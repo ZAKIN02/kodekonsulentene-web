@@ -1,0 +1,116 @@
+---
+import Base from "../layouts/Base.astro";
+import Section from "../components/Section.astro";
+import Button from "../components/Button.astro";
+import Terminal from "../components/Terminal.astro";
+import ProcessSteps from "../components/ProcessSteps.astro";
+import ContactBlock from "../components/ContactBlock.astro";
+import { prosess } from "../data/prosess";
+import { pakker } from "../data/priser";
+import { bookUrl } from "../data/firma";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  serviceType: "Utvikling av nettsider",
+  provider: { "@type": "ProfessionalService", name: "KodeKonsulentene" },
+  areaServed: { "@type": "City", name: "Oslo" },
+  offers: pakker.slice(0, 2).map((p) => ({
+    "@type": "Offer",
+    name: p.navn,
+    price: p.pris.replace(/\D/g, ""),
+    priceCurrency: "NOK",
+    description: p.beskrivelse,
+  })),
+};
+---
+<Base
+  tittel="Nettsider"
+  beskrivelse="Nettside til fast pris i Oslo: Lighthouse 95+, lokal SEO, WCAG 2.2 AA og cookieløs analyse. Start 14 900 kr, Bedrift 29 900 kr eks. mva."
+  schema={[schema]}
+>
+  <Section
+    n={1}
+    eyebrow="Nettsider"
+    tittel="En nettside som faktisk blir funnet"
+    ingress="De fleste småbedriftssider er for trege på mobil, bryter cookie-reglene og mangler org.nr. Det er tre ting som koster kunder, og alle tre er løsbare."
+  >
+    <div class="row">
+      <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
+      <Button variant="ghost" href="/sjekk">Sjekk siden du har i dag</Button>
+    </div>
+  </Section>
+
+  <Section n={2} eyebrow="Hva du får" tittel="Fire krav jeg setter selv">
+    <div class="grid-2">
+      <div class="card">
+        <h3 class="heading">Rask på mobil</h3>
+        <p class="muted">
+          Lighthouse 95 eller bedre på alle fire kategorier, målt på mobil. Største innhold
+          malt under 2,5 sekunder. Jeg viser tallet for min egen side i footeren, så du kan
+          sjekke at jeg holder det jeg selger.
+        </p>
+      </div>
+      <div class="card">
+        <h3 class="heading">Funnet lokalt</h3>
+        <p class="muted">
+          Google Bedriftsprofil satt opp riktig, samme navn, adresse og telefon overalt, og
+          egne landingssider per tjeneste og bydel. Strukturert data slik at både Google og
+          ChatGPT kan sitere deg.
+        </p>
+      </div>
+      <div class="card">
+        <h3 class="heading">Lovlig fra dag én</h3>
+        <p class="muted">
+          Org.nr. og foretaksnavn på siden, adresse og kontaktinfo etter ehandelsloven § 8,
+          personvernerklæring, og WCAG 2.2 AA – strengere enn de 35 kravene private
+          virksomheter må oppfylle.
+        </p>
+      </div>
+      <div class="card">
+        <h3 class="heading">Uten cookie-banner</h3>
+        <p class="muted">
+          Jeg bruker cookieløs analyse. Da er det ingenting å samtykke til, og du slipper
+          banneret som halvparten av besøkende lukker uten å lese. Det er også den
+          enkleste måten å overholde ekomloven § 3-15.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <Section n={3} eyebrow="Teknisk" tittel="Hva det er bygget av" ingress="Du trenger ikke å bry deg om dette. Det står her fordi noen spør, og fordi du skal kunne ta det med deg til en annen utvikler.">
+    <div class="grid-2">
+      <Terminal
+        title="~/din-side"
+        lines={[
+          { type: "cmd", text: "npm run build" },
+          { type: "out", text: "astro build · 14 sider · 0 kB JS på forsiden" },
+          { type: "cmd", text: "lighthouse --preset=mobile" },
+          { type: "ok", text: "ytelse 100 · uu 100 · beste praksis 100 · seo 100" },
+          { type: "cmd", text: "curl -I din-side.no | grep -ci 'content-security'" },
+          { type: "ok", text: "1" },
+        ]}
+        label="Terminalutsnitt: Astro-bygg med fjorten sider og null kilobyte JavaScript på forsiden, Lighthouse 100 på alle fire kategorier, og Content-Security-Policy satt."
+      />
+      <dl class="kv">
+        <div><dt>Rammeverk</dt><dd>Astro</dd></div>
+        <div><dt>Hosting</dt><dd>Cloudflare</dd></div>
+        <div><dt>Innhold</dt><dd>Markdown eller Sanity</dd></div>
+        <div><dt>Analyse</dt><dd>Plausible, cookieløs</dd></div>
+        <div><dt>Skjema</dt><dd>E-post + CRM</dd></div>
+        <div><dt>Booking</dt><dd>Cal.com</dd></div>
+        <div><dt>Eierskap</dt><dd>Ditt Git-repo</dd></div>
+      </dl>
+    </div>
+  </Section>
+
+  <Section n={4} eyebrow="Prosess" tittel="Fra samtale til lansering">
+    <ProcessSteps steps={prosess} />
+  </Section>
+
+  <Section n={5} eyebrow="Pris" tittel="14 900 kr eller 29 900 kr" ingress="Start-pakken er for deg som trenger å finnes og bli ringt. Bedrift er for deg som skal rangere lokalt og endre teksten selv. Begge eks. mva.">
+    <Button variant="primary" href="/priser">Se hele prislisten</Button>
+  </Section>
+
+  <ContactBlock n={6} />
+</Base>

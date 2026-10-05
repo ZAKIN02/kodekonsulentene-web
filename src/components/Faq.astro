@@ -1,0 +1,13 @@
+---
+import type { Sporsmaal } from "../data/faq";
+interface Props { items: Sporsmaal[]; class?: string }
+const { items, class: cls } = Astro.props;
+---
+<div class:list={["faq", cls]}>
+  {items.map((it) => (
+    <details>
+      <summary>{it.q}</summary>
+      <div class="body">{it.a}</div>
+    </details>
+  ))}
+</div>

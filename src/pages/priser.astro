@@ -1,0 +1,103 @@
+---
+import Base from "../layouts/Base.astro";
+import Section from "../components/Section.astro";
+import PriceCard from "../components/PriceCard.astro";
+import Button from "../components/Button.astro";
+import Faq from "../components/Faq.astro";
+import ContactBlock from "../components/ContactBlock.astro";
+import { pakker, loepende, prisvilkaar } from "../data/priser";
+import { firma } from "../data/firma";
+import { faq } from "../data/faq";
+
+const prisFaq = faq.filter((f) => /binding|endre|koster|eier/i.test(f.q));
+---
+<Base
+  tittel="Priser"
+  beskrivelse="Åpne priser: nettside fra 14 900 kr, Bedrift 29 900 kr, system fra 60 000 kr, abonnement 1 290–1 990 kr/mnd. Timepris 950 kr. Alle priser eks. mva."
+>
+  <Section
+    n={1}
+    eyebrow="Priser"
+    tittel="Prisene står her"
+    ingress="Fordi du skal kunne regne på det før du ringer, og fordi den som skjuler prisen sjelden gjør det til din fordel. Alle priser er eks. mva."
+  >
+    <div class="grid-3">
+      {pakker.map((p) => (
+        <PriceCard
+          name={p.navn}
+          price={p.pris}
+          prefix={p.prefiks}
+          description={p.beskrivelse}
+          recommended={p.anbefalt}
+          cta={p.cta}
+          href={p.href}
+          features={[
+            ...p.inkludert.map((t) => ({ text: t, included: true })),
+            ...(p.ikke ?? []).map((t) => ({ text: t, included: false })),
+          ]}
+        />
+      ))}
+    </div>
+  </Section>
+
+  <Section n={2} eyebrow="Løpende" tittel="Drift, abonnement og timer">
+    <div class="stack">
+      <dl class="kv">
+        {loepende.map((r) => (
+          <div>
+            <dt><strong class="body-strong">{r.navn}</strong><br /><span class="small muted">{r.tekst}</span></dt>
+            <dd class="nowrap">{r.pris}</dd>
+          </div>
+        ))}
+      </dl>
+      <ul class="small muted" style="margin: 0; padding-left: var(--space-5); display: grid; gap: var(--space-2)">
+        {prisvilkaar.map((v) => <li>{v}</li>)}
+        <li>Timeprisen er {firma.timepris} eks. mva. Norske byråer tar typisk 900–1 800 kr/t.</li>
+      </ul>
+    </div>
+  </Section>
+
+  <Section
+    n={3}
+    eyebrow="Sammenligning"
+    tittel="Hvorfor ikke 499 kr i måneden"
+    ingress="Fordi du får noe annet. Her er hva pengene faktisk kjøper, slik at du kan ta valget selv."
+  >
+    <div class="prose">
+      <table>
+        <thead>
+          <tr><th scope="col">Alternativ</th><th scope="col">Pris</th><th scope="col">Hva du får – og ikke får</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Wix, Squarespace, Webflow</td><td>150–180 kr/mnd</td><td>Du gjør jobben selv. Engelsk support. Ingen integrasjon mot Tripletex, Fiken eller Vipps.</td></tr>
+          <tr><td>AI-byggere</td><td>fra 250 kr/mnd</td><td>Prototype på et kvarter. Ingen som svarer når den slutter å virke, og ingen sikkerhetsgjennomgang.</td></tr>
+          <tr><td>Abonnementsbyrå</td><td>499–1 740 kr/mnd</td><td>Malbasert side, levert raskt. Lite skreddersøm av systemer, og bindingstid.</td></tr>
+          <tr><td>KodeKonsulentene</td><td>14 900–60 000 kr</td><td>Egenutviklet side, integrasjoner mot de systemene du har, sikkerhetsarbeid, og du eier koden.</td></tr>
+          <tr><td>Etablert byrå</td><td>80 000–250 000 kr</td><td>Team, prosess og prosjektleder. For dyrt og for tregt for de fleste småbedrifter.</td></tr>
+        </tbody>
+      </table>
+      <p class="small faint">
+        Tallene for andre leverandører er hentet fra deres egne nettsider høsten 2026 og kan ha
+        endret seg. De har kommersielle interesser og ulike definisjoner av «enkel nettside».
+        Bruk dem som markedssignal, ikke som fasit.
+      </p>
+    </div>
+  </Section>
+
+  <Section n={4} eyebrow="Spørsmål" tittel="Om pris og binding">
+    <Faq items={prisFaq} />
+    <p class="small muted" style="margin-top: var(--space-5)">
+      <a class="kk-link" href="/vilkar">Salgsvilkårene</a> står i klartekst, og
+      <a class="kk-link" href="/handbok">håndboken</a> forklarer hvordan jeg jobber.
+    </p>
+  </Section>
+
+  <Section n={5} eyebrow="Usikker" tittel="Vet du ikke hva du trenger?" ingress="Kjør den gratis sjekken på siden du har i dag. Da ser vi begge hva som er problemet før vi snakker om pris.">
+    <div class="row">
+      <Button variant="primary" href="/sjekk">Sjekk nettsiden din</Button>
+      <Button variant="ghost" href="/kontakt">Book 20 minutter</Button>
+    </div>
+  </Section>
+
+  <ContactBlock n={6} />
+</Base>

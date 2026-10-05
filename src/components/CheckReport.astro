@@ -1,0 +1,35 @@
+---
+// Rapport fra «Sjekk nettsiden din». Fem rader i fast rekkefølge (se docs/sidemonstre.md).
+// note sier hva det betyr for bedriften, ikke for utvikleren.
+import StatusBadge from "./StatusBadge.astro";
+export interface CheckRow { name: string; status: "ok" | "warn" | "fail" | "neutral"; value: string; note: string }
+interface Props { url: string; date?: string; rows: CheckRow[]; footer?: string | null; class?: string }
+const { url, date, rows, footer, class: cls } = Astro.props;
+---
+<div class:list={["kk-report", cls]}>
+  <div class="kk-report-head">
+    <span class="kk-url">{url}</span>
+    {date && <span>{date}</span>}
+  </div>
+  <table>
+    <thead>
+      <tr><th scope="col">Sjekk</th><th scope="col">Status</th><th scope="col">Verdi</th><th scope="col">Hva det betyr</th></tr>
+    </thead>
+    <tbody>
+      {rows.map((r) => (
+        <tr>
+          <td class="kk-name">{r.name}</td>
+          <td><StatusBadge status={r.status} /></td>
+          <td class="kk-value">{r.value}</td>
+          <td class="kk-note">{r.note}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+  {(footer || Astro.slots.has("action")) && (
+    <div class="kk-report-foot">
+      <span>{footer}</span>
+      <slot name="action" />
+    </div>
+  )}
+</div>

@@ -1,0 +1,16 @@
+---
+// Fire steg med tidsangivelse. Tiden er et løfte – ikke skriv den hvis den ikke holdes.
+export interface ProcessStep { title: string; time?: string; text?: string }
+interface Props { steps: ProcessStep[]; class?: string }
+const { steps, class: cls } = Astro.props;
+---
+<ol class:list={["kk-steps", cls]}>
+  {steps.map((s, i) => (
+    <li>
+      <span class="kk-step-n" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+      <h3>{s.title}</h3>
+      {s.time && <span class="kk-step-time">{s.time}</span>}
+      {s.text && <p>{s.text}</p>}
+    </li>
+  ))}
+</ol>

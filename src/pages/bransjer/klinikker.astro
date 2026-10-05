@@ -1,0 +1,112 @@
+---
+import Base from "../../layouts/Base.astro";
+import Section from "../../components/Section.astro";
+import Button from "../../components/Button.astro";
+import Terminal from "../../components/Terminal.astro";
+import UrlCheck from "../../components/UrlCheck.astro";
+import ProcessSteps from "../../components/ProcessSteps.astro";
+import ContactBlock from "../../components/ContactBlock.astro";
+import { bookUrl } from "../../data/firma";
+
+const steg = [
+  { title: "Kunden booker selv", time: "Døgnet rundt", text: "Ledige timer per behandler og behandlingstype. De fleste bestillinger kommer utenom åpningstiden." },
+  { title: "Betaler ved bestilling", time: "Vipps", text: "Forskuddsbetaling eller depositum. Det alene fjerner mesteparten av de som ikke møter opp." },
+  { title: "Påminnelse går ut", time: "24 t før", text: "SMS med tid, behandler og avbestillingslenke. Avbestiller de, frigis timen automatisk." },
+  { title: "Oppgjøret stemmer", time: "Automatisk", text: "Betalingen ligger som ordre i regnskapet. Ingen avstemming av Vipps mot timeboken." },
+];
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  serviceType: "Bookingsystem og nettside for klinikker og treningssentre",
+  provider: { "@type": "ProfessionalService", name: "KodeKonsulentene" },
+  areaServed: { "@type": "City", name: "Oslo" },
+};
+---
+<Base
+  tittel="Nettside og booking for klinikker"
+  beskrivelse="Timebestilling, Vipps-betaling, SMS-påminnelse og medlemsregister for klinikker, treningssentre og kampsportklubber i Oslo. System fra 60 000 kr eks. mva."
+  schema={[schema]}
+>
+  <Section
+    n={1}
+    eyebrow="Klinikker og trening"
+    tittel="Timer som bestilles mens dere er stengt"
+    ingress="Telefonbestilling betyr at dere bare kan selge timer i åpningstiden, og at noen må avbryte en behandling for å ta telefonen."
+  >
+    <div class="row">
+      <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
+      <Button variant="ghost" href="#demo">Se bookingflyten</Button>
+    </div>
+  </Section>
+
+  <Section n={2} eyebrow="Problemet" tittel="Tre tall dere kjenner igjen">
+    <div class="grid-2">
+      <div class="stack">
+        <dl class="kv">
+          <div><dt>Timer brukt på telefon i uka</dt><dd>TODO</dd></div>
+          <div><dt>Timer som ikke møtes opp</dt><dd>TODO</dd></div>
+          <div><dt>Tid på avstemming per måned</dt><dd>TODO</dd></div>
+        </dl>
+        <p class="muted">
+          Tallene står som TODO fordi jeg ikke vil finne på deres tall. Fyll dem ut i
+          samtalen, så regner vi sammen på hva systemet må spare for å lønne seg.
+          Blir svaret at det ikke lønner seg, sier jeg det.
+        </p>
+      </div>
+      <Terminal
+        title="~/bransje/klinikk"
+        lines={[
+          { type: "cmd", text: "når bestiller folk time" },
+          { type: "out", text: "mest kveld og helg" },
+          { type: "cmd", text: "når tar dere telefonen" },
+          { type: "warn", text: "hverdager 09–16" },
+          { type: "cmd", text: "echo $PROBLEM" },
+          { type: "fail", text: "dere selger når kundene ikke kjøper" },
+        ]}
+        label="Terminalutsnitt: folk bestiller time mest kveld og helg, men klinikken tar telefonen hverdager ni til seksten. Problemet er at dere selger når kundene ikke kjøper."
+      />
+    </div>
+  </Section>
+
+  <Section
+    n={3}
+    eyebrow="Demo"
+    tittel="Fra bestilling til oppgjør"
+    ingress="Fire steg som skjer uten at noen i resepsjonen gjør noe. Det er dette som skiller et system fra en nettside med et skjema."
+    id="demo"
+  >
+    <ProcessSteps steps={steg} />
+    <div class="card" style="margin-top: var(--space-6)">
+      <h3 class="heading">Klikkbar demo</h3>
+      <p class="muted">
+        TODO: lenk til den klikkbare demoen av bookingflyten når den er bygget.
+        En demo dere kan trykke dere gjennom sier mer enn fire kulepunkter.
+      </p>
+      <Button variant="secondary" href="/kontakt">Be om en gjennomgang</Button>
+    </div>
+  </Section>
+
+  <Section n={4} eyebrow="Også aktuelt" tittel="Medlemmer, ikke bare timer">
+    <div class="grid-3">
+      <div class="card">
+        <h3 class="subheading">Medlemsregister</h3>
+        <p class="muted">Månedstrekk, frysing av medlemskap og oversikt over hvem som faktisk møter opp. Aktuelt for treningssentre og kampsportklubber.</p>
+      </div>
+      <div class="card">
+        <h3 class="subheading">Medlemsapp</h3>
+        <p class="muted">Booking av gruppetimer, innsjekk og varsler. Jeg lager både nettsiden og appen, så det er ett system og ikke to.</p>
+      </div>
+      <div class="card">
+        <h3 class="subheading">Journal og personvern</h3>
+        <p class="muted">Behandler dere helseopplysninger, gjelder strengere krav. Da settes det opp med databehandleravtale og tilgangsstyring fra start.</p>
+      </div>
+    </div>
+  </Section>
+
+  <Section n={5} eyebrow="Start her" tittel="Sjekk den siden dere har" ingress="Mange klinikksider laster Google Analytics før samtykke. Det bryter ekomloven § 3-15, og det er fikset på en ettermiddag.">
+    <UrlCheck buttonLabel="Kjør sjekken" hint="30 sekunder. Gratis, uten innlogging." />
+  </Section>
+
+  <ContactBlock n={6} tittel="Ta en prat før dere bytter system" ingress="Har dere allerede et bookingsystem dere betaler for, er ofte svaret å koble det sammen med resten i stedet for å bytte. Det sier jeg gjerne før dere kjøper noe." />
+</Base>

@@ -1,0 +1,43 @@
+---
+// Prispakke. price er ferdig formatert («29 900 kr»). unit er alltid synlig – aldri i fotnote.
+// Ikke inkludert vises som strek i ink-faint, aldri kryss i fail: det er ikke en feil at
+// Start-pakken mangler CMS.
+import Button from "./Button.astro";
+export interface PriceFeature { text: string; included?: boolean }
+interface Props {
+  name: string; price: string; prefix?: string; unit?: string; description?: string;
+  features: Array<string | PriceFeature>; recommended?: boolean; flagLabel?: string;
+  cta?: string; href?: string; class?: string;
+}
+const {
+  name, price, prefix, unit = "eks. mva", description, features,
+  recommended = false, flagLabel = "Anbefalt", cta, href, class: cls,
+} = Astro.props;
+const rows = features.map((f) => (typeof f === "string" ? { text: f, included: true } : { included: true, ...f }));
+---
+<div class:list={["kk-price", recommended && "is-recommended", cls]}>
+  <div class="kk-price-top">
+    <h3>{name}</h3>
+    {recommended && <span class="kk-flag">{flagLabel}</span>}
+  </div>
+  <p class="kk-amount">
+    {prefix && <span class="kk-prefix">{prefix}</span>}{price}
+    <small>{unit}</small>
+  </p>
+  <div class="stack stack--tight">
+    {description && <p>{description}</p>}
+    <ul>
+      {rows.map((f) => (
+        <li class:list={[f.included ? "is-in" : "is-out"]}>
+          {f.included ? (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          ) : (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg>
+          )}
+          <span>{f.text}<span class="visually-hidden">{f.included ? " – inkludert" : " – ikke inkludert"}</span></span>
+        </li>
+      ))}
+    </ul>
+  </div>
+  {cta && <Button variant={recommended ? "primary" : "secondary"} href={href}>{cta}</Button>}
+</div>

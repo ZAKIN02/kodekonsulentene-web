@@ -1,0 +1,61 @@
+---
+// Kontaktblokken som avslutter forsiden og hver underside. Skjemaet har fire felt –
+// ikke flere enn det som trengs for å svare.
+import { firma, bookUrl } from "../data/firma";
+import Eyebrow from "./Eyebrow.astro";
+import Button from "./Button.astro";
+interface Props { n?: number; tittel?: string; ingress?: string }
+const {
+  n = 10,
+  tittel = "Snakk med den som koder",
+  ingress = "20 minutter på telefon, ingen presentasjon. Du får et prisspenn og en ærlig vurdering av om du trenger det du tror du trenger.",
+} = Astro.props;
+---
+<section class="section" id="kontakt">
+  <div class="wrap">
+    <div class="section__head">
+      <Eyebrow n={n}>Kontakt</Eyebrow>
+      <h2 class="display-lg">{tittel}</h2>
+      <p class="body-lg">{ingress}</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3 class="heading">Book direkte</h3>
+        <p class="muted">Velg et ledig kvarter i kalenderen. Du får en bekreftelse med lenke – ingen e-post fram og tilbake.</p>
+        <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
+        <dl class="kv">
+          <div><dt>E-post</dt><dd><a class="kk-link" href={`mailto:${firma.epost}`}>{firma.epost}</a></dd></div>
+          <div><dt>Telefon</dt><dd><a class="kk-link" href={`tel:${firma.telefon.replace(/\s/g, "")}`}>{firma.telefon}</a></dd></div>
+          <div><dt>Svartid</dt><dd>{firma.svartid}</dd></div>
+        </dl>
+      </div>
+
+      <form class="card" method="post" action="/api/kontakt" data-kontakt>
+        <h3 class="heading">Eller skriv kort</h3>
+        <div class="field">
+          <label for="k-navn">Navn</label>
+          <input class="control" id="k-navn" name="navn" type="text" autocomplete="name" required />
+        </div>
+        <div class="field">
+          <label for="k-epost">E-post</label>
+          <input class="control" id="k-epost" name="epost" type="email" autocomplete="email" required />
+        </div>
+        <div class="field">
+          <label for="k-nettside">Nettside i dag</label>
+          <input class="control" id="k-nettside" name="nettside" type="text" inputmode="url" placeholder="dinbedrift.no" />
+          <span class="hint">Har du ingen ennå, la feltet stå tomt.</span>
+        </div>
+        <div class="field">
+          <label for="k-melding">Hva tar tid i dag?</label>
+          <textarea class="control" id="k-melding" name="melding" required></textarea>
+        </div>
+        <Button variant="secondary" type="submit">Send</Button>
+        <p class="small faint">
+          Jeg bruker opplysningene bare for å svare deg, og sletter dem etter seks måneder hvis
+          det ikke blir et oppdrag. Se <a class="kk-link" href="/personvern">personvernerklæringen</a>.
+        </p>
+      </form>
+    </div>
+  </div>
+</section>

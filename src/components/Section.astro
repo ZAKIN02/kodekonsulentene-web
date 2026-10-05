@@ -1,0 +1,22 @@
+---
+// Standardblokk: Eyebrow + display-lg + ingress, så innhold. Rekkefølgen er fast
+// (docs/sidemonstre.md). n er nummeret i den rekkefølgen.
+import Eyebrow from "./Eyebrow.astro";
+interface Props {
+  n?: number; eyebrow?: string; tittel?: string; ingress?: string;
+  id?: string; tight?: boolean; class?: string;
+}
+const { n, eyebrow, tittel, ingress, id, tight = false, class: cls } = Astro.props;
+---
+<section id={id} class:list={["section", tight && "section--tight", cls]}>
+  <div class="wrap">
+    {(eyebrow || tittel) && (
+      <div class="section__head">
+        {eyebrow && <Eyebrow n={n}>{eyebrow}</Eyebrow>}
+        {tittel && <h2 class="display-lg">{tittel}</h2>}
+        {ingress && <p class="body-lg">{ingress}</p>}
+      </div>
+    )}
+    <slot />
+  </div>
+</section>

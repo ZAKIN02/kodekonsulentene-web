@@ -1,0 +1,214 @@
+---
+import Base from "../layouts/Base.astro";
+import Section from "../components/Section.astro";
+import UrlCheck from "../components/UrlCheck.astro";
+import Button from "../components/Button.astro";
+import Terminal from "../components/Terminal.astro";
+import ContactBlock from "../components/ContactBlock.astro";
+import { firma } from "../data/firma";
+
+// Siden er statisk. Sjekken kjøres av skriptet under mot /api/sjekk, slik at
+// rapporten kan hentes uten full sidelasting – og uten at siden trenger SSR.
+const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
+---
+<Base
+  tittel="Sjekk nettsiden din"
+  beskrivelse="Gratis sjekk av ytelse, sikkerhetsheadere, cookies før samtykke, universell utforming og lovpålagt informasjon. Rapport på 30 sekunder."
+>
+  <Section
+    n={1}
+    eyebrow="Verktøy"
+    tittel="Sjekk nettsiden din"
+    ingress="Fem ting som er konkrete, testbare og som svært mange norske småbedriftssider bryter minst ett av. Du får svaret i klartekst, ikke i utviklersjargong."
+  >
+    <div class="stack">
+      <UrlCheck
+        id="url-sjekk"
+        buttonLabel="Kjør sjekken"
+        value={forhandsutfylt}
+        hint="Jeg laster forsiden din én gang, slik en besøkende får den. Ingenting lagres."
+      />
+
+      <div id="resultat" aria-live="polite" aria-busy="false"></div>
+
+      <noscript>
+        <p class="card">
+          Sjekken krever JavaScript. Send adressen til
+          <a class="kk-link" href={`mailto:${firma.epost}?subject=Nettsidesjekk`}>{firma.epost}</a>,
+          så kjører jeg den manuelt og sender rapporten samme dag.
+        </p>
+      </noscript>
+    </div>
+  </Section>
+
+  <Section n={2} eyebrow="Hva som sjekkes" tittel="Fem punkter, i denne rekkefølgen">
+    <div class="grid-2">
+      <div class="stack">
+        <dl class="kv">
+          <div><dt>Ytelse</dt><dd>Lighthouse, mobil</dd></div>
+          <div><dt>Sikkerhetsheadere</dt><dd>CSP, HSTS, +4</dd></div>
+          <div><dt>Cookies før samtykke</dt><dd>ekomloven § 3-15</dd></div>
+          <div><dt>Universell utforming</dt><dd>WCAG 2.0 A/AA</dd></div>
+          <div><dt>Lovpålagt informasjon</dt><dd>org.nr., ehandelsloven § 8</dd></div>
+        </dl>
+        <p class="small muted">
+          Private virksomheter skal oppfylle 35 krav i WCAG 2.0 nivå A og AA. Fra 1. januar 2025
+          krever ekomloven § 3-15 at cookie-samtykke oppfyller GDPR-kravene: ingen forhåndsavkryssing,
+          «avvis» like lett som «godta», ingen sporing før samtykke.
+        </p>
+      </div>
+      <div class="stack">
+        <Terminal
+          title="~/kodekonsulentene/sjekk"
+          lines={[
+            { type: "cmd", text: "sjekk --hva" },
+            { type: "out", text: "henter forsiden én gang, uten å kjøre JavaScript" },
+            { type: "out", text: "leser svarheadere og HTML" },
+            { type: "ok", text: "rapporterer bare det som er målt" },
+            { type: "warn", text: "kontrast og tastaturbruk må testes manuelt" },
+          ]}
+          label="Terminalutsnitt: sjekken henter forsiden én gang uten å kjøre JavaScript, leser svarheadere og HTML, rapporterer bare det som er målt. Kontrast og tastaturbruk må testes manuelt."
+        />
+        <p class="small faint">
+          Verktøyet overdriver aldri funnene. Det som ikke kan måles, får status
+          «Ikke sjekket» og en setning om hvorfor. Dette er ikke juridisk rådgivning.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <Section n={3} eyebrow="Etterpå" tittel="Vil du at jeg fikser det?" ingress="Lovsjekk-pakken er 7 900 kr eks. mva og dekker cookies, universell utforming, lovpålagt informasjon og personvernerklæring på den siden du har i dag. Du trenger ikke ny nettside for det.">
+    <div class="row">
+      <Button variant="primary" href="/priser">Se hva det koster</Button>
+      <Button variant="ghost" href="/sikkerhet">Les om sikkerhetsarbeidet</Button>
+    </div>
+  </Section>
+
+  <ContactBlock n={4} tittel="Eller bare ring" ingress="Har du rapporten foran deg og vil vite hva som er viktigst å starte med, tar det fem minutter på telefon." />
+</Base>
+
+<script>
+  const ORD = { ok: "Bestått", warn: "Bør fikses", fail: "Brudd", neutral: "Ikke sjekket" } as const;
+  type Status = keyof typeof ORD;
+
+  const IKON: Record<Status, string> = {
+    ok: '<path d="M20 6 9 17l-5-5"/>',
+    warn: '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+    fail: '<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>',
+    neutral: '<circle cx="12" cy="12" r="10"/><path d="M8 12h8"/>',
+  };
+
+  interface Rad { name: string; status: Status; value: string; note: string }
+  interface Rapport { url: string; dato: string; rader: Rad[]; totalt: number; forbehold: string[]; sendt: boolean }
+
+  const esc = (s: unknown) =>
+    String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
+
+  const badge = (s: Status) =>
+    `<span class="kk-badge kk-badge-${s}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IKON[s]}</svg>${ORD[s]}</span>`;
+
+  const boks = document.querySelector<HTMLElement>("#resultat")!;
+  const skjema = document.querySelector<HTMLFormElement>("#url-sjekk")?.closest("form");
+  const felt = document.querySelector<HTMLInputElement>("#url-sjekk")!;
+
+  function melding(html: string) {
+    boks.innerHTML = `<div class="card">${html}</div>`;
+  }
+
+  function tegn(r: Rapport) {
+    const rader = r.rader
+      .map(
+        (x) => `<tr>
+          <td class="kk-name">${esc(x.name)}</td>
+          <td>${badge(x.status)}</td>
+          <td class="kk-value">${esc(x.value)}</td>
+          <td class="kk-note">${esc(x.note)}</td>
+        </tr>`,
+      )
+      .join("");
+
+    boks.innerHTML = `
+      <div class="stack">
+        <div class="kk-report">
+          <div class="kk-report-head"><span class="kk-url">${esc(r.url)}</span><span>${esc(r.dato)}</span></div>
+          <table>
+            <thead><tr><th scope="col">Sjekk</th><th scope="col">Status</th><th scope="col">Verdi</th><th scope="col">Hva det betyr</th></tr></thead>
+            <tbody>${rader}</tbody>
+          </table>
+          <div class="kk-report-foot"><span>Samlet: ${r.totalt} av 100</span><span class="mono">${esc(r.url)}</span></div>
+        </div>
+
+        <form class="card" data-send>
+          <h3 class="subheading">Få rapporten på e-post</h3>
+          <div class="field">
+            <label for="r-epost">E-post</label>
+            <input class="control" id="r-epost" name="epost" type="email" autocomplete="email" required placeholder="din@bedrift.no" />
+            <span class="hint">Jeg bruker adressen til å sende denne rapporten. Ingen nyhetsbrev.</span>
+          </div>
+          <button class="kk-btn" type="submit">Send rapporten</button>
+          <p class="small faint" data-send-status></p>
+        </form>
+
+        <details class="card card--sunken">
+          <summary class="body-strong" style="cursor: pointer">Forbehold – hva sjekken ikke ser</summary>
+          <ul class="small muted" style="margin: var(--space-3) 0 0; padding-left: var(--space-5); display: grid; gap: var(--space-2)">
+            ${r.forbehold.map((f) => `<li>${esc(f)}</li>`).join("")}
+          </ul>
+        </details>
+      </div>`;
+
+    const sendSkjema = boks.querySelector<HTMLFormElement>("[data-send]")!;
+    const status = boks.querySelector<HTMLElement>("[data-send-status]")!;
+    sendSkjema.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const epost = sendSkjema.querySelector<HTMLInputElement>("#r-epost")!.value;
+      status.textContent = "Sender …";
+      try {
+        const svar = await fetch("/api/sjekk", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ url: felt.value, epost }),
+        });
+        const data = (await svar.json()) as { sendt?: boolean; feil?: string };
+        status.textContent = data.sendt
+          ? "Sendt. Sjekk innboksen – og søppelposten, for sikkerhets skyld."
+          : "Klarte ikke å sende e-posten nå. Rapporten står fortsatt over, og du kan kopiere den.";
+      } catch {
+        status.textContent = "Klarte ikke å sende e-posten nå. Rapporten står fortsatt over.";
+      }
+    });
+  }
+
+  async function kjor(url: string) {
+    if (!url.trim()) return;
+    boks.setAttribute("aria-busy", "true");
+    melding('<p class="mono">$ sjekk ' + esc(url) + " …</p><p class='small faint'>Dette tar vanligvis 10–30 sekunder. Lighthouse-målingen er den som bruker tid.</p>");
+    try {
+      const svar = await fetch("/api/sjekk", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ url }),
+      });
+      const data = (await svar.json()) as Rapport & { feil?: string };
+      if (!svar.ok || data.feil) {
+        melding(`<p class="body-strong">Sjekken stoppet.</p><p class="muted">${esc(data.feil ?? "Ukjent feil.")}</p>`);
+        return;
+      }
+      tegn(data);
+    } catch {
+      melding('<p class="body-strong">Sjekken stoppet.</p><p class="muted">Fikk ikke svar fra serveren. Prøv igjen om et øyeblikk.</p>');
+    } finally {
+      boks.setAttribute("aria-busy", "false");
+    }
+  }
+
+  skjema?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const url = felt.value;
+    history.replaceState(null, "", `/sjekk?url=${encodeURIComponent(url)}`);
+    void kjor(url);
+  });
+
+  // Kom brukeren hit fra hero-feltet eller terminalmodus, kjør med en gang.
+  if (felt.value.trim()) void kjor(felt.value);
+</script>

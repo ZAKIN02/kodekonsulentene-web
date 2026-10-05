@@ -1,0 +1,116 @@
+---
+import Base from "../layouts/Base.astro";
+import Section from "../components/Section.astro";
+import Button from "../components/Button.astro";
+import Terminal from "../components/Terminal.astro";
+import { firma, bookUrl } from "../data/firma";
+
+// Siden rendres på serveren, ikke ved bygg. Grunnen er kvitteringen: skjemaet poster
+// til /api/kontakt, som sender deg tilbake hit med ?sendt=1. Var siden statisk, måtte
+// den meldingen vises med JavaScript – og da virker ikke skjemaet uten JavaScript.
+export const prerender = false;
+
+const sendt = Astro.url.searchParams.get("sendt") === "1";
+const feil = Astro.url.searchParams.get("feil");
+
+const feilmelding =
+  feil === "1"
+    ? "Noe manglet i skjemaet. Fyll ut navn, en gyldig e-postadresse og hva du trenger hjelp til."
+    : feil === "2"
+      ? `Skjemaet kom ikke fram. Send en e-post til ${firma.epost} i stedet, så svarer jeg like raskt.`
+      : null;
+---
+<Base
+  tittel="Kontakt"
+  beskrivelse="Book 20 minutter på telefon, eller skriv kort hva som tar tid i dag. Svar innen 24 timer. Utvikler i Oslo."
+  noindex={sendt || Boolean(feil)}
+>
+  <Section
+    n={1}
+    eyebrow="Kontakt"
+    tittel="Snakk med den som koder"
+    ingress="20 minutter på telefon, ingen presentasjon. Du får et prisspenn og en ærlig vurdering av om du trenger det du tror du trenger."
+  >
+    {sendt && (
+      <div class="card" style="border-color: var(--ok)">
+        <h2 class="heading">Takk – meldingen kom fram</h2>
+        <p class="muted">
+          Jeg svarer innen {firma.svartid}, som regel raskere. Haster det, ring
+          <a class="kk-link" href={`tel:${firma.telefon.replace(/\s/g, "")}`}>{firma.telefon}</a>.
+        </p>
+      </div>
+    )}
+
+    {feilmelding && (
+      <div class="card" style="border-color: var(--fail)">
+        <h2 class="heading">Det stoppet opp</h2>
+        <p class="muted">{feilmelding}</p>
+      </div>
+    )}
+
+    <div class="grid-2" style="margin-top: var(--space-6)">
+      <div class="stack">
+        <div class="card">
+          <h2 class="heading">Book et kvarter</h2>
+          <p class="muted">
+            Velg et ledig tidspunkt. Du får bekreftelse med lenke med én gang – ingen
+            e-post fram og tilbake for å finne en tid.
+          </p>
+          <Button variant="primary" href={bookUrl}>Åpne kalenderen</Button>
+          <dl class="kv">
+            <div><dt>E-post</dt><dd><a class="kk-link" href={`mailto:${firma.epost}`}>{firma.epost}</a></dd></div>
+            <div><dt>Telefon</dt><dd><a class="kk-link" href={`tel:${firma.telefon.replace(/\s/g, "")}`}>{firma.telefon}</a></dd></div>
+            <div><dt>Svartid</dt><dd>{firma.svartid}</dd></div>
+            <div><dt>Sted</dt><dd>{firma.adresse}</dd></div>
+          </dl>
+        </div>
+
+        <Terminal
+          title="~/kodekonsulentene/kontakt"
+          lines={[
+            { type: "cmd", text: "hva koster en prat" },
+            { type: "ok", text: "ingenting" },
+            { type: "cmd", text: "hva skjer etterpå" },
+            { type: "out", text: "du får et prisspenn på telefonen," },
+            { type: "out", text: "og et skriftlig tilbud innen to dager" },
+            { type: "cmd", text: "er jeg bundet til noe" },
+            { type: "ok", text: "nei" },
+          ]}
+          label="Terminalutsnitt: en prat koster ingenting, du får prisspenn på telefonen og skriftlig tilbud innen to dager, og du er ikke bundet til noe."
+        />
+      </div>
+
+      <form class="card" method="post" action="/api/kontakt">
+        <h2 class="heading">Eller skriv kort</h2>
+        <p class="small muted">Fire felt. Ikke flere enn det som trengs for å svare deg.</p>
+        <div class="field">
+          <label for="navn">Navn</label>
+          <input class="control" id="navn" name="navn" type="text" autocomplete="name" required />
+        </div>
+        <div class="field">
+          <label for="epost">E-post</label>
+          <input class="control" id="epost" name="epost" type="email" autocomplete="email" required />
+        </div>
+        <div class="field">
+          <label for="nettside">Nettside i dag</label>
+          <input class="control" id="nettside" name="nettside" type="text" inputmode="url" placeholder="dinbedrift.no" />
+          <span class="hint">Har du ingen ennå, la feltet stå tomt.</span>
+        </div>
+        <div class="field">
+          <label for="melding">Hva tar tid i dag?</label>
+          <textarea class="control" id="melding" name="melding" required></textarea>
+          <span class="hint">Skriv det som en setning. «Vi bruker en halv dag i måneden på å avstemme Vipps» sier mer enn «vi trenger ny nettside».</span>
+        </div>
+        <Button variant="primary" type="submit">Send</Button>
+        <p class="small faint">
+          Jeg bruker opplysningene bare for å svare deg, og sletter dem etter seks måneder
+          hvis det ikke blir et oppdrag. Se <a class="kk-link" href="/personvern">personvernerklæringen</a>.
+        </p>
+      </form>
+    </div>
+  </Section>
+
+  <Section n={2} eyebrow="Før du ringer" tittel="Kjør sjekken først" ingress="Har du en side i dag, bruk et halvt minutt på den gratis sjekken. Da ser vi begge hva som faktisk er problemet før vi snakker om pris.">
+    <Button variant="secondary" href="/sjekk">Sjekk nettsiden din</Button>
+  </Section>
+</Base>

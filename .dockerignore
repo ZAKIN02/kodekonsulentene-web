@@ -1,0 +1,16 @@
+node_modules
+dist
+.astro
+.git
+.github
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+docs
+test
+scripts
+.claude
+README.md
+CLAUDE.md

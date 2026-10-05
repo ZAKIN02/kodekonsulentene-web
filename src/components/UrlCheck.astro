@@ -1,0 +1,27 @@
+---
+// URL-felt med «$ sjekk»-prompt. Sidens sekundære CTA og leadmagnet.
+// Fungerer uten JavaScript: skjemaet går til /sjekk med ?url=. Islands-skriptet på /sjekk
+// tar over og kjører mot /api/sjekk uten full sidelasting.
+import Button from "./Button.astro";
+interface Props {
+  id?: string; label?: string; placeholder?: string; buttonLabel?: string;
+  hint?: string | null; value?: string; action?: string; class?: string;
+}
+const {
+  id = "url", label = "Nettadresse", placeholder = "dinbedrift.no",
+  buttonLabel = "Sjekk", hint = "Gratis. Rapport på 30 sekunder. Ingen innlogging.",
+  value, action = "/sjekk", class: cls,
+} = Astro.props;
+---
+<div class:list={[cls]}>
+  <form class="kk-urlcheck" method="get" action={action} data-urlcheck>
+    <label class="visually-hidden" for={id}>{label}</label>
+    <span class="kk-prompt" aria-hidden="true">$</span>
+    <input
+      class="kk-input" id={id} name="url" type="text" inputmode="url" value={value}
+      placeholder={placeholder} autocomplete="url" spellcheck="false" required
+    />
+    <Button variant="primary" type="submit">{buttonLabel}</Button>
+  </form>
+  {hint && <p class="kk-urlcheck-hint">{hint}</p>}
+</div>

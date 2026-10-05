@@ -1,0 +1,43 @@
+# Fly.io – kodekonsulentene.no
+# Deploy: fly deploy    Logger: fly logs -a kodekonsulentene
+# Hemmeligheter settes med `fly secrets set`, aldri i denne filen.
+
+app = "kodekonsulentene"
+primary_region = "ams"   # Amsterdam – nærmeste region til norske besøkende
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  HOST = "0.0.0.0"
+  PORT = "8080"
+  NODE_ENV = "production"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  # Maskinen sover når ingen er inne, og vekkes av første forespørsel.
+  # min_machines_running = 1 gjør at det alltid står én våken, slik at ingen
+  # besøkende betaler oppstartstiden. Ytelsesbudsjettet er LCP under 2,5 s.
+  auto_stop_machines = "suspend"
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 200
+    hard_limit = 250
+
+  [[http_service.checks]]
+    grace_period = "10s"
+    interval = "30s"
+    method = "GET"
+    timeout = "5s"
+    path = "/status"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1

@@ -1,0 +1,68 @@
+---
+import Base from "../layouts/Base.astro";
+import Section from "../components/Section.astro";
+import ProofStrip from "../components/ProofStrip.astro";
+import Button from "../components/Button.astro";
+import ContactBlock from "../components/ContactBlock.astro";
+import { bevis } from "../data/bevis";
+import { firma } from "../data/firma";
+---
+<Base
+  tittel="Om"
+  beskrivelse="Zakaria, utvikler i Oslo. Dataingeniør med sikkerhet som spesialfelt, egne apper på App Store. Du snakker alltid med den som koder."
+>
+  <Section
+    n={1}
+    eyebrow="Om"
+    tittel="Du snakker med den som koder"
+    ingress="Det er hele forskjellen mellom meg og et byrå. Det er også grunnen til at jeg ikke kan ta inn tjue prosjekter i måneden."
+  >
+    <div class="grid-2">
+      <div class="stack prose">
+        <p class="body-lg muted">
+          Jeg heter {firma.person} og er dataingeniør med sikkerhet som spesialfelt. Jeg har
+          publisert egne apper på App Store, og bygger nettsider og systemer for norske
+          småbedrifter fra Oslo.
+        </p>
+        <h2>Hvorfor solo</h2>
+        <p class="muted">
+          I et byrå selger en senior, en junior bygger, og en prosjektleder forklarer
+          hvorfor det tok lengre tid. Jeg gjør alle tre, og det er raskere. Du får et
+          direktenummer og svar innen {firma.svartid}.
+        </p>
+        <h2>Hvorfor sikkerhet</h2>
+        <p class="muted">
+          Fordi det er den delen ingen spør om før det er for sent. En nettside som setter
+          Google Analytics før samtykke, eller som kan legges i en ramme på et annet domene,
+          er et problem du ikke oppdager selv – du får det i fanget når noen klager.
+          Derfor står sikkerhetsarbeidet i prisen, ikke i tilleggsmenyen.
+        </p>
+        <h2>Hva jeg ikke gjør</h2>
+        <p class="muted">
+          Jeg tar ikke design uten utvikling, driver ikke annonsekampanjer, og selger ikke
+          nettbutikker på plattformer jeg ikke kan vedlikeholde. Trenger du det, sier jeg
+          det og sender deg videre til noen som er bedre på det.
+        </p>
+        <Button variant="ghost" href="/handbok">Les håndboken</Button>
+      </div>
+
+      <div class="stack">
+        <div class="shot" aria-hidden="true" style="aspect-ratio: 4/5; display: grid; place-items: center">
+          <p class="mono faint" style="text-align: center; padding: var(--space-5)">
+            TODO: portrettfoto<br />4:5, ekte bilde, ikke stock
+          </p>
+        </div>
+        <p class="small faint">
+          Ett portrettfoto. Ingen stockbilder, ingen AI-genererte illustrasjoner –
+          hverken her eller på kundesider.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <div class="wrap">
+    <ProofStrip items={bevis} label="Målbare påstander" />
+  </div>
+
+  <ContactBlock n={2} />
+</Base>

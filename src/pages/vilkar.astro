@@ -1,0 +1,147 @@
+---
+import Base from "../layouts/Base.astro";
+import Section from "../components/Section.astro";
+import Button from "../components/Button.astro";
+import { firma } from "../data/firma";
+const oppdatert = "5. oktober 2026";
+---
+<Base
+  tittel="Salgsvilkår"
+  beskrivelse="Salgsvilkår for oppdrag fra KodeKonsulentene: betaling, revisjoner, eierskap til kode og domene, drift, oppsigelse og ansvar. B2B."
+>
+  <Section n={1} eyebrow="Vilkår" tittel="Salgsvilkår" ingress={`Sist oppdatert ${oppdatert}. Gjelder oppdrag mellom ${firma.foretaksnavn} og næringsdrivende kunder. Alle priser er eks. mva.`}>
+    <div class="card card--sunken" style="border-color: var(--warn); margin-bottom: var(--space-6)">
+      <p class="body-strong">Forbehold</p>
+      <p class="small muted">
+        Dette er et utkast skrevet av utvikleren, ikke av advokat. Vilkårene må
+        kvalitetssikres juridisk før de brukes i avtaler. Dette er ikke juridisk rådgivning.
+      </p>
+    </div>
+
+    <div class="prose">
+      <h2>1. Partene og omfang</h2>
+      <p class="muted">
+        Vilkårene gjelder mellom {firma.foretaksnavn}, org.nr. {firma.orgnr} («leverandøren»)
+        og kunden. Vilkårene gjelder bare næringsdrivende. Omfanget av hvert oppdrag
+        framgår av et skriftlig tilbud som kunden har godtatt. Er det motstrid, går tilbudet
+        foran disse vilkårene.
+      </p>
+
+      <h2>2. Tilbud og bestilling</h2>
+      <p class="muted">
+        Tilbud er bindende i 30 dager. Bestilling skjer skriftlig, også ved e-post.
+        Arbeid starter når bestillingen er bekreftet og oppstartsfakturaen er betalt.
+      </p>
+
+      <h2>3. Prototype</h2>
+      <p class="muted">
+        Kunden får en klikkbar prototype innen 72 timer etter oppstartsmøtet. Er kunden
+        ikke fornøyd med prototypen, kan avtalen sies opp uten kostnad, og oppstartsfakturaen
+        krediteres i sin helhet. Leverandøren beholder rettighetene til prototypen.
+      </p>
+
+      <h2>4. Betaling</h2>
+      <ul class="muted">
+        <li>40 % av avtalt pris faktureres ved oppstart.</li>
+        <li>60 % faktureres ved lansering.</li>
+        <li>Betalingsfrist er 14 dager. Ved forsinket betaling påløper forsinkelsesrente etter forsinkelsesrenteloven.</li>
+        <li>Løpende avtaler faktureres forskuddsvis per måned eller kvartal.</li>
+        <li>Alle priser er eks. mva.</li>
+      </ul>
+
+      <h2>5. Revisjoner og endringer i omfang</h2>
+      <p class="muted">
+        To revisjonsrunder er inkludert. En runde er samlede tilbakemeldinger levert innen
+        ti virkedager. Arbeid utover avtalt omfang, inkludert nye sider og ny funksjonalitet,
+        prises til {firma.timepris} per time og skal avtales skriftlig før arbeidet starter.
+        Kunden mottar aldri faktura for arbeid som ikke er godkjent på forhånd.
+      </p>
+
+      <h2>6. Kundens medvirkning</h2>
+      <p class="muted">
+        Kunden leverer innhold, bilder og tilganger innen avtalte frister. Forsinket
+        medvirkning forskyver leveringsdato tilsvarende. Står et prosjekt stille i mer enn
+        60 dager på grunn av manglende medvirkning, kan leverandøren fakturere utført
+        arbeid og avslutte oppdraget.
+      </p>
+
+      <h2>7. Eierskap til kode, innhold og domene</h2>
+      <p class="muted">
+        Når sluttfakturaen er betalt, overdras alle rettigheter til kildekode, design og
+        konfigurasjon som er laget spesifikt for kunden. Domenet registreres på kundens
+        foretak fra dag én. Kunden eier alle kontoer hos tredjepartsleverandører.
+      </p>
+      <p class="muted">
+        Leverandøren beholder rettighetene til generelle komponenter, verktøy og
+        rammeverk som er utviklet uavhengig av oppdraget, og kan gjenbruke disse.
+        Kunden får en ubegrenset, vederlagsfri bruksrett til disse i det leverte produktet.
+        Åpen kildekode følger sine egne lisenser.
+      </p>
+
+      <h2>8. Referanse</h2>
+      <p class="muted">
+        Leverandøren kan omtale oppdraget som referanse med kundens navn, logo og
+        skjermbilder, med mindre kunden reserverer seg skriftlig. Tall og resultater
+        publiseres bare etter kundens godkjenning.
+      </p>
+
+      <h2>9. Drift, abonnement og oppsigelse</h2>
+      <ul class="muted">
+        <li>Abonnement har 12 måneders bindingstid, fordi byggekostnaden ligger i de første månedene. Deretter løper det med én måneds gjensidig oppsigelse.</li>
+        <li>Driftsavtale på side kjøpt som engangskjøp har ingen binding og sies opp med én måneds varsel.</li>
+        <li>Endringer inkludert i løpende avtaler har et tak på én time per måned. Ubrukte timer overføres ikke.</li>
+        <li>Ved oppsigelse av abonnement får kunden en kjørbar eksport av nettsiden og tilhørende data innen ti virkedager, uten tilleggskostnad.</li>
+      </ul>
+
+      <h2>10. Leverandørens tilgjengelighet</h2>
+      <p class="muted">
+        Leverandøren er ett menneske. Blir leverandøren forhindret fra å arbeide i mer enn
+        fem arbeidsdager, varsles kunden, og kunden mottar fullstendig dokumentasjon,
+        kildekode og tilganger, samt kontaktinformasjon til minst to andre utviklere som
+        kan overta. Kunden er ikke bundet til å benytte disse.
+      </p>
+
+      <h2>11. Reklamasjon og retting</h2>
+      <p class="muted">
+        Feil som skyldes leverandøren rettes uten kostnad i 12 måneder etter lansering.
+        Kunden skal reklamere skriftlig innen rimelig tid etter at feilen ble oppdaget.
+        Feil som skyldes kundens egne endringer, tredjepartstjenester eller endret
+        regelverk, faktureres etter timepris.
+      </p>
+
+      <h2>12. Ansvarsbegrensning</h2>
+      <p class="muted">
+        Leverandørens samlede erstatningsansvar er begrenset til det kunden har betalt for
+        oppdraget de siste 12 månedene. Leverandøren er ikke ansvarlig for indirekte tap,
+        herunder tapt fortjeneste, tapte data, tapt omdømme eller krav fra tredjepart.
+        Begrensningen gjelder ikke ved forsett eller grov uaktsomhet.
+      </p>
+
+      <h2>13. Taushetsplikt og personvern</h2>
+      <p class="muted">
+        Partene har gjensidig taushetsplikt om forretningsforhold de får kjennskap til.
+        Behandles personopplysninger på kundens vegne, inngås egen databehandleravtale.
+        Se også <a class="kk-link" href="/personvern">personvernerklæringen</a>.
+      </p>
+
+      <h2>14. Force majeure</h2>
+      <p class="muted">
+        Ingen av partene er ansvarlig for forsinkelse eller mangel som skyldes forhold
+        utenfor deres kontroll, herunder langvarig sykdom, strømbrudd, nedetid hos
+        tredjepartsleverandører, krig, pandemi eller offentlige pålegg. Varer forholdet
+        i mer enn 60 dager, kan begge parter si opp avtalen uten erstatningsansvar.
+      </p>
+
+      <h2>15. Lovvalg og tvister</h2>
+      <p class="muted">
+        Avtalen reguleres av norsk rett. Tvister søkes løst i minnelighet. Fører det ikke
+        fram, er Oslo tingrett verneting.
+      </p>
+    </div>
+
+    <div class="row" style="margin-top: var(--space-6)">
+      <Button variant="ghost" href="/handbok">Hvordan jeg jobber i praksis</Button>
+      <Button variant="ghost" href="/priser">Prislisten</Button>
+    </div>
+  </Section>
+</Base>

@@ -1,0 +1,87 @@
+---
+import Base from "../layouts/Base.astro";
+import Section from "../components/Section.astro";
+import Button from "../components/Button.astro";
+import Terminal from "../components/Terminal.astro";
+import ContactBlock from "../components/ContactBlock.astro";
+import { caser } from "../data/caser";
+import { bookUrl } from "../data/firma";
+const apper = caser.filter((c) => c.type === "App");
+---
+<Base
+  tittel="Apper og AI"
+  beskrivelse="iOS-app, intern app og AI-assistent fra samme utvikler som bygger nettsiden. Oslo, fast pris, databehandleravtale på plass."
+>
+  <Section
+    n={1}
+    eyebrow="Apper og AI"
+    tittel="Få frilansere leverer både nettside og app"
+    ingress="Jeg har publisert egne apper på App Store. Det betyr at du kan få nettsiden, systemet bak og appen oppå fra én person – uten at noe settes ut."
+  >
+    <div class="row">
+      <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
+      <Button variant="ghost" href="/caser">Se appene</Button>
+    </div>
+  </Section>
+
+  <Section n={2} eyebrow="Apper" tittel="Tre ting en app løser som en nettside ikke gjør">
+    <div class="grid-3">
+      <div class="card">
+        <h3 class="subheading">Varsler</h3>
+        <p class="muted">Push når en ny jobb kommer inn, eller når en time avbestilles. Ingen venter på at noen skal sjekke e-posten.</p>
+      </div>
+      <div class="card">
+        <h3 class="subheading">Offline</h3>
+        <p class="muted">Montøren registrerer timer og bilder i kjelleren uten dekning, og det synkes når telefonen får nett igjen.</p>
+      </div>
+      <div class="card">
+        <h3 class="subheading">Kamera og posisjon</h3>
+        <p class="muted">Befaringsbilder, strekkoder og GPS rett inn i ordren. Det er her feltarbeid faktisk sparer tid.</p>
+      </div>
+    </div>
+    {apper.length > 0 && (
+      <dl class="kv" style="margin-top: var(--space-6)">
+        {apper.map((a) => (
+          <div><dt>{a.tittel}</dt><dd>{a.stack.join(" · ")}</dd></div>
+        ))}
+      </dl>
+    )}
+  </Section>
+
+  <Section
+    n={3}
+    eyebrow="AI"
+    tittel="AI som gjør en jobb, ikke AI som pynt"
+    ingress="SSB melder at 48 % av foretakene med minst ti ansatte brukte KI i 2026, mot tre av ti året før. Det betyr at konkurrentene dine prøver. De fleste prøver på feil sted."
+  >
+    <div class="grid-2">
+      <div class="stack">
+        <p class="muted">
+          Det som faktisk virker for en småbedrift er smalt og kjedelig: en assistent som
+          svarer på de tjue spørsmålene du får hver uke, et verktøy som leser en PDF-faktura
+          og fyller ut skjemaet, eller en oppsummering av ukens henvendelser.
+        </p>
+        <p class="muted">
+          Det som ikke virker er en chatbot som later som den er en ansatt. Derfor merkes
+          alle AI-flater tydelig, de lover aldri priser på egen hånd, og de logger ikke
+          sensitive data. Og det skrives databehandleravtale før noe settes i drift.
+        </p>
+        <Button variant="ghost" href="/sikkerhet">Hvordan jeg sikrer det</Button>
+      </div>
+      <Terminal
+        title="~/ai/regler"
+        lines={[
+          { type: "cmd", text: "cat regler.txt" },
+          { type: "ok", text: "1. alltid merket som AI" },
+          { type: "ok", text: "2. aldri pris eller avtale uten menneske" },
+          { type: "ok", text: "3. ingen personopplysninger i loggen" },
+          { type: "ok", text: "4. databehandleravtale før produksjon" },
+          { type: "warn", text: "5. feiler den, sier den det – og sender deg videre" },
+        ]}
+        label="Terminalutsnitt med fem regler for AI-flater: alltid merket som AI, aldri pris eller avtale uten menneske, ingen personopplysninger i loggen, databehandleravtale før produksjon, og den sier det hvis den feiler."
+      />
+    </div>
+  </Section>
+
+  <ContactBlock n={4} />
+</Base>

@@ -1,0 +1,65 @@
+# KodeKonsulentene
+
+> Nettsider og systemer for norske småbedrifter, bygget av én utvikler i Oslo.
+> Fast pris, åpne priser, du eier koden og domenet.
+
+KodeKonsulentene er et enkeltpersonforetak i Oslo. Zakaria er dataingeniør med
+sikkerhet som spesialfelt og har publisert egne apper på App Store. Tjenestene er
+nettsider, systemer og integrasjoner, og apper med AI – ofte i kombinasjon, som er
+det få andre på denne størrelsen leverer.
+
+## Posisjonering
+
+For norske småbedrifter som har vokst ut av Wix-siden: nettsider og systemer som
+henger sammen med booking, Vipps og regnskap – sikkert, raskt og til fast pris.
+
+## Priser (alle eks. mva)
+
+- Start, 14 900 kr: 1–3 sider, booking eller skjema, grunnleggende SEO, lovsjekk
+- Bedrift, 29 900 kr: 5–8 sider med CMS, lokal SEO, cookieløs analyse, to revisjonsrunder
+- System, fra 60 000 kr: web-app, kundeportal eller integrasjon mot Tripletex, Fiken, PowerOffice, Vipps, BankID
+- Abonnement, 1 290–1 990 kr/mnd: side bygget, hosting, endringer, sikkerhetsoppdateringer, 12 mnd binding
+- Drift og vedlikehold, 590–1 490 kr/mnd: oppdateringer, backup, overvåkning, 1 t endringer, ingen binding
+- Lovsjekk-pakke, 7 900 kr: cookie-samtykke, universell utforming, org.nr.-krav, personvernerklæring på eksisterende side
+- Timepris, 950 kr/t
+
+Betaling er 40 % ved oppstart og 60 % ved lansering. To revisjonsrunder er inkludert.
+Kunden eier kode, innhold og domene, også ved oppsigelse.
+
+## Gratis verktøy
+
+/sjekk – «Sjekk nettsiden din». Skriv inn en nettadresse og få en rapport på under et
+minutt med fem punkter: ytelse (Lighthouse, mobil), sikkerhetsheadere, cookies satt før
+samtykke, maskinelt testbare WCAG-feil, og om lovpålagt informasjon står på siden.
+Rapporten kan sendes på e-post. Ingen innlogging.
+
+## Sider
+
+- /: forside med tjenester, caser, verktøy, prosess, priser og FAQ
+- /nettsider: nettside til fast pris, ytelse, lokal SEO, lovkrav
+- /systemer: booking, Vipps, Tripletex, Fiken, PowerOffice, BankID, kundeportal
+- /apper-og-ai: iOS-app, intern app, AI-assistent med databehandleravtale
+- /sikkerhet: sikkerhetsrutiner, de fire lovkravene, lovsjekk-pakken
+- /priser: full prisliste og sammenligning med andre alternativer i markedet
+- /caser: problem, løsning og resultat med tall
+- /om: om Zakaria og hvorfor solo
+- /handbok: åpen håndbok – arbeidstid, revisjoner, sikkerhetsrutiner, hva skjer ved sykdom
+- /kontakt: booking og kontaktskjema
+- /sjekk: nettsidesjekken
+- /status: driftsstatus og ytelsesbudsjett
+- /bransjer/handverkere: befaringsflyt, Tripletex, Mittanbud
+- /bransjer/klinikker: timebestilling, Vipps, SMS-påminnelse, medlemsregister
+- /personvern: personvernerklæring
+- /vilkar: salgsvilkår for næringsdrivende
+
+## Regelverk det jobbes etter
+
+- Foretaksnavn og organisasjonsnummer skal stå på nettsiden
+- Ehandelsloven § 8: geografisk adresse, e-post og telefon
+- Ekomloven § 3-15 (fra 1. januar 2025): cookie-samtykke må oppfylle GDPR-kravene
+- WCAG 2.0 nivå A og AA: 35 krav for private virksomheter. Leveransene bygges etter WCAG 2.2 AA
+
+## Kontakt
+
+E-post og telefon står i footeren på hver side. Svar innen 24 timer på hverdager.
+Oslo. Arbeidsspråk norsk.

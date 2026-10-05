@@ -1,0 +1,117 @@
+---
+import Base from "../../layouts/Base.astro";
+import Section from "../../components/Section.astro";
+import Button from "../../components/Button.astro";
+import Terminal from "../../components/Terminal.astro";
+import UrlCheck from "../../components/UrlCheck.astro";
+import ProcessSteps from "../../components/ProcessSteps.astro";
+import ContactBlock from "../../components/ContactBlock.astro";
+import { bookUrl } from "../../data/firma";
+
+const steg = [
+  { title: "Kunden fyller ut", time: "2 min", text: "Fire felt og tre bilder fra telefonen. Ikke et kontaktskjema – en befaringsforespørsel." },
+  { title: "Du får varsel", time: "Straks", text: "Push eller SMS med adresse, bilder og beskrivelse. Du ser om det er verdt turen før du setter deg i bilen." },
+  { title: "Du foreslår tid", time: "1 klikk", text: "Kunden velger blant tidene du faktisk har ledig. Ingen telefonrunde." },
+  { title: "Tilbudet går ut", time: "Samme dag", text: "Mal med dine priser, signert digitalt. Blir det ja, ligger ordren i regnskapet." },
+];
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  serviceType: "Nettside og befaringssystem for håndverkere",
+  provider: { "@type": "ProfessionalService", name: "KodeKonsulentene" },
+  areaServed: { "@type": "City", name: "Oslo" },
+};
+---
+<Base
+  tittel="Nettside for håndverkere i Oslo"
+  beskrivelse="Nettside og befaringssystem for håndverkere: bilder fra kunden, tilbud samme dag, ordre rett i Tripletex eller Fiken. Fast pris fra 14 900 kr eks. mva."
+  schema={[schema]}
+>
+  <Section
+    n={1}
+    eyebrow="Håndverkere"
+    tittel="Slutt å kjøre på befaring du ikke ville tatt"
+    ingress="De fleste håndverkersider er et telefonnummer og et skjema. Det gir deg forespørsler du må ringe tilbake på for å finne ut om de er noe verdt."
+  >
+    <div class="row">
+      <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
+      <Button variant="ghost" href="#demo">Se befaringsflyten</Button>
+    </div>
+  </Section>
+
+  <Section n={2} eyebrow="Tallene" tittel="Bransjen henger etter – det er en fordel for deg">
+    <div class="grid-2">
+      <div class="stack">
+        <p class="body-lg muted">
+          SSB oppgir at 72 % av foretakene i bygg og anlegg med 10–19 ansatte har nettside.
+          Snittet for alle foretak med minst ti ansatte er 86 %.
+        </p>
+        <p class="muted">
+          Det betyr to ting. For det første at omtrent én av fire konkurrenter på din
+          størrelse ikke har noe å bli funnet på i det hele tatt. For det andre at listen
+          for å ligge øverst lokalt er lavere i din bransje enn i de fleste andre.
+        </p>
+        <p class="small faint">
+          Kilde: SSB, bruk av IKT i næringslivet. Tallene gjelder foretak med minst ti
+          sysselsatte, så enkeltpersonforetak og de minste bedriftene er ikke med.
+          2026-tallene bruker ny næringsstandard og kan ikke sammenlignes direkte med
+          tidligere år.
+        </p>
+      </div>
+      <Terminal
+        title="~/bransje/bygg"
+        lines={[
+          { type: "cmd", text: "nettsidedekning --bransje=bygg --ansatte=10-19" },
+          { type: "warn", text: "72 %" },
+          { type: "cmd", text: "nettsidedekning --alle --ansatte=10+" },
+          { type: "out", text: "86 %" },
+          { type: "cmd", text: "echo $GAP" },
+          { type: "ok", text: "14 prosentpoeng å ta" },
+        ]}
+        label="Terminalutsnitt: nettsidedekning i bygg og anlegg for foretak med ti til nitten ansatte er 72 prosent, mot 86 prosent for alle foretak med minst ti ansatte. Gapet er fjorten prosentpoeng."
+      />
+    </div>
+  </Section>
+
+  <Section
+    n={3}
+    eyebrow="Demo"
+    tittel="Befaring uten telefonrunde"
+    ingress="Dette er flyten jeg bygger for håndverkere. Den er ikke en kontaktside med flere felt – den er laget for å sortere bort turene du ikke vil ha."
+    id="demo"
+  >
+    <ProcessSteps steps={steg} />
+    <div class="card" style="margin-top: var(--space-6)">
+      <h3 class="heading">Klikkbar demo</h3>
+      <p class="muted">
+        TODO: lenk til den klikkbare demoen av befaringsflyten når den er bygget.
+        En demo kunden kan trykke seg gjennom slår et avsnitt som beskriver den.
+      </p>
+      <Button variant="secondary" href="/kontakt">Be om en gjennomgang</Button>
+    </div>
+  </Section>
+
+  <Section n={4} eyebrow="Kobles mot" tittel="Det du allerede betaler for">
+    <div class="grid-3">
+      <div class="card">
+        <h3 class="subheading">Tripletex og Fiken</h3>
+        <p class="muted">Godtatt tilbud blir ordre blir faktura. Ingen taster timene inn på nytt om kvelden.</p>
+      </div>
+      <div class="card">
+        <h3 class="subheading">Vipps</h3>
+        <p class="muted">Depositum eller sluttbetaling med én skanning. Norske kunder forventer det.</p>
+      </div>
+      <div class="card">
+        <h3 class="subheading">Mittanbud</h3>
+        <p class="muted">Siden din er det kunden sjekker etter at de har sett deg der. Da bør den si noe mer enn navnet ditt.</p>
+      </div>
+    </div>
+  </Section>
+
+  <Section n={5} eyebrow="Start her" tittel="Sjekk den siden du har" ingress="Før vi snakker om ny side: kjør den gratis sjekken. Mangler org.nr. eller settes det cookies før samtykke, er det raskt fikset – og det er billigere enn en ny side.">
+    <UrlCheck buttonLabel="Kjør sjekken" hint="30 sekunder. Du ser hva som er galt før du bruker penger." />
+  </Section>
+
+  <ContactBlock n={6} tittel="Ring, så tar vi det på fem minutter" ingress="Jeg vet hva en befaring koster deg i tid. Fortell hvor mange forespørsler du får i uka, så regner vi på om dette lønner seg." />
+</Base>

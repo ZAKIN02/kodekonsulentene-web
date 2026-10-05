@@ -1,0 +1,18 @@
+---
+// Tjenestekort. href gjør hele kortet klikkbart og lenker til egen underside.
+interface Props { title: string; n?: number; description?: string; items?: string[]; linkLabel?: string; href?: string; class?: string }
+const { title, n, description, items = [], linkLabel = "Les mer", href, class: cls } = Astro.props;
+const Tag = href ? "a" : "div";
+const num = typeof n === "number" ? String(n).padStart(2, "0") : null;
+---
+<Tag class:list={["kk-svc", cls]} href={href}>
+  <div class="kk-svc-head">
+    <h3>{title}</h3>
+    {num && <span class="kk-svc-n" aria-hidden="true">{num}</span>}
+  </div>
+  <div class="stack stack--tight">
+    {description && <p>{description}</p>}
+    {items.length > 0 && <ul>{items.map((i) => <li>{i}</li>)}</ul>}
+  </div>
+  {href && <span class="kk-svc-link">{linkLabel} <span class="kk-arrow" aria-hidden="true">→</span></span>}
+</Tag>

@@ -1,0 +1,227 @@
+---
+import Base from "../layouts/Base.astro";
+import Section from "../components/Section.astro";
+import Eyebrow from "../components/Eyebrow.astro";
+import Button from "../components/Button.astro";
+import UrlCheck from "../components/UrlCheck.astro";
+import ProofStrip from "../components/ProofStrip.astro";
+import ServiceCard from "../components/ServiceCard.astro";
+import Terminal from "../components/Terminal.astro";
+import CheckReport from "../components/CheckReport.astro";
+import PriceCard from "../components/PriceCard.astro";
+import ProcessSteps from "../components/ProcessSteps.astro";
+import Faq from "../components/Faq.astro";
+import ContactBlock from "../components/ContactBlock.astro";
+
+import { firma, bookUrl } from "../data/firma";
+import { bevis } from "../data/bevis";
+import { tjenester } from "../data/tjenester";
+import { prosess } from "../data/prosess";
+import { pakker, loepende, prisvilkaar } from "../data/priser";
+import { caser } from "../data/caser";
+import { faq } from "../data/faq";
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faq.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+
+const heroTerminal = [
+  { type: "cmd" as const, text: "sjekk dinbedrift.no" },
+  { type: "out" as const, text: "ytelse ................ 54/100" },
+  { type: "fail" as const, text: "cookies før samtykke .. 3  (ekomloven § 3-15)" },
+  { type: "warn" as const, text: "sikkerhetsheadere ..... 2/6" },
+  { type: "fail" as const, text: "org.nr. ............... ikke funnet" },
+  { type: "out" as const, text: "" },
+  { type: "ok" as const, text: "4 ting å fikse. Rapport sendt." },
+];
+
+const eksempelRapport = [
+  { name: "Ytelse", status: "warn" as const, value: "54/100", note: "Besøkende på mobil venter over tre sekunder før de ser noe. Google ser det samme." },
+  { name: "Sikkerhetsheadere", status: "fail" as const, value: "2/6", note: "Mangler CSP, HSTS og rammevern. Siden kan misbrukes til å lure dine egne kunder." },
+  { name: "Cookies før samtykke", status: "fail" as const, value: "3", note: "Google Analytics laster før noen har sagt ja. Det bryter ekomloven § 3-15." },
+  { name: "Universell utforming", status: "warn" as const, value: "4 feil", note: "Fire brudd mot WCAG i koden, blant annet bilder uten alt-tekst og skjemafelt uten ledetekst." },
+  { name: "Lovpålagt informasjon", status: "fail" as const, value: "Org.nr. mangler", note: "Foretaksnavn og org.nr. skal stå på nettsiden. Det er det første en kunde sjekker." },
+];
+---
+<Base
+  tittel={firma.navn}
+  beskrivelse={firma.posisjonering}
+  schema={[faqSchema]}
+>
+  <!-- 01 Hero -->
+  <section class="hero">
+    <div class="wrap hero__grid">
+      <div class="stack">
+        <h1 class="display-xl">Nettsider og <em>systemer</em> som jobber for bedriften din</h1>
+        <p class="hero__lead body-lg">
+          Jeg er {firma.person}, {firma.rolle} i Oslo. Fast pris, levert raskt, og du snakker
+          alltid med den som faktisk koder.
+        </p>
+        <div class="hero__cta">
+          <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
+          <UrlCheck hint="Gratis sjekk av siden du har i dag. Svar på 30 sekunder." />
+        </div>
+      </div>
+      <Terminal
+        lines={heroTerminal}
+        cursor
+        label="Terminalutsnitt som viser en nettsidesjekk: ytelse 54 av 100, tre cookies før samtykke, to av seks sikkerhetsheadere, organisasjonsnummer ikke funnet."
+      />
+    </div>
+  </section>
+
+  <!-- 02 Bevis -->
+  <div class="wrap">
+    <ProofStrip items={bevis} label="Målbare påstander om denne siden og dette foretaket" />
+  </div>
+
+  <!-- 03 Tjenester -->
+  <Section n={3} eyebrow="Tjenester" tittel="Tre ting jeg gjør" ingress="Og én ting jeg ikke gjør: selge deg noe du ikke trenger. Trenger du bare en lovsjekk, er det det du får.">
+    <div class="grid-3">
+      {tjenester.map((t) => (
+        <ServiceCard
+          n={t.n}
+          title={t.tittel}
+          href={t.href}
+          description={t.beskrivelse}
+          items={t.punkter}
+          linkLabel={t.lenketekst}
+        />
+      ))}
+    </div>
+  </Section>
+
+  <!-- 04 Caser -->
+  <Section n={4} eyebrow="Caser" tittel="Hva jeg har bygget" ingress="Problem, løsning, resultat. Tallene er målt, ikke anslått.">
+    <div class="grid-3">
+      {caser.map((c) => (
+        <article class="card">
+          <div class="row" style="justify-content: space-between">
+            <Eyebrow>{c.type}</Eyebrow>
+            <span class="mono faint">{c.kunde}</span>
+          </div>
+          <h3 class="heading">{c.tittel}</h3>
+          <p class="small muted"><strong>Problem.</strong> {c.problem}</p>
+          <p class="small muted"><strong>Løsning.</strong> {c.losning}</p>
+          <dl class="kv">
+            {c.resultat.map((r) => (
+              <div><dt>{r.tekst}</dt><dd>{r.verdi}</dd></div>
+            ))}
+          </dl>
+          <p class="mono faint">{c.stack.join(" · ")}</p>
+          {c.href && <Button variant="ghost" href={c.href}>Se caset</Button>}
+        </article>
+      ))}
+    </div>
+    <p class="small faint" style="margin-top: var(--space-5)">
+      Konseptarbeid er alltid merket «Konsept, ikke oppdrag». <a class="kk-link" href="/caser">Alle caser</a>.
+    </p>
+  </Section>
+
+  <!-- 05 Verktøy -->
+  <Section
+    n={5}
+    eyebrow="Verktøy"
+    tittel="Sjekk nettsiden din gratis"
+    ingress="Skriv inn adressen. På 30 sekunder får du ytelse, sikkerhetsheadere, cookies satt før samtykke, WCAG-feil og om org.nr. står på siden."
+    id="sjekk"
+  >
+    <div class="stack">
+      <UrlCheck id="url-seksjon" buttonLabel="Kjør sjekken" hint="Ingen innlogging. Du velger selv om rapporten skal sendes på e-post." />
+      <p class="small faint">Slik ser en rapport ut. Dette er et eksempel, ikke en ekte side:</p>
+      <CheckReport
+        url="dinbedrift.no"
+        date="eksempel"
+        rows={eksempelRapport}
+        footer="Samlet: 32 av 100. Fire av fem punkter bør fikses."
+      >
+        <Button slot="action" variant="ghost" href="/sjekk">Kjør på din side</Button>
+      </CheckReport>
+    </div>
+  </Section>
+
+  <!-- 06 Prosess -->
+  <Section n={6} eyebrow="Prosess" tittel="Fire steg, kjente tider" ingress="Du ser en klikkbar prototype før du har betalt noe. Sier du nei der, koster det ingenting.">
+    <ProcessSteps steps={prosess} />
+  </Section>
+
+  <!-- 07 Priser -->
+  <Section n={7} eyebrow="Priser" tittel="Prisene står her" ingress="Fordi du skal kunne regne på det før du ringer. Alle priser er eks. mva." id="priser">
+    <div class="stack">
+      <div class="grid-3">
+        {pakker.map((p) => (
+          <PriceCard
+            name={p.navn}
+            price={p.pris}
+            prefix={p.prefiks}
+            description={p.beskrivelse}
+            recommended={p.anbefalt}
+            cta={p.cta}
+            href={p.href}
+            features={[
+              ...p.inkludert.map((t) => ({ text: t, included: true })),
+              ...(p.ikke ?? []).map((t) => ({ text: t, included: false })),
+            ]}
+          />
+        ))}
+      </div>
+      <dl class="kv">
+        {loepende.map((r) => (
+          <div>
+            <dt><strong class="body-strong">{r.navn}</strong><br /><span class="small muted">{r.tekst}</span></dt>
+            <dd class="nowrap">{r.pris}</dd>
+          </div>
+        ))}
+      </dl>
+      <ul class="small faint" style="margin: 0; padding-left: var(--space-5); display: grid; gap: var(--space-1)">
+        {prisvilkaar.map((v) => <li>{v}</li>)}
+      </ul>
+    </div>
+  </Section>
+
+  <!-- 08 Om -->
+  <Section n={8} eyebrow="Om" tittel="Én utvikler, ingen mellomledd">
+    <div class="grid-2">
+      <div class="stack">
+        <p class="body-lg muted">
+          Jeg er dataingeniør med sikkerhet som spesialfelt, og har publisert egne apper
+          på App Store. Det er den kombinasjonen som gjør at jeg kan bygge både nettsiden,
+          systemet bak og appen oppå – uten å sette ut noe til noen.
+        </p>
+        <p class="muted">
+          Solo er et valg, ikke et mellomstadium. Det betyr at du snakker med den som skriver
+          koden, at ingenting forsvinner i et ledd, og at jeg har tak på hvor mange prosjekter
+          jeg tar inn samtidig. Hvordan jeg jobber, hva ting koster og hva som skjer hvis jeg
+          blir syk, står i <a class="kk-link" href="/handbok">håndboken</a>.
+        </p>
+        <Button variant="ghost" href="/om">Mer om meg</Button>
+      </div>
+      <Terminal
+        title="~/kodekonsulentene/om"
+        lines={[
+          { type: "cmd", text: "whoami" },
+          { type: "out", text: `${firma.person} – ${firma.rolle}, Oslo` },
+          { type: "cmd", text: "cat kompetanse.txt" },
+          { type: "out", text: "sikkerhet · nettsider · iOS · integrasjoner · AI" },
+          { type: "cmd", text: "cat prinsipp.txt" },
+          { type: "ok", text: "Du eier koden. Du eier domenet. Ingen innlåsing." },
+        ]}
+        label="Terminalutsnitt: Zakaria, utvikler i Oslo. Kompetanse: sikkerhet, nettsider, iOS, integrasjoner, AI. Prinsipp: du eier koden og domenet, ingen innlåsing."
+      />
+    </div>
+  </Section>
+
+  <!-- 09 FAQ -->
+  <Section n={9} eyebrow="Spørsmål" tittel="Det folk spør om først">
+    <Faq items={faq} />
+  </Section>
+
+  <!-- 10 Kontakt -->
+  <ContactBlock n={10} />
+</Base>

@@ -1,0 +1,44 @@
+---
+// Lovpålagt footer: foretaksnavn og org.nr. (Altinn), adresse, e-post og telefon
+// (ehandelsloven § 8), pluss lenker til personvern, cookies og vilkår.
+// Komponenten rendrer ikke uten org.nr. – det er med vilje.
+export interface FooterLink { label: string; href: string }
+interface Props {
+  name?: string; legalName?: string; tagline?: string; orgnr: string; vat?: boolean;
+  address?: string; email?: string; phone?: string; links?: FooterLink[];
+  cookieNote?: string; meta?: string; class?: string;
+}
+const {
+  name = "KodeKonsulentene", legalName, tagline, orgnr, vat = false,
+  address, email, phone, links = [], cookieNote, meta, class: cls,
+} = Astro.props;
+const org = orgnr.replace(/\D/g, "").replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3");
+---
+{orgnr && (
+  <footer class:list={["kk-footer", cls]}>
+    <div>
+      <p class="kk-wordmark">{name}</p>
+      {tagline && <p>{tagline}</p>}
+      <p class="kk-orgnr">
+        <span class="visually-hidden">Organisasjonsnummer </span>Org.nr. {org}{vat ? " MVA" : ""}
+      </p>
+    </div>
+    <div>
+      <address>
+        {legalName && <div>{legalName}</div>}
+        {address && <div>{address}</div>}
+        {email && <div><a class="kk-link" href={`mailto:${email}`}>{email}</a></div>}
+        {phone && <div><a class="kk-link" href={`tel:${phone.replace(/\s/g, "")}`}>{phone}</a></div>}
+      </address>
+    </div>
+    <div>
+      <ul>
+        {links.map((l) => <li><a class="kk-link" href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </div>
+    <div class="kk-footer-meta">
+      <span>{cookieNote}</span>
+      {meta && <span>{meta}</span>}
+    </div>
+  </footer>
+)}

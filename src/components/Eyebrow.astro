@@ -1,0 +1,11 @@
+---
+// Nummerert seksjonsetikett: «// 02 TJENESTER». Nummeret følger rekkefølgen på siden.
+interface Props { n?: number; as?: "p" | "span" | "div"; class?: string }
+const { n, as = "p", class: cls } = Astro.props;
+const Tag = as;
+const num = typeof n === "number" ? String(n).padStart(2, "0") : null;
+---
+<Tag class:list={["kk-eyebrow", cls]}>
+  <span class="kk-eyebrow-n" aria-hidden="true">//{num ? ` ${num}` : ""}</span>
+  <span><slot /></span>
+</Tag>

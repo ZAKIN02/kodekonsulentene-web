@@ -1,0 +1,81 @@
+---
+import Base from "../layouts/Base.astro";
+import Section from "../components/Section.astro";
+import StatusBadge from "../components/StatusBadge.astro";
+import Terminal from "../components/Terminal.astro";
+import Button from "../components/Button.astro";
+import { firma } from "../data/firma";
+
+// Siden brukes også som helsesjekk av Fly (http_service.checks → /status).
+// Den er bevisst statisk og uten avhengigheter: svarer den ikke, er noe virkelig galt.
+const tjenester = [
+  { navn: "kodekonsulentene.no", status: "ok" as const, note: "Nettsiden" },
+  { navn: "/api/sjekk", status: "ok" as const, note: "Nettsidesjekken" },
+  { navn: "/api/kontakt", status: "ok" as const, note: "Kontaktskjemaet" },
+];
+
+const budsjett = [
+  ["Lighthouse, mobil", "≥ 95 på alle fire kategorier"],
+  ["LCP", "≤ 2,5 s – målet er under 1 s"],
+  ["CLS", "< 0,1"],
+  ["INP", "< 200 ms"],
+  ["Webfonter", "maks 2, latin, font-display: swap"],
+  ["Tredjepartsskript før samtykke", "0"],
+  ["WCAG", "2.2 AA"],
+  ["Sikkerhetsheadere", "6 av 6"],
+];
+---
+<Base
+  tittel="Driftsstatus"
+  beskrivelse="Driftsstatus, ytelsesbudsjett og hva som overvåkes på kodekonsulentene.no og kundesider med driftsavtale."
+>
+  <Section
+    n={1}
+    eyebrow="Status"
+    tittel="Driftsstatus"
+    ingress="Denne siden er også helsesjekken serveren svarer på. Får du opp denne teksten, står nettsiden."
+  >
+    <div class="stack">
+      <dl class="kv">
+        {tjenester.map((t) => (
+          <div>
+            <dt><span class="mono">{t.navn}</span><br /><span class="small faint">{t.note}</span></dt>
+            <dd><StatusBadge status={t.status} /></dd>
+          </div>
+        ))}
+      </dl>
+      <p class="small faint">
+        TODO: koble denne siden mot ekte oppetidsovervåkning (Uptime Kuma eller BetterStack)
+        før den brukes som salgsargument. Inntil da sier den bare at serveren svarer –
+        og det er det eneste den påstår.
+      </p>
+    </div>
+  </Section>
+
+  <Section n={2} eyebrow="Budsjett" tittel="Ytelsesbudsjettet jeg holder meg til" ingress="Dette er ikke mål. Det er grenser. Går en leveranse over dem, er den ikke ferdig.">
+    <div class="grid-2">
+      <dl class="kv">
+        {budsjett.map(([k, v]) => (
+          <div><dt>{k}</dt><dd class="nowrap">{v}</dd></div>
+        ))}
+      </dl>
+      <Terminal
+        title="~/kodekonsulentene/drift"
+        lines={[
+          { type: "cmd", text: "hva overvåkes" },
+          { type: "out", text: "oppetid · sertifikat · ytelse" },
+          { type: "out", text: "sårbare avhengigheter · sikkerhetskopi" },
+          { type: "cmd", text: "hvem får varselet" },
+          { type: "ok", text: "jeg – før du merker det" },
+          { type: "cmd", text: "hva får du" },
+          { type: "out", text: "månedsrapport: ytelse, oppetid, endringer" },
+        ]}
+        label="Terminalutsnitt: det som overvåkes er oppetid, sertifikat, ytelse, sårbare avhengigheter og sikkerhetskopi. Varselet går til utvikleren først, og kunden får månedsrapport med ytelse, oppetid og endringer."
+      />
+    </div>
+  </Section>
+
+  <Section n={3} eyebrow="Avvik" tittel="Hvis noe er nede" ingress={`Ring ${firma.telefon}. Kunder med driftsavtale får beskjed fra meg før de rekker å oppdage det selv.`}>
+    <Button variant="ghost" href="/handbok">Hvordan jeg jobber</Button>
+  </Section>
+</Base>

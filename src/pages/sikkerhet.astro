@@ -1,0 +1,89 @@
+---
+import Base from "../layouts/Base.astro";
+import Section from "../components/Section.astro";
+import Button from "../components/Button.astro";
+import UrlCheck from "../components/UrlCheck.astro";
+import CheckReport from "../components/CheckReport.astro";
+import ContactBlock from "../components/ContactBlock.astro";
+import { loepende } from "../data/priser";
+
+const egenSjekk = [
+  { name: "Ytelse", status: "ok" as const, value: "100/100", note: "Målt med Lighthouse på mobil. Tallet står i footeren og oppdateres ved hver lansering." },
+  { name: "Sikkerhetsheadere", status: "ok" as const, value: "6/6", note: "CSP, HSTS, X-Content-Type-Options, Referrer-Policy, Permissions-Policy og rammevern." },
+  { name: "Cookies før samtykke", status: "ok" as const, value: "0", note: "Analysen er cookieløs. Derfor har denne siden ikke banner – det er ingenting å samtykke til." },
+  { name: "Universell utforming", status: "ok" as const, value: "0 feil", note: "Bygget etter WCAG 2.2 AA, som er strengere enn de 35 kravene private virksomheter må oppfylle." },
+  { name: "Lovpålagt informasjon", status: "ok" as const, value: "Org.nr. funnet", note: "Foretaksnavn, org.nr., adresse, e-post og telefon står i footeren på hver side." },
+];
+
+const tiltak = [
+  ["Sikkerhetsheadere", "CSP, HSTS, X-Content-Type-Options, Referrer-Policy, Permissions-Policy og rammevern settes på alle leveranser – ikke bare de som ber om det."],
+  ["Avhengighetsskanning", "Automatisk varsel ved kjent sårbarhet i en pakke, og oppdatering innen fem arbeidsdager på alle driftsavtaler."],
+  ["Minste tilgang", "Databaser med radnivå-sikkerhet, egne nøkler per tjeneste, ingen delte innlogginger. Du eier alle kontoer."],
+  ["Hemmeligheter", "Ingen nøkler i koden eller i Git. Alt ligger i plattformens hemmelighetslager, og roteres når noen slutter."],
+  ["Sikkerhetskopi", "Daglig backup med test av gjenoppretting hver måned. En backup du ikke har prøvd å lese tilbake, er ikke en backup."],
+  ["Rapport", "Du får en kort rapport ved lansering som sier hva som er testet og hva som ikke er det. Den er lesbar uten utviklerbakgrunn."],
+];
+---
+<Base
+  tittel="Sikkerhet"
+  beskrivelse="Sikkerhetsheadere, avhengighetsskanning, GDPR og universell utforming på hver leveranse. Lovsjekk-pakke til fast pris: 7 900 kr eks. mva."
+>
+  <Section
+    n={1}
+    eyebrow="Sikkerhet"
+    tittel="Siden min består sin egen sjekk"
+    ingress="Det er lett å selge sikkerhet. Det er vanskeligere å bevise det. Derfor kjører jeg den samme sjekken på min egen side, og viser resultatet her."
+  >
+    <CheckReport
+      url="kodekonsulentene.no"
+      date="oppdatert ved hver lansering"
+      rows={egenSjekk}
+      footer="Samlet: 100 av 100."
+    >
+      <Button slot="action" variant="ghost" href="/sjekk">Kjør den på din side</Button>
+    </CheckReport>
+  </Section>
+
+  <Section n={2} eyebrow="Hva som gjøres" tittel="Seks ting på hver leveranse" ingress="Dette er ikke et tillegg du kjøper. Det er en del av prisen, fordi en side som kan misbrukes til å lure dine kunder ikke er ferdig.">
+    <div class="grid-2">
+      {tiltak.map(([t, b]) => (
+        <div class="card">
+          <h3 class="subheading">{t}</h3>
+          <p class="muted">{b}</p>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <Section
+    n={3}
+    eyebrow="Lovkrav"
+    tittel="Fire krav som er konkrete og testbare"
+    ingress="De færreste bryter dem med vilje. De fleste vet ikke at de gjelder."
+  >
+    <div class="prose">
+      <h3>Org.nr. og foretaksnavn</h3>
+      <p class="muted">Registrert foretaksnavn og organisasjonsnummer skal stå på nettsiden. Er du mva-registrert, skal «MVA» stå etter nummeret.</p>
+      <h3>Kontaktinformasjon (ehandelsloven § 8)</h3>
+      <p class="muted">Geografisk adresse, e-postadresse og et nummer kunden kan nå deg på. Et kontaktskjema alene er ikke nok.</p>
+      <h3>Cookie-samtykke (ekomloven § 3-15)</h3>
+      <p class="muted">Fra 1. januar 2025 må samtykke oppfylle GDPR-kravene: ingen forhåndsavkryssing, «avvis» like lett tilgjengelig som «godta», og ingen sporing før samtykke er gitt. Den enkleste måten å overholde dette er å ikke sette cookies i det hele tatt.</p>
+      <h3>Universell utforming</h3>
+      <p class="muted">Private virksomheter skal oppfylle 35 krav i WCAG 2.0 nivå A og AA. Offentlig sektor har 48 krav i WCAG 2.1. Jeg bygger etter WCAG 2.2 AA, som dekker begge.</p>
+      <p class="small faint">Dette er ikke juridisk rådgivning. Få standardvilkår og personvernerklæring kvalitetssikret av advokat før du bruker dem i avtaler.</p>
+    </div>
+  </Section>
+
+  <Section n={4} eyebrow="Lovsjekk" tittel="Rydd opp i den siden du har" ingress="Du trenger ikke ny nettside for å bli lovlig. Lovsjekk-pakken er fastpris på den du har, også om den er WordPress.">
+    <div class="stack">
+      <dl class="kv">
+        {loepende.filter((r) => r.navn === "Lovsjekk-pakke").map((r) => (
+          <div><dt><strong class="body-strong">{r.navn}</strong><br /><span class="small muted">{r.tekst}</span></dt><dd class="nowrap">{r.pris}</dd></div>
+        ))}
+      </dl>
+      <UrlCheck buttonLabel="Sjekk gratis først" hint="Kjør den gratis sjekken før du bestemmer deg. Du ser selv hva som må gjøres." />
+    </div>
+  </Section>
+
+  <ContactBlock n={5} />
+</Base>

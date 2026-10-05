@@ -1,0 +1,29 @@
+---
+// primary (én per visningsområde), secondary (standard), ghost (tekstlenke med pil).
+// href gjør den til <a>. Teksten skal være et verb i imperativ, under fire ord.
+import type { HTMLAttributes } from "astro/types";
+
+type KnappType = "button" | "submit" | "reset";
+type Base = {
+  variant?: "primary" | "secondary" | "ghost";
+  arrow?: boolean;
+  class?: string;
+  href?: string;
+  type?: KnappType;
+};
+type Props = Base & Omit<HTMLAttributes<"button"> & HTMLAttributes<"a">, "type" | "href" | "class">;
+
+const { variant = "secondary", arrow, class: cls, href, type, ...rest } = Astro.props;
+const Tag = href ? "a" : "button";
+
+// Uten eksplisitt type blir en <button> inne i et skjema en submit-knapp.
+// Standarden her er "button"; den som vil sende skjemaet, sender type="submit" inn.
+const knappType: KnappType | undefined = href ? undefined : (type ?? "button");
+const showArrow = arrow ?? variant === "ghost";
+---
+<Tag
+  class:list={["kk-btn", variant !== "secondary" && `kk-btn-${variant}`, cls]}
+  href={href}
+  type={knappType}
+  {...rest}
+><slot />{showArrow && <span class="kk-arrow" aria-hidden="true">→</span>}</Tag>

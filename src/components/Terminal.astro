@@ -1,0 +1,21 @@
+---
+// Terminalblokk – alltid mørk, i begge temaer. Dette er den ene flaten som ikke bytter tema.
+// Den eneste komponenten der tekst får «skrive seg selv», fordi det *er* innholdet.
+export interface TerminalLine { type?: "cmd" | "out" | "ok" | "warn" | "fail"; text: string; prompt?: string }
+interface Props { title?: string; label?: string; lines: TerminalLine[]; cursor?: boolean; class?: string }
+const { title = "~/kodekonsulentene", label, lines, cursor = false, class: cls } = Astro.props;
+const cl = { cmd: "kk-cmd", out: "kk-out", ok: "kk-ok", warn: "kk-warn", fail: "kk-fail" } as const;
+---
+<div class:list={["kk-term", cls]} role="img" aria-label={label ?? `Terminalutsnitt: ${lines.map((l) => l.text).join(". ")}`}>
+  <div class="kk-term-bar">
+    <span class="kk-dot" aria-hidden="true"></span>
+    <span>{title}</span>
+  </div>
+  <pre aria-hidden="true">{lines.map((l, i) => (
+    <Fragment>
+      {l.type === "cmd" && <span class="kk-ps">{l.prompt ?? "$"} </span>}
+      <span class={cl[l.type ?? "out"]}>{l.text}</span>
+      {i < lines.length - 1 && "\n"}
+    </Fragment>
+  ))}{cursor && <Fragment>{"\n"}<span class="kk-cursor"></span></Fragment>}</pre>
+</div>

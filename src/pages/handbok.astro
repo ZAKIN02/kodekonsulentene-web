@@ -1,0 +1,118 @@
+---
+import Base from "../layouts/Base.astro";
+import Section from "../components/Section.astro";
+import Button from "../components/Button.astro";
+import ContactBlock from "../components/ContactBlock.astro";
+import { firma } from "../data/firma";
+import { prisvilkaar } from "../data/priser";
+---
+<Base
+  tittel="Håndbok"
+  beskrivelse="Hvordan jeg jobber, hva ting koster, hvilke sikkerhetsrutiner som gjelder og hva som skjer hvis jeg blir syk. Åpent, slik at du vet hva du kjøper."
+>
+  <Section
+    n={1}
+    eyebrow="Håndbok"
+    tittel="Hvordan jeg jobber, åpent"
+    ingress="Når du kjøper fra én person, er det rimelig å vite hvordan den personen jobber før du betaler. Derfor står det her i stedet for i en e-post du må be om."
+  >
+    <div class="prose">
+      <h2>Arbeidstid og svartid</h2>
+      <p class="muted">
+        Jeg svarer på henvendelser innen {firma.svartid} på hverdager. Haster det og du er
+        kunde med driftsavtale, ring – da er det telefonen som gjelder, ikke e-post.
+        Jeg jobber ikke kvelder og helger, bortsett fra når noe er nede.
+      </p>
+
+      <h2>Hvor mange prosjekter om gangen</h2>
+      <p class="muted">
+        Maks tre byggeprosjekter samtidig. Det er grunnen til at jeg av og til sier at
+        du må vente to uker. Alternativet er å si ja til alt og levere sent til alle,
+        og det er en dårligere avtale for deg.
+      </p>
+
+      <h2>Hva et prosjekt koster og når du betaler</h2>
+      <ul class="muted">
+        {prisvilkaar.map((v) => <li>{v}</li>)}
+        <li>Timeprisen er {firma.timepris} eks. mva for arbeid utenfor avtalt omfang, alltid avtalt skriftlig først.</li>
+      </ul>
+      <p class="muted">
+        Fullstendig prisliste står på <a class="kk-link" href="/priser">prissiden</a>,
+        og de juridiske formuleringene i <a class="kk-link" href="/vilkar">salgsvilkårene</a>.
+      </p>
+
+      <h2>Hva som er inkludert, og hva som ikke er det</h2>
+      <p class="muted">
+        Inkludert: tekstarbeid på sidene vi avtaler, bildebehandling av bilder du sender,
+        SEO-grunnarbeid, lovsjekk, sikkerhetsheadere, to revisjonsrunder og opplæring på
+        en halvtime ved lansering.
+      </p>
+      <p class="muted">
+        Ikke inkludert: nye bilder (fotograf), tekstforfatter, annonsebudsjett, oversettelse,
+        og innhold du ikke har. Trenger du det, sier jeg fra tidlig og foreslår noen.
+      </p>
+
+      <h2>Revisjoner og endringer underveis</h2>
+      <p class="muted">
+        To revisjonsrunder er med i prisen. En runde er samlede tilbakemeldinger, ikke
+        enkeltmeldinger over fjorten dager. Kommer det nye sider eller ny funksjonalitet
+        etter at vi er enige om omfanget, får du en pris på det før jeg begynner.
+        Du får aldri en faktura du ikke har sagt ja til på forhånd.
+      </p>
+
+      <h2>Sikkerhetsrutiner</h2>
+      <ul class="muted">
+        <li>Ingen hemmeligheter i koden eller i Git. Nøkler ligger i plattformens hemmelighetslager.</li>
+        <li>Egne nøkler per tjeneste og per kunde. Ingen delte innlogginger.</li>
+        <li>Avhengigheter skannes automatisk; kjent sårbarhet lappes innen fem arbeidsdager på driftsavtaler.</li>
+        <li>Databaser med radnivå-sikkerhet der det er persondata.</li>
+        <li>Daglig sikkerhetskopi, og test av gjenoppretting hver måned. En backup du ikke har lest tilbake, er ikke en backup.</li>
+        <li>Sikkerhetsheadere og lovsjekk på hver leveranse – det står i <a class="kk-link" href="/sikkerhet">sikkerhetssiden</a>.</li>
+      </ul>
+
+      <h2>Hvem har tilgang til hva</h2>
+      <p class="muted">
+        Alle kontoer – domene, hosting, analyse, database – står i ditt foretaks navn
+        med deg som eier. Jeg er lagt til som bruker. Sier du opp, fjerner du meg;
+        du trenger ikke be meg om å overføre noe.
+      </p>
+
+      <h2>Hva skjer hvis jeg blir syk</h2>
+      <p class="muted">
+        Siden din står uansett – den ligger ikke på min maskin, og du eier alle kontoene.
+        Blir jeg borte i mer enn fem arbeidsdager, får du beskjed, full dokumentasjon og
+        tilganger, og navn på to utviklere jeg har avtale med og som kan ta over.
+        Dette står også i salgsvilkårene, slik at det er noe du kan holde meg til.
+      </p>
+
+      <h2>Hva jeg ikke gjør</h2>
+      <p class="muted">
+        Design uten utvikling. Annonsekampanjer. Nettbutikker på plattformer jeg ikke kan
+        vedlikeholde. Prosjekter uten skriftlig omfang. Og jeg tar ikke oppdrag der
+        oppgaven i praksis er å legge et nytt lag maling på et system som burde byttes –
+        da sier jeg det i stedet.
+      </p>
+
+      <h2>Underleverandører</h2>
+      <p class="muted">
+        Per i dag ingen. Blir det aktuelt – for eksempel foto, tekst eller
+        oversettelse – spør jeg deg først, og det er fortsatt jeg som er ansvarlig
+        overfor deg.
+      </p>
+
+      <h2>Når noe går galt</h2>
+      <p class="muted">
+        Er det min feil, fikser jeg det uten å fakturere. Er det uklart hvem sin feil
+        det er, fikser jeg det først og vi tar diskusjonen etterpå. Er du ikke fornøyd
+        med prototypen, betaler du ingenting og vi skiller lag som venner.
+      </p>
+    </div>
+
+    <div class="row" style="margin-top: var(--space-6)">
+      <Button variant="primary" href="/kontakt">Book 20 minutter</Button>
+      <Button variant="ghost" href="/vilkar">Les salgsvilkårene</Button>
+    </div>
+  </Section>
+
+  <ContactBlock n={2} />
+</Base>

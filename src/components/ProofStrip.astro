@@ -1,0 +1,14 @@
+---
+// Bevis-stripen under hero: fire–fem målbare påstander. Tallene skal være sanne.
+export interface ProofItem { value: string; label: string; accent?: boolean }
+interface Props { items: ProofItem[]; label?: string; class?: string }
+const { items, label = "Bevis", class: cls } = Astro.props;
+---
+<ul class:list={["kk-proof", cls]} aria-label={label}>
+  {items.map((it) => (
+    <li>
+      <span class:list={["kk-stat", it.accent && "is-accent"]}>{it.value}</span>
+      <span class="kk-label">{it.label}</span>
+    </li>
+  ))}
+</ul>

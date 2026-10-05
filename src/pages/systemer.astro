@@ -1,0 +1,86 @@
+---
+import Base from "../layouts/Base.astro";
+import Section from "../components/Section.astro";
+import Button from "../components/Button.astro";
+import Terminal from "../components/Terminal.astro";
+import ContactBlock from "../components/ContactBlock.astro";
+import { bookUrl } from "../data/firma";
+
+const integrasjoner = [
+  { navn: "Booking", verdi: "Timer bestilles og betales døgnet rundt, uten en telefon.", teknisk: "Cal.com eller eget system i Supabase" },
+  { navn: "Vipps", verdi: "Norske kunder betaler med det de allerede har på telefonen.", teknisk: "2,99 % + 1 kr integrert, 2,49 % + 1 kr på betalingslenke" },
+  { navn: "Tripletex / Fiken / PowerOffice", verdi: "Tilbud blir ordre blir faktura – uten at noen skriver tallene inn på nytt.", teknisk: "Tripletex krever Smart-pakke og tillegget «Integrasjoner» (API 2.0)" },
+  { navn: "Skjema til CRM", verdi: "Ingen henvendelse blir liggende i en innboks.", teknisk: "HubSpot, Pipedrive eller egen tabell" },
+  { navn: "BankID", verdi: "Avtaler signeres på minutter, juridisk bindende.", teknisk: "Criipto/Idura eller Signicat – ferdig tjeneste til du har volum" },
+  { navn: "Kundeportal", verdi: "Kunden ser status, filer og fakturaer selv.", teknisk: "Supabase med radnivå-sikkerhet" },
+];
+---
+<Base
+  tittel="Systemer og integrasjoner"
+  beskrivelse="Booking, Vipps, Tripletex, Fiken og BankID koblet sammen til ett system. Fra 60 000 kr eks. mva. Utvikler i Oslo."
+>
+  <Section
+    n={1}
+    eyebrow="Systemer"
+    tittel="Få systemene du betaler for til å snakke sammen"
+    ingress="De fleste småbedrifter har allerede booking, regnskap og betaling. Problemet er at ingen av dem vet om hverandre, så noen taster samme tall tre ganger."
+  >
+    <div class="row">
+      <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
+      <Button variant="ghost" href="#integrasjoner">Se hva som kan kobles</Button>
+    </div>
+  </Section>
+
+  <Section n={2} eyebrow="Typisk" tittel="Hvordan det ser ut i praksis" id="eksempel">
+    <div class="grid-2">
+      <div class="stack">
+        <p class="body-lg muted">
+          En klinikk med fire behandlere brukte to timer i uken på å ringe tilbake om ledige
+          timer, og en halv dag i måneden på å avstemme Vipps mot regnskapet.
+        </p>
+        <p class="muted">
+          Etter: kunden booker og betaler selv, timen havner i behandlerens kalender,
+          betalingen havner som ordre i Fiken, og påminnelsen går ut på SMS 24 timer før.
+          Ingen taster noe. Det er dette jeg mener med «system» – ikke en nettside med
+          et skjema på.
+        </p>
+        <Button variant="ghost" href="/bransjer/klinikker">Se bransjesiden for klinikker</Button>
+      </div>
+      <Terminal
+        title="~/flyt"
+        lines={[
+          { type: "cmd", text: "cat flyt.txt" },
+          { type: "out", text: "kunde → booking → Vipps → kalender" },
+          { type: "out", text: "                        ↓" },
+          { type: "out", text: "                  ordre i Fiken" },
+          { type: "out", text: "                        ↓" },
+          { type: "ok", text: "            SMS 24 t før time" },
+          { type: "cmd", text: "echo $MANUELLE_STEG" },
+          { type: "ok", text: "0" },
+        ]}
+        label="Terminalutsnitt som viser flyten: kunde booker, betaler med Vipps, timen går i kalenderen, ordren går til Fiken, SMS sendes 24 timer før. Null manuelle steg."
+      />
+    </div>
+  </Section>
+
+  <Section n={3} eyebrow="Integrasjoner" tittel="Det jeg kobler oftest" id="integrasjoner">
+    <div class="grid-2">
+      {integrasjoner.map((i) => (
+        <div class="card">
+          <h3 class="subheading">{i.navn}</h3>
+          <p class="muted">{i.verdi}</p>
+          <p class="mono faint">{i.teknisk}</p>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <Section n={4} eyebrow="Pris" tittel="System fra 60 000 kr" ingress="Prisen følger antall integrasjoner og hvor mye som må holdes i orden etterpå. Du får fast pris før vi begynner, og 40 % faktureres ved oppstart. Eks. mva.">
+    <div class="row">
+      <Button variant="primary" href="/kontakt">Beskriv behovet</Button>
+      <Button variant="ghost" href="/priser">Se hele prislisten</Button>
+    </div>
+  </Section>
+
+  <ContactBlock n={5} />
+</Base>

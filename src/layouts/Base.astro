@@ -1,0 +1,113 @@
+---
+import "../styles/tokens.css";
+import "../styles/components.css";
+import "../styles/site.css";
+import Topbar from "../components/Topbar.astro";
+import LegalFooter from "../components/LegalFooter.astro";
+import { firma } from "../data/firma";
+import { footerLenker } from "../data/navigasjon";
+import { TEMA_SCRIPT } from "../../sikkerhet.mjs";
+
+interface Props {
+  tittel: string;
+  beskrivelse: string;
+  /** Settes bare på sider som ikke skal indekseres (takkesider, rapportvisninger). */
+  noindex?: boolean;
+  /** Ekstra JSON-LD utover LocalBusiness, f.eks. Service eller FAQPage. */
+  schema?: Record<string, unknown>[];
+}
+const { tittel, beskrivelse, noindex = false, schema = [] } = Astro.props;
+const fullTittel = tittel === firma.navn ? `${firma.navn} – ${firma.tagline}` : `${tittel} – ${firma.navn}`;
+const kanonisk = new URL(Astro.url.pathname, Astro.site ?? firma.url).href;
+
+const localBusiness = {
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  name: firma.navn,
+  legalName: firma.foretaksnavn,
+  description: firma.posisjonering,
+  url: firma.url,
+  email: firma.epost,
+  telephone: firma.telefon,
+  address: { "@type": "PostalAddress", addressLocality: firma.adresse, addressCountry: "NO" },
+  areaServed: { "@type": "City", name: "Oslo" },
+  priceRange: "14 900–60 000 NOK",
+  knowsLanguage: ["nb-NO", "en"],
+  ...(firma.orgnr !== "000000000" ? { vatID: firma.mva ? `NO${firma.orgnr}MVA` : undefined, taxID: firma.orgnr } : {}),
+};
+---
+<!doctype html>
+<html lang="nb">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTittel}</title>
+    <meta name="description" content={beskrivelse} />
+    <link rel="canonical" href={kanonisk} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={firma.navn} />
+    <meta property="og:locale" content="nb_NO" />
+    <meta property="og:title" content={fullTittel} />
+    <meta property="og:description" content={beskrivelse} />
+    <meta property="og:url" content={kanonisk} />
+    <meta name="twitter:card" content="summary" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/logo/kk-app-icon-1024.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
+
+    <!-- Maks to webfonter, latin, swap. Brødteksten er systemfont – null nedlasting. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@700..800&family=JetBrains+Mono:wght@400..600&display=swap"
+    />
+
+    <!-- Temavalget settes før første maling. Teksten kommer fra lib/tema-script.ts,
+         som middleware.ts regner CSP-hashen av. Ikke skriv den av her. -->
+    <script is:inline set:html={TEMA_SCRIPT} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(localBusiness)} is:inline />
+    {schema.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} is:inline />)}
+  </head>
+
+  <body>
+    <a class="skip" href="#innhold">Hopp til innhold</a>
+    <Topbar />
+    <main id="innhold">
+      <slot />
+    </main>
+    <div class="wrap">
+      <LegalFooter
+        name={firma.navn}
+        legalName={firma.foretaksnavn}
+        tagline={firma.tagline}
+        orgnr={firma.orgnr}
+        vat={firma.mva}
+        address={firma.adresse}
+        email={firma.epost}
+        phone={firma.telefon}
+        links={footerLenker}
+        cookieNote={firma.cookieNote}
+        meta={`Bygget i Oslo · Lighthouse 100 · ${new Date().getFullYear()}`}
+      />
+    </div>
+
+    <script>
+      // Tema: knappen i topbaren, valget huskes. Ingen cookie – localStorage er ikke sporing.
+      const toggle = document.querySelector<HTMLButtonElement>("[data-theme-toggle]");
+      toggle?.addEventListener("click", () => {
+        const lys = document.documentElement.dataset.theme === "light";
+        const neste = lys ? "dark" : "light";
+        document.documentElement.dataset.theme = neste;
+        try { localStorage.setItem("kk-tema", neste); } catch {}
+      });
+    </script>
+
+    <script src="/terminal.js" defer></script>
+  </body>
+</html>

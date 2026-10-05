@@ -1,0 +1,104 @@
+---
+import Base from "../layouts/Base.astro";
+import Section from "../components/Section.astro";
+import { firma } from "../data/firma";
+const oppdatert = "5. oktober 2026";
+---
+<Base
+  tittel="Personvernerklæring"
+  beskrivelse="Hva KodeKonsulentene lagrer, hvorfor, hvor lenge og hvilke rettigheter du har. Cookieløs analyse – ingen sporing før samtykke."
+>
+  <Section n={1} eyebrow="Personvern" tittel="Personvernerklæring" ingress={`Sist oppdatert ${oppdatert}. Kort fortalt: denne siden bruker ikke cookies, og jeg lagrer bare det som trengs for å svare deg.`}>
+    <div class="card card--sunken" style="border-color: var(--warn); margin-bottom: var(--space-6)">
+      <p class="body-strong">Forbehold</p>
+      <p class="small muted">
+        Denne teksten er et utkast skrevet av utvikleren, ikke av advokat. Den må
+        kvalitetssikres juridisk før den brukes som bindende erklæring overfor kunder
+        og besøkende. Dette er ikke juridisk rådgivning.
+      </p>
+    </div>
+
+    <div class="prose">
+      <h2>Behandlingsansvarlig</h2>
+      <p class="muted">
+        {firma.foretaksnavn}, org.nr. {firma.orgnr}, {firma.adresse}.
+        E-post <a class="kk-link" href={`mailto:${firma.epost}`}>{firma.epost}</a>,
+        telefon {firma.telefon}.
+      </p>
+
+      <h2>Cookies</h2>
+      <p class="muted">
+        Siden setter ingen cookies, og det er derfor du ikke har sett et samtykkevindu.
+        Besøksstatistikken er cookieløs og teller sidevisninger uten å identifisere deg
+        eller følge deg mellom nettsteder. Fra 1. januar 2025 krever ekomloven § 3-15 at
+        cookie-samtykke oppfyller GDPR-kravene; den enkleste måten å overholde det på er
+        å ikke sette cookies.
+      </p>
+      <p class="muted">
+        Ett unntak, som ikke er en cookie: velger du lyst eller mørkt tema, lagres valget
+        i nettleserens eget lager (<code>localStorage</code>) på din maskin. Det sendes
+        aldri til serveren, og jeg kan ikke lese det.
+      </p>
+
+      <h2>Hva lagres når du bruker nettsidesjekken</h2>
+      <p class="muted">
+        Skriver du inn en nettadresse på <a class="kk-link" href="/sjekk">/sjekk</a>, henter
+        serveren den forsiden én gang og analyserer svaret. Adressen og rapporten lagres
+        ikke – de finnes bare i svaret som sendes tilbake til nettleseren din.
+      </p>
+      <p class="muted">
+        Ber du om rapporten på e-post, sendes e-postadressen og rapporten til Resend, som
+        er databehandler for utsending. Adressen brukes bare til å sende den ene e-posten,
+        og den havner ikke på noen liste. Velger jeg å ta kontakt i etterkant, skjer det
+        på grunnlag av berettiget interesse (B2B), og du kan reservere deg i svaret.
+      </p>
+      <p class="muted">
+        Er PageSpeed-målingen aktiv, sendes adressen du skrev inn til Googles
+        PageSpeed Insights-API for å måle ytelse. Ingen opplysninger om deg sendes med.
+      </p>
+
+      <h2>Hva lagres når du bruker kontaktskjemaet</h2>
+      <p class="muted">
+        Navn, e-postadresse, eventuell nettadresse og meldingen du skriver. Opplysningene
+        brukes bare til å svare deg og eventuelt gi et tilbud.
+      </p>
+
+      <h2>Behandlingsgrunnlag</h2>
+      <ul class="muted">
+        <li><strong>Kontaktskjema og nettsidesjekk på e-post:</strong> berettiget interesse i å svare på henvendelser, og å inngå avtale på din forespørsel (GDPR art. 6 nr. 1 b og f).</li>
+        <li><strong>Kundeforhold:</strong> oppfyllelse av avtale (art. 6 nr. 1 b).</li>
+        <li><strong>Regnskapsbilag:</strong> rettslig forpliktelse etter bokføringsloven (art. 6 nr. 1 c).</li>
+      </ul>
+
+      <h2>Hvor lenge</h2>
+      <ul class="muted">
+        <li>Henvendelser som ikke blir oppdrag: slettes etter seks måneder.</li>
+        <li>Kundeopplysninger: så lenge kundeforholdet varer, og deretter tre år.</li>
+        <li>Regnskapsbilag: fem år, som bokføringsloven krever.</li>
+        <li>Nettsidesjekker: lagres ikke.</li>
+      </ul>
+
+      <h2>Hvem får opplysningene</h2>
+      <p class="muted">
+        Databehandlere jeg bruker: Fly.io (drift av nettsiden, EU-region Amsterdam),
+        Resend (utsending av e-post) og regnskapsprogram for fakturering. Det er inngått
+        databehandleravtale der det kreves. Opplysninger selges aldri videre, og brukes
+        ikke til profilering eller annonsering.
+      </p>
+
+      <h2>Dine rettigheter</h2>
+      <p class="muted">
+        Du kan be om innsyn i hva som er lagret om deg, få det rettet eller slettet, og
+        protestere mot behandlingen. Send en e-post til
+        <a class="kk-link" href={`mailto:${firma.epost}`}>{firma.epost}</a>, så svarer jeg
+        innen 30 dager. Mener du at noe er galt, kan du klage til Datatilsynet.
+      </p>
+
+      <h2>Endringer</h2>
+      <p class="muted">
+        Endres erklæringen, oppdateres datoen øverst. Er endringen vesentlig for deg som
+        kunde, får du beskjed på e-post.
+      </p>
+    </div>
+  </Section>
+</Base>

@@ -9,7 +9,7 @@ import ContactBlock from "../../components/ContactBlock.astro";
 import { bookUrl } from "../../data/firma";
 
 const steg = [
-  { title: "Kunden fyller ut", time: "2 min", text: "Fire felt og tre bilder fra telefonen. Ikke et kontaktskjema – en befaringsforespørsel." },
+  { title: "Kunden fyller ut", time: "2 vår", text: "Fire felt og tre bilder fra telefonen. Ikke et kontaktskjema – en befaringsforespørsel." },
   { title: "Du får varsel", time: "Straks", text: "Push eller SMS med adresse, bilder og beskrivelse. Du ser om det er verdt turen før du setter deg i bilen." },
   { title: "Du foreslår tid", time: "1 klikk", text: "Kunden velger blant tidene du faktisk har ledig. Ingen telefonrunde." },
   { title: "Tilbudet går ut", time: "Samme dag", text: "Mal med dine priser, signert digitalt. Blir det ja, ligger ordren i regnskapet." },
@@ -78,7 +78,7 @@ const schema = {
     n={3}
     eyebrow="Demo"
     tittel="Befaring uten telefonrunde"
-    ingress="Dette er flyten jeg bygger for håndverkere. Den er ikke en kontaktside med flere felt – den er laget for å sortere bort turene du ikke vil ha."
+    ingress="Dette er flyten vi bygger for håndverkere. Den er ikke en kontaktside med flere felt – den er laget for å sortere bort turene du ikke vil ha."
     id="demo"
   >
     <ProcessSteps steps={steg} />
@@ -113,5 +113,5 @@ const schema = {
     <UrlCheck buttonLabel="Kjør sjekken" hint="30 sekunder. Du ser hva som er galt før du bruker penger." />
   </Section>
 
-  <ContactBlock n={6} tittel="Ring, så tar vi det på fem minutter" ingress="Jeg vet hva en befaring koster deg i tid. Fortell hvor mange forespørsler du får i uka, så regner vi på om dette lønner seg." />
+  <ContactBlock n={6} tittel="Ring, så tar vi det på fem minutter" ingress="Vi vet hva en befaring koster deg i tid. Fortell hvor mange forespørsler du får i uka, så regner vi på om dette lønner seg." />
 </Base>

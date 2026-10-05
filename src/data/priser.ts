@@ -20,7 +20,7 @@ export const pakker: Pakke[] = [
       "Lovsjekk: org.nr., cookies, universell utforming",
       "Du eier koden og domenet",
     ],
-    ikke: ["CMS – jeg endrer teksten for deg", "Lokal SEO per bydel"],
+    ikke: ["CMS – vi endrer teksten for deg", "Lokal SEO per bydel"],
     cta: "Book 20 minutter",
     href: "/kontakt",
   },

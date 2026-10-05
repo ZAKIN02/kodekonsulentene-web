@@ -41,14 +41,14 @@ const schema = {
     </div>
   </Section>
 
-  <Section n={2} eyebrow="Hva du får" tittel="Fire krav jeg setter selv">
+  <Section n={2} eyebrow="Hva du får" tittel="Fire krav vi setter selv">
     <div class="grid-2">
       <div class="card">
         <h3 class="heading">Rask på mobil</h3>
         <p class="muted">
           Lighthouse 95 eller bedre på alle fire kategorier, målt på mobil. Største innhold
-          malt under 2,5 sekunder. Jeg viser tallet for min egen side i footeren, så du kan
-          sjekke at jeg holder det jeg selger.
+          malt under 2,5 sekunder. Vi viser tallet for vår egen side i footeren, så du kan
+          sjekke at vi holder det vi selger.
         </p>
       </div>
       <div class="card">
@@ -70,7 +70,7 @@ const schema = {
       <div class="card">
         <h3 class="heading">Uten cookie-banner</h3>
         <p class="muted">
-          Jeg bruker cookieløs analyse. Da er det ingenting å samtykke til, og du slipper
+          Vi bruker cookieløs analyse. Da er det ingenting å samtykke til, og du slipper
           banneret som halvparten av besøkende lukker uten å lese. Det er også den
           enkleste måten å overholde ekomloven § 3-15.
         </p>
@@ -85,12 +85,12 @@ const schema = {
         lines={[
           { type: "cmd", text: "npm run build" },
           { type: "out", text: "astro build · 14 sider · 0 kB JS på forsiden" },
-          { type: "cmd", text: "lighthouse --preset=mobile" },
-          { type: "ok", text: "ytelse 100 · uu 100 · beste praksis 100 · seo 100" },
+          { type: "cmd", text: "sjekk --budsjett" },
+          { type: "ok", text: "0 cookies · 0 wcag-feil · 6/6 headere" },
           { type: "cmd", text: "curl -I din-side.no | grep -ci 'content-security'" },
           { type: "ok", text: "1" },
         ]}
-        label="Terminalutsnitt: Astro-bygg med fjorten sider og null kilobyte JavaScript på forsiden, Lighthouse 100 på alle fire kategorier, og Content-Security-Policy satt."
+        label="Terminalutsnitt: Astro-bygg med fjorten sider og null kilobyte JavaScript på forsiden, null cookies, null WCAG-feil, seks av seks sikkerhetsheadere, og Content-Security-Policy satt."
       />
       <dl class="kv">
         <div><dt>Rammeverk</dt><dd>Astro</dd></div>

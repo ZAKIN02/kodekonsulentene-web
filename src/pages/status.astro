@@ -52,7 +52,7 @@ const budsjett = [
     </div>
   </Section>
 
-  <Section n={2} eyebrow="Budsjett" tittel="Ytelsesbudsjettet jeg holder meg til" ingress="Dette er ikke mål. Det er grenser. Går en leveranse over dem, er den ikke ferdig.">
+  <Section n={2} eyebrow="Budsjett" tittel="Ytelsesbudsjettet vi holder oss til" ingress="Dette er ikke mål. Det er grenser. Går en leveranse over dem, er den ikke ferdig.">
     <div class="grid-2">
       <dl class="kv">
         {budsjett.map(([k, v]) => (
@@ -66,7 +66,7 @@ const budsjett = [
           { type: "out", text: "oppetid · sertifikat · ytelse" },
           { type: "out", text: "sårbare avhengigheter · sikkerhetskopi" },
           { type: "cmd", text: "hvem får varselet" },
-          { type: "ok", text: "jeg – før du merker det" },
+          { type: "ok", text: "vi – før du merker det" },
           { type: "cmd", text: "hva får du" },
           { type: "out", text: "månedsrapport: ytelse, oppetid, endringer" },
         ]}
@@ -75,7 +75,7 @@ const budsjett = [
     </div>
   </Section>
 
-  <Section n={3} eyebrow="Avvik" tittel="Hvis noe er nede" ingress={`Ring ${firma.telefon}. Kunder med driftsavtale får beskjed fra meg før de rekker å oppdage det selv.`}>
-    <Button variant="ghost" href="/handbok">Hvordan jeg jobber</Button>
+  <Section n={3} eyebrow="Avvik" tittel="Hvis noe er nede" ingress={`Ring ${firma.telefon}. Kunder med driftsavtale får beskjed fra oss før de rekker å oppdage det selv.`}>
+    <Button variant="ghost" href="/handbok">Hvordan vi jobber</Button>
   </Section>
 </Base>

@@ -30,7 +30,7 @@ Skal du skrive tekst, bygge UI, lage et tilbud eller lansere: bruk skillene i
 - Alle priser fra `src/data/priser.ts`. Skriv aldri av en pris.
 - Alle fakta om foretaket fra `src/data/firma.ts`.
 - Bokmål, du-form, tall før adjektiver. Ingen emoji, ingen utropstegn, ingen floskler.
-- **Dikt aldri opp et tall.** Org.nr., telefon, app-navn og case-resultater står som `TODO` eller `PLASSHOLDER` til Zakaria fyller dem inn. Et oppdiktet tall velter hele posisjoneringen.
+- **Dikt aldri opp et tall.** Org.nr., telefon, app-navn og case-resultater står som `TODO` eller `PLASSHOLDER` til de er fylt inn. Et oppdiktet tall velter hele posisjoneringen.
 
 **Kode**
 - `npm run verify` før commit: tester, typesjekk og bygg.

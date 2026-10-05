@@ -4,7 +4,7 @@ import Section from "../components/Section.astro";
 import Eyebrow from "../components/Eyebrow.astro";
 import Button from "../components/Button.astro";
 import ContactBlock from "../components/ContactBlock.astro";
-import { caser } from "../data/caser";
+import { synligeCaser } from "../data/caser";
 ---
 <Base
   tittel="Caser"
@@ -14,10 +14,10 @@ import { caser } from "../data/caser";
     n={1}
     eyebrow="Caser"
     tittel="Problem, løsning, resultat"
-    ingress="Hver case sier hva som var problemet, hva jeg bygde, og hva det ga i tall. Konseptarbeid er alltid merket, slik at du vet hva som er oppdrag og hva som er øvelse."
+    ingress="Hver case sier hva som var problemet, hva vi bygde, og hva det ga i tall. Konseptarbeid er alltid merket, slik at du vet hva som er oppdrag og hva som er øvelse."
   >
     <div class="stack">
-      {caser.map((c) => (
+      {synligeCaser.map((c) => (
         <article class="card">
           <div class="row" style="justify-content: space-between">
             <Eyebrow>{c.type}</Eyebrow>
@@ -30,11 +30,18 @@ import { caser } from "../data/caser";
               <p class="muted"><strong class="body-strong">Løsning.</strong> {c.losning}</p>
               <p class="mono faint">{c.stack.join(" · ")}</p>
             </div>
-            <dl class="kv">
-              {c.resultat.map((r) => (
-                <div><dt>{r.tekst}</dt><dd>{r.verdi}</dd></div>
-              ))}
-            </dl>
+            {c.resultat ? (
+              <dl class="kv">
+                {c.resultat.map((r) => (
+                  <div><dt>{r.tekst}</dt><dd>{r.verdi}</dd></div>
+                ))}
+              </dl>
+            ) : (
+              <p class="small faint">
+                Ingen målte tall ennå. Når denne løsningen er levert til en kunde,
+                står resultatet her – ikke før.
+              </p>
+            )}
           </div>
           {c.href && <Button variant="ghost" href={c.href}>Se mer</Button>}
         </article>
@@ -42,5 +49,5 @@ import { caser } from "../data/caser";
     </div>
   </Section>
 
-  <ContactBlock n={2} tittel="Vil du bli den neste?" ingress="Jeg tar inn to til tre pilotprosjekter til redusert pris mot at jeg får bruke tallene som case. Si fra hvis det er aktuelt." />
+  <ContactBlock n={2} tittel="Vil du bli den neste?" ingress="Vi tar inn to til tre pilotprosjekter til redusert pris mot at vi får bruke tallene som case. Si fra hvis det er aktuelt." />
 </Base>

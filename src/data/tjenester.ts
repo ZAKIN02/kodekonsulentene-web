@@ -24,8 +24,8 @@ export const tjenester: Tjeneste[] = [
     n: 3,
     tittel: "Apper og AI",
     href: "/apper-og-ai",
-    beskrivelse: "Intern app eller iOS-app fra samme person som bygde nettsiden – og AI som faktisk gjør en jobb.",
+    beskrivelse: "Intern app eller iOS-app fra samme sted som bygde nettsiden – og AI som faktisk gjør en jobb.",
     punkter: ["iOS-app i App Store", "Intern app for felt og verksted", "AI-assistent med databehandleravtale"],
-    lenketekst: "Se appene jeg har laget",
+    lenketekst: "Se hva vi har bygget",
   },
 ];

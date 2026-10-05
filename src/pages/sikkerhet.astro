@@ -8,7 +8,7 @@ import ContactBlock from "../components/ContactBlock.astro";
 import { loepende } from "../data/priser";
 
 const egenSjekk = [
-  { name: "Ytelse", status: "ok" as const, value: "100/100", note: "Målt med Lighthouse på mobil. Tallet står i footeren og oppdateres ved hver lansering." },
+  { name: "Ytelse", status: "neutral" as const, value: "0,1 s", note: "Svartid målt fra Oslo. Lighthouse-score er ikke hentet inn her – vi viser ikke et tall vi ikke har målt." },
   { name: "Sikkerhetsheadere", status: "ok" as const, value: "6/6", note: "CSP, HSTS, X-Content-Type-Options, Referrer-Policy, Permissions-Policy og rammevern." },
   { name: "Cookies før samtykke", status: "ok" as const, value: "0", note: "Analysen er cookieløs. Derfor har denne siden ikke banner – det er ingenting å samtykke til." },
   { name: "Universell utforming", status: "ok" as const, value: "0 feil", note: "Bygget etter WCAG 2.2 AA, som er strengere enn de 35 kravene private virksomheter må oppfylle." },
@@ -31,14 +31,14 @@ const tiltak = [
   <Section
     n={1}
     eyebrow="Sikkerhet"
-    tittel="Siden min består sin egen sjekk"
-    ingress="Det er lett å selge sikkerhet. Det er vanskeligere å bevise det. Derfor kjører jeg den samme sjekken på min egen side, og viser resultatet her."
+    tittel="Siden vår består sin egen sjekk"
+    ingress="Det er lett å selge sikkerhet. Det er vanskeligere å bevise det. Derfor kjører vi den samme sjekken på vår egen side og viser resultatet her – også raden vi ikke består."
   >
     <CheckReport
       url="kodekonsulentene.no"
       date="oppdatert ved hver lansering"
       rows={egenSjekk}
-      footer="Samlet: 100 av 100."
+      footer="Samlet: 90 av 100. Ytelsesraden står som «ikke sjekket» fordi Lighthouse ikke er kjørt."
     >
       <Button slot="action" variant="ghost" href="/sjekk">Kjør den på din side</Button>
     </CheckReport>
@@ -69,7 +69,7 @@ const tiltak = [
       <h3>Cookie-samtykke (ekomloven § 3-15)</h3>
       <p class="muted">Fra 1. januar 2025 må samtykke oppfylle GDPR-kravene: ingen forhåndsavkryssing, «avvis» like lett tilgjengelig som «godta», og ingen sporing før samtykke er gitt. Den enkleste måten å overholde dette er å ikke sette cookies i det hele tatt.</p>
       <h3>Universell utforming</h3>
-      <p class="muted">Private virksomheter skal oppfylle 35 krav i WCAG 2.0 nivå A og AA. Offentlig sektor har 48 krav i WCAG 2.1. Jeg bygger etter WCAG 2.2 AA, som dekker begge.</p>
+      <p class="muted">Private virksomheter skal oppfylle 35 krav i WCAG 2.0 nivå A og AA. Offentlig sektor har 48 krav i WCAG 2.1. Vi bygger etter WCAG 2.2 AA, som dekker begge.</p>
       <p class="small faint">Dette er ikke juridisk rådgivning. Få standardvilkår og personvernerklæring kvalitetssikret av advokat før du bruker dem i avtaler.</p>
     </div>
   </Section>

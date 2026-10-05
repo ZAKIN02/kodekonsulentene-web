@@ -34,7 +34,7 @@ const localBusiness = {
   areaServed: { "@type": "City", name: "Oslo" },
   priceRange: "14 900–60 000 NOK",
   knowsLanguage: ["nb-NO", "en"],
-  ...(firma.orgnr !== "000000000" ? { vatID: firma.mva ? `NO${firma.orgnr}MVA` : undefined, taxID: firma.orgnr } : {}),
+  ...(erUferdig ? {} : { taxID: firma.orgnr, ...(firma.mva ? { vatID: `NO${firma.orgnr}MVA` } : {}) }),
 };
 ---
 <!doctype html>
@@ -94,7 +94,7 @@ const localBusiness = {
         phone={firma.telefon}
         links={footerLenker}
         cookieNote={firma.cookieNote}
-        meta={`Bygget i Oslo · Lighthouse 100 · ${new Date().getFullYear()}`}
+        meta={`Bygget i Oslo · Uten cookies · ${new Date().getFullYear()}`}
       />
     </div>
 

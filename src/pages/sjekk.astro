@@ -26,7 +26,7 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
         id="url-sjekk"
         buttonLabel="Kjør sjekken"
         value={forhandsutfylt}
-        hint="Jeg laster forsiden din én gang, slik en besøkende får den. Ingenting lagres."
+        hint="Vi laster forsiden din én gang, slik en besøkende får den. Ingenting lagres."
       />
 
       <div id="resultat" aria-live="polite" aria-busy="false"></div>
@@ -35,7 +35,7 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
         <p class="card">
           Sjekken krever JavaScript. Send adressen til
           <a class="kk-link" href={`mailto:${firma.epost}?subject=Nettsidesjekk`}>{firma.epost}</a>,
-          så kjører jeg den manuelt og sender rapporten samme dag.
+          så kjører vi den manuelt og sender rapporten samme dag.
         </p>
       </noscript>
     </div>
@@ -77,7 +77,7 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
     </div>
   </Section>
 
-  <Section n={3} eyebrow="Etterpå" tittel="Vil du at jeg fikser det?" ingress="Lovsjekk-pakken er 7 900 kr eks. mva og dekker cookies, universell utforming, lovpålagt informasjon og personvernerklæring på den siden du har i dag. Du trenger ikke ny nettside for det.">
+  <Section n={3} eyebrow="Etterpå" tittel="Vil du at vi fikser det?" ingress="Lovsjekk-pakken er 7 900 kr eks. mva og dekker cookies, universell utforming, lovpålagt informasjon og personvernerklæring på den siden du har i dag. Du trenger ikke ny nettside for det.">
     <div class="row">
       <Button variant="primary" href="/priser">Se hva det koster</Button>
       <Button variant="ghost" href="/sikkerhet">Les om sikkerhetsarbeidet</Button>
@@ -143,7 +143,7 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
           <div class="field">
             <label for="r-epost">E-post</label>
             <input class="control" id="r-epost" name="epost" type="email" autocomplete="email" required placeholder="din@bedrift.no" />
-            <span class="hint">Jeg bruker adressen til å sende denne rapporten. Ingen nyhetsbrev.</span>
+            <span class="hint">Vi bruker adressen til å sende denne rapporten. Ingen nyhetsbrev.</span>
           </div>
           <button class="kk-btn" type="submit">Send rapporten</button>
           <p class="small faint" data-send-status></p>

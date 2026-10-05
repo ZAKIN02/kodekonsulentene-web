@@ -17,7 +17,7 @@ const feilmelding =
   feil === "1"
     ? "Noe manglet i skjemaet. Fyll ut navn, en gyldig e-postadresse og hva du trenger hjelp til."
     : feil === "2"
-      ? `Skjemaet kom ikke fram. Send en e-post til ${firma.epost} i stedet, så svarer jeg like raskt.`
+      ? `Skjemaet kom ikke fram. Send en e-post til ${firma.epost} i stedet, så svarer vi like raskt.`
       : null;
 ---
 <Base
@@ -35,7 +35,7 @@ const feilmelding =
       <div class="card" style="border-color: var(--ok)">
         <h2 class="heading">Takk – meldingen kom fram</h2>
         <p class="muted">
-          Jeg svarer innen {firma.svartid}, som regel raskere. Haster det, ring
+          Vi svarer innen {firma.svartid}, som regel raskere. Haster det, ring
           <a class="kk-link" href={`tel:${firma.telefon.replace(/\s/g, "")}`}>{firma.telefon}</a>.
         </p>
       </div>
@@ -73,7 +73,7 @@ const feilmelding =
             { type: "cmd", text: "hva skjer etterpå" },
             { type: "out", text: "du får et prisspenn på telefonen," },
             { type: "out", text: "og et skriftlig tilbud innen to dager" },
-            { type: "cmd", text: "er jeg bundet til noe" },
+            { type: "cmd", text: "er vi bundet til noe" },
             { type: "ok", text: "nei" },
           ]}
           label="Terminalutsnitt: en prat koster ingenting, du får prisspenn på telefonen og skriftlig tilbud innen to dager, og du er ikke bundet til noe."
@@ -103,7 +103,7 @@ const feilmelding =
         </div>
         <Button variant="primary" type="submit">Send</Button>
         <p class="small faint">
-          Jeg bruker opplysningene bare for å svare deg, og sletter dem etter seks måneder
+          Vi bruker opplysningene bare for å svare deg, og sletter dem etter seks måneder
           hvis det ikke blir et oppdrag. Se <a class="kk-link" href="/personvern">personvernerklæringen</a>.
         </p>
       </form>

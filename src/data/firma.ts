@@ -2,27 +2,33 @@
  * Ett sted for alle fakta om foretaket. Endrer du noe her, endres det overalt:
  * footer, strukturert data, vilkår, personvernerklæring og tilbudsmaler.
  *
- * TODO før lansering: feltene merket PLASSHOLDER må byttes ut med ekte verdier.
- * `npm run test` feiler på plassholder-org.nr., slik at siden ikke kan deployes
- * uten at det er på plass. Se docs/sjekklister/lansering.md.
+ * Foretaksdataene er hentet fra Enhetsregisteret (data.brreg.no) 5. oktober 2026.
+ * Siden snakker i vi-form og nevner ingen person ved navn. Det registrerte
+ * foretaksnavnet inneholder etternavnet fordi foretaksnavnloven § 2-2 krever det
+ * av et enkeltpersonforetak – det står derfor bare i den lovpålagte footeren,
+ * aldri i brødtekst.
+ *
+ * TODO før lansering: feltene merket PLASSHOLDER. Se docs/sjekklister/lansering.md.
  */
 export const PLASSHOLDER_ORGNR = "000000000";
 
 export const firma = {
   navn: "KodeKonsulentene",
-  /** Registrert foretaksnavn i Brønnøysundregistrene. PLASSHOLDER. */
-  foretaksnavn: "KodeKonsulentene ENK",
-  /** PLASSHOLDER – ni siffer fra Brønnøysundregistrene. */
-  orgnr: PLASSHOLDER_ORGNR,
+  /** Registrert foretaksnavn i Enhetsregisteret. Må stå på nettsiden sammen med org.nr. */
+  foretaksnavn: "KodeKonsulentene Elkassmi",
+  /** Enhetsregisteret, registrert 14. oktober 2025. Enkeltpersonforetak. */
+  orgnr: "936374336",
   /** true når foretaket er registrert i Merverdiavgiftsregisteret (omsetning > 50 000 kr / 12 mnd). */
   mva: false,
-  person: "Zakaria",
-  rolle: "utvikler",
-  /** PLASSHOLDER – geografisk adresse er påkrevd etter ehandelsloven § 8. */
+  /**
+   * TODO: ehandelsloven § 8 krever geografisk adresse, ikke bare poststed.
+   * Står som «Oslo» inntil postboks eller kontoradresse er på plass –
+   * hjemmeadressen skal ikke publiseres.
+   */
   adresse: "Oslo",
   epost: "hei@kodekonsulentene.no",
-  /** PLASSHOLDER. */
-  telefon: "+47 000 00 000",
+  /** TODO: tomt til et ekte nummer finnes. Footeren hopper over feltet når det er tomt. */
+  telefon: "",
   domene: "kodekonsulentene.no",
   url: "https://kodekonsulentene.no",
   /** Cal.com-brukernavn. PLASSHOLDER. */
@@ -45,4 +51,6 @@ export const bookUrl = `https://cal.com/${firma.cal}`;
  * nettopp det /sjekk flagger som brudd hos andre, og det skal ikke stå på vår egen
  * side i Google. Den slår seg av av seg selv når firma.orgnr er ekte.
  */
-export const erUferdig = firma.orgnr === PLASSHOLDER_ORGNR;
+// `as string` fordi firma er `as const`: uten den kan TypeScript bevise at
+// sammenligningen er usann og klager, i stedet for å la porten stå igjen.
+export const erUferdig: boolean = (firma.orgnr as string) === PLASSHOLDER_ORGNR;

@@ -23,10 +23,10 @@ export async function sendRapport(til: string, rapport: Rapport, n: EpostNokler)
     "Forbehold",
     ...rapport.forbehold.map((f) => `- ${f}`),
     "",
-    "Vil du at jeg skal fikse det som står her, tar det vanligvis to til fire timer.",
+    "Vil du at vi skal fikse det som står her, tar det vanligvis to til fire timer.",
     "Lovsjekk-pakken er 7 900 kr eks. mva og dekker alt sammen til fast pris.",
     "",
-    "Zakaria, KodeKonsulentene",
+    "KodeKonsulentene",
     "https://kodekonsulentene.no",
   ].join("\n");
 

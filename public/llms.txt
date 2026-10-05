@@ -1,12 +1,12 @@
 # KodeKonsulentene
 
-> Nettsider og systemer for norske småbedrifter, bygget av én utvikler i Oslo.
+> Nettsider og systemer for norske småbedrifter, bygget i Oslo.
 > Fast pris, åpne priser, du eier koden og domenet.
 
-KodeKonsulentene er et enkeltpersonforetak i Oslo. Zakaria er dataingeniør med
-sikkerhet som spesialfelt og har publisert egne apper på App Store. Tjenestene er
-nettsider, systemer og integrasjoner, og apper med AI – ofte i kombinasjon, som er
-det få andre på denne størrelsen leverer.
+KodeKonsulentene er et enkeltpersonforetak i Oslo med dataingeniørbakgrunn og
+sikkerhet som spesialfelt. Tjenestene er nettsider, systemer og integrasjoner,
+og apper med AI – ofte i kombinasjon, som er det få andre på denne størrelsen
+leverer.
 
 ## Posisjonering
 
@@ -42,7 +42,7 @@ Rapporten kan sendes på e-post. Ingen innlogging.
 - /sikkerhet: sikkerhetsrutiner, de fire lovkravene, lovsjekk-pakken
 - /priser: full prisliste og sammenligning med andre alternativer i markedet
 - /caser: problem, løsning og resultat med tall
-- /om: om Zakaria og hvorfor solo
+- /om: om KodeKonsulentene og hvordan vi jobber
 - /handbok: åpen håndbok – arbeidstid, revisjoner, sikkerhetsrutiner, hva skjer ved sykdom
 - /kontakt: booking og kontaktskjema
 - /sjekk: nettsidesjekken

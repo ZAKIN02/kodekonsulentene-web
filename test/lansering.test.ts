@@ -14,7 +14,7 @@ import { erGyldigOrgnr } from "../src/lib/sjekk.ts";
 import { pakker, loepende } from "../src/data/priser.ts";
 import { SIKKERHETSHEADERE, TEMA_SCRIPT } from "../sikkerhet.mjs";
 
-describe("FØR LANSERING – disse skal feile til Zakaria har fylt inn ekte verdier", () => {
+describe("FØR LANSERING – disse skal feile til ekte verdier er fylt inn", () => {
   test("org.nr. er ikke lenger plassholder (se docs/sjekklister/lansering.md)", () => {
     assert.notEqual(
       firma.orgnr,
@@ -27,9 +27,11 @@ describe("FØR LANSERING – disse skal feile til Zakaria har fylt inn ekte verd
     );
   });
 
-  test("telefonnummeret er ikke lenger plassholder", () => {
+  // Telefon er valgfri: footeren hopper over feltet når det er tomt, og et tomt felt
+  // er ærligere enn et oppdiktet nummer. Testen slår bare ned på plassholderen.
+  test("telefonnummeret er ikke et plassholdernummer", () => {
     assert.ok(
-      !/0{3}\s?0{2}\s?0{3}/.test(firma.telefon),
+      firma.telefon === "" || !/0{3}\s?0{2}\s?0{3}/.test(firma.telefon),
       "src/data/firma.ts har fortsatt plassholder-telefonnummer.",
     );
   });

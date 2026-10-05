@@ -1,9 +1,0 @@
-# kodekonsulentene.no
-User-agent: *
-Allow: /
-
-# Kvitteringssider har ingen verdi i søk og er merket noindex uansett.
-Disallow: /kontakt?
-Disallow: /sjekk?
-
-Sitemap: https://kodekonsulentene.no/sitemap-index.xml

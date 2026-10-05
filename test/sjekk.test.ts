@@ -32,6 +32,11 @@ describe("erGyldigOrgnr", () => {
     assert.equal(erGyldigOrgnr("923609016"), true); // Equinor ASA
     assert.equal(erGyldigOrgnr("974760673"), true); // Statistisk sentralbyrå
     assert.equal(erGyldigOrgnr("974 760 673"), true, "mellomrom skal tolereres");
+
+    // Regresjon: bare nuller består mod 11-regnestykket, men er ikke et tildelt
+    // nummer. Verktøyet meldte vår egen plassholder som gyldig org.nr. i produksjon.
+    assert.equal(erGyldigOrgnr("000000000"), false, "bare nuller er ikke et org.nr.");
+    assert.equal(erGyldigOrgnr("000 000 000"), false);
     assert.equal(erGyldigOrgnr("974.760.673"), true, "punktum skal tolereres");
   });
 

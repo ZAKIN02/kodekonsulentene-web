@@ -271,6 +271,10 @@ export interface LovFunn extends Funn {
 export function erGyldigOrgnr(nr: string): boolean {
   const s = nr.replace(/\D/g, "");
   if (s.length !== 9) return false;
+  // Bare nuller består mod 11-regnestykket (sum 0 gir kontrollsiffer 0), men er
+  // ikke et tildelt nummer. Uten denne linjen meldte verktøyet vår egen
+  // plassholder «000000000» som gyldig org.nr.
+  if (/^0+$/.test(s)) return false;
   const vekter = [3, 2, 7, 6, 5, 4, 3, 2];
   let sum = 0;
   for (let i = 0; i < 8; i++) sum += Number(s[i]) * vekter[i]!;

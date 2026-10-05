@@ -38,3 +38,11 @@ export const firma = {
 } as const;
 
 export const bookUrl = `https://cal.com/${firma.cal}`;
+
+/**
+ * Sann så lenge siden fortsatt bærer plassholdere i stedet for ekte foretaksdata.
+ * Mens den er sann nekter siden å bli indeksert: et org.nr. som ikke finnes er
+ * nettopp det /sjekk flagger som brudd hos andre, og det skal ikke stå på vår egen
+ * side i Google. Den slår seg av av seg selv når firma.orgnr er ekte.
+ */
+export const erUferdig = firma.orgnr === PLASSHOLDER_ORGNR;

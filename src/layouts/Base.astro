@@ -4,7 +4,7 @@ import "../styles/components.css";
 import "../styles/site.css";
 import Topbar from "../components/Topbar.astro";
 import LegalFooter from "../components/LegalFooter.astro";
-import { firma } from "../data/firma";
+import { firma, erUferdig } from "../data/firma";
 import { footerLenker } from "../data/navigasjon";
 import { TEMA_SCRIPT } from "../../sikkerhet.mjs";
 
@@ -16,7 +16,8 @@ interface Props {
   /** Ekstra JSON-LD utover LocalBusiness, f.eks. Service eller FAQPage. */
   schema?: Record<string, unknown>[];
 }
-const { tittel, beskrivelse, noindex = false, schema = [] } = Astro.props;
+// Uferdig side skal aldri indekseres, uansett hva siden selv ber om.
+const { tittel, beskrivelse, noindex = erUferdig, schema = [] } = Astro.props;
 const fullTittel = tittel === firma.navn ? `${firma.navn} – ${firma.tagline}` : `${tittel} – ${firma.navn}`;
 const kanonisk = new URL(Astro.url.pathname, Astro.site ?? firma.url).href;
 

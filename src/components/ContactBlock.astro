@@ -26,7 +26,9 @@ const {
         <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
         <dl class="kv">
           <div><dt>E-post</dt><dd><a class="kk-link" href={`mailto:${firma.epost}`}>{firma.epost}</a></dd></div>
-          <div><dt>Telefon</dt><dd><a class="kk-link" href={`tel:${firma.telefon.replace(/\s/g, "")}`}>{firma.telefon}</a></dd></div>
+          {firma.telefon && (
+            <div><dt>Telefon</dt><dd><a class="kk-link" href={`tel:${firma.telefon.replace(/\s/g, "")}`}>{firma.telefon}</a></dd></div>
+          )}
           <div><dt>Svartid</dt><dd>{firma.svartid}</dd></div>
         </dl>
       </div>

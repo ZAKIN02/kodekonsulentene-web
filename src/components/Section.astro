@@ -5,15 +5,21 @@ import Eyebrow from "./Eyebrow.astro";
 interface Props {
   n?: number; eyebrow?: string; tittel?: string; ingress?: string;
   id?: string; tight?: boolean; class?: string;
+  /**
+   * Overskriftsnivå. Hver side skal ha nøyaktig én h1, så sidens øverste seksjon
+   * settes til 1 og resten står som 2. Forsiden har sin egen h1 i hero.
+   */
+  nivaa?: 1 | 2;
 }
-const { n, eyebrow, tittel, ingress, id, tight = false, class: cls } = Astro.props;
+const { n, eyebrow, tittel, ingress, id, tight = false, class: cls, nivaa = 2 } = Astro.props;
+const Tittel = nivaa === 1 ? "h1" : "h2";
 ---
 <section id={id} class:list={["section", tight && "section--tight", cls]}>
   <div class="wrap">
     {(eyebrow || tittel) && (
       <div class="section__head">
         {eyebrow && <Eyebrow n={n}>{eyebrow}</Eyebrow>}
-        {tittel && <h2 class="display-lg">{tittel}</h2>}
+        {tittel && <Tittel class="display-lg">{tittel}</Tittel>}
         {ingress && <p class="body-lg">{ingress}</p>}
       </div>
     )}

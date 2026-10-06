@@ -27,13 +27,43 @@
      veldig brede skjermer. */
   /* 11cqi, ikke 11vw – se merknaden på .mega-blokk. */
   font-size: clamp(44px, 11cqi, 200px);
-  line-height: 0.92;
-  /* line-height under 1 er med vilje – stram display-typografi. Men da stikker
-     nedstrekerne ut under linjeboksen, og neste element la seg oppå dem: målt 64 px
+  /* 0.92 var for stramt FOR NORSK, og det var ikke en smaksdom – linjene kolliderte.
+     Målt med Range per tegn og canvas-metrikker (actualBoundingBox), ikke med øyemål:
+
+       Schibsted Grotesk 800, blekkhøyde over grunnlinja:
+         Å 0.974em · å 0.807em · j-prikk 0.795em · b/k 0.732em · A 0.703em
+       under grunnlinja: g 0.204em · j/p/y 0.190em
+
+     Da trengs 0.204 + 0.807 = 1.011em mellom grunnlinjene bare for at en g skal
+     slippe unna ringen i å på linja under. Ved 0.92 manglet det 0.09em, og det ga
+     EKTE overlapp på produksjonssiden – ikke teoretisk:
+       /apper-og-ai  «AI som gjør / en jobb, ikke»  g mot i-prikk:
+         -3,5 px ved 390 · -6,2 ved 768 · -8,4 ved 1024 · -12,0 ved 1440
+       /bransjer/handverkere 1920  «Slutt å kjøre / på befaring»  j mot i: -11,5 px
+       /apper-og-ai  «Få leverandører / tar både»  e mot ring i å: 4,4 px ved 390
+     Den siste er bildet eieren sendte: ringen i «både» nesten oppi linja over.
+
+     1.06 gir 0.049em klaring mot å og 0.061em mot i/j-prikken – målt etterpå:
+     +10,5 px ved 390 og +9,4 px der det før var -12,0 ved 1440. Fortsatt godt under
+     brødtekstens 1.63, så slagget i display-blokka er intakt.
+
+     RESTEN SOM IKKE ER LØST: stor Å ligger 0.974em over grunnlinja og krever 1.178em.
+     En overskrift der linje 2 begynner med Å rett under en nedstreker vil fortsatt
+     stikke 0.118em inn i hverandre. Ingen av dagens Mega-tekster har stor Å; skriver
+     du en, må den linja sjekkes. 1.18 ville fjernet display-karakteren helt. */
+  line-height: 1.06;
+  /* Nedstrekerne stikker fortsatt ut under linjeboksen når line-height er mindre
+     enn fontens egen boks (1.235em her), og neste element la seg oppå dem: målt 64 px
      overlapp mot ingressen på alle sider. Synlig bare når siste linje HAR nedstreker,
      så «jobber, åpent» skar gjennom teksten mens «Driftsstatus» så fin ut.
+
+     0.18 → 0.24em: luften NED til brødteksten var det andre eieren pekte på. Målt
+     blekk-til-blekk fra siste linje i Mega til første linje i ingressen på
+     /apper-og-ai: 18,9 px ved 1440 og 20,4 ved 1920 – altså 0.12em under en
+     overskrift på 153–176 px. Seksjonen selv gir bare 6 px; resten var denne
+     paddingen. Med 1.06 og 0.24em er den 0.25em (≈38 px ved 1440).
      Klaringen er i em, så den følger skriftstørrelsen. */
-  padding-bottom: 0.18em;
+  padding-bottom: 0.24em;
   letter-spacing: -0.04em;
   color: var(--ink);
   text-wrap: balance;
@@ -170,7 +200,14 @@
   font-family: var(--font-display);
   font-weight: 800;
   font-size: clamp(32px, 5vw, 72px);
-  line-height: 1.02;
+  /* 1.02 holdt såvidt på engelsk og ikke på norsk: kravet for at en g skal slippe
+     unna ringen i å på linja under er 1.011em, så marginen var 0.01em. Målt på
+     /apper-og-ai «Fire steg, ingen / overraskelser», g mot k: 2,7 px ved 390 og
+     6,0 ved 1440 – to glyffer som står rett over hverandre. 1.08 gir 0.069em
+     klaring, altså 4,6 px ved 390 og 10,4 ved 1440. Litt løsere forhold enn .mega
+     med vilje: dette er halve skriftstørrelsen, og mindre grader tåler – og
+     trenger – mer luft per em. */
+  line-height: 1.08;
   letter-spacing: -0.03em;
   color: var(--ink);
   max-width: 18ch;
@@ -298,7 +335,13 @@
      Men i firefeltsoppsettet har tallet en firedels bredde, ikke hele. 8vw lot
      «0,1 s» sprenge feltet sitt. */
   font-size: clamp(38px, 4.4vw, 76px);
-  line-height: 1;
+  /* 1 betyr at glyffen er høyere enn sin egen linjeboks. Harmløst for «24» og
+     «99,9», men komma har nedstrek: «0,1 s» stakk 1,2 px ut under boksen ved
+     1920, rett inn i de 8 pikslene som skiller tallet fra etiketten. 1.05 flytter
+     komma-halen inn i boksen (målt 0,7 px klaring) og gjør mellomrommet ned til
+     etiketten ekte i stedet for tilfeldig. Tallene er mono og får aldri å eller ø,
+     så her er det ingen ringer å ta hensyn til. */
+  line-height: 1.05;
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
   /* «0,1 s» og «24 t» brakk over to linjer i en firedels bredde. Tallet er én

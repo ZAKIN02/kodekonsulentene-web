@@ -17,6 +17,17 @@
 .kk-btn-primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 .kk-btn-primary:hover { border-color: var(--on-accent); }
 .kk-btn-ghost { background: transparent; border-color: transparent; color: var(--ink); padding-left: var(--space-2); padding-right: var(--space-2); }
+/* En .kk-btn er inline-flex med justify-content: center. I et GRID-barn blir
+   den likevel strukket til hele sporet, og da sentreres teksten midt i spalten.
+   Maalt paa fem steder: «Mer om oss» sto 203 px, «Les haandboken» 190 px,
+   «Se bransjesiden» 140 px, «Se caset» 99 px og «Se mer» 468 px til hoeyre for
+   tekstspaltens venstrekant. En spoekelsesknapp ER en tekstlenke – den skal
+   begynne der teksten over den begynner.
+
+   justify-self gjelder bare i grid; i .row (flex) blir den ignorert, saa
+   knapperadene staar uendret. Fylte knapper beholder strekket med vilje:
+   .kk-price og kontaktskjemaet vil ha dem i full bredde. */
+.kk-btn-ghost { justify-self: start; }
 .kk-btn-ghost:hover { border-color: transparent; color: var(--accent-text); }
 .kk-btn-ghost .kk-arrow { font-family: var(--font-mono); font-weight: 400; }
 .kk-btn[disabled], .kk-btn[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
@@ -54,7 +65,11 @@
 .kk-svc .kk-svc-link .kk-arrow { font-family: var(--font-mono); }
 
 /* StatusBadge */
-.kk-badge { display: inline-flex; align-items: center; gap: var(--space-1); min-height: 24px; padding: 0 var(--space-2) 0 var(--space-2); border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
+/* Endeluften er 12 og ikke 8 px. En pille har radius 12 px naar den er 24 px
+   hoey, saa kanten KRUMMER innover forbi de ytterste 8 pikslene: malt paa 6x
+   sto ikonet og den siste bokstaven inne i selve svingen. 12 px gir samme
+   optiske klaring i enden som 8 px gir over og under. */
+.kk-badge { display: inline-flex; align-items: center; gap: var(--space-1); min-height: 24px; padding: 0 var(--space-3); border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
 .kk-badge svg { width: 14px; height: 14px; flex: none; }
 .kk-badge-ok { background: var(--ok-soft); color: var(--ok); }
 .kk-badge-warn { background: var(--warn-soft); color: var(--warn); }
@@ -98,12 +113,21 @@
 .kk-price.is-recommended { border-color: var(--line-strong); }
 .kk-price .kk-price-top { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); }
 .kk-price h3 { margin: 0; font-family: var(--font-display); font-size: 20px; line-height: 28px; font-weight: 600; letter-spacing: -0.01em; }
-.kk-price .kk-flag { display: inline-flex; align-items: center; min-height: 24px; padding: 0 var(--space-2); border-radius: var(--radius-pill); background: var(--accent-soft); color: var(--accent-text); font-family: var(--font-mono); font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+/* Samme pille, samme endeluft som .kk-badge. */
+.kk-price .kk-flag { display: inline-flex; align-items: center; min-height: 24px; padding: 0 var(--space-3); border-radius: var(--radius-pill); background: var(--accent-soft); color: var(--accent-text); font-family: var(--font-mono); font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
 .kk-price .kk-amount { font-family: var(--font-mono); font-size: 32px; line-height: 36px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 .kk-price .kk-amount small { display: block; margin-top: var(--space-1); font-family: var(--font-sans); font-size: 14px; line-height: 20px; font-weight: 400; letter-spacing: 0; color: var(--ink-faint); }
 .kk-price .kk-amount .kk-prefix { font-size: 14px; line-height: 20px; font-weight: 400; letter-spacing: 0; color: var(--ink-muted); margin-right: var(--space-2); }
 .kk-price p { margin: 0; color: var(--ink-muted); font-size: 14px; line-height: 20px; }
-.kk-price ul { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--space-2); font-size: 14px; line-height: 20px; }
+/* 12 px mellom punktene, ikke 8. Punktene er 14/20, og tre av dem brytes til
+   TO linjer paa 1440 og 412 px («Grunnleggende SEO og Google / Bedriftsprofil»).
+   Med 8 px laa avstanden mellom to punkter saa naer den innvendige linjeluften
+   i et brutt punkt at lista leste som én blokk: malt 20 px inne i punktet mot
+   28 px mellom punktene. 12 px gir 32 mot 20 og gjoer punktet til enheten.
+   .kk-svc har samme liste paa 4 px og staar urørt – der brytes ingen punkter
+   (malt 20 px hoeye paa 1440, 860 og 412), saa der er det tett FORDI de hoerer
+   sammen. */
+.kk-price ul { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--space-3); font-size: 14px; line-height: 20px; }
 .kk-price ul li { display: flex; gap: var(--space-2); align-items: flex-start; }
 .kk-price ul li svg { flex: none; width: 16px; height: 16px; margin-top: 2px; }
 .kk-price ul li.is-in svg { color: var(--ok); }
@@ -130,7 +154,9 @@
 .kk-footer .kk-wordmark { margin: 0; font-family: var(--font-display); font-size: 20px; line-height: 28px; font-weight: 800; letter-spacing: -0.03em; color: var(--ink); }
 .kk-footer address { font-style: normal; }
 .kk-footer .kk-orgnr { font-family: var(--font-mono); font-size: 13px; color: var(--ink); }
-.kk-footer ul { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--space-1); }
+/* 8 px, ikke 4. Se trykkmaalsnotatet nederst i fila: med 4 px OVERLAPPET
+   treffflatene hverandre med 1 px. */
+.kk-footer ul { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--space-2); }
 .kk-footer a.kk-link { color: var(--link); text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 3px; }
 .kk-footer a.kk-link:hover { text-decoration-color: var(--accent-text); }
 .kk-footer .kk-footer-meta { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: var(--space-4); padding-top: var(--space-4); border-top: var(--hairline) solid var(--line); font-family: var(--font-mono); font-size: 12px; line-height: 16px; color: var(--ink-faint); }
@@ -200,7 +226,32 @@
    en setning – så unntaket i 2.5.8 gjelder ikke. Lenker i brødtekst får
    fortsatt ingen treffflate; det ville brutt tekstflyten.
 
-   Polstringen utvider treffflaten uten å endre linjeboksen, og lista har 4 px
-   mellomrom, så ingen treffflater overlapper. */
+   Polstringen utvider treffflaten uten å endre linjeboksen. Setningen som sto
+   her – «lista har 4 px mellomrom, så ingen treffflater overlapper» – var FEIL,
+   og det var regning, ikke måling. Målt i Chrome på 1440 px: lenkeboksen ble
+   25 px høy (17 px linjeboks + 2 × 4 px polstring), mens avstanden fra
+   lenketopp til lenketopp bare var 24 px (20 px li + 4 px gap). Treffflatene
+   lå altså 1 px OPPÅ hverandre på hver eneste side. Under 860 px var det
+   allerede riktig, fordi mobilgjennomgangen satte lista til 8 px der.
+
+   Lista står nå på 8 px i alle bredder: pitch 28 mot treffflate 25, altså
+   3 px klaring. Dermed er `.kk-footer ul { gap }` i site.css sin
+   860 px-blokk overflødig – den setter nå samme verdi som grunnregelen. */
 .kk-footer ul li a,
 .kk-footer address a { padding-block: var(--space-1); }
+
+/* Trykkmål som bare ble rettet på mobil.
+   Mobilgjennomgangen i site.css la alle 2.5.8-rettingene inn i
+   `@media (max-width: 860px)`. Men WCAG 2.5.8 har ingen bruddpunkt: kravet på
+   24 × 24 px gjelder også for en mus. Målt på 1440 px, med mus:
+
+     avkryssingsboks / radioknapp i priskalkulatoren   13 × 13
+     <summary> «Har du DKIM-selektoren?» på /verktoy/dmarc   560 × 20
+
+   Begge er frittstående kontroller, ikke ord inne i en setning, så unntaket i
+   2.5.8 gjelder ikke. Reglene her er uten mediespørring og gjør kopiene i
+   site.css sin 860 px-blokk overflødige. Lenker i brødtekst røres fortsatt
+   ikke. */
+input[type="checkbox"],
+input[type="radio"] { inline-size: 24px; block-size: 24px; }
+summary { min-height: 24px; }

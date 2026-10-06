@@ -32,7 +32,7 @@ body > * { position: relative; z-index: 1; }
 
 /* ---- Typografi: mobilskalaen. Alt annet er likt på alle skjermer. ---- */
 @media (max-width: 720px) {
-  .display-xl { font-size: 40px; line-height: 40px; }
+  .display-xl { font-size: 40px; line-height: 42.5px; }
   .display-lg { font-size: 32px; line-height: 36px; }
   .heading { font-size: 24px; line-height: 30px; }
 }
@@ -97,6 +97,17 @@ a:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
 .stack { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-5); }
 .stack--tight { gap: var(--space-3); }
 .row { display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; }
+/* En knapperad rett under broedtekst sto paa NULL piksler paa /apper-og-ai og
+   /systemer, og 16 paa /sikkerhet. Eieren meldte det to ganger.
+   Margen settes bare naar raden FOELGER en tekstblokk – ikke generelt paa .row,
+   for der raden allerede ligger i en beholder med gap ville den doblet avstanden.
+   Avslor pakker ofte raden, derfor :has. Og '~' i stedet for '+': Astro legger
+   et <script> mellom avsnittet og Avslor, saa naboselektoren traff aldri. Og
+   forgjengeren er en DIV, ikke en p: broedteksten ligger i sin egen Avslor. Jeg
+   maatte lese den faktiske DOM-en for aa se det – to gjetninger bommet foerst. */
+:is(p, ul, ol, h1, h2, h3, h4, .mega-blokk, .avslor) ~ :is(.row, .avslor:has(> .row)) {
+  margin-block-start: var(--space-6);
+}
 
 /* ---- Topplinje ---- */
 /* Topplinja er klebrig og 166 px hoey paa mobil. Uten scroll-padding-top parkerer

@@ -111,7 +111,7 @@ Siste ledd er 1,23, altså høyere enn de to foran (0,39 og 0,71). Klippet endre
 seg fortsatt i siste sekund, slik `_bevegelse` ber om. Ingen frontlasting:
 det er null endring i første fjerdedel som ikke er tilsiktet venting.
 
-### Drift-kolonnen lyver her – det er målt, ikke antatt
+## FUNN TIL DEN SOM EIER `klipp-maal.py`: drift-kolonnen gir falsk positiv
 
 `klipp-maal.py` rapporterer **541 px kameradrift**. Det er en falsk positiv, og
 jeg har bevist det i stedet for å påstå det:
@@ -186,67 +186,152 @@ havner likevel midt i tidslinjen.
 prosentpoengs variasjon. Ingen morf i lengde. Det var hele poenget med å dele
 kanalen i to like halvdeler.
 
-## Det som ikke ble bra
+## Runde 2 – rettingen, godkjent av koordinator
 
-**1. Slåen vokser 16 % i høyde når den går i inngrep.** Mellom 3 s og 4 s går
-slåens høyde fra 16,1 % til 18,7 % av bildehøyden – omtrent 14 piksler lagt til
-over og under ved 1080p. Målt på fast kolonne, så det er ikke perspektiv.
+Én retting var godkjent: **slåen skal ha identisk høyde i begge nøkkelrammene.**
+Alt annet beholdt – komposisjon, faser, typografisone, sekundstruktur.
 
-Feilen er **ikke** Klings. Den lå allerede i nøkkelrammene: Qwen tegnet slåen
-16,1 % høy i startbildet og 18,7 % høy – altså kanalens fulle høyde – da den ble
-flyttet inn i spalten. Kling interpolerte trofast mellom to rammer som ikke var
-enige om størrelsen.
+### Hva feilen faktisk var
 
-Det er den samme klassen feil som `_felle1`, og jeg lot den passere i
-rammekontrollen fordi jeg målte det *lyse båndet* (slå + kanalramme) i stedet for
-*slåen*. Båndet var identisk i alle tre rammene, så kontrollen så grønn ut.
-**Lærdom: mål objektet som skal bevege seg, ikke sonen det ligger i.**
+`slutt[0]` sa *«filling it completely from wall to wall and end to end»*. Qwen
+leste **«wall to wall» i høyderetningen** og trakk slåen ut til kanalens fulle
+høyde. Kling interpolerte deretter trofast mellom to rammer som ikke var enige om
+størrelsen. Feilen var altså i prompten, ikke i modellen – igjen.
 
-**2. Limelinja er asymmetrisk.** Ved 8 s løper topplinja sammenhengende over
-53,9 % av bredden – hele kanalen – mens bunnlinja bare dekker 31,9 %. Prompten ba
-om to like lange linjer. Samlet lime er 0,36 % av bildet, altså godt innenfor
-stilkortets 3 %, men asymmetrien er synlig når klippet står i full bredde.
+Rettingen: *«covering that opening»* i stedet for *«filling it from wall to
+wall»*, pluss en eksplisitt setning om at **skyggespalten over og under slåen
+skal bevares**, så det finnes noe å måle mot. Samme setning lagt inn i `slutt[1]`.
+Grunnbildet og startbildet ble **ikke** regenerert – bare de to siste leddene i
+kjeden. Billigere, og komposisjonen kunne ikke drive.
 
-**3. Den tømte kanalen kan leses som «fortsatt åpen».** I sluttbildet er venstre
-halvdel av kanalen en tom fordypning. Den har synlig gulv og en lys bunnfas, så
-den er tydelig ikke et hull – det åpne hullet ved 0 s er helsvart, fordypningen
-ved 8 s er mellomgrå. Men en skeptisk leser kan si at hullet «flyttet seg til
-venstre» i stedet for at det ble lukket. Historien hadde vært renere om slåen
-forsvant inn i et hus i stedet for å etterlate et spor.
+### Kontrollen som sviktet, og som nå finnes som skript
 
-**Det som derimot tåler nærsyn:** fasene. Ved 4K-utsnitt på selve inngrepet er
-faseskinnet en enkelt skarp linje både under glidningen og etter, kantene er
-rene, og slåens endeflate møter kanalenden i én rett kontaktlinje. Ingen
-dobbeltkanter, ingen flimmer, ingen oppfunne objekter. Det var inngrepet som
-måtte tåle nærsyn, og overflatene gjør det.
+`.skudd/bolt-hoyde.py` måler objektets egen høyde på en fast kolonne inne i
+objektet, med limegrønt maskert bort. Den er kalibrert mot begge runder:
+
+```
+runde 1:  startbilde 187 px  →  sluttbilde 214 px   avvik 27 px  FORKASTET
+runde 2:  startbilde 187 px  →  sluttbilde 186 px   avvik  3 px  GODKJENT
+```
+
+To fallgruver skriptet er bygget for å unngå, begge påtruffet underveis:
+
+1. **Limelinja blåser opp tallet.** Den ligger rett over og under objektet, så en
+   ren luminansterskel tar den med. Første måling ga 218 px på sluttbildet og
+   ville forkastet en ramme som var i orden.
+2. **«Største sammenhengende løp» kutter ved fasen** og måler bare den flate
+   forsiden. Den ga 184 px i *begge* runder og ville godkjent runde 1.
+
+### Målt resultat
+
+| | runde 1 | runde 2 |
+|---|---|---|
+| **slåens høyde gjennom klippet** | 16,2 % → **18,6 %** | **15,97–16,25 %** |
+| sum (9 rammer) | 18,37 | **19,76** |
+| sum (5 rammer) | 16,53 | **17,75** |
+| toppunkt (9 / 5 rammer) | **44 % / 38 %** | 31 % / 38 % |
+| limelinje topp / bunn | 53,9 % / 31,9 % | **55,9 % / 55,9 %** |
+| ekte kameradrift | 0 px | **1–2 px** |
+| venstre tredel, verste piksel | 20,5:1, 0,00 % lime | 20,5:1, 0,00 % lime |
+| master | 3840×2160, 2,91 Mbit/s | 3840×2160, **3,58 Mbit/s** |
+
+**Høydefeilen er borte.** Slåen holder 15,97–16,25 % av bildehøyden gjennom alle
+åtte sekundene – 0,28 prosentpoengs variasjon, altså 6 piksler i 4K. Runde 1
+vokste 2,4 prosentpoeng på ett sekund.
+
+**Limelinja er symmetrisk.** Topp og bunn dekker nå nøyaktig 55,9 % hver, begge
+fra 35,0 % til 90,8–90,9 % av bredden. Sammenhengende, hårtynne, 0,59 % av bildet.
+
+**Inngrepet lander fortsatt på 5. sekund**, som bestilt. Slåens venstre ende:
+34,9 % (0 s) → 35,0 (1 s) → 41,8 → 49,2 → 56,6 → **60,9 % (5 s)**, og så i ro.
+
+### Drift-funnet er sterkere nå
+
+Fasekorrelasjonen på hele bildet rapporterer 454–539 px. Den **følger slåens
+posisjon ramme for ramme**: (0) → (−22) → (−165) → (−310) → (−454) → … Samtidig
+står platens venstre kant på x = 669–671 i alle ni rammene, og fasekorrelasjon på
+båndene over og under kanalen gir (−1, 0) i hver eneste ramme. Ekte drift er
+**1–2 piksler**. Dette er den samme falske positiven som i runde 1, nå med et
+forløp som ikke kan forveksles med kameradrift: et kamera som vandret 454 px for
+så å stå på −2 ved neste ramme, finnes ikke.
+
+### Oppløsning og bitrate, runde 2
+
+| fil | oppløsning | fps | størrelse | bitrate |
+|---|---|---|---|---|
+| `assets/mastere/bolt-master.mp4` | **3840×2160** | 24 | 3,40 MB | 3,58 Mbit/s |
+| `public/scener/bolt-2560.mp4` | 2560×1440 | 24 | 2,92 MB | 3,08 Mbit/s |
+| `public/scener/bolt-1920.mp4` | 1920×1080 | 24 | 2,24 MB | 2,36 Mbit/s |
+| `public/scener/bolt-1280.mp4` | 1280×720 | 24 | 884 kB | 0,91 Mbit/s |
+
+## Det som fortsatt ikke er perfekt
+
+**1. Slåen blir 7,3 % lengre underveis.** Lengden går fra 27,4 % av bildebredden
+ved 0 s til 29,5 % ved 5 s. Feilen ligger i nøkkelrammene – Qwen tegnet slåen
+29,4 % lang i sluttbildet mot 27,4 % i startbildet – og Kling gjengir rammene
+nøyaktig.
+
+Jeg byttet altså en høydefeil mot en mindre lengdefeil. **Grunnen til at jeg ikke
+fanget den før bestilling: jeg kontrollerte høyden, fordi det var høyden som
+sviktet sist.** Lengden var konstant i runde 1, så jeg så ikke etter den. Riktig
+kontroll er alle dimensjoner, ikke den som feilet forrige gang.
+
+Hvor synlig er den? 2,0 prosentpoeng er 38 piksler ved 1080p, lagt til bakenden
+over fire sekunder – omtrent 10 px/s, mens slåen samtidig forflytter seg 135
+px/s. Bakkanten henger altså 7 % etter forkanten. Til sammenligning var runde 1
+sin feil 26 piksler loddrett på ett sekund, på et objekt som ellers ikke endret
+seg, nøyaktig i sekundet øyet lander. Jeg vurderer den nye feilen som vesentlig
+mindre synlig, men den er av samme klasse og skal ikke skjules.
+
+**2. Toppunktet gikk fra 44 % til 31 % på nimålingen.** Bevegelsen er jevnere
+fordelt i runde 2, og det flyttet paradoksalt nok toppen tidligere. På
+femmålingen er den 38 %, altså innenfor 35–65 %. På nimålingen er den utenfor.
+
+**Trimming hjelper ikke her, og jeg lot være.** Limelinja tenner først ved 7 s
+(0,40 %) og er på 0,59 % ved 8 s. Et kutt som flytter toppen mot midten måtte tatt
+klippet ned mot 5–6 sekunder, og da forsvinner hele tredje akt. `floke` kunne
+trimmes gratis fordi halen var død; vår hale er der poenget ligger. Jeg beholdt
+derfor 8 sekunder.
+
+**Om varigheten:** koordinator foreslo å vurdere 6–7 s fordi Kling løper ~1,5 s
+foran bestilt klokke. Jeg beholdt 8 s med vilje. Begrunnelse: denne scenen har nå
+**to** kjøringer der inngrepet landet på nøyaktig 5. sekund som bestilt, så
+strukturen løper ikke foran her. Og trimming er gratis i etterkant, mens en for
+kort bestilling ikke kan gjøres om. Rekkefølgen «bestill langt, trim ved behov»
+er den billige.
+
+**3. Den tømte kanalen kan fortsatt leses som «fortsatt åpen».** Målt er den 7,3
+ganger lysere enn hullet (snitt 45,5 mot 6,3, maks 76 mot 30), og den har synlig
+gulv og lys bunnfas. Den er altså tydelig ikke et hull. Men historien hadde vært
+renere om slåen forsvant inn i et hus i stedet for å etterlate et spor. Dette er
+en motivsvakhet, ikke en feil, og den krever et nytt grunnbilde å rette.
 
 ## Dom
 
-**Fortellingen leser.** Dekker du teksten: et helsvart hull står åpent i en
-maskinert flate, en tung slå glir vannrett over det og stanser mot et anslag,
-hullet er borte, og en grønn hårlinje tenner langs skjøten. Subjekt, verb,
-resultat. Det er den andre scenen hos oss som har alle tre.
+**Fortellingen leser, og den leser bedre enn runde 1.** Dekker du teksten: et
+helsvart hull står åpent i en maskinert flate, en tung slå glir vannrett over det
+og stanser mot et anslag ved 5. sekund, hullet er borte, og to grønne hårlinjer
+tenner symmetrisk langs skjøten. Subjekt, verb, resultat.
 
-**Teknisk er dette det beste klippet vi har målt:** sum 18,37 er over referansen,
-toppunkt 44 % er midt i tidslinjen, kameraet står på 0 piksler drift, venstre
-tredel holder 20,5:1 med 0 % aksent i hver ramme, og masteren er ekte 3840×2160.
-Alle tolv klippene i `docs/akt.md` strøk på minst ett av disse punktene.
+**Nærsynet på 4K holder.** Fasene er rene i alle tre rammene, slåen sitter inne i
+kanalen med synlig skyggespalt over og under hele veien – den rir ikke lenger
+oppå kanalen slik runde 1 gjorde – endeflaten møter anslaget i én rett
+kontaktlinje, og limelinja er hårtynn og lik i topp og bunn. Ingen dobbeltkanter,
+ingen flimmer, ingen oppfunne objekter.
 
-**Men den skal ikke stå i full bredde og full styrke uten at feil 1 er nevnt.**
-En 16 % høydeendring på det objektet øyet følger, i det sekundet øyet lander, på
-et motiv som vises kant til kant uten maske – det er nøyaktig den typen detalj
-eieren fanget da han sa at platene «rister». Jeg vil ikke påstå at den passerer
-en kritisk kikk bare fordi tallene er grønne.
+**Den feilen som måtte bort, er borte, og den er målt borte.** 0,28 prosentpoengs
+høydevariasjon mot 2,4 i runde 1.
 
-Feilen er rettbar, og rettelsen er kjent: nøkkelrammene må gi slåen samme høyde i
-begge posisjoner. Det krever én ny bildekjede og én ny bestilling. **Jeg bestiller
-ikke på nytt uten beskjed.**
+**Jeg mener den tåler full bredde og full styrke**, med det forbeholdet at
+lengdeveksten på 7,3 % står i loggen og ikke er bortforklart. Den er ikke
+usynlig; den er mindre synlig enn noe annet vi har levert, og den går langs
+bevegelsesretningen, ikke på tvers av den.
 
 Brandboken rangerer opptak av verktøyet over diagram over *ingenting*. Dette er
 en metafor, ikke informasjon – den sier ikke *nettside*, og den sier ikke
 *sikkerhetsheader*. Den sier «det var åpent, nå er det lukket», tydeligere enn
-noe annet vi har laget. Om det slår «ingenting» på /sikkerhet er en redaksjonell
-avgjørelse, ikke en teknisk, og den er ikke tatt her.
+noe annet vi har laget. **Om det slår «ingenting» på /sikkerhet er en redaksjonell
+avgjørelse, ikke en teknisk, og den er ikke tatt her.**
 
 **Ikke koblet inn noe sted. Ikke committet. Ikke deployet.**
-
+Runde 1 er tatt vare på i `.skudd/bolt/runde1/` for sammenligning.

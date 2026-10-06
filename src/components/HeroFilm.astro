@@ -2,7 +2,8 @@
 /**
  * Hero-bakgrunn: scroll-spolt video i full bredde, med innholdet liggende over.
  *
- * Den spoles av scroll og spiller ikke av seg selv – da gjelder ikke kravet i
+ * Kilden er rendret i 4K (3840x2160) og skalert ned til 1920 og 1280, slik at
+ * platekantene holder seg skarpe. Den spoles av scroll og spiller ikke av seg selv – da gjelder ikke kravet i
  * WCAG 2.2.2 om pauseknapp, og den bruker ingen CPU når siden står stille.
  * Plakaten (AVIF) er LCP-elementet og står alene ved redusert bevegelse,
  * Save-Data, eller hvis videoen ikke rekker å laste.
@@ -15,10 +16,10 @@
     playsinline
     preload="none"
     poster="/historie/hero-poster.avif"
-    width="1440"
-    height="810"
+    width="1920"
+    height="1080"
   >
-    <source data-smal="/historie/hero-900.mp4" data-bred="/historie/hero-1440.mp4" type="video/mp4" />
+    <source data-smal="/historie/hero-1280.mp4" data-bred="/historie/hero-1920.mp4" type="video/mp4" />
   </video>
 </div>
 

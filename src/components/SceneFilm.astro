@@ -14,16 +14,28 @@
 interface Props {
   smal: string;
   bred: string;
+  /** Valgfritt 2560-trinn. Hentes bare på brede skjermer og rask forbindelse. */
+  stor?: string;
+  /**
+   * Hvor masken begynner å slippe filmen inn, i prosent av bredden.
+   *
+   * Dette MÅ være en prop. Sider forsøkte å overstyre masken med en scoped
+   * <style>, men .scenefilm--venstre bærer DENNE komponentens scope-id mens
+   * .scenefilm-ramme bærer sidens – en regel som krever begge matcher ingenting.
+   * Overstyringen på /systemer var død CSS: maske 46 % og 92 % ga identisk måling.
+   * En egendefinert CSS-variabel arver og er ikke scope-bundet, så den virker.
+   */
+  maske?: number;
   plakat: string;
   /** Hvilken side teksten står på. Masken åpner motsatt side. */
   tekst?: "venstre" | "hoyre";
   class?: string;
 }
-const { smal, bred, plakat, tekst = "venstre", class: cls } = Astro.props;
+const { smal, bred, stor, plakat, tekst = "venstre", maske = 46, class: cls } = Astro.props;
 ---
-<div class:list={["scenefilm", `scenefilm--${tekst}`, cls]} data-scenefilm aria-hidden="true">
+<div class:list={["scenefilm", `scenefilm--${tekst}`, cls]} style={`--maske: ${maske}%`} data-scenefilm aria-hidden="true">
   <video data-scenefilm-video muted playsinline preload="none" poster={plakat} width="1920" height="1080">
-    <source data-smal={smal} data-bred={bred} type="video/mp4" />
+    <source data-smal={smal} data-bred={bred} data-stor={stor} type="video/mp4" />
   </video>
 </div>
 
@@ -31,13 +43,13 @@ const { smal, bred, plakat, tekst = "venstre", class: cls } = Astro.props;
   .scenefilm { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; opacity: 0.85; }
   .scenefilm video { width: 100%; height: 100%; object-fit: cover; display: block; }
   .scenefilm--venstre {
-    -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 46%, rgb(0 0 0 / 0.25) 58%, #000 76%);
-    mask-image: linear-gradient(90deg, transparent 0%, transparent 46%, rgb(0 0 0 / 0.25) 58%, #000 76%);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent var(--maske), rgb(0 0 0 / 0.25) calc(var(--maske) + 12%), #000 calc(var(--maske) + 30%));
+    mask-image: linear-gradient(90deg, transparent 0%, transparent var(--maske), rgb(0 0 0 / 0.25) calc(var(--maske) + 12%), #000 calc(var(--maske) + 30%));
   }
   .scenefilm--venstre video { object-position: 72% center; }
   .scenefilm--hoyre {
-    -webkit-mask-image: linear-gradient(270deg, transparent 0%, transparent 46%, rgb(0 0 0 / 0.25) 58%, #000 76%);
-    mask-image: linear-gradient(270deg, transparent 0%, transparent 46%, rgb(0 0 0 / 0.25) 58%, #000 76%);
+    -webkit-mask-image: linear-gradient(270deg, transparent 0%, transparent var(--maske), rgb(0 0 0 / 0.25) calc(var(--maske) + 12%), #000 calc(var(--maske) + 30%));
+    mask-image: linear-gradient(270deg, transparent 0%, transparent var(--maske), rgb(0 0 0 / 0.25) calc(var(--maske) + 12%), #000 calc(var(--maske) + 30%));
   }
   .scenefilm--hoyre video { object-position: 28% center; }
   @media (max-width: 860px) {
@@ -70,7 +82,17 @@ const { smal, bred, plakat, tekst = "venstre", class: cls } = Astro.props;
     const io = new IntersectionObserver((poster) => {
       if (!poster.some((p) => p.isIntersecting)) return;
       io.disconnect();
-      kilde.src = window.innerWidth >= 1024 ? kilde.dataset.bred! : kilde.dataset.smal!;
+      // Tre trinn. 2560-filene lå tidligere som 18,6 MB ingen lastet ned, fordi
+      // komponenten bare kjente smal og bred.
+      const nett = (navigator as Navigator & { connection?: { effectiveType?: string; saveData?: boolean } }).connection;
+      const treigt = nett?.saveData === true || /2g|3g/.test(nett?.effectiveType ?? "");
+      const px = window.innerWidth * (window.devicePixelRatio || 1);
+      kilde.src =
+        !treigt && px >= 2200 && kilde.dataset.stor
+          ? kilde.dataset.stor
+          : window.innerWidth >= 1024
+            ? kilde.dataset.bred!
+            : kilde.dataset.smal!;
       film.preload = "auto";
       film.load();
     }, { rootMargin: "150% 0px" });

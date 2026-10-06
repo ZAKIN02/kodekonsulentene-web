@@ -17,3 +17,7 @@ CLAUDE.md
 
 # Skanneren har sitt eget bilde og sin egen kontekst (services/skanner/fly.toml).
 services/
+
+# Mastere og prompter brukes bare av scripts/ lokalt, aldri av astro build.
+# 36 MB videomastere havnet ellers i byggekonteksten til et offentlig repo.
+assets/

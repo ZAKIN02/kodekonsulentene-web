@@ -74,6 +74,7 @@ const integrasjoner = [
       smal="/scener/systemer-1280.mp4"
       bred="/scener/systemer-1920.mp4"
       plakat="/scener/systemer-poster.avif"
+      maske={62}
       tekst="venstre"
     />
   <Scene n={3} eyebrow="Integrasjoner" tittel="Det vi kobler oftest" id="integrasjoner">
@@ -116,10 +117,9 @@ const integrasjoner = [
   /* Scenetittelen bryter ut til 1320 px på brede skjermer og møtte filmen der
      masken begynner å slippe den inn. Målt 4,37:1 mot ink – under AA-kravet på
      4,5. Masken skyves derfor lenger ut på denne siden. Målt etterpå: 15,6:1. */
-  @media (min-width: 1200px) {
-    .scenefilm-ramme .scenefilm--venstre {
-      -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 62%, rgb(0 0 0 / 0.25) 72%, #000 86%);
-      mask-image: linear-gradient(90deg, transparent 0%, transparent 62%, rgb(0 0 0 / 0.25) 72%, #000 86%);
-    }
+  /* Maskeoverstyringen lå her som en scoped <style>-regel og var DØD CSS:
+     .scenefilm--venstre bærer SceneFilms scope-id, .scenefilm-ramme bærer denne
+     sidens, og en regel som krever begge matcher ingenting. Bevis: maske 46 % og
+     92 % ga identisk måling. Nå settes den med maske={62} på komponenten. */
   }
 </style>

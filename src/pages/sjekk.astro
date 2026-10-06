@@ -1,5 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
+import Demo from "../components/Demo.astro";
+import opptak from "../data/opptak.json";
 import Section from "../components/Section.astro";
 import UrlCheck from "../components/UrlCheck.astro";
 import Button from "../components/Button.astro";
@@ -88,6 +90,18 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
         å publisere navn på sider som kommer dårlig ut, og rådata ligger utenfor
         repoet. Raden om oss selv viser våre egne feil i rødt når vi har noen. */}
     <ForOgEtter />
+
+    {/* Opptak av vår egen sjekk: 50 av 100 mot 90, med radene som skiller dem
+        navngitt. Utsnittet tar med bunnteksten med vilje – vår egen regel om at
+        den sjekkede siden ikke navngis står der. */}
+    <Demo
+      smal={opptak.sammenlign.smal}
+      bred={opptak.sammenlign.bred}
+      stor={opptak.sammenlign.stor}
+      plakat={opptak.sammenlign.plakat}
+      tekst={opptak.sammenlign.tekst}
+      kilde={opptak.sammenlign.kilde}
+    />
   </Section>
 
   {/* Scenen bak HANDLINGEN, ikke bak forklaringen.

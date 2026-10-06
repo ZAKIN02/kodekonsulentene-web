@@ -1,5 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
+import opptak from "../data/opptak.json";
+import Demo from "../components/Demo.astro";
 import Scene from "../components/Scene.astro";
 import Mega from "../components/Mega.astro";
 import Avslor from "../components/Avslor.astro";
@@ -44,6 +46,18 @@ const tiltak = [
     <Mega som="h1" merke="Sikkerhet" n={1} tekst="Siden vår består sin egen sjekk" aksent="sjekk" />
     <Avslor trinn={1}>
       <p class="scene__ingress body-lg">Det er lett å selge sikkerhet. Det er vanskeligere å bevise det. Derfor kjører vi den samme sjekken på vår egen side og viser resultatet her – også raden vi ikke består.</p>
+    </Avslor>
+
+    <Avslor trinn={2}>
+      {/* Terminalen kjoerer de samme sjekkene som verktoeyene, her mot vaart EGET domene. Regelen om aa ikke navngi sider som kommer daarlig ut gjelder ikke oss selv. */}
+      <Demo
+        smal={opptak.terminal.smal}
+        bred={opptak.terminal.bred}
+        stor={opptak.terminal.stor}
+        plakat={opptak.terminal.plakat}
+        tekst={opptak.terminal.tekst}
+        kilde={opptak.terminal.kilde}
+      />
     </Avslor>
 
     <CheckReport

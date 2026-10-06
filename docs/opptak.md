@@ -23,6 +23,9 @@ Dette er mer av det.
 | `dmarc` | 9 s | 6,02 MB · 5,61 Mbit/s | At verktøyet gjør et reelt DNS-oppslag |
 | `uu-sjekk` | 6 s | 3,84 MB · 5,37 Mbit/s | At sjekken starter en ekte nettleser og kjører axe-core |
 | `cookie-sjekk` | 6 s | 3,72 MB · 5,21 Mbit/s | Hva «før samtykke» faktisk betyr, målt |
+| `lagstabel` | 6 s | 4,24 MB · 5,93 Mbit/s | **Hva en nettside består av** – fire lag med navn og forklaring |
+| `sammenlign` | 6 s | 3,19 MB · 4,46 Mbit/s | **Hva forskjellen er i tall** – 50 av 100 mot 90 av 100 |
+| `terminal` | 8 s | 2,27 MB · 2,38 Mbit/s | At verktøyene er ekte, kjørt mot vårt eget domene |
 
 Alle i 1920, 1280 og 960 med AVIF-plakat. CRF 19 og `-g 8`, som de genererte
 scenene. Dimensjonene i `src/data/opptak.json` er målt med `ffprobe` etter at
@@ -106,6 +109,61 @@ den kommer godt ut med 83 av 100. digdir.no består begge: 0 maskinelle brudd og
 Vår egen forside ble også vurdert og forkastet som subjekt – ikke av hensyn til
 regelen, som ikke gjelder oss selv, men fordi den **stryker med ni
 kontrastbrudd** (se under).
+
+## De tre som forklarer produktet, ikke bare verktøyene
+
+De fem første beviser at **verktøyene** virker. Det er nyttig, men en kunde som
+ikke vet hva en nettside består av, blir ikke klokere av å se en DNS-sjekk.
+
+- **`lagstabel`** svarer på spørsmålet kunden stiller først: *hva er det jeg
+  kjøper?* Fire lag, hvert med navn og en setning: Design (det kunden ser), Kode
+  (det som gjør at det virker), Sikkerhet (det ingen spør om før det er for
+  sent), Integrasjoner (booking, Vipps, regnskap). Ingen abstrakt render sier
+  det. Denne er bokstavelig, og teksten er komponentens egen.
+- **`sammenlign`** er det nærmeste vi kommer et før/etter: 50 av 100 mot 90 av
+  100, med radene som skiller dem navngitt. Utsnittet tar med bunnteksten med
+  vilje, for der står vår egen regel om at vi ikke navngir sider som kommer
+  dårlig ut.
+- **`terminal`** kjører `sjekk` og `headere` mot **vårt eget domene**. Subjektet
+  er et valg: den fulle sjekken gir digdir.no 3/6 headere og 1 uu-feil, altså
+  middels, og da forbyr vår egen regel å navngi dem. Regelen gjelder ikke oss,
+  så vi måler oss selv – inkludert forbeholdet «Ingen brudd, men 1 ikke sjekket».
+
+Alle tre drives av komponentenes **egne kontroller** – samme spak en
+tastaturbruker bruker – så opptaket viser komponenten gjøre det den gjør.
+
+## Hvordan utsnittet regnes ut
+
+Motivet VANDRER i to av dem. Lagstabelen står 95 px høyere samlet enn adskilt,
+og modalen i `terminal` vokser fra 138 til 490 px mens kommandoene kjører. Måles
+utsnittet i én stilling, klipper det motivet i en annen.
+
+Derfor måles unionen av det faktiske blekket gjennom hele forløpet – for
+stabelen ved spak 0, 25, 50, 75 og 100 – og rettes så opp til 16:9. Utsnittet
+oppgis som et fast objekt i `klipp`, ikke som en velger.
+
+Små utsnitt tas opp tettere. Lagstabelen er 926×520 CSS; på tetthet 2 blir det
+1852 px bredt, altså en **oppskalering** til 1920. Scenen kan derfor overstyre
+`tetthet`.
+
+## Måleverktøyet som ikke virker på tekst
+
+`scene_score` i ffmpeg – som `.skudd/maal-doedhale.mjs` bruker – oppdager
+scene­skift, ikke tekst som skrives fram. På `terminal` rapporterte den 0,0000
+for hvert eneste sekund, i et klipp der både kommandoer og svar kom til syne.
+
+For tekstklipp må man måle faktisk pikselforskjell i stedet:
+
+```
+ffmpeg -i rammeA.png -i rammeB.png \
+  -filter_complex "blend=all_mode=difference,signalstats,metadata=print:file=-" -f null -
+```
+
+Det avslørte det `scene_score` skjulte: mellom de to kommandoene sto bildet
+stille i halvannet sekund (0,001 i endring). Den andre kommandoen ble derfor
+byttet fra `pris` (fire tegn, for kort til å fylle midten) til
+`headere kodekonsulentene.no` (27 tegn). Tasting er liten endring, men det ER
+endring – og den holder strekningen i live.
 
 ## Hvorfor klippene er 6 s og ikke 10
 

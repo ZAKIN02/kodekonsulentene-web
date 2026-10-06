@@ -1,5 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
+import opptak from "../data/opptak.json";
+import Demo from "../components/Demo.astro";
 import Scene from "../components/Scene.astro";
 import Mega from "../components/Mega.astro";
 import Avslor from "../components/Avslor.astro";
@@ -38,6 +40,18 @@ const schema = {
     <Mega som="h1" merke="Nettsider" n={1} tekst="En nettside som faktisk blir funnet" aksent="funnet" />
     <Avslor trinn={1}>
       <p class="scene__ingress body-lg">De fleste småbedriftssider er for trege på mobil, bryter cookie-reglene og mangler org.nr. Det er tre ting som koster kunder, og alle tre er løsbare.</p>
+    </Avslor>
+
+    <Avslor trinn={2}>
+      {/* Ekte opptak av vår egen lagstabel. Fire navngitte lag svarer paa det kunden spoer foerst: hva er det jeg kjoeper? Brandboken rangerer opptak av verktoeyet i drift oeverst. */}
+      <Demo
+        smal={opptak.lagstabel.smal}
+        bred={opptak.lagstabel.bred}
+        stor={opptak.lagstabel.stor}
+        plakat={opptak.lagstabel.plakat}
+        tekst={opptak.lagstabel.tekst}
+        kilde={opptak.lagstabel.kilde}
+      />
     </Avslor>
 
     <Avslor>

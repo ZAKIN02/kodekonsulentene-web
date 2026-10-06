@@ -48,5 +48,35 @@
     "hoyde": 1080,
     "tekst": "Cookie-sjekken laster forsiden med tom nettleserprofil og klikker ikke på noe. Alt som står i listen ble satt uten samtykke – her ingenting.",
     "kilde": "6. oktober 2026"
+  },
+  "lagstabel": {
+    "smal": "/opptak/lagstabel-960.mp4",
+    "bred": "/opptak/lagstabel-1280.mp4",
+    "stor": "/opptak/lagstabel-1920.mp4",
+    "plakat": "/opptak/lagstabel-poster.avif",
+    "bredde": 1920,
+    "hoyde": 1078,
+    "tekst": "Lagstabelen på vår egen side, dratt fra hverandre. De fire lagene er det en nettside faktisk består av – og alle fire er med i det vi leverer.",
+    "kilde": "6. oktober 2026"
+  },
+  "sammenlign": {
+    "smal": "/opptak/sammenlign-960.mp4",
+    "bred": "/opptak/sammenlign-1280.mp4",
+    "stor": "/opptak/sammenlign-1920.mp4",
+    "plakat": "/opptak/sammenlign-poster.avif",
+    "bredde": 1920,
+    "hoyde": 1082,
+    "tekst": "To ekte målinger fra vår egen sjekk, samme dag. Radene som skiller 50 fra 90 er navngitt – det er de fire tingene vi retter.",
+    "kilde": "6. oktober 2026"
+  },
+  "terminal": {
+    "smal": "/opptak/terminal-960.mp4",
+    "bred": "/opptak/terminal-1280.mp4",
+    "stor": "/opptak/terminal-1920.mp4",
+    "plakat": "/opptak/terminal-poster.avif",
+    "bredde": 1920,
+    "hoyde": 1080,
+    "tekst": "Terminalen på siden kjører de samme sjekkene som verktøyene. Her mot vårt eget domene, og tallene er det sjekken faktisk svarte – forbeholdet inkludert.",
+    "kilde": "6. oktober 2026"
   }
 }

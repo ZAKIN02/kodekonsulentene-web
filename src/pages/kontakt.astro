@@ -1,5 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
+import Demo from "../components/Demo.astro";
+import opptak from "../data/opptak.json";
 import Scene from "../components/Scene.astro";
 import Mega from "../components/Mega.astro";
 import Avslor from "../components/Avslor.astro";
@@ -38,6 +40,19 @@ const feilmelding =
     <Mega som="h1" merke="Kontakt" n={1} tekst="Snakk med den som koder" />
     <Avslor trinn={1}>
       <p class="scene__ingress body-lg">20 minutter på telefon, ingen presentasjon. Du får et prisspenn og en ærlig vurdering av om du trenger det du tror du trenger.</p>
+    </Avslor>
+
+    <Avslor trinn={2}>
+      {/* Ekte opptak av vaar egen side i drift. Brandboken rangerer dette oeverst:
+          det BEVISER paastanden i stedet for aa illustrere den. */}
+      <Demo
+        smal={opptak.skjema.smal}
+        bred={opptak.skjema.bred}
+        stor={opptak.skjema.stor}
+        plakat={opptak.skjema.plakat}
+        tekst={opptak.skjema.tekst}
+        kilde={opptak.skjema.kilde}
+      />
     </Avslor>
 
     {sendt && (

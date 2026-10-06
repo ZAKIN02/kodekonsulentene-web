@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import opptak from "../data/opptak.json";
 import Scene from "../components/Scene.astro";
 import Mega from "../components/Mega.astro";
 import Avslor from "../components/Avslor.astro";
@@ -29,6 +30,19 @@ import "../styles/scener.css";
     <Mega som="h1" merke="Om" n={1} tekst="Du snakker med den som koder" aksent="koder" />
     <Avslor trinn={1}>
       <p class="scene__ingress body-lg">Det er hele forskjellen mellom oss og et byrå. Det er også grunnen til at vi ikke kan ta inn tjue prosjekter i måneden.</p>
+    </Avslor>
+
+    <Avslor trinn={2}>
+      {/* Ekte opptak av vaar egen side i drift. Brandboken rangerer dette oeverst:
+          det BEVISER paastanden i stedet for aa illustrere den. */}
+      <Demo
+        smal={opptak.flyt.smal}
+        bred={opptak.flyt.bred}
+        stor={opptak.flyt.stor}
+        plakat={opptak.flyt.plakat}
+        tekst={opptak.flyt.tekst}
+        kilde={opptak.flyt.kilde}
+      />
     </Avslor>
 
     <Avslor trinn={2}>

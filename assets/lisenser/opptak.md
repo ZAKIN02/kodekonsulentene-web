@@ -18,6 +18,8 @@ stillbilde.
 | `public/opptak/lagstabel-{1920,1280,960}.mp4`, `lagstabel-poster.avif` | Lagstabelen dratt fra hverandre av komponentens egen spak: Design (det kunden ser), Kode, Sikkerhet, Integrasjoner (booking, Vipps, regnskap). Teksten er komponentens egen. | `scripts/opptak.mjs`, opptak «lagstabel» | Eget verk | 2026-10-06 | KodeKonsulentene |
 | `public/opptak/sammenlign-{1920,1280,960}.mp4`, `sammenlign-poster.avif` | Slepesammenligningen: 50 av 100 mot 90 av 100. Begge kolonner målt med vår egen sjekk samme dag; den sjekkede siden er ikke navngitt, og forbeholdet står i bildet. | `scripts/opptak.mjs`, opptak «sammenlign» | Eget verk | 2026-10-06 | KodeKonsulentene |
 | `public/opptak/terminal-{1920,1280,960}.mp4`, `terminal-poster.avif` | Terminalen kjører `sjekk` og `headere` mot vårt EGET domene i produksjon: 6/6 headere, 0 cookies, 0 uu-feil, org.nr. bekreftet, samlet 90 av 100 – med forbeholdet «1 ikke sjekket» synlig. | `scripts/opptak.mjs`, opptak «terminal» | Eget verk | 2026-10-06 | KodeKonsulentene |
+| `public/opptak/flyt-{1920,1280,960}.mp4`, `flyt-poster.avif` | Flytdiagrammet på `/systemer` som tegner seg selv mens siden scrolles: Kunde → Booking → Vipps → Fiken → SMS, med detaljlinjen under hver node. Figuren er `Flyt.astro`, tegnet i SVG og animert i CSS. | `scripts/opptak.mjs`, opptak «flyt» | Eget verk | 2026-10-06 | KodeKonsulentene |
+| `public/opptak/skjema-{1920,1280,960}.mp4`, `skjema-poster.avif` | Kontaktskjemaet som validerer uten JavaScript: rød kant og ✕ når e-posten mangler krøllalfa, grønn kant og ✓ når den er hel. Tilstanden kommer fra `:has(.control:user-invalid)` i `site.css`. | `scripts/opptak.mjs`, opptak «skjema» | Eget verk | 2026-10-06 | KodeKonsulentene |
 
 ## Om nkom.no
 

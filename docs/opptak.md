@@ -26,6 +26,8 @@ Dette er mer av det.
 | `lagstabel` | 6 s | 4,24 MB · 5,93 Mbit/s | **Hva en nettside består av** – fire lag med navn og forklaring |
 | `sammenlign` | 6 s | 3,19 MB · 4,46 Mbit/s | **Hva forskjellen er i tall** – 50 av 100 mot 90 av 100 |
 | `terminal` | 8 s | 2,27 MB · 2,38 Mbit/s | At verktøyene er ekte, kjørt mot vårt eget domene |
+| `flyt` | 7 s | 5,04 MB · 6,04 Mbit/s | **Hva «systemer som snakker sammen» betyr** – fem noder med ekte navn |
+| `skjema` | 6 s | 1,92 MB · 2,69 Mbit/s | **At skjemaet sier fra før du sender** – rød ✕, grønn ✓, null JavaScript |
 
 Alle i 1920, 1280 og 960 med AVIF-plakat. CRF 19 og `-g 8`, som de genererte
 scenene. Dimensjonene i `src/data/opptak.json` er målt med `ffprobe` etter at
@@ -210,3 +212,76 @@ curl -sS -X POST https://kodekonsulentene.no/api/uu-sjekk \
 Det er «den feilen flest faktisk merker», med vår egen formulering, på siden som
 selger universell utforming. Fargene ligger i `src/styles/`, så det er ikke
 rettet her.
+
+## Runde to: `flyt` og `skjema`
+
+Kunden ba om flere videoer, og om at de skal være **elegante**. Eleganse er en
+begrensning, ikke en invitasjon: færre bevegelser, ett grep om gangen, ingenting
+som konkurrerer. Derfor to opptak og ikke fire.
+
+### `flyt` – flytdiagrammet tegner seg selv
+
+Én gest: scroll. Ingen peker, ingen klikk. Nodene heter Kunde, Booking, Vipps,
+Fiken og SMS – ikke abstrakte former. Brandboken rangerer «diagram med ekte
+navn» som nivå 2 og «opptak av verktøyet i drift» som nivå 1; dette er begge
+deler samtidig, fordi figuren *er* en komponent som tegner seg mens du scroller.
+
+**Redusert bevegelse måtte av for denne scenen.** Opptakskonteksten setter
+`reducedMotion: reduce` globalt, og det er riktig for de andre – sidens egen
+inntoning er bare støy. Men `Flyt` slår da av tegningen (`animation: none
+!important`) og står ferdig. Opptaket ville vist et stillbilde av den eneste
+figuren vi har der tegningen selv er motivet. Scenen kan nå overstyre med
+`bevegelse: "no-preference"`.
+
+**Ikke klippet, og vinduet er smalere.** Figuren vandrer 829 px opp gjennom
+visningsvinduet mens den tegnes – målt: rammen står på topp 900 når første strek
+begynner og på topp 71 når den siste er ferdig. Et fast utsnitt kan ikke romme
+den, og et utsnitt per ramme ville ristet. I stedet rammer et smalere vindu den:
+figuren er 1056 px bred uansett vindusbredde, så i 1600 fyller den 66 % av
+bredden og drukner i teksten rundt, mens den i 1200 fyller 88 %. Målt på fem
+bredder. Scenen kan nå overstyre med `vindu`.
+
+### `skjema` – kontaktskjemaet sier fra før du sender
+
+Tre slag: navnet fylles ut, e-posten er ugyldig og blir rød med ✕, e-posten
+rettes og blir grønn med ✓. Alt sammen er `:has(.control:user-invalid)` i
+`site.css` – ikke en linje JavaScript. Det beviser en håndverkspåstand vi ellers
+bare kunne hevde.
+
+## To feil funnet ved å se på resultatet, igjen
+
+**`kari@eksempel` er en GYLDIG e-postadresse.** Første forsøk brukte den som
+ugyldig verdi, og feltet ble grønt: `input[type=email]` godtar `bruker@vert`
+uten toppdomene. Rødtilstanden – halve poenget – dukket aldri opp. Verdien er nå
+`kari`, uten krøllalfa, som er utvetydig ugyldig.
+
+**Tabulatortasten rullet skjemaet ut av bildet.** Første forsøk tabbet mellom
+feltene, og nettleseren rullet neste felt inn i synsranden. Flaten vandret ut av
+det faste utsnittet, og de tre siste sekundene viste bunnteksten.
+`document.activeElement.blur()` utløser `:user-invalid` like godt uten å flytte
+siden, og scrollposisjonen låses i tillegg hver ramme.
+
+## Hvile er ikke det samme som dødtid
+
+`skjema` har tre frosne intervaller av 23, og de er med vilje: etter at navnet er
+skrevet, på den røde tilstanden, og på den grønne. Et skjema som fylles ut uten
+pause er stressende, ikke elegant – øyet trenger tid til å lese ✕ før det blir ✓.
+Det som ble ryddet bort var noe annet: en første versjon på 7 s lot den grønne
+tilstanden lande på 90 % av tidslinjen, slik at de siste 0,7 sekundene sto helt
+stille i strekk. Nå er klippet 6 s og hvilene ligger spredt der de betyr noe.
+
+`flyt` har null frosne intervaller av 27.
+
+## To opptak ble valgt bort, og hvorfor
+
+**Temabyttet lys/mørk.** Én klikk, hele siden snur. Teknisk elegant, men det
+består ikke brandbokens prøve: dekker du til teksten ved siden av, forstår ikke
+en rørlegger hva det handler om. Det viser at vi har bygget to temaer – en
+kvalitetsdetalj, ikke et svar på «hva får jeg kjøpt?».
+
+**404-siden som terminal.** Sjarmerende, men det er en påskeegg og ikke et bevis.
+Den selger ingenting, og brandboken rangerer «ingenting» over et bilde som ikke
+sier noe.
+
+**Skannertjenesten** er allerede dekket: `uu-sjekk` og `cookie-sjekk` kjører den
+mot digdir.no i produksjon, så tjenesten vises i drift der.

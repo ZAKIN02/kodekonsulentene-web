@@ -80,7 +80,11 @@ export function inlineSkriptHasher(rot) {
       if (e.isDirectory()) gaa(full);
       else if (e.name.endsWith(".html")) {
         const html = readFileSync(full, "utf8");
-        for (const m of html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)) {
+        // type="application/ld+json" er DATA, ikke kjoerbar kode, og trenger ingen hash.
+      // Da strukturerte data ble lagt inn doblet CSP-headeren seg paa hvert eneste svar:
+      // 1591 -> 2887 byte, 23 -> 47 hasher. Verifisert at utelating er trygt – en server
+      // med CSP uten dem ga 0 brudd, og inline-skriptene kjoerte fortsatt.
+      for (const m of html.matchAll(/<script(?![^>]*\bsrc=)(?![^>]*application\/ld\+json)[^>]*>([\s\S]*?)<\/script>/g)) {
           if (m[1].trim()) hasher.add(`'sha256-${createHash("sha256").update(m[1], "utf8").digest("base64")}'`);
         }
       }

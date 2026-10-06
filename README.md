@@ -1,5 +1,10 @@
 # kodekonsulentene-web
 
+**Nettstedet:** <https://kodekonsulentene.no> — nettsider, systemer og sikkerhet for småbedrifter i Oslo.
+
+**Sjekk nettsiden din gratis:** <https://kodekonsulentene.no/sjekk>
+
+
 Nettsiden til KodeKonsulentene – nettsider, systemer og apper for norske småbedrifter.
 Astro 7, Node 22, Fly.io i Amsterdam.
 

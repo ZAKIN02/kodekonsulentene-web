@@ -82,7 +82,13 @@ a:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
 .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6); }
 @media (max-width: 860px) { .grid-3, .grid-2 { grid-template-columns: 1fr; } }
 
-.stack { display: grid; gap: var(--space-5); }
+/* minmax(0, 1fr) og ikke bare `grid`: rutenettbarn faar `min-width: auto`, saa de
+   kan ikke krympe under sitt eget min-content. Paa /sikkerhet gjorde det at
+   prisraden og URL-skjemaet ble 370 px i en 342 px spalte – «7 900 kr» ble
+   klippet til «7 900 kı» og knappen «Sjekk gratis foerst» skaaret av i kanten.
+   Det var usynlig for overflytstester fordi en global `overflow-x: clip` hindrer
+   sidelengs drag: innholdet forsvinner i stedet for aa dra siden ut av form. */
+.stack { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-5); }
 .stack--tight { gap: var(--space-3); }
 .row { display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; }
 
@@ -389,6 +395,17 @@ textarea.control {
 
   /* <summary> var 20 px høy. */
   summary { min-height: 24px; }
+
+  /* E-postadressen sto som 193x18 i kontaktblokken og 170x17 i footeren.
+     Begge er FRITTSTÅENDE lenker – forelderens tekst er nøyaktig lenketeksten,
+     uten en setning rundt – så WCAG 2.5.8 sitt unntak for lenker inne i en
+     setning gjelder ikke. Målt på hver av de 25 sidene. */
+  .kv dd a.kk-link,
+  .kk-footer address a.kk-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+  }
 }
 
 @media (max-width: 860px) {

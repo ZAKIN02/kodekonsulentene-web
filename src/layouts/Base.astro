@@ -8,6 +8,7 @@ import Topbar from "../components/Topbar.astro";
 import LegalFooter from "../components/LegalFooter.astro";
 import { firma, erUferdig } from "../data/firma";
 import { footerLenker } from "../data/navigasjon";
+import { foretak, nettsted, brodsmuler } from "../data/schema";
 import { TEMA_SCRIPT } from "../../sikkerhet.mjs";
 
 interface Props {
@@ -26,21 +27,22 @@ const ogUrl = new URL(`/og/${ogBilde}.png`, Astro.site ?? firma.url).href;
 const fullTittel = tittel === firma.navn ? `${firma.navn} – ${firma.tagline}` : `${tittel} – ${firma.navn}`;
 const kanonisk = new URL(Astro.url.pathname, Astro.site ?? firma.url).href;
 
-const localBusiness = {
-  "@context": "https://schema.org",
-  "@type": "ProfessionalService",
-  name: firma.navn,
-  legalName: firma.foretaksnavn,
-  description: firma.posisjonering,
-  url: firma.url,
-  email: firma.epost,
-  telephone: firma.telefon,
-  address: { "@type": "PostalAddress", addressLocality: firma.adresse, addressCountry: "NO" },
-  areaServed: { "@type": "City", name: "Oslo" },
-  priceRange: "14 900–60 000 NOK",
-  knowsLanguage: ["nb-NO", "en"],
-  ...(erUferdig ? {} : { taxID: firma.orgnr, ...(firma.mva ? { vatID: `NO${firma.orgnr}MVA` } : {}) }),
-};
+/**
+ * Strukturerte data bygges i src/data/schema.ts, av de samme tallene som står i
+ * teksten. Tre noder går på hver side:
+ *
+ *  - foretaket, med fast `@id` så alle sider peker på SAMME virksomhet
+ *  - nettstedet, som knytter sidene sammen under én utgiver
+ *  - brødsmuler, utledet av stien – Google viser dem i stedet for rå URL
+ *
+ * Sider som er merket noindex får ingen av dem. Strukturerte data på en side vi
+ * ber Google la være, er bare støy.
+ */
+const basisSchema = noindex
+  ? []
+  : [foretak(), nettsted(), brodsmuler(Astro.url.pathname, tittel)].filter(
+      (n): n is Record<string, unknown> => n !== null,
+    );
 ---
 <!doctype html>
 <html lang="nb">
@@ -86,8 +88,8 @@ const localBusiness = {
          som middleware.ts regner CSP-hashen av. Ikke skriv den av her. -->
     <script is:inline set:html={TEMA_SCRIPT} />
 
-    <script type="application/ld+json" set:html={JSON.stringify(localBusiness)} is:inline />
-    {schema.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} is:inline />)}
+    {basisSchema.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} is:inline />)}
+    {!noindex && schema.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} is:inline />)}
   </head>
 
   <body>

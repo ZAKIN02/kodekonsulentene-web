@@ -1,0 +1,192 @@
+---
+import Base from "../../layouts/Base.astro";
+import Section from "../../components/Section.astro";
+import Button from "../../components/Button.astro";
+import ContactBlock from "../../components/ContactBlock.astro";
+import Terminal from "../../components/Terminal.astro";
+import { finnArtikkel } from "../../data/artikler";
+import { firma } from "../../data/firma";
+import maalinger from "../../data/maalinger.json";
+
+const a = finnArtikkel("orgnr-pa-nettsiden");
+const andel = maalinger.andelProsent;
+const utvalg = maalinger.utvalg;
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "Må en norsk nettside ha organisasjonsnummer?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Ja. Foretaksregisterloven § 10-2 krever at nettsidene til et registrert foretak inneholder organisasjonsnummeret og foretaksnavnet. Aksjeselskaper må i tillegg oppgi registeret foretaket er registrert i, selskapsform og forretningskontor.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Hvilken informasjon krever ehandelsloven § 8 på en nettside?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Navn, geografisk adresse, e-postadresse og annen informasjon som gjør det mulig å komme i direkte kontakt. I tillegg registeret du er registrert i, organisasjonsnummer, om virksomheten er mva-registrert, og eventuelle nødvendige tillatelser.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Hvor på nettsiden skal organisasjonsnummeret stå?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Loven sier ikke hvor. Den vanlige løsningen er footeren, fordi den står på alle sider. Kravet er at opplysningene er lett og direkte tilgjengelige, så en kontaktside alene er svakere enn en footer.",
+        },
+      },
+    ],
+  },
+];
+---
+<Base tittel={a.tittel} beskrivelse={a.beskrivelse} schema={schema} ogBilde="forside">
+  <Section
+    nivaa={1}
+    n={1}
+    eyebrow="Artikkel"
+    tittel="Org.nr. på nettsiden"
+    ingress="Det er ikke en anbefaling. Foretaksregisterloven § 10-2 krever organisasjonsnummer og foretaksnavn på nettsidene dine. To av tre sider vi målte manglet det."
+  >
+    <div class="prose">
+      <p class="small faint">
+        Publisert {a.publisert}. Innholdet er kontrollert mot kilden {a.oppdatert}.
+        Dette er ikke juridisk rådgivning.
+      </p>
+
+      <h2>To lover, to ulike krav</h2>
+      <p>
+        Dette blandes sammen hele tiden, så det er verdt å skille dem.
+      </p>
+
+      <h3>Foretaksregisterloven § 10-2</h3>
+      <p>
+        <a class="kk-link" href="https://lovdata.no/lov/1985-06-21-78/§10-2" rel="nofollow">Paragrafen</a>{" "}
+        sier at foretakets nettsider, brev og forretningsdokumenter skal inneholde{" "}
+        <strong class="body-strong">organisasjonsnummeret og foretaksnavnet</strong>.
+        Det gjelder uansett medium, og det gjelder alle registrerte foretak.
+      </p>
+      <p>
+        Er du aksjeselskap, kommer det mer: du skal også oppgi hvilket register foretaket er
+        registrert i, selskapsform, forretningskontor, og eventuelt at selskapet er under
+        avvikling. Et enkeltpersonforetak slipper det – der er det bare nummer og navn.
+      </p>
+      <p>
+        Merk at det er det <em>registrerte foretaksnavnet</em> som skal stå, ikke
+        merkenavnet du markedsfører deg under. Heter foretaket noe annet i Enhetsregisteret
+        enn det som står øverst på siden, er det foretaksnavnet som må med.
+      </p>
+
+      <h3>Ehandelsloven § 8</h3>
+      <p>
+        <a class="kk-link" href="https://lovdata.no/lov/2003-05-23-35/§8" rel="nofollow">Denne</a>{" "}
+        gjelder hvis du tilbyr en informasjonssamfunnstjeneste – i praksis nesten enhver
+        kommersiell nettside. Den krever at du gir{" "}
+        <strong class="body-strong">navn, geografisk adresse, e-postadresse</strong> og annen
+        informasjon som gjør det mulig å komme i direkte kontakt med deg. I tillegg registeret
+        du står i, organisasjonsnummeret, om du er mva-registrert, og eventuelle tillatelser
+        virksomheten krever.
+      </p>
+      <p>
+        «Geografisk adresse» er den som felles flest. En e-postadresse og et kontaktskjema er
+        ikke nok. Og et poststed uten gateadresse er heller ikke en geografisk adresse –
+        det er noe vi selv står og rydder opp i akkurat nå.
+      </p>
+
+      <h3>Er du mva-registrert, skal det stå «MVA»</h3>
+      <p>
+        Mva-registrerte foretak skal ha bokstavene <code>MVA</code> etter organisasjonsnummeret.
+        Ikke er du det, skal de ikke stå der. Dette er en liten detalj som avslører at
+        nummeret er kopiert fra et sted det ikke hørte hjemme.
+      </p>
+
+      <h2>Hvor mange som mangler det</h2>
+      <p>
+        Vi skannet {utvalg.trukket} tilfeldig trukne nettsider fra foretak med
+        {utvalg.stoerrelse} i Enhetsregisteret. {utvalg.svarte} svarte.
+        <strong class="body-strong">{andel.manglerOrgnr} % hadde ikke organisasjonsnummer på forsiden.</strong>
+      </p>
+      <p class="small faint">
+        Forbeholdet som hører med: vi hentet forsiden, ikke hele nettstedet. Står nummeret på
+        en egen «Om oss»-side, teller det som manglende her. Det er strengere enn loven, som
+        ikke sier hvor opplysningene skal stå – men det er nær det en besøkende faktisk
+        opplever, siden få leter.
+      </p>
+      <p>
+        Vi navngir ingen av dem. Metoden, inkludert hva vi ikke har målt, står i{" "}
+        <a class="kk-link" href="/handbok">håndboken</a>.
+      </p>
+
+      <h2>Hvorfor det er verdt å bry seg</h2>
+      <p>
+        Den ærlige grunnen er ikke frykt for tilsyn. Vi kjenner ingen småbedrift som har
+        fått bot for dette. Grunnen er at opplysningene gjør deg mulig å kontrollere.
+      </p>
+      <p>
+        En potensiell kunde som vurderer å overføre penger til deg, kan slå opp nummeret i
+        Enhetsregisteret og se at foretaket finnes, hvor lenge det har eksistert, og at det
+        ikke er under avvikling. Står nummeret ikke der, må de ta deg på ordet. Noen gjør
+        det. Andre lukker fanen.
+      </p>
+      <p>
+        Det er også et av de få signalene som skiller en ekte virksomhet fra en nettside
+        satt opp på en ettermiddag. Det koster deg én linje.
+      </p>
+
+      <h2>Hva som skal stå, og hvor</h2>
+      <p>
+        Loven sier ikke hvor på siden opplysningene skal stå, bare at de skal være lett og
+        direkte tilgjengelige. Den praktiske løsningen er footeren, fordi den står på alle
+        sider. En kontaktside alene er svakere: den krever at noen leter.
+      </p>
+      <p>
+        Slik ser vår egen ut. Foretaksnavnet er et annet enn merkenavnet, fordi
+        foretaksnavnloven § 2-2 krever at et enkeltpersonforetak har innehaverens etternavn i
+        navnet – derfor står det bare her, aldri i brødteksten.
+      </p>
+      <Terminal
+        title="footeren på denne siden"
+        label={`Utsnitt av footeren: ${firma.foretaksnavn}, org.nr. ${firma.orgnr}, ${firma.adresse}, ${firma.epost}`}
+        lines={[
+          { type: "out", text: firma.foretaksnavn },
+          { type: "out", text: `org.nr. ${firma.orgnr}` },
+          { type: "out", text: firma.adresse },
+          { type: "out", text: firma.epost },
+        ]}
+      />
+      <p>
+        Sjekklista er kort:
+      </p>
+      <ul>
+        <li>Registrert foretaksnavn, slik det står i Enhetsregisteret</li>
+        <li>Organisasjonsnummer, med <code>MVA</code> etter hvis du er mva-registrert</li>
+        <li>Geografisk adresse – gateadresse, ikke bare poststed</li>
+        <li>E-postadresse eller et annet direkte kontaktpunkt</li>
+        <li>For AS: register, selskapsform og forretningskontor</li>
+      </ul>
+
+      <h2>Sjekk din egen side</h2>
+      <p>
+        Sjekken vår leter etter et organisasjonsnummer på forsiden, og slår det opp mot
+        Enhetsregisteret for å se at det finnes og hvilket foretak det hører til. Den sier
+        også fra når den ikke fant en geografisk adresse.
+      </p>
+      <p>
+        Den påstår ikke at det er <em>riktig</em> foretak – bare at nummeret er gyldig og
+        hvem det tilhører. Resten må du vurdere selv.
+      </p>
+    </div>
+
+    <div class="row" style="margin-top: var(--space-6); gap: var(--space-4); flex-wrap: wrap">
+      <Button variant="primary" href={a.verktoy!.href}>{a.verktoy!.tekst}</Button>
+      <Button variant="ghost" href="/artikler/35-wcag-krav">Neste: de 35 WCAG-kravene →</Button>
+    </div>
+  </Section>
+
+  <ContactBlock />
+</Base>

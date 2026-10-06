@@ -102,7 +102,11 @@ describe("CSP blokkerer ikke vår egen JavaScript", () => {
 
     for (const f of filer) {
       const html = readFileSync(f, "utf8");
-      for (const m of html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)) {
+      // Samme unntak som i sikkerhet.mjs: application/ld+json er DATA, ikke
+      // kjørbar kode, og trenger ingen hash. Da strukturerte data ble lagt inn
+      // doblet CSP-headeren seg på hvert svar – 1591 til 2887 byte, 23 til 47
+      // hasher. Verifisert med en server uten dem: 0 brudd, skriptene kjørte.
+      for (const m of html.matchAll(/<script(?![^>]*\bsrc=)(?![^>]*application\/ld\+json)[^>]*>([\s\S]*?)<\/script>/g)) {
         if (!m[1].trim()) continue;
         const hash = `'sha256-${createHash("sha256").update(m[1], "utf8").digest("base64")}'`;
         assert.ok(

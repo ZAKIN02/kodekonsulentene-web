@@ -22,6 +22,11 @@ export const GET: APIRoute = () => {
         "Disallow: /kontakt?",
         "Disallow: /sjekk?",
         "",
+        "# /lab/* er interne demosider for komponenter og teknikker. De er merket",
+        "# noindex, men en side som ikke skal indekseres bør heller ikke spise",
+        "# kravlebudsjett – det er elleve prosent av sidene våre.",
+        "Disallow: /lab/",
+        "",
         `Sitemap: ${firma.url}/sitemap-index.xml`,
       ];
   return new Response(linjer.join("\n") + "\n", {

@@ -1,0 +1,201 @@
+---
+import Base from "../../layouts/Base.astro";
+import Section from "../../components/Section.astro";
+import Button from "../../components/Button.astro";
+import ContactBlock from "../../components/ContactBlock.astro";
+import { finnArtikkel } from "../../data/artikler";
+import { WCAG_NAVN } from "../../data/wcag";
+import maalinger from "../../data/maalinger.json";
+
+const a = finnArtikkel("35-wcag-krav");
+const andel = maalinger.andelProsent;
+const utvalg = maalinger.utvalg;
+
+// De reglene vi faktisk kan navngi på norsk, gruppert slik en leser tenker.
+// Teksten er den samme som rapporten gir – ingen egen artikkelformulering, så
+// leseren kjenner igjen setningen når verktøyet sier den.
+const vanligste = [
+  "color-contrast",
+  "image-alt",
+  "link-name",
+  "button-name",
+  "html-has-lang",
+  "document-title",
+] as const;
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "Hvor mange WCAG-krav gjelder for private virksomheter i Norge?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "35 av 61 suksesskriterier på nivå A og AA i WCAG 2.0, etter forskrift om universell utforming av IKT-løsninger. Offentlig sektor har siden 1. februar 2023 hatt et strengere krav: 48 kriterier etter WCAG 2.1.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Gjelder kravene små bedrifter?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Ja. Kravene gjelder virksomheter som retter seg mot allmennheten, uavhengig av størrelse. Det finnes ingen terskel for antall ansatte eller omsetning.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Må private virksomheter ha en tilgjengelighetserklæring?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Nei. Tilgjengelighetserklæring er påbudt for offentlig sektor. Private kan publisere en frivillig, men det er ikke et krav.",
+        },
+      },
+    ],
+  },
+];
+---
+<Base tittel={a.tittel} beskrivelse={a.beskrivelse} schema={schema} ogBilde="sikkerhet">
+  <Section
+    nivaa={1}
+    n={1}
+    eyebrow="Artikkel"
+    tittel="De 35 WCAG-kravene"
+    ingress="Private nettsider i Norge må oppfylle 35 av 61 suksesskriterier i WCAG 2.0. Det gjelder uansett hvor liten bedriften er. Her er hvilke som feiler oftest, og hva de koster å rette."
+  >
+    <div class="prose">
+      <p class="small faint">
+        Publisert {a.publisert}. Innholdet er kontrollert mot kilden {a.oppdatert}.
+        Dette er ikke juridisk rådgivning.
+      </p>
+
+      <h2>Hvilke krav som gjelder deg</h2>
+      <p>
+        Kravene står i{" "}
+        <a class="kk-link" href="https://lovdata.no/dokument/SF/forskrift/2013-06-21-732" rel="nofollow">forskrift om universell utforming av IKT-løsninger</a>,
+        som henger på likestillings- og diskrimineringsloven. For private virksomheter som
+        retter seg mot allmennheten er minstekravet{" "}
+        <strong class="body-strong">35 av 61 suksesskriterier på nivå A og AA i WCAG 2.0</strong>.
+        Unntaket fra de 61 er blant annet synstolking av video.
+      </p>
+      <p>
+        Det finnes ingen terskel. En frisørsalong med to ansatte har samme krav som en kjede
+        med to hundre. Størrelsen påvirker hva som er rimelig å forvente av tempo, ikke om
+        kravet gjelder.
+      </p>
+
+      <h3>Offentlig sektor har strengere krav</h3>
+      <p>
+        Dette forvirrer mange som leser seg opp. Fra 1. februar 2023 må offentlig sektor
+        følge 48 kriterier etter WCAG 2.1, som følge av EUs webdirektiv. Private er ikke
+        omfattet av den endringen, og står fortsatt på 35 etter WCAG 2.0.
+      </p>
+      <p>
+        I praksis er forskjellen mindre enn tallene antyder: de 13 ekstra kriteriene handler
+        mest om mobilvisning, orientering og innhold som kan forstørres. Bygger du etter
+        WCAG 2.1 nå, slipper du å gjøre jobben to ganger.
+      </p>
+      <p>
+        <strong class="body-strong">En ting til:</strong> tilgjengelighetserklæring er påbudt
+        for offentlig sektor, ikke for private. Du kan publisere en frivillig, men du trenger
+        det ikke.
+      </p>
+
+      <h2>Hvor vanlig bruddene er</h2>
+      <p>
+        Vi skannet {utvalg.trukket} tilfeldig trukne nettsider fra foretak med
+        {utvalg.stoerrelse} i Enhetsregisteret. {utvalg.svarte} svarte.
+        <strong class="body-strong">{andel.harMinstEnUuFeil} % hadde minst én feil som kan måles maskinelt.</strong>
+      </p>
+      <p class="small faint">
+        Og det er den viktige presiseringen: en maskin finner bare en del av kravene.
+        Kontrast mellom tekst og bakgrunn kan måles. Om tastaturnavigasjonen gir mening,
+        om rekkefølgen er logisk, og om en skjermleser faktisk kan fullføre en bestilling,
+        kan den ikke. De 35 kravene krever at noen prøver selv. Det reelle tallet er derfor
+        høyere enn {andel.harMinstEnUuFeil} %.
+      </p>
+
+      <h2>De seks som feiler oftest</h2>
+      <p>
+        Dette er feilene vi finner igjen og igjen. Teksten under hver er den samme som
+        rapporten vår gir, så du kjenner den igjen når du kjører sjekken.
+      </p>
+      <table>
+        <thead>
+          <tr><th>Krav</th><th>Hva som er galt</th></tr>
+        </thead>
+        <tbody>
+          {vanligste.map((n) => (
+            <tr>
+              <td><span class="mono">{WCAG_NAVN[n].krav}</span></td>
+              <td>{WCAG_NAVN[n].tekst}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <h3>Kontrast er den som faktisk merkes</h3>
+      <p>
+        Av disse seks er for svak kontrast den eneste en vanlig besøkende legger merke til
+        uten å vite hvorfor. Teksten er der, men den er slitsom å lese, så folk slutter å
+        lese. Kravet er 4,5:1 for vanlig tekst og 3:1 for stor tekst, og det er lett å
+        bryte med lysegrå tekst på hvit bakgrunn – en stil som har vært på moten lenge.
+      </p>
+
+      <h2>Hva det koster å rette</h2>
+      <p>
+        Vi oppgir ikke et tall per krav, fordi det ville vært et anslag presentert som en
+        måling. Men rekkefølgen etter hva som koster minst er den samme nesten hver gang:
+      </p>
+      <ol>
+        <li>
+          <strong class="body-strong">Språkkode og sidetittel.</strong> To linjer i malen.
+          Dette er minutter, ikke timer, og det gjelder hele siden på én gang.
+        </li>
+        <li>
+          <strong class="body-strong">Alt-tekst på bilder.</strong> Arbeidet er å skrive dem,
+          ikke å legge dem inn. Et dekorativt bilde skal ha tom alt-tekst, ikke en beskrivelse
+          – det er like viktig.
+        </li>
+        <li>
+          <strong class="body-strong">Lenke- og knappetekst.</strong> «Les mer» fem ganger på
+          samme side er en reell feil. En skjermleser kan liste opp alle lenkene, og da sier
+          lista ingenting.
+        </li>
+        <li>
+          <strong class="body-strong">Kontrast.</strong> Ofte en endring i noen få
+          fargevariabler. Blir dyrt hvis fargene er hardkodet på hvert enkelt element.
+        </li>
+        <li>
+          <strong class="body-strong">Tastaturnavigasjon og skjemaer.</strong> Her ligger
+          timene. Dette er også det en maskin ikke finner for deg.
+        </li>
+      </ol>
+      <p>
+        På en vanlig småbedriftsside ligger de fire første innenfor en arbeidsdag. Det femte
+        avhenger helt av hvordan siden er bygget. Har du et skjema som ikke kan fylles ut med
+        tastatur, er det ikke en justering – det er en ombygging av skjemaet.
+      </p>
+
+      <h2>Sjekk din egen side</h2>
+      <p>
+        Verktøyet vårt kjører en ekte nettleser mot siden din og rapporterer det som kan
+        måles maskinelt, med kravnummer og en setning om hva feilen betyr for den som
+        rammes. Det er gratis og krever ingen innlogging.
+      </p>
+      <p>
+        Det sier også tydelig fra om hva det <em>ikke</em> har sjekket. En rapport som
+        påstår «0 feil» uten det forbeholdet, gir deg en falsk trygghet du kan bli
+        ansvarlig for.
+      </p>
+    </div>
+
+    <div class="row" style="margin-top: var(--space-6); gap: var(--space-4); flex-wrap: wrap">
+      <Button variant="primary" href={a.verktoy!.href}>{a.verktoy!.tekst}</Button>
+      <Button variant="ghost" href="/artikler/cookies-for-samtykke">Neste: cookies før samtykke →</Button>
+    </div>
+  </Section>
+
+  <ContactBlock />
+</Base>

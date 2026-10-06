@@ -29,12 +29,10 @@ const tilstander = [
 ];
 
 for (const [navn, sti] of maler) {
-  // Data-URI BARE her. I selve malen ville det vært feil: Gmail blokkerer
-  // data-URI-er i img, så den ekte malen må peke på en https-adresse.
-  const logo = readFileSync(`${rot}/public/logo/kk-lockup-dark@2x.png`).toString("base64");
-  let html = readFileSync(sti, "utf8")
-    .replaceAll("https://kodekonsulentene.no/logo/kk-lockup-dark@2x.png",
-                `data:image/png;base64,${logo}`);
+  // Malen har ingen bilder i det hele tatt – logoen er levende tekst. Ingenting
+  // å bytte ut her lenger, men vi teller bilder under for å fange at det
+  // eventuelt sniker seg inn et.
+  let html = readFileSync(sti, "utf8");
   for (const [t, bredde, o] of tilstander) {
     const ctx = await b.newContext({ viewport: { width: bredde, height: 1200 }, deviceScaleFactor: 2 });
     const p = await ctx.newPage();

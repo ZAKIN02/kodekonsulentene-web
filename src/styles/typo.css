@@ -25,7 +25,8 @@
   /* Skalaen er poenget. 11vw gjør at ett ord fyller skjermbredden på mobil og
      holder seg stort på desktop; taket på 200px hindrer at den sprekker på
      veldig brede skjermer. */
-  font-size: clamp(44px, 11vw, 200px);
+  /* 11cqi, ikke 11vw – se merknaden på .mega-blokk. */
+  font-size: clamp(44px, 11cqi, 200px);
   line-height: 0.92;
   /* line-height under 1 er med vilje – stram display-typografi. Men da stikker
      nedstrekerne ut under linjeboksen, og neste element la seg oppå dem: målt 64 px
@@ -44,8 +45,7 @@
      Ingen test fanget det: overflow-x: clip holder scrollWidth lik clientWidth, så
      overflytstester melder grønt mens teksten klippes stille bort.
      Negativ marg sentrerer boksen også når den er bredere enn forelderen. */
-  width: min(100vw - 2 * var(--space-5), 1600px);
-  margin-inline: calc((100% - min(100vw - 2 * var(--space-5), 1600px)) / 2);
+  width: 100%;
   max-width: none;
 }
 
@@ -74,6 +74,14 @@
 .mega-blokk {
   display: grid;
   gap: var(--space-4);
+  /* Beholderen bærer bredden, og Mega måler seg mot DEN i stedet for mot vinduet.
+     Med 11vw fulgte skriften vindusbredden mens boksen ble skalert av nettleser-
+     zoom, så teksten vokste ut av sin egen ramme: målt +68 px ved zoom 1,5,
+     +205 ved 1,75 og +343 ved 2,0. Kunden så det; fjorten breddetester gjorde ikke.
+     cqi er prosent av beholderens egen bredde, så forholdet holder uansett zoom. */
+  width: min(100vw - 2 * var(--space-5), 1600px);
+  margin-inline: calc((100% - min(100vw - 2 * var(--space-5), 1600px)) / 2);
+  container-type: inline-size;
 }
 .mega-blokk__merke {
   display: flex;

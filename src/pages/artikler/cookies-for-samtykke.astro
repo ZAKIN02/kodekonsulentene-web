@@ -1,0 +1,213 @@
+---
+import Base from "../../layouts/Base.astro";
+import Section from "../../components/Section.astro";
+import Button from "../../components/Button.astro";
+import ContactBlock from "../../components/ContactBlock.astro";
+import Terminal from "../../components/Terminal.astro";
+import { finnArtikkel } from "../../data/artikler";
+import maalinger from "../../data/maalinger.json";
+
+const a = finnArtikkel("cookies-for-samtykke");
+
+// Tallene kommer fra vår egen skanning. De skrives aldri inn for hånd – endrer
+// maalinger.json seg, endrer artikkelen seg. Metoden står i docs/metode-skanning.md.
+const andel = maalinger.andelProsent;
+const utvalg = maalinger.utvalg;
+
+// FAQPage-schema. Spørsmålene er hentet fra docs/ai-synlighet.md, altså de vi
+// faktisk måler om vi blir sitert på.
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "Hva krever ekomloven § 3-15 om cookies?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Du må ha samtykke før du lagrer eller henter opplysninger på brukerens utstyr. Samtykket må oppfylle kravene i personvernforordningen: frivillig, spesifikt, informert og gitt ved en aktiv handling. Det skal være like lett å trekke tilbake som å gi. Unntatt er lagring som bare overfører kommunikasjon, og lagring som er strengt nødvendig for en tjeneste brukeren uttrykkelig har bedt om.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Hvordan sjekker jeg om nettsiden min setter cookies før samtykke?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Åpne siden i et privat vindu, trykk F12, gå til Application og så Cookies. Alt som ligger der før du har klikket på noe i cookie-banneret, er satt uten samtykke. Er noe av det fra Google, Meta eller en annen tredjepart, er det et brudd.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Trenger jeg cookie-banner hvis jeg bruker Plausible?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Analyseverktøy som ikke lagrer noe på brukerens utstyr, faller utenfor samtykkekravet i ekomloven § 3-15, fordi paragrafen handler om lagring og tilgang på utstyret. Det fritar deg ikke fra personvernforordningen hvis du likevel behandler personopplysninger. Sjekk hva verktøyet faktisk lagrer før du fjerner banneret.",
+        },
+      },
+    ],
+  },
+];
+---
+<Base tittel={a.tittel} beskrivelse={a.beskrivelse} schema={schema} ogBilde="sjekk">
+  <Section
+    nivaa={1}
+    n={1}
+    eyebrow="Artikkel"
+    tittel="Cookies før samtykke"
+    ingress="Fra 1. januar 2025 er regelen ekomloven § 3-15. Den krever at du har samtykke før noe lagres på besøkendes utstyr – ikke etterpå. De fleste sidene vi har målt bryter den, og eierne vet det ikke."
+  >
+    <div class="prose">
+      <p class="small faint">
+        Publisert {a.publisert}. Innholdet er kontrollert mot kilden {a.oppdatert}.
+        Dette er ikke juridisk rådgivning.
+      </p>
+
+      <h2>Hva loven faktisk sier</h2>
+      <p>
+        Den gamle regelen sto i ekomloven § 2-7b og tillot i praksis at du informerte om
+        cookies i en bannerlinje og lot bruken av siden telle som samtykke. Den paragrafen
+        er opphevet. Fra 1. januar 2025 gjelder{" "}
+        <a class="kk-link" href="https://lovdata.no/lov/2024-12-13-76/§3-15" rel="nofollow">ekomloven § 3-15</a>,
+        og den knytter samtykkekravet direkte til personvernforordningen.
+      </p>
+      <p>
+        Det betyr at et gyldig samtykke må være frivillig, spesifikt, informert og gitt ved
+        en aktiv handling. Forhåndskryssede bokser teller ikke. At du fortsetter å bruke
+        siden teller ikke. Og det skal være{" "}
+        <strong class="body-strong">like lett å trekke samtykket tilbake som å gi det</strong> –
+        i praksis betyr det at «Avvis alle» må være like tilgjengelig som «Godta alle».
+      </p>
+
+      <h3>De to unntakene</h3>
+      <p>
+        Loven har to unntak, og begge er smale:
+      </p>
+      <ul>
+        <li>
+          Lagring eller tilgang som utelukkende skjer for å overføre kommunikasjon i et
+          elektronisk kommunikasjonsnett.
+        </li>
+        <li>
+          Lagring eller tilgang som er <em>strengt nødvendig</em> for å levere en tjeneste
+          brukeren uttrykkelig har bedt om.
+        </li>
+      </ul>
+      <p>
+        Handlekurven i en nettbutikk er strengt nødvendig. Innloggingen din er strengt
+        nødvendig. Google Analytics er det ikke, uansett hvor nyttig det er for deg.
+        «Strengt nødvendig» måles fra brukerens side, ikke fra din.
+      </p>
+
+      <h3>Hvem fører tilsyn</h3>
+      <p>
+        Nkom forvalter ekomloven. Men fordi § 3-15 henter samtykkekravet fra
+        personvernforordningen, er det Datatilsynet som fører tilsyn med selve samtykket.
+        Er banneret ditt problemet, er det dem det gjelder.
+      </p>
+
+      <h2>Hvor vanlig bruddet er</h2>
+      <p>
+        Vi skannet {utvalg.trukket} tilfeldig trukne nettsider fra foretak med
+        {utvalg.stoerrelse} i Enhetsregisteret. {utvalg.svarte} svarte.
+        <strong class="body-strong">{andel.settercookiesForSamtykke} % satte minst én cookie før samtykke</strong>,
+        og {andel.harSporereForSamtykke} % lastet en sporer fra en tredjepart før noen hadde
+        klikket på noe.
+      </p>
+      <p class="small faint">
+        Forbehold som hører med: forsiden ble hentet én gang, uten å kjøre JavaScript. Cookies
+        som settes av skript etterpå er ikke med. Det faktiske tallet er altså høyere enn
+        {andel.settercookiesForSamtykke} %, ikke lavere. Hele metoden, inkludert hva vi ikke
+        har målt, står i <a class="kk-link" href="/handbok">håndboken</a>.
+      </p>
+      <p>
+        Vi navngir ingen av sidene. En bedrift som blir hengt ut fordi nettsiden har en feil,
+        er en bedrift vi aldri får som kunde – og det er uansett ikke greit.
+      </p>
+
+      <h2>Sjekk din egen side på to minutter</h2>
+      <p>
+        Du trenger ikke verktøy for dette. Du trenger en nettleser.
+      </p>
+      <ol>
+        <li>Åpne nettsiden din i et <strong class="body-strong">privat vindu</strong>. Det er viktig – ellers ligger gamle cookies der fra sist.</li>
+        <li>Trykk <code>F12</code> for å åpne utviklerverktøyet.</li>
+        <li>Gå til fanen <code>Application</code>, og velg <code>Cookies</code> i venstre kolonne.</li>
+        <li>Se på lista <em>før</em> du klikker på noe i cookie-banneret.</li>
+      </ol>
+      <p>
+        Alt som ligger der nå, er satt uten samtykke. Ser du navn fra Google, Meta, Hotjar
+        eller et annonsenettverk, er det et brudd. Ser du bare én cookie med et navn som{" "}
+        <code>session</code> eller <code>csrf</code>, er du sannsynligvis innenfor det andre
+        unntaket.
+      </p>
+
+      <h3>Eller la verktøyet gjøre det</h3>
+      <p>
+        Vi har bygget en sjekk som gjør nøyaktig det samme, men som også laster siden i en
+        ekte nettleser og kjører JavaScript – altså fanger den også cookies som settes av
+        skript. Den er gratis, krever ingen innlogging, og du velger selv om rapporten skal
+        sendes på e-post.
+      </p>
+      <Terminal
+        skriv
+        label="Terminalutsnitt som viser et eksempel på hva cookie-sjekken rapporterer: tre cookies og én sporer satt før samtykke."
+        lines={[
+          { type: "cmd", text: "cookie-sjekk dinbedrift.no" },
+          { type: "out", text: "Henter forsiden uten å gi samtykke …" },
+          { type: "fail", text: "3 cookies satt før samtykke" },
+          { type: "out", text: "  _ga, _gid   Google Analytics   tredjepart" },
+          { type: "out", text: "  _fbp        Meta Pixel         tredjepart" },
+          { type: "warn", text: "1 sporer lastet før samtykke" },
+        ]}
+      />
+
+      <h2>Hva du gjør med det du finner</h2>
+      <p>
+        Rekkefølgen under er den som faktisk løser problemet. Mange begynner i feil ende og
+        kjøper et banner før de vet hva de har.
+      </p>
+      <ol>
+        <li>
+          <strong class="body-strong">Finn ut hva som settes, og av hva.</strong> Et banner som
+          ikke dekker alt du faktisk laster, gir deg en falsk trygghet.
+        </li>
+        <li>
+          <strong class="body-strong">Fjern det du ikke trenger.</strong> Det billigste samtykket
+          er det du slipper å be om. Mange sider laster sporere fra en kampanje som ble avsluttet
+          for to år siden.
+        </li>
+        <li>
+          <strong class="body-strong">Flytt resten bak samtykket.</strong> Skriptene skal ikke
+          lastes før brukeren har sagt ja. Et banner som bare skjuler seg selv, mens skriptene
+          kjører i bakgrunnen, er verre enn ingenting: det dokumenterer at du kjente kravet.
+        </li>
+        <li>
+          <strong class="body-strong">Gjør «Avvis alle» like lett som «Godta alle».</strong>{" "}
+          Lik plassering, lik størrelse, like tydelig. Dette er kravet flest bryter etter at
+          de har ryddet opp i resten.
+        </li>
+      </ol>
+
+      <h3>Det enkleste alternativet</h3>
+      <p>
+        Trenger du egentlig besøkstall, eller trenger du bare å vite om noen finner deg? Et
+        analyseverktøy som ikke lagrer noe på brukerens utstyr, faller utenfor § 3-15 – fordi
+        paragrafen handler om lagring og tilgang på utstyret, ikke om måling i seg selv.
+        Da kan du droppe banneret helt.
+      </p>
+      <p>
+        Det er det vi har gjort på denne siden. Den setter null cookies, og derfor står det
+        «Denne siden bruker ikke cookies» i footeren i stedet for et banner. Du kan verifisere
+        det selv med stegene over.
+      </p>
+    </div>
+
+    <div class="row" style="margin-top: var(--space-6); gap: var(--space-4); flex-wrap: wrap">
+      <Button variant="primary" href={a.verktoy!.href}>{a.verktoy!.tekst}</Button>
+      <Button variant="ghost" href="/artikler/orgnr-pa-nettsiden">Neste: org.nr. på nettsiden →</Button>
+    </div>
+  </Section>
+
+  <ContactBlock />
+</Base>

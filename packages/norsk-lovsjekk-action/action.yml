@@ -1,0 +1,65 @@
+name: "Norsk lovsjekk"
+description: "Sjekker en nettside mot norske lovkrav: cookies før samtykke (ekomloven § 3-15), universell utforming (WCAG 2.0 A/AA), organisasjonsnummer (ehandelsloven § 8) og sikkerhetsheadere."
+author: "KodeKonsulentene"
+
+branding:
+  icon: shield
+  color: green
+
+inputs:
+  url:
+    description: "Adressen som skal sjekkes, for eksempel https://dinbedrift.no"
+    required: true
+  terskel:
+    description: "Laveste godtatte samlede score, 0-100. Under denne feiler jobben."
+    required: false
+    default: "70"
+  tillat-brudd:
+    description: "true lar jobben passere selv om en rad har status brudd. Som standard feiler den."
+    required: false
+    default: "false"
+  epost:
+    description: "true kjører i tillegg e-postsjekken (SPF, DKIM, DMARC) på domenet. Feiler aldri bygget."
+    required: false
+    default: "false"
+  dkim:
+    description: "DKIM-selektor. Brukes bare når epost er true."
+    required: false
+    default: ""
+  api:
+    description: "Overstyr tjenesten sjekken kjores mot. Normalt ikke nodvendig."
+    required: false
+    default: "https://kodekonsulentene.no"
+
+outputs:
+  score:
+    description: "Samlet score, 0-100."
+    value: ${{ steps.sjekk.outputs.score }}
+  brudd:
+    description: "Antall rader med status brudd."
+    value: ${{ steps.sjekk.outputs.brudd }}
+  rapport:
+    description: "Hele rapporten som JSON."
+    value: ${{ steps.sjekk.outputs.rapport }}
+
+runs:
+  using: composite
+  steps:
+    - name: Sjekk nettsiden
+      id: sjekk
+      shell: bash
+      run: >-
+        python3 "${{ github.action_path }}/lovsjekk.py"
+        "${{ inputs.api }}"
+        "${{ inputs.url }}"
+        "${{ inputs.terskel }}"
+        "${{ inputs['tillat-brudd'] }}"
+
+    - name: Sjekk e-posten
+      if: ${{ inputs.epost == 'true' }}
+      shell: bash
+      run: >-
+        python3 "${{ github.action_path }}/epostsjekk.py"
+        "${{ inputs.api }}"
+        "${{ inputs.url }}"
+        "${{ inputs.dkim }}"

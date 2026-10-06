@@ -1,0 +1,239 @@
+---
+import Base from "../../layouts/Base.astro";
+import Section from "../../components/Section.astro";
+import UrlCheck from "../../components/UrlCheck.astro";
+import Button from "../../components/Button.astro";
+import Terminal from "../../components/Terminal.astro";
+import ContactBlock from "../../components/ContactBlock.astro";
+import { firma } from "../../data/firma";
+
+const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
+---
+<Base
+  tittel="Sjekk universell utforming"
+  beskrivelse="Automatisk WCAG-sjekk av nettsiden din mot kravene som gjelder private virksomheter. Vi sier også hva sjekken ikke kan avgjøre. Gratis."
+>
+  <Section nivaa={1}
+    n={1}
+    eyebrow="Verktøy"
+    tittel="Sjekk universell utforming"
+    ingress="Private virksomheter skal oppfylle 35 krav i WCAG 2.0 nivå A og AA. Vi kjører siden gjennom axe-core og viser de bruddene en maskin kan finne."
+  >
+    <div class="stack">
+      <UrlCheck
+        id="url-uu"
+        action="/verktoy/uu-sjekk"
+        buttonLabel="Kjør sjekken"
+        value={forhandsutfylt}
+        hint="Tar 15–30 sekunder. Vi lagrer ingenting."
+      />
+
+      <div id="resultat" aria-live="polite" aria-busy="false"></div>
+
+      <noscript>
+        <p class="card">
+          Sjekken krever JavaScript. Send adressen til
+          <a class="kk-link" href={`mailto:${firma.epost}?subject=UU-sjekk`}>{firma.epost}</a>,
+          så kjører vi den manuelt og sender rapporten samme dag.
+        </p>
+      </noscript>
+    </div>
+  </Section>
+
+  <Section
+    n={2}
+    eyebrow="Ærlighet"
+    tittel="Hva en automatisk test ikke kan se"
+    ingress="Dette er den viktigste seksjonen på siden. En grønn rapport her betyr ikke at kravene er oppfylt."
+  >
+    <div class="grid-2">
+      <div class="stack">
+        <p class="muted">
+          Automatiske tester finner det som kan leses ut av koden: manglende alt-tekst,
+          manglende ledetekster, feil språkkode, svak kontrast på ensfarget bakgrunn.
+          Det er ekte feil, og det er verdt å rette dem.
+        </p>
+        <p class="muted">
+          Men en maskin kan ikke avgjøre om alt-teksten faktisk beskriver bildet, om
+          tastaturrekkefølgen gir mening, om skjermleseren leser innholdet i riktig
+          rekkefølge, om videoen er tekstet, eller om språket er til å forstå.
+          Det er mennesker som må teste det.
+        </p>
+        <p class="small faint">
+          Derfor sier rapporten alltid hvor mye som gjenstår manuelt. Dette er ikke
+          juridisk rådgivning.
+        </p>
+      </div>
+      <div class="stack">
+        <Terminal
+          title="~/kodekonsulentene/uu"
+          lines={[
+            { type: "cmd", text: "uu-sjekk --dekning" },
+            { type: "ok", text: "maskinelt: alt-tekst, ledetekster, språk, kontrast" },
+            { type: "warn", text: "manuelt: tastaturflyt, skjermleserrekkefølge" },
+            { type: "warn", text: "manuelt: om alt-teksten faktisk stemmer" },
+            { type: "fail", text: "grønn rapport = ikke det samme som lovlig" },
+          ]}
+          label="Terminalutsnitt: maskinelt sjekkes alt-tekst, ledetekster, språk og kontrast. Manuelt må tastaturflyt, skjermleserrekkefølge og om alt-teksten faktisk stemmer sjekkes. En grønn rapport er ikke det samme som å være lovlig."
+        />
+      </div>
+    </div>
+  </Section>
+
+  <Section n={3} eyebrow="Etterpå" tittel="Vil du ha en full gjennomgang?" ingress="En manuell revisjon dekker det automatiske tester ikke når: tastaturnavigasjon, skjermleser, kontrast over bilder og forståelig språk.">
+    <div class="row">
+      <Button variant="primary" href="/priser">Se hva det koster</Button>
+      <Button variant="ghost" href="/sjekk">Kjør den fulle sjekken</Button>
+      <Button variant="ghost" href="/verktoy/cookie-sjekk">Sjekk cookies</Button>
+    </div>
+  </Section>
+
+  <ContactBlock n={4} tittel="Spørsmål om funnene?" ingress="Har du rapporten foran deg og vil vite hva som haster, tar det fem minutter på telefon." />
+</Base>
+
+<script>
+  interface Brudd {
+    regel: string; alvorlighet: string; forklaring: string; krav: string | null;
+    oversatt: boolean; antall: number; eksempler: string[]; hjelpeLenke: string;
+  }
+  interface Rapport {
+    url: string; dato: string; status: "ok" | "warn" | "fail" | "neutral";
+    antallBrudd: number; antallRegler: number; antallAlvorlige: number;
+    brudd: Brudd[]; måSjekkesManuelt: { regel: string; forklaring: string; antall: number }[];
+    sekunder: number; oppsummering: string; forbehold: string[]; feil?: string;
+  }
+
+  const ORD = { ok: "Bestått", warn: "Bør fikses", fail: "Brudd", neutral: "Ikke sjekket" } as const;
+  const IKON = {
+    ok: '<path d="M20 6 9 17l-5-5"/>',
+    warn: '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+    fail: '<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>',
+    neutral: '<circle cx="12" cy="12" r="10"/><path d="M8 12h8"/>',
+  } as const;
+
+  const ALVOR: Record<string, string> = {
+    critical: "Kritisk", serious: "Alvorlig", moderate: "Middels", minor: "Mindre", ukjent: "Ukjent",
+  };
+
+  const esc = (s: unknown) =>
+    String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
+
+  const badge = (s: keyof typeof ORD) =>
+    `<span class="kk-badge kk-badge-${s}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IKON[s]}</svg>${ORD[s]}</span>`;
+
+  const boks = document.querySelector<HTMLElement>("#resultat")!;
+  const skjema = document.querySelector<HTMLInputElement>("#url-uu")?.closest("form");
+  const felt = document.querySelector<HTMLInputElement>("#url-uu")!;
+
+  const melding = (html: string) => { boks.innerHTML = `<div class="card">${html}</div>`; };
+
+  function tegn(r: Rapport) {
+    const rader = r.brudd
+      .map((b) => {
+        const alvor = b.alvorlighet === "critical" || b.alvorlighet === "serious" ? "fail" : "warn";
+        return `<tr>
+          <td class="kk-name">${esc(ALVOR[b.alvorlighet] ?? b.alvorlighet)}</td>
+          <td>${badge(alvor)}</td>
+          <td class="kk-value">${b.antall}</td>
+          <td class="kk-note">
+            ${esc(b.forklaring)}
+            ${b.krav ? ` <span class="mono faint">${esc(b.krav)}</span>` : ""}
+            ${b.oversatt ? "" : ' <span class="small faint">(axe-core sin engelske tekst – regelen er ikke oversatt)</span>'}
+          </td>
+        </tr>`;
+      })
+      .join("");
+
+    boks.innerHTML = `
+      <div class="stack">
+        <div class="kk-report">
+          <div class="kk-report-head"><span class="kk-url">${esc(r.url)}</span><span>${esc(r.dato)}</span></div>
+          <table>
+            <thead><tr><th scope="col">Funn</th><th scope="col">Status</th><th scope="col">Antall</th><th scope="col">Hva det betyr</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="kk-name">Maskinelle brudd</td>
+                <td>${badge(r.status)}</td>
+                <td class="kk-value">${r.antallBrudd}</td>
+                <td class="kk-note">${esc(r.oppsummering)}</td>
+              </tr>
+              <tr>
+                <td class="kk-name">Må testes manuelt</td>
+                <td>${badge("neutral")}</td>
+                <td class="kk-value">${r.måSjekkesManuelt.length}</td>
+                <td class="kk-note">Regler axe-core ikke kunne avgjøre på egen hånd. De er ikke feil – de er usjekket.</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="kk-report-foot"><span>Skannet på ${r.sekunder} s</span><span class="mono">WCAG 2.0 A + AA</span></div>
+        </div>
+
+        ${
+          r.brudd.length
+            ? `<div class="kk-report">
+                 <div class="kk-report-head"><span class="kk-url">Brudd, mest alvorlige først</span></div>
+                 <table>
+                   <thead><tr><th scope="col">Alvorlighet</th><th scope="col">Status</th><th scope="col">Antall</th><th scope="col">Hva det betyr for brukeren</th></tr></thead>
+                   <tbody>${rader}</tbody>
+                 </table>
+               </div>`
+            : `<p class="card">Ingen maskinelle brudd funnet. Les forbeholdene under før du konkluderer.</p>`
+        }
+
+        ${
+          r.måSjekkesManuelt.length
+            ? `<details class="card card--sunken">
+                 <summary class="body-strong" style="cursor: pointer">${r.måSjekkesManuelt.length} regler axe-core ikke kunne avgjøre</summary>
+                 <ul class="small muted" style="margin: var(--space-3) 0 0; padding-left: var(--space-5); display: grid; gap: var(--space-2)">
+                   ${r.måSjekkesManuelt.map((m) => `<li>${esc(m.forklaring)} <span class="mono faint">${esc(m.regel)} · ${m.antall}</span></li>`).join("")}
+                 </ul>
+               </details>`
+            : ""
+        }
+
+        <details class="card card--sunken" open>
+          <summary class="body-strong" style="cursor: pointer">Forbehold – hva sjekken ikke kan avgjøre</summary>
+          <ul class="small muted" style="margin: var(--space-3) 0 0; padding-left: var(--space-5); display: grid; gap: var(--space-2)">
+            ${r.forbehold.map((f) => `<li>${esc(f)}</li>`).join("")}
+          </ul>
+        </details>
+      </div>`;
+  }
+
+  async function kjor(url: string) {
+    if (!url.trim()) return;
+    boks.setAttribute("aria-busy", "true");
+    melding(
+      `<p class="mono">$ uu-sjekk ${esc(url)} …</p>` +
+        `<p class="small faint">Vi starter en nettleser og kjører axe-core. Det tar vanligvis 15–30 sekunder.</p>`,
+    );
+    try {
+      const svar = await fetch("/api/uu-sjekk", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ url }),
+      });
+      const data = (await svar.json()) as Rapport;
+      if (!svar.ok || data.feil) {
+        melding(
+          `<p class="body-strong">Sjekken stoppet.</p><p class="muted">${esc(data.feil ?? "Ukjent feil.")}</p>` +
+            `<p class="small faint">At sjekken ikke kjørte er ikke det samme som at siden er i orden.</p>`,
+        );
+        return;
+      }
+      tegn(data);
+    } catch {
+      melding('<p class="body-strong">Sjekken stoppet.</p><p class="muted">Fikk ikke svar fra serveren. Prøv igjen om et øyeblikk.</p>');
+    } finally {
+      boks.setAttribute("aria-busy", "false");
+    }
+  }
+
+  skjema?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    history.replaceState(null, "", `/verktoy/uu-sjekk?url=${encodeURIComponent(felt.value)}`);
+    void kjor(felt.value);
+  });
+
+  if (felt.value.trim()) void kjor(felt.value);
+</script>

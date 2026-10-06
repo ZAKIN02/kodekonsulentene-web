@@ -1,0 +1,199 @@
+---
+import Base from "../../layouts/Base.astro";
+import Section from "../../components/Section.astro";
+import Button from "../../components/Button.astro";
+import Terminal from "../../components/Terminal.astro";
+import ContactBlock from "../../components/ContactBlock.astro";
+import { firma } from "../../data/firma";
+
+const forhandsutfylt = Astro.url.searchParams.get("domene") ?? "";
+---
+<Base
+  tittel="Sjekk e-posten din: SPF, DKIM og DMARC"
+  beskrivelse="Gratis sjekk av SPF, DKIM og DMARC på domenet ditt. Se om noen kan sende e-post i bedriftens navn, og om din egen e-post havner i søppelposten."
+>
+  <Section
+    nivaa={1}
+    n={1}
+    eyebrow="Verktøy"
+    tittel="Kan noen sende e-post i ditt navn?"
+    ingress="Tre poster i DNS avgjør det: SPF, DKIM og DMARC. Mangler de, kan hvem som helst sende faktura som ser ut til å komme fra bedriften din – og din egen e-post havner oftere i søppelposten."
+  >
+    <div class="stack">
+      <form class="stack stack--tight" id="dmarc-skjema" style="max-width: 560px">
+        <div class="kk-urlcheck">
+          <label class="visually-hidden" for="domene">Domene</label>
+          <span class="kk-prompt" aria-hidden="true">@</span>
+          <input
+            class="kk-input" id="domene" name="domene" type="text" inputmode="url"
+            value={forhandsutfylt} placeholder="dinbedrift.no" autocomplete="url"
+            spellcheck="false" required
+          />
+          <Button variant="primary" type="submit">Sjekk</Button>
+        </div>
+        <details>
+          <summary class="small muted" style="cursor: pointer">Har du DKIM-selektoren? (valgfritt)</summary>
+          <div class="field" style="margin-top: var(--space-3)">
+            <label for="dkim">DKIM-selektor</label>
+            <input class="control" id="dkim" name="dkim" type="text" placeholder="google" spellcheck="false" />
+            <span class="hint">
+              DKIM ligger på en selektor vi ikke kan gjette. Google Workspace bruker ofte
+              «google», Microsoft 365 bruker «selector1». Står den ikke her, hopper vi over DKIM.
+            </span>
+          </div>
+        </details>
+        <p class="kk-urlcheck-hint">Vi leser bare DNS. Ingen e-post sendes, ingenting lagres.</p>
+      </form>
+
+      <div id="resultat" aria-live="polite" aria-busy="false"></div>
+
+      <noscript>
+        <p class="card">
+          Sjekken krever JavaScript. Send domenet til
+          <a class="kk-link" href={`mailto:${firma.epost}?subject=E-postsjekk`}>{firma.epost}</a>,
+          så kjører vi den manuelt.
+        </p>
+      </noscript>
+    </div>
+  </Section>
+
+  <Section n={2} eyebrow="Hva det betyr" tittel="De tre postene, forklart">
+    <div class="grid-2">
+      <div class="stack">
+        <dl class="kv">
+          <div><dt>SPF</dt><dd>hvem får sende</dd></div>
+          <div><dt>DKIM</dt><dd>signatur på e-posten</dd></div>
+          <div><dt>DMARC</dt><dd>hva mottaker skal gjøre</dd></div>
+        </dl>
+        <p class="muted">
+          SPF sier hvilke servere som har lov til å sende e-post for domenet ditt.
+          DKIM signerer hver e-post, slik at mottakeren ser at innholdet ikke er endret.
+          DMARC binder de to sammen og sier hva som skal skje når noe ikke stemmer.
+        </p>
+        <p class="muted">
+          Den vanligste feilen er ikke at postene mangler, men at DMARC står på
+          <span class="mono">p=none</span>. Da blir falsk e-post i ditt navn levert
+          som normalt – du får bare en rapport om at det skjedde.
+        </p>
+      </div>
+      <div class="stack">
+        <Terminal
+          title="~/kodekonsulentene/dmarc"
+          lines={[
+            { type: "cmd", text: "dig +short TXT _dmarc.dinbedrift.no" },
+            { type: "fail", text: "(tomt)" },
+            { type: "out", text: "" },
+            { type: "warn", text: "ingen DMARC-post" },
+            { type: "out", text: "noen kan sende faktura i ditt navn," },
+            { type: "out", text: "og du får ikke beskjed om at det skjer" },
+          ]}
+          label="Terminalutsnitt: oppslag etter DMARC-post gir tomt svar. Uten DMARC kan noen sende faktura i bedriftens navn uten at eieren får beskjed."
+        />
+        <p class="small faint">
+          Sjekken sier at postene finnes og er riktig formet. Den sier ikke at hele
+          e-postoppsettet ditt virker i praksis – det krever en testsending.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <Section n={3} eyebrow="Etterpå" tittel="Vil du at vi ordner det?" ingress="Å sette opp SPF, DKIM og DMARC riktig tar vanligvis en til to timer, og det gjøres én gang. Timeprisen er 950 kr eks. mva.">
+    <div class="row">
+      <Button variant="primary" href="/kontakt">Book 20 minutter</Button>
+      <Button variant="ghost" href="/verktoy">Se de andre verktøyene</Button>
+    </div>
+  </Section>
+
+  <ContactBlock n={4} />
+</Base>
+
+<script>
+  const ORD = { ok: "Bestått", warn: "Bør fikses", fail: "Brudd", neutral: "Ikke sjekket" } as const;
+  type Status = keyof typeof ORD;
+
+  const IKON: Record<Status, string> = {
+    ok: '<path d="M20 6 9 17l-5-5"/>',
+    warn: '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+    fail: '<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>',
+    neutral: '<circle cx="12" cy="12" r="10"/><path d="M8 12h8"/>',
+  };
+
+  interface Rad { name: string; status: Status; value: string; note: string }
+  interface Rapport { domene: string; dato: string; rader: Rad[]; totalt: number; forbehold: string[] }
+
+  const esc = (s: unknown) =>
+    String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
+
+  const badge = (s: Status) =>
+    `<span class="kk-badge kk-badge-${s}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IKON[s]}</svg>${ORD[s]}</span>`;
+
+  const boks = document.querySelector<HTMLElement>("#resultat")!;
+  const skjema = document.querySelector<HTMLFormElement>("#dmarc-skjema")!;
+  const felt = document.querySelector<HTMLInputElement>("#domene")!;
+  const dkimFelt = document.querySelector<HTMLInputElement>("#dkim")!;
+
+  const melding = (html: string) => { boks.innerHTML = `<div class="card">${html}</div>`; };
+
+  function tegn(r: Rapport) {
+    const rader = r.rader
+      .map(
+        (x) => `<tr>
+          <td class="kk-name">${esc(x.name)}</td>
+          <td>${badge(x.status)}</td>
+          <td class="kk-value">${esc(x.value)}</td>
+          <td class="kk-note">${esc(x.note)}</td>
+        </tr>`,
+      )
+      .join("");
+
+    boks.innerHTML = `
+      <div class="stack">
+        <div class="kk-report">
+          <div class="kk-report-head"><span class="kk-url">${esc(r.domene)}</span><span>${esc(r.dato)}</span></div>
+          <table>
+            <thead><tr><th scope="col">Post</th><th scope="col">Status</th><th scope="col">Verdi</th><th scope="col">Hva det betyr</th></tr></thead>
+            <tbody>${rader}</tbody>
+          </table>
+          <div class="kk-report-foot"><span>Samlet: ${r.totalt} av 100</span><span class="mono">${esc(r.domene)}</span></div>
+        </div>
+        <details class="card card--sunken">
+          <summary class="body-strong" style="cursor: pointer">Forbehold – hva sjekken ikke ser</summary>
+          <ul class="small muted" style="margin: var(--space-3) 0 0; padding-left: var(--space-5); display: grid; gap: var(--space-2)">
+            ${r.forbehold.map((f) => `<li>${esc(f)}</li>`).join("")}
+          </ul>
+        </details>
+      </div>`;
+  }
+
+  async function kjor(domene: string, dkim: string) {
+    if (!domene.trim()) return;
+    boks.setAttribute("aria-busy", "true");
+    melding(`<p class="mono">$ dig TXT ${esc(domene)} …</p><p class="small faint">Tre DNS-oppslag. Dette tar et par sekunder.</p>`);
+    try {
+      const svar = await fetch("/api/dmarc", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ domene, dkim: dkim || undefined }),
+      });
+      const data = (await svar.json()) as Rapport & { feil?: string };
+      if (!svar.ok || data.feil) {
+        melding(`<p class="body-strong">Sjekken stoppet.</p><p class="muted">${esc(data.feil ?? "Ukjent feil.")}</p>`);
+        return;
+      }
+      tegn(data);
+    } catch {
+      melding('<p class="body-strong">Sjekken stoppet.</p><p class="muted">Fikk ikke svar fra serveren. Prøv igjen om et øyeblikk.</p>');
+    } finally {
+      boks.setAttribute("aria-busy", "false");
+    }
+  }
+
+  skjema.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const d = felt.value;
+    history.replaceState(null, "", `/verktoy/dmarc?domene=${encodeURIComponent(d)}`);
+    void kjor(d, dkimFelt.value);
+  });
+
+  if (felt.value.trim()) void kjor(felt.value, dkimFelt.value);
+</script>

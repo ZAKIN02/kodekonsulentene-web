@@ -1,0 +1,53 @@
+# Fly.io – skannertjenesten (services/skanner)
+#
+# Egen app, med vilje. En skanning starter en ekte Chromium og kan bruke flere
+# hundre megabyte. Lå den i samme maskin som nettsiden, kunne én tung skanning
+# tatt ned forsiden. Her kan den bare ta ned seg selv.
+#
+# Deploy:  fly deploy -c fly.skanner.toml
+# Logger:  fly logs -a kodekonsulentene-skanner
+# Se docs/skanner.md for hele oppsettet.
+
+app = "kodekonsulentene-skanner"
+primary_region = "ams"
+
+[build]
+  dockerfile = "services/skanner/Dockerfile"
+
+[env]
+  HOST = "0.0.0.0"
+  PORT = "8080"
+  NODE_ENV = "production"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  # Skanneren sover når ingen bruker den. Den er ikke en nettside – ingen
+  # besøkende venter på at den skal våkne, og et verktøykall tåler de sekundene
+  # oppstarten tar. Derfor 0 våkne maskiner, i motsetning til nettsiden.
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+  [http_service.concurrency]
+    # Én skanning om gangen per maskin. Chromium og 1 GB minne tåler ikke mer,
+    # og tjenesten håndhever det selv med et «opptatt»-svar.
+    type = "requests"
+    soft_limit = 1
+    hard_limit = 2
+
+  [[http_service.checks]]
+    grace_period = "20s"
+    interval = "30s"
+    method = "GET"
+    timeout = "5s"
+    path = "/helse"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  # Chromium klarer seg ikke på 512 MB. Går du under dette, dør skanningen
+  # midtveis med et uforståelig «Target closed».
+  memory = "1gb"
+  cpu_kind = "shared"
+  cpus = 1

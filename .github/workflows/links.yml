@@ -1,0 +1,39 @@
+name: Lenkesjekk
+
+on:
+  pull_request:
+  schedule:
+    # Mandag 06:00 UTC. Eksterne lenker råtner uten at noen rører repoet.
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  lychee:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          # Sjekker bygget HTML, ikke kildefiler – da fanges også genererte lenker.
+          args: >-
+            --no-progress
+            --accept 200,206,429
+            --max-concurrency 4
+            --exclude-path dist/server
+            dist/client/**/*.html
+            docs/**/*.md
+            *.md
+          fail: true

@@ -1,0 +1,201 @@
+---
+import Base from "../../layouts/Base.astro";
+import Section from "../../components/Section.astro";
+import ContactBlock from "../../components/ContactBlock.astro";
+import { tillegg, timepris, TIMER_PER_EKSTRA_SIDE, TIMER_APP_FRA } from "../../lib/priskalkyle";
+import { markedspriser, markedTimepris } from "../../data/markedspriser";
+import { prisvilkaar } from "../../data/priser";
+
+const t = timepris();
+const kr = (n: number) => `${n.toLocaleString("nb-NO").replace(/ /g, " ")} kr`;
+---
+<Base
+  tittel="Hva koster en nettside? Kalkulator med åpne priser"
+  beskrivelse="Svar på fire spørsmål og få et prisspenn med alle forutsetninger synlige. Våre priser er faste og står åpent. Markedstallene har kilde og dato."
+>
+  <Section
+    nivaa={1}
+    n={1}
+    eyebrow="Verktøy"
+    tittel="Hva koster det?"
+    ingress="Fire spørsmål gir et prisspenn. Du ser hver linje estimatet består av, hvilke timeanslag som ligger bak, og hva andre tar for det samme."
+  >
+    <div class="grid-2">
+      <form class="card" id="kalk">
+        <h2 class="heading">Fire spørsmål</h2>
+
+        <div class="field">
+          <label for="sider">Hvor mange sider trenger du?</label>
+          <input class="control" id="sider" name="sider" type="number" min="1" max="60" value="5" />
+          <span class="hint">Forside, tjenester, om, kontakt – tell dem du faktisk vil ha.</span>
+        </div>
+
+        <fieldset style="border: 0; padding: 0; margin: 0" class="stack stack--tight">
+          <legend class="body-strong" style="padding: 0">Vil du endre innholdet selv?</legend>
+          <label class="row" style="gap: var(--space-2)">
+            <input type="checkbox" id="cms" name="cms" checked />
+            <span>Ja, jeg vil ha CMS</span>
+          </label>
+          <span class="hint">Uten CMS endrer vi teksten for deg – det er inkludert i drift.</span>
+        </fieldset>
+
+        <fieldset style="border: 0; padding: 0; margin: 0" class="stack stack--tight">
+          <legend class="body-strong" style="padding: 0">Skal noe kobles sammen?</legend>
+          {tillegg.map((i) => (
+            <label class="row" style="gap: var(--space-2); align-items: flex-start">
+              <input type="checkbox" name="integrasjon" value={i.id} style="margin-top: 4px" />
+              <span>
+                {i.navn}
+                <br /><span class="small faint">{i.forklaring}</span>
+              </span>
+            </label>
+          ))}
+        </fieldset>
+
+        <fieldset style="border: 0; padding: 0; margin: 0" class="stack stack--tight">
+          <legend class="body-strong" style="padding: 0">Trenger du en app?</legend>
+          <label class="row" style="gap: var(--space-2)">
+            <input type="checkbox" id="app" name="app" />
+            <span>Ja, iOS- eller intern app</span>
+          </label>
+          <span class="hint">En app estimeres ordentlig etter en samtale. Her får du bare et gulv.</span>
+        </fieldset>
+      </form>
+
+      <div class="stack">
+        <div id="svar" aria-live="polite"></div>
+        <noscript>
+          <p class="card">
+            Kalkulatoren krever JavaScript. Hele prislisten står uansett åpent på
+            <a class="kk-link" href="/priser">prissiden</a>.
+          </p>
+        </noscript>
+      </div>
+    </div>
+  </Section>
+
+  <Section n={2} eyebrow="Forutsetninger" tittel="Dette ligger bak tallene" ingress="En kalkulator som ikke viser forutsetningene sine er bare en påstand med skyvebryter. Her er alle sammen.">
+    <div class="grid-2">
+      <div class="stack">
+        <h3 class="subheading">Timeanslag</h3>
+        <p class="small muted">
+          Pakkeprisene er faste. Alt utover dem regnes ut fra timeprisen på
+          <span class="mono">{kr(t)}</span> eks. mva og anslagene under.
+          <strong>Dette er våre anslag, ikke målte tall.</strong> Spennet er bredt med vilje:
+          en Vipps-integrasjon mot én betaling er noe annet enn mot et abonnement.
+        </p>
+        <dl class="kv">
+          <div><dt>Side utover pakken</dt><dd>{TIMER_PER_EKSTRA_SIDE.lav}–{TIMER_PER_EKSTRA_SIDE.hoy} t</dd></div>
+          {tillegg.map((i) => (
+            <div><dt>{i.navn}</dt><dd>{i.timerLav}–{i.timerHoy} t</dd></div>
+          ))}
+          <div><dt>App</dt><dd>fra {TIMER_APP_FRA} t</dd></div>
+        </dl>
+      </div>
+      <div class="stack">
+        <h3 class="subheading">Vilkår</h3>
+        <ul class="small muted" style="margin: 0; padding-left: var(--space-5); display: grid; gap: var(--space-2)">
+          {prisvilkaar.map((v) => <li>{v}</li>)}
+          <li>Estimatet erstatter ikke et tilbud. Etter en samtale får du fast pris.</li>
+        </ul>
+      </div>
+    </div>
+  </Section>
+
+  <Section n={3} eyebrow="Markedet" tittel="Hva andre tar" ingress="Tallene under er ikke våre. De er hentet fra leverandørenes egne nettsider, med kilde og dato, slik at du kan etterprøve dem.">
+    <div class="prose" style="max-width: none">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Leverandør</th><th scope="col">Gjelder</th>
+            <th scope="col">Pris</th><th scope="col">Kilde</th>
+          </tr>
+        </thead>
+        <tbody>
+          {markedspriser.map((m) => (
+            <tr>
+              <td>{m.leverandor}</td>
+              <td>{m.gjelder}{m.merknad && <><br /><span class="small faint">{m.merknad}</span></>}</td>
+              <td class="nowrap mono">
+                {m.hoy === null ? `fra ${kr(m.lav ?? 0)}` : m.lav === m.hoy ? kr(m.lav ?? 0) : `${kr(m.lav ?? 0)}–${kr(m.hoy)}`}
+                {m.enhet === "mnd" ? "/mnd" : ""}
+              </td>
+              <td class="small faint">Sist sjekket {m.sistSjekket}</td>
+            </tr>
+          ))}
+          <tr>
+            <td>Timepris i markedet</td>
+            <td>Byråer / frilansere</td>
+            <td class="nowrap mono">{kr(markedTimepris.byraaLav)}–{kr(markedTimepris.byraaHoy)}/t · {kr(markedTimepris.frilansLav)}–{kr(markedTimepris.frilansHoy)}/t</td>
+            <td class="small faint">Sist sjekket {markedTimepris.sistSjekket}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="small faint">
+        Leverandørene har kommersielle interesser og ulike definisjoner av «enkel nettside».
+        Bruk tallene som markedssignal, ikke som fasit. Vår egen timepris er {kr(t)} eks. mva.
+      </p>
+    </div>
+  </Section>
+
+  <ContactBlock n={4} tittel="Vil du ha fast pris?" ingress="Et estimat er et spenn. Et tilbud er et tall. Tjue minutter på telefon er nok til å gi deg det andre." />
+</Base>
+
+<script>
+  import { beregn, formaterKr, type Integrasjon } from "../../lib/priskalkyle.ts";
+
+  const skjema = document.querySelector<HTMLFormElement>("#kalk")!;
+  const svar = document.querySelector<HTMLElement>("#svar")!;
+
+  const esc = (s: unknown) =>
+    String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
+
+  function tegn() {
+    const data = new FormData(skjema);
+    const e = beregn({
+      sider: Number(data.get("sider")) || 1,
+      cms: data.get("cms") === "on",
+      integrasjoner: data.getAll("integrasjon") as Integrasjon[],
+      app: data.get("app") === "on",
+    });
+
+    const linjer = e.linjer
+      .map((l) => {
+        const belop = l.lav === l.hoy ? formaterKr(l.lav) : `${formaterKr(l.lav)}–${formaterKr(l.hoy)}`;
+        const anslag = l.anslag
+          ? `<br><span class="small faint">${l.anslag.timerLav === l.anslag.timerHoy ? `fra ${l.anslag.timerLav}` : `${l.anslag.timerLav}–${l.anslag.timerHoy}`} timer · anslag</span>`
+          : "";
+        return `<div><dt>${esc(l.tekst)}${anslag}</dt><dd class="nowrap">${belop}</dd></div>`;
+      })
+      .join("");
+
+    const sum =
+      e.lav === e.hoy
+        ? `${e.aapentOppe ? "fra " : ""}${formaterKr(e.lav)}`
+        : `${formaterKr(e.lav)}–${formaterKr(e.hoy)}`;
+
+    svar.innerHTML = `
+      <div class="card">
+        <p class="kk-eyebrow"><span class="kk-eyebrow-n" aria-hidden="true">//</span><span>${esc(e.pakke)}-pakken</span></p>
+        <p class="mono-stat">${sum}</p>
+        <p class="small faint">eks. mva${e.aapentOppe ? " · gulv, ikke tak" : ""}</p>
+        <p class="muted">${esc(e.pakkeBegrunnelse)}</p>
+        <dl class="kv">${linjer}</dl>
+        <dl class="kv">
+          <div><dt>Etter lansering</dt><dd class="nowrap">${esc(e.loepende.pris)}</dd></div>
+        </dl>
+        <a class="kk-btn kk-btn-primary" href="/kontakt">Få fast pris</a>
+      </div>
+      <details class="card card--sunken" style="margin-top: var(--space-4)">
+        <summary class="body-strong" style="cursor: pointer">Hva estimatet forutsetter</summary>
+        <ul class="small muted" style="margin: var(--space-3) 0 0; padding-left: var(--space-5); display: grid; gap: var(--space-2)">
+          ${e.forutsetninger.map((f) => `<li>${esc(f)}</li>`).join("")}
+        </ul>
+      </details>`;
+  }
+
+  skjema.addEventListener("input", tegn);
+  skjema.addEventListener("change", tegn);
+  skjema.addEventListener("submit", (ev) => ev.preventDefault());
+  tegn();
+</script>

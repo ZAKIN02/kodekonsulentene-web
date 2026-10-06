@@ -7,6 +7,9 @@ interface Env {
   /** Resend – sender rapport og skjemasvar på e-post. */
   RESEND_API_KEY?: string;
   RAPPORT_FRA?: string;
+  /** Skannertjenesten med ekte nettleser (egen Fly-app). */
+  SKANNER_URL?: string;
+  SKANNER_NOKKEL?: string;
   RAPPORT_KOPI?: string;
 }
 

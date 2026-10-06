@@ -1,0 +1,104 @@
+---
+import Base from "../../layouts/Base.astro";
+import Section from "../../components/Section.astro";
+import ServiceCard from "../../components/ServiceCard.astro";
+import ContactBlock from "../../components/ContactBlock.astro";
+
+/**
+ * Samleside for gratisverktøyene. Verktøyene er sidens viktigste salgsargument:
+ * de viser at vi kan jobben i stedet for å påstå det.
+ *
+ * cookie-sjekk og uu-sjekk bygges parallelt og er lenket herfra før de står ferdig.
+ * Står de ikke oppe ennå, er `klar: false` – da lenker kortet ingen steder.
+ */
+const verktoy = [
+  {
+    n: 1,
+    tittel: "Sjekk nettsiden din",
+    href: "/sjekk",
+    beskrivelse: "Ytelse, sikkerhetsheadere, cookies før samtykke, WCAG-feil og org.nr. i én sjekk.",
+    punkter: ["Org.nr. verifiseres mot Enhetsregisteret", "Rapport på 30 sekunder", "Kan sendes på e-post"],
+    klar: true,
+  },
+  {
+    n: 2,
+    tittel: "Hva koster det?",
+    href: "/verktoy/priskalkulator",
+    beskrivelse: "Fire spørsmål gir et prisspenn, med alle timeanslag og forutsetninger synlige.",
+    punkter: ["Våre faste priser", "Markedstall med kilde og dato", "Ingen skjulte påslag"],
+    klar: true,
+  },
+  {
+    n: 3,
+    tittel: "Kan noen sende e-post i ditt navn?",
+    href: "/verktoy/dmarc",
+    beskrivelse: "SPF, DKIM og DMARC lest rett fra DNS, forklart uten driftssjargong.",
+    punkter: ["Ser om domenet kan misbrukes", "Forklarer hvorfor e-post havner i søppelposten", "Ingen e-post sendes"],
+    klar: true,
+  },
+  {
+    n: 4,
+    tittel: "Cookie-sjekk",
+    href: "/verktoy/cookie-sjekk",
+    beskrivelse: "Laster siden uten å klikke på noe, og lister alt som settes før samtykke.",
+    punkter: ["Ekomloven § 3-15", "Kjører ekte nettleser", "Ser det HTML-sjekken ikke ser"],
+    klar: true,
+  },
+  {
+    n: 5,
+    tittel: "Universell utforming",
+    href: "/verktoy/uu-sjekk",
+    beskrivelse: "De maskinelt testbare av de 35 kravene private virksomheter må oppfylle.",
+    punkter: ["WCAG 2.0 nivå A og AA", "Sier hva som ikke kan testes maskinelt", "Rapport du kan sende videre"],
+    klar: true,
+  },
+];
+---
+<Base
+  tittel="Gratisverktøy"
+  beskrivelse="Gratis verktøy for norske bedrifter: nettsidesjekk, priskalkulator, e-postsikkerhet, cookie-sjekk og universell utforming. Ingen innlogging."
+>
+  <Section
+    nivaa={1}
+    n={1}
+    eyebrow="Verktøy"
+    tittel="Verktøy du kan bruke gratis"
+    ingress="Vi selger sikkerhet og etterlevelse. Da er det rimelig at du får se at vi kan det, før du betaler for noe. Ingen innlogging, ingen e-post før du selv ber om rapporten."
+  >
+    <div class="grid-3">
+      {verktoy.map((v) => (
+        <ServiceCard
+          n={v.n}
+          title={v.tittel}
+          href={v.klar ? v.href : undefined}
+          description={v.beskrivelse}
+          items={v.punkter}
+          linkLabel="Kjør den"
+        />
+      ))}
+    </div>
+    <p class="small faint" style="margin-top: var(--space-5)">
+      Kortene uten lenke er under arbeid. De dukker opp her når de faktisk virker –
+      ikke før.
+    </p>
+  </Section>
+
+  <Section n={2} eyebrow="Åpent" tittel="Motoren er åpen kildekode" ingress="Sjekkene kjører også som kommandolinjeverktøy og som GitHub Action, slik at du kan ha dem i ditt eget bygg i stedet for å besøke denne siden.">
+    <div class="grid-2">
+      <div class="card">
+        <h3 class="subheading">Kommandolinje</h3>
+        <p class="muted">Kjør den samme sjekken fra terminalen, uten å installere noe.</p>
+        <pre class="kk-term" style="padding: var(--space-4); overflow-x: auto"><code class="mono">npx kodekonsulentene sjekk dinbedrift.no</code></pre>
+      </div>
+      <div class="card">
+        <h3 class="subheading">GitHub Action</h3>
+        <p class="muted">La bygget feile hvis en side bryter lovkravene, før den går i produksjon.</p>
+        <pre class="kk-term" style="padding: var(--space-4); overflow-x: auto"><code class="mono">- uses: kodekonsulentene/norsk-lovsjekk@v1
+  with:
+    url: https://dinbedrift.no</code></pre>
+      </div>
+    </div>
+  </Section>
+
+  <ContactBlock n={3} />
+</Base>

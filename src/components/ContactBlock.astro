@@ -5,6 +5,11 @@ import { firma, bookUrl } from "../data/firma";
 import Eyebrow from "./Eyebrow.astro";
 import Button from "./Button.astro";
 interface Props { n?: number; tittel?: string; ingress?: string }
+// firma er `as const`, så firma.telefon har literal-typen "" når feltet står tomt.
+// Uten denne utvidelsen smalner den sanne grenen under til `never`, og astro check
+// feiler på .replace(). Verdien er uendret – bare typen er bredere.
+const telefon: string = firma.telefon;
+
 const {
   n = 10,
   tittel = "Snakk med den som koder",
@@ -26,8 +31,8 @@ const {
         <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
         <dl class="kv">
           <div><dt>E-post</dt><dd><a class="kk-link" href={`mailto:${firma.epost}`}>{firma.epost}</a></dd></div>
-          {firma.telefon && (
-            <div><dt>Telefon</dt><dd><a class="kk-link" href={`tel:${firma.telefon.replace(/\s/g, "")}`}>{firma.telefon}</a></dd></div>
+          {telefon && (
+            <div><dt>Telefon</dt><dd><a class="kk-link" href={`tel:${telefon.replace(/\s/g, "")}`}>{telefon}</a></dd></div>
           )}
           <div><dt>Svartid</dt><dd>{firma.svartid}</dd></div>
         </dl>

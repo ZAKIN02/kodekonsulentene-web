@@ -1,0 +1,13 @@
+{
+  "name": "kodekonsulentene",
+  "version": "1.0.0",
+  "description": "Sjekk en norsk nettside fra terminalen: cookies før samtykke, sikkerhetsheadere, universell utforming, org.nr. og e-postsikkerhet.",
+  "type": "module",
+  "bin": { "kodekonsulentene": "./kodekonsulentene.mjs" },
+  "files": ["kodekonsulentene.mjs", "README.md", "LICENSE"],
+  "engines": { "node": ">=18" },
+  "keywords": ["wcag", "gdpr", "norway", "norge", "accessibility", "cookie-consent", "dmarc", "spf", "ekomloven"],
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/kodekonsulentene/norsk-lovsjekk" },
+  "homepage": "https://kodekonsulentene.no/verktoy"
+}

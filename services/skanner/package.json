@@ -1,0 +1,18 @@
+{
+  "name": "kodekonsulentene-skanner",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Skannertjeneste med ekte nettleser: cookies før samtykke og WCAG-sjekk med axe-core.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "SKANNER_NOKKEL=lokal-nokkel node server.mjs"
+  },
+  "dependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "playwright": "^1.63.0"
+  }
+}

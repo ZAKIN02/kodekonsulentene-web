@@ -14,3 +14,6 @@ scripts
 .claude
 README.md
 CLAUDE.md
+
+# Skanneren har sitt eget bilde (fly.skanner.toml).
+services/

@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typesjekk
+        run: npm run check
+
+      # Bygget må skje før testene: test/bygget-html.test.ts leser dist/ og
+      # hopper over seg selv når mappa mangler. Uten bygg først ville de
+      # testene stilltiende blitt droppet i CI.
+      - name: Bygg
+        run: npm run build
+
+      - name: Tester
+        run: npm run test

@@ -53,6 +53,42 @@ Dette er dekket av tester i `test/sjekk.test.ts`, og de testene skal ikke mykes 
 Av samme grunn er `test/lansering.test.ts` **rød så lenge org.nr. er plassholder**.
 Siden rapporterer brudd hos andre når org.nr. mangler, og kan ikke lanseres uten sitt eget.
 
+## Agenter og sprintflyt
+
+`.claude/agents/` har ti roller: `seo-strateg`, `innholdsskribent`, `faktasjekker`,
+`verktoybygger`, `designer`, `teknisk-seo-revisor`, `sikkerhetsrevisor`,
+`tilgjengelighetsrevisor`, `distribusjon` og `maling`.
+
+Dette er **definisjoner, ikke ti agenter som kjører samtidig.** Kjør 3–5 parallelt,
+og bare når oppgavene er uavhengige. Et orkestrator-oppsett bruker mange ganger så
+mange tokens som en vanlig samtale, og agenter som deles opp for finmasket kan bruke
+mer på koordinering enn på arbeidet.
+
+De fire revisorene er **skrivebeskyttet** og returnerer bare funn. Det er med vilje:
+den som har skrevet koden skal ikke være den som godkjenner den.
+
+`/sprint` starter flyten. Fasene er plan → research → bygg → revisjon → godkjenning
+→ distribusjon → retro, og mennesket er porten mellom revisjon og merge.
+
+**Ingenting publiseres, merges eller sendes uten et eksplisitt «GODKJENT».**
+
+### Felleskontekst for agentene
+
+- KodeKonsulentene, enkeltpersonforetak i Oslo. Org.nr. og foretaksnavn i `src/data/firma.ts`.
+- Siden snakker som **«vi»**. Ingen person nevnes ved navn i brødtekst. Det
+  registrerte foretaksnavnet står bare i den lovpålagte footeren, fordi
+  foretaksnavnloven § 2-2 krever etternavnet i navnet på et ENK.
+- Tjenester: nettsider, systemer og integrasjoner, apper og AI.
+- Priser: bare fra `src/data/priser.ts`. Skriv aldri av et tall.
+- Posisjon: sikkerhet, integrasjoner og apper — levert til fast pris.
+- Mål: rangere på nisjesøk (lovkrav, integrasjoner, bransje + by) gjennom
+  gratisverktøy folk faktisk bruker. `kodekonsulentene-seo` har reglene.
+
+### Overleveringsformat
+
+Hver agent avslutter med: **Resultat · Filer endret · Kilder (URL + dato) · Åpne
+spørsmål og antakelser · Neste steg og hvem som bør ta over.**
+
 ## Kommandoer
 
 ```bash

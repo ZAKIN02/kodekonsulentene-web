@@ -1,0 +1,263 @@
+---
+import Base from "../../layouts/Base.astro";
+import Section from "../../components/Section.astro";
+import UrlCheck from "../../components/UrlCheck.astro";
+import Button from "../../components/Button.astro";
+import Terminal from "../../components/Terminal.astro";
+import ContactBlock from "../../components/ContactBlock.astro";
+import { firma } from "../../data/firma";
+
+const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
+---
+<Base
+  tittel="Cookie-sjekk"
+  beskrivelse="Se hva nettsiden din setter før noen har samtykket. Vi laster forsiden i en ekte nettleser med tom profil og klikker ikke på noe. Gratis."
+>
+  <Section nivaa={1}
+    n={1}
+    eyebrow="Verktøy"
+    tittel="Hva setter siden din før noen sier ja?"
+    ingress="Vi laster forsiden i en ekte nettleser med tom profil, og klikker ikke på noe. Alt som er satt i det øyeblikket, er satt uten samtykke."
+  >
+    <div class="stack">
+      <UrlCheck
+        id="url-cookie"
+        action="/verktoy/cookie-sjekk"
+        buttonLabel="Kjør sjekken"
+        value={forhandsutfylt}
+        hint="Tar 15–30 sekunder. Vi lagrer ingenting."
+      />
+
+      <div id="resultat" aria-live="polite" aria-busy="false"></div>
+
+      <noscript>
+        <p class="card">
+          Sjekken krever JavaScript. Send adressen til
+          <a class="kk-link" href={`mailto:${firma.epost}?subject=Cookie-sjekk`}>{firma.epost}</a>,
+          så kjører vi den manuelt og sender rapporten samme dag.
+        </p>
+      </noscript>
+    </div>
+  </Section>
+
+  <Section n={2} eyebrow="Loven" tittel="Hva ekomloven § 3-15 krever">
+    <div class="grid-2">
+      <div class="stack">
+        <p class="muted">
+          Fra 1. januar 2025 må samtykke til informasjonskapsler oppfylle GDPR-kravene.
+          I praksis betyr det tre ting: ingen forhåndsavkryssede valg, «avvis» skal være
+          like lett tilgjengelig som «godta», og ingenting som krever samtykke skal lastes
+          før samtykket er gitt.
+        </p>
+        <p class="muted">
+          Unntaket er informasjonskapsler som er <em>strengt nødvendige</em> for at
+          tjenesten skal virke – en handlekurv, en innlogging, en språkinnstilling.
+          Det unntaket kan ingen maskin vurdere. Derfor sier dette verktøyet hva som
+          ble satt, ikke om du er lovlig.
+        </p>
+        <p class="small faint">
+          Dette er en teknisk observasjon, ikke en juridisk vurdering, og ikke juridisk
+          rådgivning.
+        </p>
+      </div>
+      <div class="stack">
+        <Terminal
+          title="~/kodekonsulentene/cookie"
+          lines={[
+            { type: "cmd", text: "cookie-sjekk --hvordan" },
+            { type: "out", text: "ny nettleserprofil, ingen historikk" },
+            { type: "out", text: "laster forsiden, venter til det er stille" },
+            { type: "fail", text: "klikker ALDRI på banneret" },
+            { type: "ok", text: "leser cookies, lagring og tredjepartskall" },
+          ]}
+          label="Terminalutsnitt: sjekken åpner en ny nettleserprofil uten historikk, laster forsiden, venter til nettverket er stille, klikker aldri på banneret, og leser cookies, lagring og tredjepartskall."
+        />
+        <p class="small faint">
+          Å ikke klikke er hele poenget. Et samtykkebanner som ligger urørt er
+          nettopp situasjonen loven regulerer.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <Section n={3} eyebrow="Etterpå" tittel="Vil du at vi rydder opp?" ingress="Lovsjekk-pakken dekker cookies, universell utforming, lovpålagt informasjon og personvernerklæring på den siden du har i dag. Du trenger ikke ny nettside for det.">
+    <div class="row">
+      <Button variant="primary" href="/priser">Se hva det koster</Button>
+      <Button variant="ghost" href="/sjekk">Kjør den fulle sjekken</Button>
+      <Button variant="ghost" href="/verktoy/uu-sjekk">Sjekk universell utforming</Button>
+    </div>
+  </Section>
+
+  <ContactBlock n={4} tittel="Spørsmål om funnene?" ingress="Har du rapporten foran deg og vil vite hva som haster, tar det fem minutter på telefon." />
+</Base>
+
+<script>
+  interface Cookie {
+    navn: string; domene: string; forstepart: boolean;
+    levetidDager: number | null; sikker: boolean; httpOnly: boolean; sporer: string | null;
+  }
+  interface Sporer { id: string; navn: string; kategori: string; vert: string; antallKall: number; typiskeCookies: string[] }
+  interface Rapport {
+    url: string; dato: string; status: "ok" | "warn" | "fail" | "neutral";
+    antallCookies: number; antallTredjepart: number;
+    cookies: Cookie[]; lagring: { local: string[]; session: string[] };
+    sporere: Sporer[]; ukjenteTredjeparter: { vert: string; antallKall: number }[];
+    sekunder: number; oppsummering: string; forbehold: string[]; feil?: string;
+  }
+
+  const ORD = { ok: "Bestått", warn: "Bør fikses", fail: "Brudd", neutral: "Ikke sjekket" } as const;
+  const IKON = {
+    ok: '<path d="M20 6 9 17l-5-5"/>',
+    warn: '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+    fail: '<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>',
+    neutral: '<circle cx="12" cy="12" r="10"/><path d="M8 12h8"/>',
+  } as const;
+
+  const esc = (s: unknown) =>
+    String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
+
+  const badge = (s: keyof typeof ORD) =>
+    `<span class="kk-badge kk-badge-${s}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IKON[s]}</svg>${ORD[s]}</span>`;
+
+  const boks = document.querySelector<HTMLElement>("#resultat")!;
+  const skjema = document.querySelector<HTMLInputElement>("#url-cookie")?.closest("form");
+  const felt = document.querySelector<HTMLInputElement>("#url-cookie")!;
+
+  const melding = (html: string) => { boks.innerHTML = `<div class="card">${html}</div>`; };
+
+  const levetid = (d: number | null) =>
+    d === null ? "økt" : d === 0 ? "i dag" : d === 1 ? "1 dag" : `${d} dager`;
+
+  function tegn(r: Rapport) {
+    const sporerRader = r.sporere
+      .map(
+        (s) => `<tr>
+          <td class="kk-name">${esc(s.navn)}</td>
+          <td class="kk-value">${esc(s.kategori)}</td>
+          <td class="kk-value">${esc(s.vert)}</td>
+          <td class="kk-note">Setter typisk ${esc(s.typiskeCookies.slice(0, 3).join(", "))}</td>
+        </tr>`,
+      )
+      .join("");
+
+    const cookieRader = r.cookies
+      .map(
+        (c) => `<tr>
+          <td class="kk-name">${esc(c.navn)}</td>
+          <td class="kk-value">${c.forstepart ? "Siden selv" : "Tredjepart"}</td>
+          <td class="kk-value">${esc(c.domene)}</td>
+          <td class="kk-note">${esc(levetid(c.levetidDager))}${c.sporer ? ` · ${esc(c.sporer)}` : ""}</td>
+        </tr>`,
+      )
+      .join("");
+
+    const lagringsliste = [...r.lagring.local, ...r.lagring.session];
+
+    boks.innerHTML = `
+      <div class="stack">
+        <div class="kk-report">
+          <div class="kk-report-head"><span class="kk-url">${esc(r.url)}</span><span>${esc(r.dato)}</span></div>
+          <table>
+            <thead><tr><th scope="col">Funn</th><th scope="col">Status</th><th scope="col">Antall</th><th scope="col">Hva det betyr</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="kk-name">Før samtykke</td>
+                <td>${badge(r.status)}</td>
+                <td class="kk-value">${r.antallCookies}</td>
+                <td class="kk-note">${esc(r.oppsummering)}</td>
+              </tr>
+              <tr>
+                <td class="kk-name">Sporingstjenester</td>
+                <td>${badge(r.sporere.length ? "fail" : "ok")}</td>
+                <td class="kk-value">${r.sporere.length}</td>
+                <td class="kk-note">${r.sporere.length ? esc(r.sporere.map((s) => s.navn).join(", ")) : "Ingen kjente sporere lastet før samtykke."}</td>
+              </tr>
+              <tr>
+                <td class="kk-name">Tredjeparts-cookies</td>
+                <td>${badge(r.antallTredjepart ? "fail" : "ok")}</td>
+                <td class="kk-value">${r.antallTredjepart}</td>
+                <td class="kk-note">${r.antallTredjepart ? "Cookies fra andre domener er sjelden strengt nødvendige." : "Ingen cookies fra andre domener."}</td>
+              </tr>
+              <tr>
+                <td class="kk-name">Lagring i nettleser</td>
+                <td>${badge(lagringsliste.length ? "warn" : "ok")}</td>
+                <td class="kk-value">${lagringsliste.length}</td>
+                <td class="kk-note">${lagringsliste.length ? `localStorage og sessionStorage teller også som lagring etter § 3-15: ${esc(lagringsliste.slice(0, 5).join(", "))}` : "Ingenting lagret i nettleseren."}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="kk-report-foot"><span>Skannet på ${r.sekunder} s</span><span class="mono">uten å klikke</span></div>
+        </div>
+
+        ${
+          r.sporere.length
+            ? `<div class="kk-report">
+                 <div class="kk-report-head"><span class="kk-url">Sporere som lastet</span></div>
+                 <table>
+                   <thead><tr><th scope="col">Tjeneste</th><th scope="col">Kategori</th><th scope="col">Vert</th><th scope="col">Typiske cookies</th></tr></thead>
+                   <tbody>${sporerRader}</tbody>
+                 </table>
+               </div>`
+            : ""
+        }
+
+        ${
+          r.cookies.length
+            ? `<details class="card card--sunken">
+                 <summary class="body-strong" style="cursor: pointer">Alle ${r.cookies.length} informasjonskapsler</summary>
+                 <div class="kk-report" style="margin-top: var(--space-3)">
+                   <table>
+                     <thead><tr><th scope="col">Navn</th><th scope="col">Satt av</th><th scope="col">Domene</th><th scope="col">Varer</th></tr></thead>
+                     <tbody>${cookieRader}</tbody>
+                   </table>
+                 </div>
+               </details>`
+            : ""
+        }
+
+        <details class="card card--sunken">
+          <summary class="body-strong" style="cursor: pointer">Forbehold – hva sjekken ikke avgjør</summary>
+          <ul class="small muted" style="margin: var(--space-3) 0 0; padding-left: var(--space-5); display: grid; gap: var(--space-2)">
+            ${r.forbehold.map((f) => `<li>${esc(f)}</li>`).join("")}
+          </ul>
+        </details>
+      </div>`;
+  }
+
+  async function kjor(url: string) {
+    if (!url.trim()) return;
+    boks.setAttribute("aria-busy", "true");
+    melding(
+      `<p class="mono">$ cookie-sjekk ${esc(url)} …</p>` +
+        `<p class="small faint">Vi starter en nettleser og laster siden. Det tar vanligvis 15–30 sekunder.</p>`,
+    );
+    try {
+      const svar = await fetch("/api/cookie-sjekk", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ url }),
+      });
+      const data = (await svar.json()) as Rapport;
+      if (!svar.ok || data.feil) {
+        melding(
+          `<p class="body-strong">Sjekken stoppet.</p><p class="muted">${esc(data.feil ?? "Ukjent feil.")}</p>` +
+            `<p class="small faint">At sjekken ikke kjørte er ikke det samme som at siden er i orden.</p>`,
+        );
+        return;
+      }
+      tegn(data);
+    } catch {
+      melding('<p class="body-strong">Sjekken stoppet.</p><p class="muted">Fikk ikke svar fra serveren. Prøv igjen om et øyeblikk.</p>');
+    } finally {
+      boks.setAttribute("aria-busy", "false");
+    }
+  }
+
+  skjema?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    history.replaceState(null, "", `/verktoy/cookie-sjekk?url=${encodeURIComponent(felt.value)}`);
+    void kjor(felt.value);
+  });
+
+  if (felt.value.trim()) void kjor(felt.value);
+</script>

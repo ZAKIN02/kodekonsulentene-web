@@ -19,11 +19,14 @@ const oppdatert = "5. oktober 2026";
     </div>
 
     <div class="prose">
+      {/* firma.telefon er tomt til vi har et ekte nummer. Uten vakten nedenfor ble det
+          stående «telefon .» – en merkelapp uten verdi, på siden som skal si hvordan folk
+          når oss. Kommentaren står utenfor avsnittet med vilje: Astro fjerner en kommentar
+          sammen med mellomrommet rundt, og limte «Oslo.» og «E-post» sammen da den sto inni. */}
       <h2>Behandlingsansvarlig</h2>
       <p class="muted">
         {firma.foretaksnavn}, org.nr. {firma.orgnr}, {firma.adresse}.
-        E-post <a class="kk-link" href={`mailto:${firma.epost}`}>{firma.epost}</a>,
-        telefon {firma.telefon}.
+        E-post <a class="kk-link" href={`mailto:${firma.epost}`}>{firma.epost}</a>{firma.telefon ? `, telefon ${firma.telefon}` : ""}.
       </p>
 
       <h2>Cookies</h2>

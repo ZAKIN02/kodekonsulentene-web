@@ -64,7 +64,10 @@ const verktoy = [
   beskrivelse="Gratis verktøy for norske bedrifter: nettsidesjekk, priskalkulator, e-postsikkerhet, cookie-sjekk og universell utforming. Ingen innlogging."
 >
   <Scene lav>
-    <Mega som="h1" merke="Verktøy" n={1} tekst="Verktøy du kan bruke gratis" />
+    {/* Merket het «Verktøy» og overskriften begynte på «Verktøy», så siden leste
+          «Verktøy Verktøy du kan bruke gratis». Merket sier nå hva det koster, og
+          overskriften hva du gjør. */}
+      <Mega som="h1" merke="Gratis" n={1} tekst="Verktøy du kan kjøre selv" />
     <Avslor trinn={1}>
       <p class="scene__ingress body-lg">Vi selger sikkerhet og etterlevelse. Da er det rimelig at du får se at vi kan det, før du betaler for noe. Ingen innlogging, ingen e-post før du selv ber om rapporten.</p>
     </Avslor>

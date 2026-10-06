@@ -12,6 +12,7 @@ import UrlCheck from "../components/UrlCheck.astro";
 import CheckReport from "../components/CheckReport.astro";
 import ContactBlock from "../components/ContactBlock.astro";
 import { loepende } from "../data/priser";
+import maalinger from "../data/maalinger.json";
 
 import "../styles/scener.css";
 
@@ -21,11 +22,16 @@ import "../styles/scener.css";
  * Endrer siden seg, skal disse tallene endres med den. Står det noe her vi ikke
  * kan måle på nytt i dag, er det en feil.
  */
+/* Tallene leses fra src/data/maalinger.json, som skrives av .skudd/maaling-egen.mjs
+   mot produksjon. Svartiden sto tidligere som «204 ms» skrevet for hånd mens den
+   målte verdien var 133 ms – nøyaktig den driften kommentaren over advarer mot. */
+const oss = maalinger.oss;
+
 const egenSjekk = [
-  { name: "Ytelse", status: "neutral" as const, value: "204 ms", note: "Svartid målt fra Oslo. Lighthouse-score er ikke hentet inn her, og da sier vi «ikke sjekket» i stedet for å vise et tall vi ikke har målt." },
-  { name: "Sikkerhetsheadere", status: "ok" as const, value: "6/6", note: "CSP, HSTS, X-Content-Type-Options, Referrer-Policy, Permissions-Policy og rammevern." },
-  { name: "Cookies før samtykke", status: "ok" as const, value: "0", note: "Målt med en ekte nettleser, uten å klikke på noe: null cookies, null lagringsnøkler og null tredjepartskall." },
-  { name: "Universell utforming", status: "ok" as const, value: "0 feil", note: "Ingen av de maskinelt testbare feilene. Kontrast, tastaturflyt og skjermleserrekkefølge må testes manuelt, og det er ikke gjort her." },
+  { name: "Ytelse", status: "neutral" as const, value: `${oss.ttfbMs} ms`, note: "Svartid målt fra Oslo. Lighthouse-score er ikke hentet inn her, og da sier vi «ikke sjekket» i stedet for å vise et tall vi ikke har målt." },
+  { name: "Sikkerhetsheadere", status: "ok" as const, value: `${oss.headereAv6}/6`, note: "CSP, HSTS, X-Content-Type-Options, Referrer-Policy, Permissions-Policy og rammevern." },
+  { name: "Cookies før samtykke", status: "ok" as const, value: String(oss.cookiesForSamtykke), note: "Målt med en ekte nettleser, uten å klikke på noe: null cookies, null lagringsnøkler og null tredjepartskall." },
+  { name: "Universell utforming", status: "ok" as const, value: `${oss.uuFeil} feil`, note: "Ingen av de maskinelt testbare feilene. Kontrast, tastaturflyt og skjermleserrekkefølge må testes manuelt, og det er ikke gjort her." },
   { name: "Lovpålagt informasjon", status: "ok" as const, value: "Org.nr. bekreftet", note: "Nummeret er slått opp i Enhetsregisteret og tilhører KODEKONSULENTENE ELKASSMI." },
 ];
 

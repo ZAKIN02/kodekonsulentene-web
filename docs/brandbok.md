@@ -1,4 +1,4 @@
-KodeKonsulentene er ett menneske i Oslo som bygger nettsider, interne systemer og apper for norske småbedrifter – sikkert, raskt og til fast pris. Designsystemet skal få en besøkende til å tro tre ting på fem sekunder: dette er bygget av noen som kan mer enn nettsider, det går fort, og det er trygt. Alt under følger av det.
+KodeKonsulentene er et utviklermiljø i Oslo som bygger nettsider, interne systemer og apper for norske småbedrifter – sikkert, raskt og til fast pris. Designsystemet skal få en besøkende til å tro tre ting på fem sekunder: dette er bygget av noen som kan mer enn nettsider, det går fort, og det er trygt. Alt under følger av det.
 
 > «Nettsider som virker. Systemer som henger sammen.»
 

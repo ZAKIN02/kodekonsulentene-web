@@ -48,7 +48,7 @@ export const caser: Case[] = [
   {
     slug: "booking-demo",
     tittel: "Bookingsystem for klinikk",
-    kunde: "Demo – ikke et levert oppdrag",
+    kunde: "Ikke et levert oppdrag",
     type: "Demo",
     problem:
       "Timebestilling over telefon i åpningstiden betyr tapte timer, avbrutte behandlinger og en halv dag i måneden på å avstemme Vipps mot regnskapet.",

@@ -84,6 +84,11 @@ async function lagBasis(prompt) {
     input: {
       prompt: `${STIL}\n\n${prompt}`,
       aspect_ratio: "16:9",
+      // Uten denne leverer Qwen 1280x720 – leverandørens standard, og nøyaktig
+      // oppløsningen kunden har klaget på. Hele filmkjeden arver basisbildet, så
+      // en manglende linje her senket ALLE scener uansett hva de ble enkodet i.
+      // stillbilde.mjs har satt den hele tiden; scene.mjs hadde den aldri.
+      resolution: "2k",
       negative_prompt: NEGATIV,
     },
     withPolling: true,
@@ -106,7 +111,7 @@ const sh = (cmd, a) => execFileSync(cmd, a, { stdio: ["ignore", "pipe", "inherit
 /** Settes før redigeringene kjører. Begge leser den samme. */
 let basisUrl = null;
 
-async function rediger(merke, endring) {
+async function rediger(merke, endring, kildeUrl = basisUrl) {
   // Mellomlagres slik at en ny kjøring for å justere enkoding ikke koster en
   // ny bildegenerering. Slett .skudd/scene-tmp/ for å tvinge nye bilder.
   const hurtig = `.skudd/scene-tmp/${id}-${merke}.url`;
@@ -118,7 +123,10 @@ async function rediger(merke, endring) {
   const r = await higgsfield.subscribe("alibaba/qwen-image-3/edit", {
     input: {
       prompt: `${STIL}\n\nEdit the supplied image. ${scene.bevar ?? DEF._bevar} ${endring}`,
-      image_urls: [basisUrl],
+      image_urls: [kildeUrl],
+      // Også her: uten 2k faller redigeringen tilbake til 1280x720, selv om
+      // kildebildet er større.
+      resolution: "2k",
       aspect_ratio: "16:9",
       negative_prompt: NEGATIV,
     },
@@ -155,7 +163,19 @@ const hent = (url, fil) => { sh("curl", ["-sS", "--max-time", "300", "-o", fil, 
 console.log(`Bygger scenen «${id}»`);
 basisUrl = scene.basis ? `${CDN}/${scene.basis}.png` : await lagBasis(scene.basisPrompt);
 const startUrl = await rediger("startbilde", scene.start);
-const sluttUrl = await rediger("sluttbilde", scene.slutt);
+/**
+ * Sluttbildet redigeres fra STARTBILDET, ikke fra basisbildet.
+ *
+ * Redigeres begge rammer uavhengig ut fra basis, arver de ikke hverandres
+ * arrangement. Scenen «systemer» ga da et startbilde med rundt 40 tynne plater og
+ * et sluttbilde med rundt 8 tykke, i tillegg til ulik kameravinkel. Klippet mellom
+ * to slike rammer er en morf der objektet forvandler seg til noe annet - nettopp
+ * det som far AI-video til a se billig ut.
+ *
+ * Kjeden gjor at sluttbildet arver platetall, tykkelse og kamera fra startbildet,
+ * og at `_bevar` bare trenger a holde pa det som allerede er der.
+ */
+const sluttUrl = await rediger("sluttbilde", scene.slutt, startUrl);
 
 if (args.includes("--kun-bilder")) {
   console.log(`\nstart: ${startUrl}\nslutt: ${sluttUrl}`);

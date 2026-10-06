@@ -38,15 +38,17 @@
       "id": "systemer",
       "mappe": "scener",
       "basis": "6f5a4bd2-4820-4797-a67c-1ae32fb8444b",
-      "start": "Change the arrangement: the plates are pressed together into one single slim monolithic slab, flush and perfectly aligned, with the material layers clearly distinct in the side profile. Five thin matte black braided cables hang loose in front of the slab's lower edge, their small machined aluminium connectors NOT yet plugged in, pointing toward five small empty ports along that edge.",
-      "slutt": "Change the arrangement: the plates are pressed together into one single slim monolithic slab, flush and perfectly aligned. Five thin matte black braided cables are each plugged into five ports along the slab's lower edge, running out toward the viewer in a parallel evenly spaced row. A single hair-thin lime green seam line glows softly along one joint in the slab.",
+      "start": "Change only the cables: five thin matte black braided cables hang loose below the stack's lower edge, their small machined aluminium connectors NOT yet plugged in, each pointing up toward one of five small empty ports along that edge. The stack itself is unchanged. No lime green line is lit.",
+      "slutt": "Change only the cables and one seam: the same five cables are now each seated in the five ports along the stack's lower edge, running out toward the viewer in a parallel evenly spaced row. A single hair-thin lime green #c8f24a seam line glows softly along one joint in the stack. The stack keeps the same plate count, height and camera angle as the supplied image.",
       "bevegelse": "The five black braided cables glide straight forward and plug into the five ports along the slab's lower edge, one after another from left to right. As the last cable seats, a single hair-thin lime green seam line lights up softly along one joint in the slab.",
       "pingpong": false,
       "bredder": [
         2560,
         1920,
         1280
-      ]
+      ],
+      "bevar": "Keep exactly identical: camera position, perspective, framing, lighting direction and intensity, rim light, the near-black #0b0d10 background, the suspension wires, and the number, size, thickness, spacing, material and surface finish of every plate in the stack. The stack keeps exactly the same total height and the same plate count as the supplied image. No plate is added or removed. All surfaces stay plain and unmarked: no text, letters, numbers, logos or watermarks.",
+      "_hvorfor": "Startbildet hadde rundt 40 tynne plater, sluttbildet rundt 8 tykke, og kameravinkelen var ulik - fordi begge rammer ble redigert uavhengig ut fra basisbildet. Klippet mellom dem ville vaert en morf. Sluttbildet kjedes na fra startbildet, og bevar laaser platetallet eksplisitt."
     },
     {
       "id": "apper",

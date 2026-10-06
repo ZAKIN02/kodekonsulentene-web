@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import Storflate from "../components/Storflate.astro";
 import opptak from "../data/opptak.json";
 import Demo from "../components/Demo.astro";
 import Scene from "../components/Scene.astro";
@@ -128,6 +129,28 @@ const tiltak = [
   </Scene>
 
   <div class="scenefilm-ramme">
+
+  {/* Full styrke, kant til kant. Dekker du teksten: en spalte staar aapen, en slaa
+      glir over den, spalten er borte, og limelinja tenner langs skjoeten. Subjekt,
+      verb, resultat – det er hele sikkerhetsjobben i ett bilde.
+
+      Levert paa to bestillinger. Runde 1 ble forkastet fordi slaaen VOKSTE 16 % i
+      hoeyde idet den gikk i inngrep – aarsaken laa i vaar egen prompt: «filling it
+      completely from wall to wall» ble lest i hoeyderetningen. Rettet til «covering
+      that opening». Runde 2 holder 15,97-16,25 % gjennom alle aatte sekundene.
+
+      Staar i loggen og bortforklares ikke: slaaen blir 7,3 % LENGRE underveis.
+      Agenten fanget det ikke foer bestilling fordi den kontrollerte hoeyden – altsaa
+      dimensjonen som sviktet sist – i stedet for alle. */}
+  <Storflate
+    smal="/scener/bolt-1280.mp4"
+    bred="/scener/bolt-1920.mp4"
+    stor="/scener/bolt-2560.mp4"
+    plakat="/scener/bolt-poster.avif"
+    tittel="Det sto åpent."
+    tekst="Manglende sikkerhetsheadere er en åpning du ikke ser. Sjekken vår finner dem, og de tar minutter å lukke."
+    hoyde={64}
+  />
   <Scene n={3} eyebrow="Hva som gjøres" tittel="Seks ting på hver leveranse" ingress="Dette er ikke et tillegg du kjøper. Det er en del av prisen, fordi en side som kan misbrukes til å lure dine kunder ikke er ferdig.">
     <Avslor>
     <div class="grid-2">

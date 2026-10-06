@@ -29,12 +29,16 @@ const prisFaq = faq.filter((f) => /binding|endre|koster|eier/i.test(f.q));
         at det anbefalte ligger naermest leseren – en forskjell du kjenner foer du
         har lest etiketten. Parallaksen er kontinuerlig, ikke en inngang, saa de tre
         drar fra hverandre mens du scroller og leses som rom i stedet for en rad. */}
-    <div class="grid-3">
+    {/* Lik dybde paa alle tre. Kortene laa foer paa +26 for det anbefalte og -12
+        for de to andre, altsaa opptil 38 px forskjoevet loddrett – det leste som
+        at raden ikke var i linje. Det anbefalte kortet skiller seg fortsatt ut
+        der det betyr noe: merkelapp, lys flate og invertert knapp. */}
+    <div class="grid-3 priskort-rad">
       {pakker.map((p, k) => (
         <Avslor
           trinn={k}
           fra="dybde"
-          dybde={p.anbefalt ? 26 : -12}
+          dybde={18}
           as="div"
         >
         <PriceCard nivaa={2}

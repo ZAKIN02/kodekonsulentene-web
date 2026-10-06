@@ -543,7 +543,10 @@ const heroTerminal = [
   @media (min-width: 861px) {
     .tjenester-rad > :nth-child(1) { margin-block-start: 0; }
     .tjenester-rad > :nth-child(2) { margin-block-start: var(--space-7); }
-    .tjenester-rad > :nth-child(3) { margin-block-start: calc(var(--space-5) * -1); }
+    /* Kort 1 og 3 staar paa SAMME linje. De laa foer paa 0 og minus space-5, altsaa
+       forskjoevet loddrett i forhold til hverandre – det leste som at raden ikke var
+       i linje. Bare kort 2 er forskjoevet, og det er nok til aa bryte rutenettet. */
+    .tjenester-rad > :nth-child(3) { margin-block-start: 0; }
     .priser-rad > :nth-child(2) { margin-block-start: calc(var(--space-6) * -1); }
   }
 

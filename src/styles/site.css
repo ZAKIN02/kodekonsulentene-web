@@ -70,6 +70,45 @@ a:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
   border-radius: var(--radius-sm);
 }
 
+/* ---- Avstand: navngitte trinn, ikke nye tall --------------------------------
+ *
+ * --space-* er fortsatt den eneste skalaen. Dette er NAVN paa trinn i den, og de
+ * finnes fordi maalingen viste at problemet ikke var skalaen, men at generiske
+ * beholdere brukte ETT tall uansett hva som sto i dem:
+ *
+ *   .section__head ga 12 px baade over og under en overskrift i 44/48 px display
+ *   .stack ga 24 px baade mellom to avsnitt og mellom broedtekst og knapperad
+ *   .prose ga 16 px baade under en overskrift og mellom to avsnitt
+ *
+ * Naar avstanden over og under en overskrift er lik, binder overskriften ingenting,
+ * og leseren ser en liste med like ledd i stedet for et hierarki. Maalt paa
+ * forsiden: eyebrow -> h2 12 px, h2 -> ingress 12 px, med 48 px linjeavstand
+ * mellom. Det var naerbildet eieren sendte.
+ *
+ * Trinnene vokser med skjermen fordi typen gjoer det: .display-lg er 32/36 px paa
+ * mobil og 44/48 paa skrivebord, og 56/58 inne i en scene.
+ *
+ * De bor her og ikke i tokens.css av samme grunn som .card gjoer det: site.css er
+ * den fila som faktisk eier disse layoutreglene. Verdiene er rene aliaser – ingen
+ * hardkodet piksel passerer herfra. */
+:root {
+  /* Avsnitt etter avsnitt. Det roligste skillet som fortsatt ER et skille. */
+  --luft-avsnitt: var(--space-5);      /* 24 */
+  /* Under en overskrift, foer broedteksten den eier. */
+  --luft-overskrift: var(--space-6);   /* 32 */
+  /* Fra tekst til en knapperad. En handling er ikke neste avsnitt. */
+  --luft-handling: var(--space-6);     /* 32 */
+  /* Mellom to blokker i samme seksjon. */
+  --luft-blokk: var(--space-6);        /* 32 */
+}
+@media (min-width: 721px) {
+  :root {
+    --luft-overskrift: var(--space-7); /* 48 */
+    --luft-handling: var(--space-7);   /* 48 */
+    --luft-blokk: var(--space-7);      /* 48 */
+  }
+}
+
 /* ---- Layout ---- */
 .wrap { width: 100%; max-width: 1120px; margin: 0 auto; padding: 0 var(--space-5); }
 @media (min-width: 721px) { .wrap { padding: 0 var(--space-6); } }
@@ -77,10 +116,27 @@ a:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
 .section { padding-block: var(--space-8); }
 @media (min-width: 721px) { .section { padding-block: var(--space-9); } }
 .section--tight { padding-block: var(--space-7); }
-.section + .section { padding-top: 0; }
+
+/* To seksjoner som moetes skal ikke legge 64 + 64 oppa hverandre – men de skal
+   heller ikke dele paa EN polstring. Maalt blekk til blekk foer: 64 px paa mobil
+   og 96 paa skrivebord der ENHVER annen seksjonsgrense paa nettstedet laa paa
+   128/192. Det er halve pusten akkurat der en ny seksjon begynner, og det traff
+   /sjekk, /artikler/* og /lab/bevegelse, som har flere .section etter hverandre.
+   Et halvt trinn tilbake gir 96/144: tydelig mindre enn to fulle polstringer,
+   tydelig mer enn ingenting. */
+.section + .section { padding-top: var(--space-6); }
+@media (min-width: 721px) { .section + .section { padding-top: var(--space-7); } }
 
 .section__head { display: grid; gap: var(--space-3); max-width: 44ch; margin-bottom: var(--space-6); }
 .section__head p { color: var(--ink-muted); }
+/* Eyebrow -> overskrift beholder 12: etiketten MERKER overskriften og hoerer til
+   den. Ingressen under er neste tanke, og faar et eget trinn i tillegg til gapet.
+   Gapet kan ikke settes ned i et rutenett, saa differansen legges som marg paa
+   det ene barnet som skal ha mer. */
+.section__head > :is(h1, h2, h3) + p { margin-top: calc(var(--luft-overskrift) - var(--space-3)); }
+/* Hele hodet mot innholdet under: 32 paa mobil var mindre enn avstanden inne i
+   mange av blokkene det sto over. */
+@media (min-width: 721px) { .section__head { margin-bottom: var(--space-7); } }
 
 .rule { height: var(--hairline); background: var(--line); border: 0; margin: 0; }
 
@@ -96,6 +152,22 @@ a:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
    sidelengs drag: innholdet forsvinner i stedet for aa dra siden ut av form. */
 .stack { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-5); }
 .stack--tight { gap: var(--space-3); }
+
+/* Stabelen ga 24 px uansett hva som sto i den. Maalt i heroen paa forsiden:
+   h1 i 40/64 px display -> ingress 24 px, ingress -> knapperad 24 px,
+   knapperad -> fotnote 24 px. Fire ledd i jevn takt, uten hierarki – og det var
+   noeyaktig naerbildet eieren sendte.
+   Gapet staar paa 24 (to avsnitt skal ligge der). Det som trenger mer, faar et
+   tillegg som marg: i et rutenett legges margen TIL gapet, den kollapser ikke.
+   Tillegget regnes mot .stack sitt gap paa 24, saa .stack--tight (gap 12) er
+   holdt utenfor: der hadde samme tillegg gitt 20 px og ikke 32, og .stack--tight
+   er dessuten tett MED VILJE – den binder et avsnitt til punktlisten sin. */
+.stack:not(.stack--tight) > :is(h1, h2, h3, .display-xl, .display-lg, .heading) + * {
+  margin-top: calc(var(--luft-overskrift) - var(--space-5));
+}
+.stack:not(.stack--tight) > :not(:first-child):is(.row, .hero__cta) {
+  margin-top: calc(var(--luft-handling) - var(--space-5));
+}
 .row { display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; }
 /* En knapperad rett under broedtekst sto paa NULL piksler paa /apper-og-ai og
    /systemer, og 16 paa /sikkerhet. Eieren meldte det to ganger.
@@ -176,13 +248,35 @@ html[data-theme="light"] .iconbtn [data-icon="moon"] { display: none; }
 .hero h1 { max-width: 20ch; }
 .hero h1 em { font-style: normal; color: var(--accent-text); }
 .hero__lead { max-width: 52ch; color: var(--ink-muted); }
-.hero__cta { display: grid; gap: var(--space-4); }
-@media (min-width: 561px) { .hero__cta { grid-template-columns: auto 1fr; align-items: start; } }
+/* Under 561 px staar de to handlingene UNDER hverandre, og da er 16 px for lite:
+   «Book 20 minutter» og URL-feltet er to ulike valg, ikke to deler av det samme.
+   Over 561 staar de side om side, og 16 er riktig som spalteavstand. */
+.hero__cta { display: grid; gap: var(--luft-avsnitt); }
+@media (min-width: 561px) { .hero__cta { grid-template-columns: auto 1fr; gap: var(--space-4); align-items: start; } }
 
 /* ---- Prosa (personvern, vilkår, håndbok) ---- */
+/* Gapet er 16 og skal VAERE 16: det er avstanden fra en overskrift ned til
+   teksten den eier, og den skal vaere den minste i blokken. Alt annet legger et
+   tillegg oppaa.
+   Foer: overskrift -> avsnitt 16, avsnitt -> avsnitt 16. Like store. Da bandt
+   overskriften ingenting, og /handbok, /personvern, /vilkar og de tre artiklene
+   leste som en jevn remse. Maalt paa alle seks. */
 .prose { max-width: 68ch; display: grid; gap: var(--space-4); }
-.prose h2 { font-family: var(--font-display); font-size: 28px; line-height: 34px; font-weight: 700; letter-spacing: -0.015em; margin-top: var(--space-5); }
-.prose h3 { font-family: var(--font-display); font-size: 20px; line-height: 28px; font-weight: 600; letter-spacing: -0.01em; margin-top: var(--space-4); }
+.prose h2 { font-family: var(--font-display); font-size: 28px; line-height: 34px; font-weight: 700; letter-spacing: -0.015em; }
+.prose h3 { font-family: var(--font-display); font-size: 20px; line-height: 28px; font-weight: 600; letter-spacing: -0.01em; }
+/* `* + h2`, ikke `h2`: en marg paa det foerste barnet i et rutenett dytter hele
+   blokken ned uten at noe staar over den. Den gamle regelen gjorde nettopp det. */
+.prose > * + h2 { margin-top: calc(var(--space-7) - var(--space-4)); }   /* 48 over */
+.prose > * + h3 { margin-top: calc(var(--space-6) - var(--space-4)); }   /* 32 over */
+@media (min-width: 721px) {
+  .prose > * + h2 { margin-top: calc(var(--space-8) - var(--space-4)); } /* 64 over */
+  .prose > * + h3 { margin-top: calc(var(--space-7) - var(--space-4)); } /* 48 over */
+}
+/* Avsnitt etter avsnitt, og det som leses som et avsnitt: liste, tabell,
+   terminalutsnitt. En overskrift staar ikke i listen – den beholder sine 16. */
+.prose > :is(p, ul, ol, table, .kk-term, figure) + :is(p, .kk-term, figure) {
+  margin-top: calc(var(--luft-avsnitt) - var(--space-4));
+}
 .prose ul, .prose ol { margin: 0; padding-left: var(--space-5); display: grid; gap: var(--space-2); color: var(--ink-muted); }
 .prose code { font-family: var(--font-mono); font-size: 14px; background: var(--bg-sunken); border: var(--hairline) solid var(--line); border-radius: var(--radius-sm); padding: 1px 4px; }
 .prose table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 20px; }
@@ -609,3 +703,8 @@ html, body { overflow-x: clip; }
   .case-og-flyt { grid-template-columns: minmax(320px, 26rem) 1fr; gap: var(--space-7); }
 }
 .case-og-flyt > .case-kort { display: grid; gap: var(--space-5); }
+
+/* Kortene har kontinuerlig parallakse (dybde 18), saa de VANDRER opptil 18 px opp
+   og ned mens man scroller. Maalt uten denne margen: foerste kort la seg 4 px
+   OPPAA ingressen. Margen maa derfor daekke hele utslaget, ikke bare gi luft i ro. */
+.priskort-rad { margin-block-start: var(--space-7); }

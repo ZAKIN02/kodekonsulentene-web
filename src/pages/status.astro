@@ -1,10 +1,15 @@
 ---
 import Base from "../layouts/Base.astro";
-import Section from "../components/Section.astro";
+import Scene from "../components/Scene.astro";
+import Mega from "../components/Mega.astro";
+import Avslor from "../components/Avslor.astro";
+import Nokkeltall from "../components/Nokkeltall.astro";
 import StatusBadge from "../components/StatusBadge.astro";
 import Terminal from "../components/Terminal.astro";
 import Button from "../components/Button.astro";
 import { firma } from "../data/firma";
+
+import "../styles/scener.css";
 
 // Siden brukes også som helsesjekk av Fly (http_service.checks → /status).
 // Den er bevisst statisk og uten avhengigheter: svarer den ikke, er noe virkelig galt.
@@ -12,6 +17,14 @@ const tjenester = [
   { navn: "kodekonsulentene.no", status: "ok" as const, note: "Nettsiden" },
   { navn: "/api/sjekk", status: "ok" as const, note: "Nettsidesjekken" },
   { navn: "/api/kontakt", status: "ok" as const, note: "Kontaktskjemaet" },
+];
+
+// Samme tall som i budsjett-listen under, bare løftet fram som grafikk.
+const budsjettTall = [
+  { value: "95", label: "Lighthouse, mobil – alle fire kategorier", accent: true },
+  { value: "2,5 s", label: "LCP, øvre grense" },
+  { value: "0", label: "Tredjepartsskript før samtykke" },
+  { value: "6", label: "Sikkerhetsheadere av 6" },
 ];
 
 const budsjett = [
@@ -29,12 +42,12 @@ const budsjett = [
   tittel="Driftsstatus"
   beskrivelse="Driftsstatus, ytelsesbudsjett og hva som overvåkes på kodekonsulentene.no og kundesider med driftsavtale."
 >
-  <Section nivaa={1}
-    n={1}
-    eyebrow="Status"
-    tittel="Driftsstatus"
-    ingress="Denne siden er også helsesjekken serveren svarer på. Får du opp denne teksten, står nettsiden."
-  >
+  <Scene lav>
+    <Mega som="h1" merke="Status" n={1} tekst="Driftsstatus" />
+    <Avslor trinn={1}>
+      <p class="scene__ingress body-lg">Denne siden er også helsesjekken serveren svarer på. Får du opp denne teksten, står nettsiden.</p>
+    </Avslor>
+
     <div class="stack">
       <dl class="kv">
         {tjenester.map((t) => (
@@ -50,9 +63,12 @@ const budsjett = [
         og det er det eneste den påstår.
       </p>
     </div>
-  </Section>
+  </Scene>
 
-  <Section n={2} eyebrow="Budsjett" tittel="Ytelsesbudsjettet vi holder oss til" ingress="Dette er ikke mål. Det er grenser. Går en leveranse over dem, er den ikke ferdig.">
+  <Scene n={2} eyebrow="Budsjett" tittel="Ytelsesbudsjettet vi holder oss til" ingress="Dette er ikke mål. Det er grenser. Går en leveranse over dem, er den ikke ferdig.">
+    <Avslor>
+      <Nokkeltall poster={budsjettTall} navn="Ytelsesbudsjettets fire viktigste grenser" />
+    </Avslor>
     <div class="grid-2">
       <dl class="kv">
         {budsjett.map(([k, v]) => (
@@ -60,6 +76,7 @@ const budsjett = [
         ))}
       </dl>
       <Terminal
+        skriv
         title="~/kodekonsulentene/drift"
         lines={[
           { type: "cmd", text: "hva overvåkes" },
@@ -73,9 +90,22 @@ const budsjett = [
         label="Terminalutsnitt: det som overvåkes er oppetid, sertifikat, ytelse, sårbare avhengigheter og sikkerhetskopi. Varselet går til utvikleren først, og kunden får månedsrapport med ytelse, oppetid og endringer."
       />
     </div>
-  </Section>
+  </Scene>
 
-  <Section n={3} eyebrow="Avvik" tittel="Hvis noe er nede" ingress={`Ring ${firma.telefon}. Kunder med driftsavtale får beskjed fra oss før de rekker å oppdage det selv.`}>
+  <Scene n={3} eyebrow="Avvik" tittel="Hvis noe er nede" ingress={`Ring ${firma.telefon}. Kunder med driftsavtale får beskjed fra oss før de rekker å oppdage det selv.`}>
     <Button variant="ghost" href="/handbok">Hvordan vi jobber</Button>
-  </Section>
+  </Scene>
 </Base>
+<style is:global>
+  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
+     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
+     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
+     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
+  .scene:first-of-type .mega .ord,
+  .scene:first-of-type .mega-blokk,
+  .scene:first-of-type .avslor {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+</style>

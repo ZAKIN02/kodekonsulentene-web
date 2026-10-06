@@ -1,11 +1,15 @@
 ---
 import Base from "../../layouts/Base.astro";
-import Section from "../../components/Section.astro";
+import Scene from "../../components/Scene.astro";
+import Mega from "../../components/Mega.astro";
+import Avslor from "../../components/Avslor.astro";
 import UrlCheck from "../../components/UrlCheck.astro";
 import Button from "../../components/Button.astro";
 import Terminal from "../../components/Terminal.astro";
 import ContactBlock from "../../components/ContactBlock.astro";
 import { firma } from "../../data/firma";
+
+import "../../styles/scener.css";
 
 const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
 ---
@@ -13,12 +17,13 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
   tittel="Cookie-sjekk"
   beskrivelse="Se hva nettsiden din setter før noen har samtykket. Vi laster forsiden i en ekte nettleser med tom profil og klikker ikke på noe. Gratis."
 >
-  <Section nivaa={1}
-    n={1}
-    eyebrow="Verktøy"
-    tittel="Hva setter siden din før noen sier ja?"
-    ingress="Vi laster forsiden i en ekte nettleser med tom profil, og klikker ikke på noe. Alt som er satt i det øyeblikket, er satt uten samtykke."
-  >
+  <Scene lav>
+    <Mega som="h1" merke="Verktøy" n={1} tekst="Hva setter siden din før noen sier ja?" />
+    <Avslor trinn={1}>
+      <p class="scene__ingress body-lg">Vi laster forsiden i en ekte nettleser med tom profil, og klikker ikke på noe. Alt som er satt i det øyeblikket, er satt uten samtykke.</p>
+    </Avslor>
+
+    <Avslor>
     <div class="stack">
       <UrlCheck
         id="url-cookie"
@@ -38,9 +43,11 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
         </p>
       </noscript>
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
-  <Section n={2} eyebrow="Loven" tittel="Hva ekomloven § 3-15 krever">
+  <Scene n={2} eyebrow="Loven" tittel="Hva ekomloven § 3-15 krever">
+    <Avslor>
     <div class="grid-2">
       <div class="stack">
         <p class="muted">
@@ -62,6 +69,7 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
       </div>
       <div class="stack">
         <Terminal
+          skriv
           title="~/kodekonsulentene/cookie"
           lines={[
             { type: "cmd", text: "cookie-sjekk --hvordan" },
@@ -78,18 +86,34 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
         </p>
       </div>
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
-  <Section n={3} eyebrow="Etterpå" tittel="Vil du at vi rydder opp?" ingress="Lovsjekk-pakken dekker cookies, universell utforming, lovpålagt informasjon og personvernerklæring på den siden du har i dag. Du trenger ikke ny nettside for det.">
+  <Scene n={3} eyebrow="Etterpå" tittel="Vil du at vi rydder opp?" ingress="Lovsjekk-pakken dekker cookies, universell utforming, lovpålagt informasjon og personvernerklæring på den siden du har i dag. Du trenger ikke ny nettside for det.">
+    <Avslor>
     <div class="row">
       <Button variant="primary" href="/priser">Se hva det koster</Button>
       <Button variant="ghost" href="/sjekk">Kjør den fulle sjekken</Button>
       <Button variant="ghost" href="/verktoy/uu-sjekk">Sjekk universell utforming</Button>
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
   <ContactBlock n={4} tittel="Spørsmål om funnene?" ingress="Har du rapporten foran deg og vil vite hva som haster, tar det fem minutter på telefon." />
 </Base>
+<style is:global>
+  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
+     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
+     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
+     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
+  .scene:first-of-type .mega .ord,
+  .scene:first-of-type .mega-blokk,
+  .scene:first-of-type .avslor {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+</style>
 
 <script>
   interface Cookie {

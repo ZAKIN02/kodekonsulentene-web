@@ -1,0 +1,10 @@
+import { chromium } from "@playwright/test";
+const b = await chromium.launch();
+const p = await b.newPage({ viewport: { width: 1280, height: 860 }, colorScheme: "dark" });
+await p.goto("http://127.0.0.1:4399/lab/rontgen", { waitUntil: "networkidle" });
+await p.waitForTimeout(600);
+const boks = await p.locator("[data-rontgen-flate]").boundingBox();
+await p.mouse.move(boks.x + boks.width * 0.52, boks.y + boks.height * 0.46);
+await p.waitForTimeout(350);
+await p.locator("[data-rontgen-flate]").screenshot({ path: ".skudd/rontgen-full.png" });
+await b.close();

@@ -1,21 +1,26 @@
 ---
 import Base from "../layouts/Base.astro";
-import Section from "../components/Section.astro";
+import Scene from "../components/Scene.astro";
+import Mega from "../components/Mega.astro";
+import Avslor from "../components/Avslor.astro";
 import Button from "../components/Button.astro";
 import ContactBlock from "../components/ContactBlock.astro";
 import { firma } from "../data/firma";
 import { prisvilkaar } from "../data/priser";
+
+import "../styles/scener.css";
 ---
 <Base
   tittel="Håndbok"
   beskrivelse="Hvordan vi jobber, hva ting koster, hvilke sikkerhetsrutiner som gjelder og hva som skjer hvis vi ikke kan fullføre. Åpent, slik at du vet hva du kjøper."
 >
-  <Section nivaa={1}
-    n={1}
-    eyebrow="Håndbok"
-    tittel="Hvordan vi jobber, åpent"
-    ingress="Det er rimelig å vite hvordan en leverandør jobber før du betaler. Derfor står det her i stedet for i en e-post du må be om."
-  >
+  <Scene lav>
+    <Mega som="h1" merke="Håndbok" n={1} tekst="Hvordan vi jobber, åpent" />
+    <Avslor trinn={1}>
+      <p class="scene__ingress body-lg">Det er rimelig å vite hvordan en leverandør jobber før du betaler. Derfor står det her i stedet for i en e-post du må be om.</p>
+    </Avslor>
+
+    <Avslor>
     <div class="prose">
       <h2>Arbeidstid og svartid</h2>
       <p class="muted">
@@ -112,7 +117,21 @@ import { prisvilkaar } from "../data/priser";
       <Button variant="primary" href="/kontakt">Book 20 minutter</Button>
       <Button variant="ghost" href="/vilkar">Les salgsvilkårene</Button>
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
   <ContactBlock n={2} />
 </Base>
+<style is:global>
+  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
+     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
+     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
+     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
+  .scene:first-of-type .mega .ord,
+  .scene:first-of-type .mega-blokk,
+  .scene:first-of-type .avslor {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+</style>

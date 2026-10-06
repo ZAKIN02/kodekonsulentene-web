@@ -107,3 +107,27 @@ describe("CSP blokkerer ikke vår egen JavaScript", () => {
     }
   });
 });
+
+describe("CSS-stenografi ødelegger ikke scroll-tidslinjer", () => {
+  /**
+   * lightningcss slår `animation` og `animation-timeline` sammen til
+   * `animation: linear both navn view()`. Den formen er ugyldig – animation-timeline
+   * er ikke del av stenografien – og BÅDE Chromium og Firefox forkaster hele
+   * erklæringen uten en lyd. Avdekkingen på /historie kjørte ikke for en eneste
+   * besøkende, mens CSS.supports fortsatt meldte at view() var støttet.
+   *
+   * Mønsteret kan bare oppstå ved minifisering og er aldri riktig.
+   */
+  test("ingen animation-stenografi inneholder view() eller scroll()", () => {
+    // /lab/bibliotek inneholder mønsteret MED VILJE: den er en levende
+    // reproduksjon som viser hva minifieren gjør. Den er ikke en kundeside.
+    for (const f of filer.filter((f) => !f.includes("lab/bibliotek"))) {
+      const treff = readFileSync(f, "utf8").match(/animation:[^;}]*\b(?:view|scroll)\(/g) ?? [];
+      assert.equal(
+        treff.length,
+        0,
+        `${f}: ${treff.join(", ")}\n  Bruk langformene animation-name/-duration/-timing-function/-fill-mode\n  sammen med animation-timeline, ellers slår minifieren dem sammen til ugyldig CSS.`,
+      );
+    }
+  });
+});

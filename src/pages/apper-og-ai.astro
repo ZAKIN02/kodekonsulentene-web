@@ -1,30 +1,37 @@
 ---
 import Base from "../layouts/Base.astro";
-import Section from "../components/Section.astro";
+import Scene from "../components/Scene.astro";
+import Mega from "../components/Mega.astro";
+import Avslor from "../components/Avslor.astro";
 import Button from "../components/Button.astro";
 import Terminal from "../components/Terminal.astro";
 import ContactBlock from "../components/ContactBlock.astro";
 import { caser } from "../data/caser";
 import { bookUrl } from "../data/firma";
+
+import "../styles/scener.css";
 const apper = caser.filter((c) => c.type === "App");
 ---
 <Base
   tittel="Apper og AI"
   beskrivelse="iOS-app, intern app og AI-assistent fra samme utvikler som bygger nettsiden. Oslo, fast pris, databehandleravtale på plass."
 >
-  <Section nivaa={1}
-    n={1}
-    eyebrow="Apper og AI"
-    tittel="Få leverandører tar både nettside og app"
-    ingress="De fleste som bygger nettsider setter ut apputvikling. Vi gjør begge deler selv, slik at nettsiden, systemet bak og appen oppå henger sammen fra start."
-  >
+  <Scene lav>
+    <Mega som="h1" merke="Apper og AI" n={1} tekst="Få leverandører tar både nettside og app" />
+    <Avslor trinn={1}>
+      <p class="scene__ingress body-lg">De fleste som bygger nettsider setter ut apputvikling. Vi gjør begge deler selv, slik at nettsiden, systemet bak og appen oppå henger sammen fra start.</p>
+    </Avslor>
+
+    <Avslor>
     <div class="row">
       <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
       <Button variant="ghost" href="/caser">Se appene</Button>
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
-  <Section n={2} eyebrow="Apper" tittel="Tre ting en app løser som en nettside ikke gjør">
+  <Scene n={2} eyebrow="Apper" tittel="Tre ting en app løser som en nettside ikke gjør">
+    <Avslor>
     <div class="grid-3">
       <div class="card">
         <h3 class="subheading">Varsler</h3>
@@ -39,6 +46,7 @@ const apper = caser.filter((c) => c.type === "App");
         <p class="muted">Befaringsbilder, strekkoder og GPS rett inn i ordren. Det er her feltarbeid faktisk sparer tid.</p>
       </div>
     </div>
+    </Avslor>
     {apper.length > 0 && (
       <dl class="kv" style="margin-top: var(--space-6)">
         {apper.map((a) => (
@@ -46,14 +54,15 @@ const apper = caser.filter((c) => c.type === "App");
         ))}
       </dl>
     )}
-  </Section>
+  </Scene>
 
-  <Section
+  <Scene
     n={3}
     eyebrow="AI"
     tittel="AI som gjør en jobb, ikke AI som pynt"
     ingress="SSB melder at 48 % av foretakene med minst ti ansatte brukte KI i 2026, mot tre av ti året før. Det betyr at konkurrentene dine prøver. De fleste prøver på feil sted."
   >
+    <Avslor>
     <div class="grid-2">
       <div class="stack">
         <p class="muted">
@@ -69,6 +78,7 @@ const apper = caser.filter((c) => c.type === "App");
         <Button variant="ghost" href="/sikkerhet">Hvordan vi sikrer det</Button>
       </div>
       <Terminal
+        skriv
         title="~/ai/regler"
         lines={[
           { type: "cmd", text: "cat regler.txt" },
@@ -81,7 +91,21 @@ const apper = caser.filter((c) => c.type === "App");
         label="Terminalutsnitt med fem regler for AI-flater: alltid merket som AI, aldri pris eller avtale uten menneske, ingen personopplysninger i loggen, databehandleravtale før produksjon, og den sier det hvis den feiler."
       />
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
   <ContactBlock n={4} />
 </Base>
+<style is:global>
+  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
+     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
+     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
+     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
+  .scene:first-of-type .mega .ord,
+  .scene:first-of-type .mega-blokk,
+  .scene:first-of-type .avslor {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+</style>

@@ -1,0 +1,262 @@
+---
+/**
+ * Røntgenlinsen – sidens signaturinteraksjon.
+ *
+ * KodeKonsulentene selger å se hva som ligger INNE i en nettside: sikkerhet,
+ * lovkrav, lagene under designet. Denne flaten gjør det bokstavelig. Beveger du
+ * pekeren over den, skjæres et hull i designet og innsiden kommer fram der du
+ * peker – ekte sikkerhetsheadere, ekte WCAG-krav, ekte markup.
+ *
+ * Hvorfor DOM og CSS, ikke video eller bilde:
+ *  - den svarer på brukeren, en video kan bare spilles av
+ *  - den er knivskarp i alle oppløsninger fordi det er tekst, ikke piksler
+ *  - den veier under 2 kB JavaScript og ingen mediefiler
+ *
+ * Innholdet er hentet fra sikkerhet.mjs og fra skannerens WCAG-tabell. Det er med
+ * vilje: står det et tall her, er det det samme tallet siden faktisk sender. Da
+ * kan det ikke drive fra virkeligheten uten at noen merker det.
+ */
+import "../styles/rontgen.css";
+import { SIKKERHETSHEADERE } from "../../sikkerhet.mjs";
+import { WCAG_NAVN } from "../../services/skanner/wcag-navn.mjs";
+
+interface Props {
+  /** Overskrift over innsiden, i mono-label. */
+  merke?: string;
+  class?: string;
+}
+const { merke = "Innsiden", class: cls } = Astro.props;
+
+/** Kutter lange headerverdier uten å dikte. Full verdi ligger i title-attributtet. */
+const kort = (v: string, n = 54) => (v.length > n ? `${v.slice(0, n - 1)}…` : v);
+
+// Ekte headere, i den rekkefølgen nettsidesjekken teller dem.
+const headerNavn = [
+  "content-security-policy",
+  "strict-transport-security",
+  "x-content-type-options",
+  "referrer-policy",
+  "permissions-policy",
+  "x-frame-options",
+] as const;
+
+const headere = headerNavn.map((navn) => ({
+  navn,
+  verdi: String((SIKKERHETSHEADERE as Record<string, string>)[navn] ?? ""),
+}));
+
+// Ekte WCAG-krav fra skannerens tabell. Åtte stykker, ikke tre: flaten skal ha
+// innhold uansett hvor pekeren lander. Tomrom under linsen leser som om det ikke
+// er noe der – og poenget er at det ER noe der.
+const wcag = ([
+  "color-contrast",
+  "link-name",
+  "html-has-lang",
+  "label",
+  "meta-viewport",
+  "bypass",
+  "page-has-heading-one",
+  "heading-order",
+] as const)
+  .map((id) => ({ id, ...(WCAG_NAVN as Record<string, { tekst: string; krav?: string }>)[id] }))
+  .filter((w) => w.krav);
+---
+<div class:list={["rontgen", cls]} data-rontgen>
+  <div
+    class="rontgen__flate"
+    data-rontgen-flate
+    tabindex="0"
+    role="group"
+    aria-label="Røntgen: flytt pekeren, eller bruk piltastene, for å se hva som ligger inne i flaten"
+  >
+    <!-- Innsiden. Ligger alltid der; designet over skjuler den. -->
+    <div class="rontgen__lag rontgen__innside">
+      <p class="rontgen__merk mono-label">
+        <b aria-hidden="true">//</b><span>{merke}</span>
+      </p>
+
+      <ul class="rontgen__liste mono">
+        {headere.map((h) => (
+          <li>
+            <span class="rontgen__nokkel">{h.navn}</span>
+            <span class="rontgen__verdi" title={h.verdi}>{kort(h.verdi)}</span>
+          </li>
+        ))}
+        {wcag.map((w) => (
+          <li>
+            <span class="rontgen__nokkel rontgen__ja">{w.krav}</span>
+            <span class="rontgen__verdi">{w.tekst}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <!-- Designet. Hullet skjæres her. -->
+    <div class="rontgen__lag rontgen__design">
+      <slot />
+    </div>
+
+    <div class="rontgen__ring" aria-hidden="true"></div>
+  </div>
+
+  <div class="rontgen__styring">
+    <button class="rontgen__bryter" type="button" data-rontgen-bryter aria-pressed="false">
+      Vis hele innsiden
+    </button>
+    <span class="small faint" data-rontgen-hjelp>
+      Flytt pekeren over flaten, eller tapp på den. Med tastatur: piltaster når flaten har fokus.
+    </span>
+  </div>
+
+  <p class="visually-hidden" aria-live="polite" data-rontgen-status></p>
+</div>
+
+<script>
+  for (const rot of document.querySelectorAll<HTMLElement>("[data-rontgen]")) {
+    const flate = rot.querySelector<HTMLElement>("[data-rontgen-flate]")!;
+    const design = rot.querySelector<HTMLElement>(".rontgen__design")!;
+    const ring = rot.querySelector<HTMLElement>(".rontgen__ring")!;
+    const bryter = rot.querySelector<HTMLButtonElement>("[data-rontgen-bryter]")!;
+    const status = rot.querySelector<HTMLElement>("[data-rontgen-status]")!;
+
+    // Først nå finnes masken. Før dette står designet helt, og innsiden leses
+    // under det – se .rontgen:not([data-klar]) i rontgen.css.
+    rot.dataset.klar = "true";
+
+    const RADIUS = 150;
+    let alt = false;              // «Vis hele innsiden» er på
+    let x = 0.5;                  // andel av bredden
+    let y = 0.5;                  // andel av høyden
+    let planlagt = false;
+    let boks: DOMRect | null = null;
+
+    const tegn = () => {
+      planlagt = false;
+      design.style.setProperty("--x", `${(x * 100).toFixed(2)}%`);
+      design.style.setProperty("--y", `${(y * 100).toFixed(2)}%`);
+      ring.style.setProperty("--x", `${(x * 100).toFixed(2)}%`);
+      ring.style.setProperty("--y", `${(y * 100).toFixed(2)}%`);
+    };
+    const planlegg = () => {
+      if (planlagt) return;
+      planlagt = true;
+      requestAnimationFrame(tegn);
+    };
+
+    const settRadius = (r: number) => {
+      design.style.setProperty("--h", `${r}px`);
+      ring.style.setProperty("--h", `${r}px`);
+    };
+
+    const settLinse = (på: boolean) => {
+      if (på) rot.dataset.linse = "";
+      else delete rot.dataset.linse;
+    };
+
+    // «Vis hele innsiden»: radius større enn flaten, altså ingen design igjen.
+    const settAlt = (på: boolean) => {
+      alt = på;
+      bryter.setAttribute("aria-pressed", String(på));
+      bryter.textContent = på ? "Skjul innsiden" : "Vis hele innsiden";
+      if (på) {
+        const r = Math.hypot(flate.clientWidth, flate.clientHeight);
+        x = 0.5;
+        y = 0.5;
+        settRadius(r);
+        settLinse(false);
+        tegn();
+        status.textContent = "Hele innsiden vises: sikkerhetsheadere og WCAG-krav.";
+      } else {
+        settRadius(0);
+        settLinse(false);
+        status.textContent = "Innsiden er skjult igjen.";
+      }
+    };
+
+    // Pekeren. Fungerer for mus, penn og finger.
+    //
+    // Valget for berøring: et tapp PLASSERER linsen, og den blir stående til du
+    // tapper et annet sted eller slår på hele innsiden. Første utkast lukket den
+    // på pointerup, men da åpnet og lukket et tapp seg i samme bevegelse og viste
+    // ingenting – målt, ikke antatt. En linse som i stedet følger scroll ble
+    // vraket fordi hullet da havner der brukeren IKKE ser, og fordi en flate som
+    // endrer seg av seg selv under scroll er nettopp den scroll-jackingen
+    // brandboken forbyr.
+    const fra = (e: PointerEvent) => {
+      if (alt) return;
+      // Én layout-lesing per gest, ikke per ramme.
+      boks ??= flate.getBoundingClientRect();
+      x = (e.clientX - boks.left) / boks.width;
+      y = (e.clientY - boks.top) / boks.height;
+      planlegg();
+    };
+
+    flate.addEventListener("pointerenter", (e) => {
+      if (alt) return;
+      boks = flate.getBoundingClientRect();
+      settRadius(RADIUS);
+      settLinse(true);
+      fra(e);
+    }, { passive: true });
+
+    flate.addEventListener("pointermove", fra, { passive: true });
+
+    // Bare musa lukker linsen når den forlater flaten. På berøring fyrer
+    // pointerleave automatisk når fingeren løftes – pekeren opphører å eksistere –
+    // og uten dette skillet lukket et tapp seg selv i samme bevegelse.
+    flate.addEventListener("pointerleave", (e) => {
+      if (alt || e.pointerType !== "mouse") return;
+      boks = null;
+      settRadius(0);
+      settLinse(false);
+    }, { passive: true });
+
+    // Berøring: pointerenter/leave fyrer ikke pålitelig, så vi åpner på pointerdown.
+    flate.addEventListener("pointerdown", (e) => {
+      if (alt || e.pointerType === "mouse") return;
+      boks = flate.getBoundingClientRect();
+      settRadius(RADIUS);
+      settLinse(true);
+      fra(e);
+    }, { passive: true });
+    // Ingen lukking på pointerup: for mus gjør pointerleave jobben, og for
+    // finger skal linsen bli stående der du satte den.
+    flate.addEventListener("pointerup", () => { boks = null; }, { passive: true });
+
+    // Tastatur: piltastene flytter linsen når flaten har fokus. En interaksjon
+    // som bare musa når, er ingen interaksjon.
+    flate.addEventListener("keydown", (e) => {
+      const steg = e.shiftKey ? 0.12 : 0.04;
+      let brukt = true;
+      switch (e.key) {
+        case "ArrowLeft": x -= steg; break;
+        case "ArrowRight": x += steg; break;
+        case "ArrowUp": y -= steg; break;
+        case "ArrowDown": y += steg; break;
+        default: brukt = false;
+      }
+      if (!brukt || alt) return;
+      e.preventDefault();
+      x = Math.min(1, Math.max(0, x));
+      y = Math.min(1, Math.max(0, y));
+      settRadius(RADIUS);
+      settLinse(true);
+      tegn();
+      status.textContent = `Linsen står ${Math.round(x * 100)} prosent fra venstre og ${Math.round(y * 100)} prosent ned.`;
+    });
+
+    flate.addEventListener("blur", () => {
+      if (alt) return;
+      settRadius(0);
+      settLinse(false);
+    });
+
+    bryter.addEventListener("click", () => settAlt(!alt));
+
+    // Flaten kan endre størrelse – da er den bufrede boksen ugyldig.
+    addEventListener("resize", () => { boks = null; if (alt) settAlt(true); }, { passive: true });
+
+    settRadius(0);
+    tegn();
+  }
+</script>

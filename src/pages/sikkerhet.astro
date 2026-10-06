@@ -1,12 +1,16 @@
 ---
 import Base from "../layouts/Base.astro";
-import Section from "../components/Section.astro";
+import Scene from "../components/Scene.astro";
+import Mega from "../components/Mega.astro";
+import Avslor from "../components/Avslor.astro";
 import Button from "../components/Button.astro";
 import Terminal from "../components/Terminal.astro";
 import UrlCheck from "../components/UrlCheck.astro";
 import CheckReport from "../components/CheckReport.astro";
 import ContactBlock from "../components/ContactBlock.astro";
 import { loepende } from "../data/priser";
+
+import "../styles/scener.css";
 
 /**
  * Dette er ikke et salgsargument skrevet for hånd – det er svaret /api/sjekk og
@@ -35,12 +39,12 @@ const tiltak = [
   tittel="Sikkerhet"
   beskrivelse="Sikkerhetsheadere, avhengighetsskanning, GDPR og universell utforming på hver leveranse. Lovsjekk-pakke til fast pris: 7 900 kr eks. mva."
 >
-  <Section nivaa={1}
-    n={1}
-    eyebrow="Sikkerhet"
-    tittel="Siden vår består sin egen sjekk"
-    ingress="Det er lett å selge sikkerhet. Det er vanskeligere å bevise det. Derfor kjører vi den samme sjekken på vår egen side og viser resultatet her – også raden vi ikke består."
-  >
+  <Scene lav>
+    <Mega som="h1" merke="Sikkerhet" n={1} tekst="Siden vår består sin egen sjekk" aksent="sjekk" />
+    <Avslor trinn={1}>
+      <p class="scene__ingress body-lg">Det er lett å selge sikkerhet. Det er vanskeligere å bevise det. Derfor kjører vi den samme sjekken på vår egen side og viser resultatet her – også raden vi ikke består.</p>
+    </Avslor>
+
     <CheckReport
       url="kodekonsulentene.no"
       date="oppdatert ved hver lansering"
@@ -49,9 +53,10 @@ const tiltak = [
     >
       <Button slot="action" variant="ghost" href="/sjekk">Kjør den på din side</Button>
     </CheckReport>
-  </Section>
+  </Scene>
 
-  <Section n={2} eyebrow="Et funn" tittel="Verktøyet tok oss selv" ingress="6. oktober 2026 kjørte vi cookie-skanningen mot vår egen forside. Den fant to tredjepartskall vi ikke visste om.">
+  <Scene n={2} eyebrow="Et funn" tittel="Verktøyet tok oss selv" ingress="6. oktober 2026 kjørte vi cookie-skanningen mot vår egen forside. Den fant to tredjepartskall vi ikke visste om.">
+    <Avslor>
     <div class="grid-2">
       <div class="stack">
         <p class="muted">
@@ -68,6 +73,7 @@ const tiltak = [
         </p>
       </div>
       <Terminal
+        skriv
         title="~/kodekonsulentene"
         lines={[
           { type: "cmd", text: "cookie-sjekk kodekonsulentene.no" },
@@ -80,9 +86,11 @@ const tiltak = [
         label="Terminalutsnitt: cookie-sjekken fant tredjepartskall til Google Fonts på vår egen side. Etter at fontene ble flyttet til egen server: null cookies, null lagring, null tredjeparter."
       />
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
-  <Section n={3} eyebrow="Hva som gjøres" tittel="Seks ting på hver leveranse" ingress="Dette er ikke et tillegg du kjøper. Det er en del av prisen, fordi en side som kan misbrukes til å lure dine kunder ikke er ferdig.">
+  <Scene n={3} eyebrow="Hva som gjøres" tittel="Seks ting på hver leveranse" ingress="Dette er ikke et tillegg du kjøper. Det er en del av prisen, fordi en side som kan misbrukes til å lure dine kunder ikke er ferdig.">
+    <Avslor>
     <div class="grid-2">
       {tiltak.map(([t, b]) => (
         <div class="card">
@@ -91,14 +99,16 @@ const tiltak = [
         </div>
       ))}
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
-  <Section
+  <Scene
     n={4}
     eyebrow="Lovkrav"
     tittel="Fire krav som er konkrete og testbare"
     ingress="De færreste bryter dem med vilje. De fleste vet ikke at de gjelder."
   >
+    <Avslor>
     <div class="prose">
       <h3>Org.nr. og foretaksnavn</h3>
       <p class="muted">Registrert foretaksnavn og organisasjonsnummer skal stå på nettsiden. Er du mva-registrert, skal «MVA» stå etter nummeret.</p>
@@ -110,9 +120,11 @@ const tiltak = [
       <p class="muted">Private virksomheter skal oppfylle 35 krav i WCAG 2.0 nivå A og AA. Offentlig sektor har 48 krav i WCAG 2.1. Vi bygger etter WCAG 2.2 AA, som dekker begge.</p>
       <p class="small faint">Dette er ikke juridisk rådgivning. Få standardvilkår og personvernerklæring kvalitetssikret av advokat før du bruker dem i avtaler.</p>
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
-  <Section n={5} eyebrow="Lovsjekk" tittel="Rydd opp i den siden du har" ingress="Du trenger ikke ny nettside for å bli lovlig. Lovsjekk-pakken er fastpris på den du har, også om den er WordPress.">
+  <Scene n={5} eyebrow="Lovsjekk" tittel="Rydd opp i den siden du har" ingress="Du trenger ikke ny nettside for å bli lovlig. Lovsjekk-pakken er fastpris på den du har, også om den er WordPress.">
+    <Avslor>
     <div class="stack">
       <dl class="kv">
         {loepende.filter((r) => r.navn === "Lovsjekk-pakke").map((r) => (
@@ -121,7 +133,21 @@ const tiltak = [
       </dl>
       <UrlCheck buttonLabel="Sjekk gratis først" hint="Kjør den gratis sjekken før du bestemmer deg. Du ser selv hva som må gjøres." />
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
   <ContactBlock n={6} />
 </Base>
+<style is:global>
+  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
+     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
+     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
+     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
+  .scene:first-of-type .mega .ord,
+  .scene:first-of-type .mega-blokk,
+  .scene:first-of-type .avslor {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+</style>

@@ -1,22 +1,27 @@
 ---
 import Base from "../layouts/Base.astro";
-import Section from "../components/Section.astro";
+import Scene from "../components/Scene.astro";
+import Mega from "../components/Mega.astro";
+import Avslor from "../components/Avslor.astro";
 import ProofStrip from "../components/ProofStrip.astro";
 import Button from "../components/Button.astro";
 import ContactBlock from "../components/ContactBlock.astro";
 import { bevis } from "../data/bevis";
 import { firma } from "../data/firma";
+
+import "../styles/scener.css";
 ---
 <Base
   tittel="Om"
   beskrivelse="KodeKonsulentene er et utviklermiljø i Oslo med sikkerhet som spesialfelt. Du snakker med utvikleren som skriver koden."
 >
-  <Section nivaa={1}
-    n={1}
-    eyebrow="Om"
-    tittel="Du snakker med den som koder"
-    ingress="Det er hele forskjellen mellom oss og et byrå. Det er også grunnen til at vi ikke kan ta inn tjue prosjekter i måneden."
-  >
+  <Scene lav>
+    <Mega som="h1" merke="Om" n={1} tekst="Du snakker med den som koder" aksent="koder" />
+    <Avslor trinn={1}>
+      <p class="scene__ingress body-lg">Det er hele forskjellen mellom oss og et byrå. Det er også grunnen til at vi ikke kan ta inn tjue prosjekter i måneden.</p>
+    </Avslor>
+
+    <Avslor>
     <div class="grid-2">
       <div class="stack prose">
         <p class="body-lg muted">
@@ -58,7 +63,8 @@ import { firma } from "../data/firma";
         </p>
       </div>
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
   <div class="wrap">
     <ProofStrip items={bevis} label="Målbare påstander" />
@@ -66,3 +72,16 @@ import { firma } from "../data/firma";
 
   <ContactBlock n={2} />
 </Base>
+<style is:global>
+  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
+     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
+     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
+     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
+  .scene:first-of-type .mega .ord,
+  .scene:first-of-type .mega-blokk,
+  .scene:first-of-type .avslor {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+</style>

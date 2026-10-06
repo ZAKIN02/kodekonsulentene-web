@@ -151,7 +151,15 @@ import { bookUrl } from "../data/firma";
        den kortets egen opasitet, og da slapp de lyse platene i videoen gjennom
        bakgrunnen: målt 1,00:1 midt i avdekkingen, altså usynlig tekst. */
     .hist[data-aktiv] .hist__kort > * {
-      animation: hist-inn linear both;
+      /* Langformer, ikke stenografi. lightningcss slår `animation` og
+         `animation-timeline` sammen til `animation: linear both hist-inn view()`,
+         som er ugyldig – `animation-timeline` er ikke del av stenografien. Både
+         Chromium og Firefox forkaster hele erklæringen STILLE, og avdekkingen
+         kjørte ikke for noen. Testen i test/bygget-html.test.ts vokter mønsteret. */
+      animation-name: hist-inn;
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
       animation-timeline: view();
       animation-range: entry 15% cover 40%;
     }

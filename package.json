@@ -21,7 +21,11 @@
     "kontrast": "node .skudd/herokontrast.mjs",
     "visuell": "playwright test",
     "visuell:prod": "BASE_URL=https://kodekonsulentene.no playwright test --grep @overvaak",
-    "visuell:ui": "playwright test --ui"
+    "visuell:ui": "playwright test --ui",
+    "scene": "node scripts/scene.mjs",
+    "ytelse": "node .skudd/lh.mjs",
+    "ytelse:prod": "node .skudd/lh.mjs https://kodekonsulentene.no",
+    "lhci": "lhci autorun"
   },
   "dependencies": {
     "@astrojs/node": "^11.1.6",
@@ -31,6 +35,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@axe-core/playwright": "^4.13.0",
+    "@higgsfield/client": "^0.2.6",
     "@playwright/test": "^1.63.0",
     "@types/pngjs": "^6.0.5",
     "pngjs": "^7.0.0",

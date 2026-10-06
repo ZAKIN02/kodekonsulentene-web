@@ -1,6 +1,8 @@
 ---
 import Base from "../layouts/Base.astro";
-import Section from "../components/Section.astro";
+import Scene from "../components/Scene.astro";
+import Mega from "../components/Mega.astro";
+import Avslor from "../components/Avslor.astro";
 import PriceCard from "../components/PriceCard.astro";
 import Button from "../components/Button.astro";
 import Faq from "../components/Faq.astro";
@@ -9,18 +11,21 @@ import { pakker, loepende, prisvilkaar } from "../data/priser";
 import { firma } from "../data/firma";
 import { faq } from "../data/faq";
 
+import "../styles/scener.css";
+
 const prisFaq = faq.filter((f) => /binding|endre|koster|eier/i.test(f.q));
 ---
 <Base
   tittel="Priser"
   beskrivelse="Åpne priser: nettside fra 14 900 kr, Bedrift 29 900 kr, system fra 60 000 kr, abonnement 1 290–1 990 kr/mnd. Timepris 950 kr. Alle priser eks. mva."
 >
-  <Section nivaa={1}
-    n={1}
-    eyebrow="Priser"
-    tittel="Prisene står her"
-    ingress="Fordi du skal kunne regne på det før du ringer, og fordi den som skjuler prisen sjelden gjør det til din fordel. Alle priser er eks. mva."
-  >
+  <Scene lav>
+    <Mega som="h1" merke="Priser" n={1} tekst="Prisene står her" aksent="her" />
+    <Avslor trinn={1}>
+      <p class="scene__ingress body-lg">Fordi du skal kunne regne på det før du ringer, og fordi den som skjuler prisen sjelden gjør det til din fordel. Alle priser er eks. mva.</p>
+    </Avslor>
+
+    <Avslor>
     <div class="grid-3">
       {pakker.map((p) => (
         <PriceCard
@@ -38,9 +43,11 @@ const prisFaq = faq.filter((f) => /binding|endre|koster|eier/i.test(f.q));
         />
       ))}
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
-  <Section n={2} eyebrow="Løpende" tittel="Drift, abonnement og timer">
+  <Scene n={2} eyebrow="Løpende" tittel="Drift, abonnement og timer">
+    <Avslor>
     <div class="stack">
       <dl class="kv">
         {loepende.map((r) => (
@@ -55,14 +62,16 @@ const prisFaq = faq.filter((f) => /binding|endre|koster|eier/i.test(f.q));
         <li>Timeprisen er {firma.timepris} eks. mva. Norske byråer tar typisk 900–1 800 kr/t.</li>
       </ul>
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
-  <Section
+  <Scene
     n={3}
     eyebrow="Sammenligning"
     tittel="Hvorfor ikke 499 kr i måneden"
     ingress="Fordi du får noe annet. Her er hva pengene faktisk kjøper, slik at du kan ta valget selv."
   >
+    <Avslor>
     <div class="prose">
       <table>
         <thead>
@@ -82,22 +91,38 @@ const prisFaq = faq.filter((f) => /binding|endre|koster|eier/i.test(f.q));
         Bruk dem som markedssignal, ikke som fasit.
       </p>
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
-  <Section n={4} eyebrow="Spørsmål" tittel="Om pris og binding">
+  <Scene n={4} eyebrow="Spørsmål" tittel="Om pris og binding">
     <Faq items={prisFaq} />
     <p class="small muted" style="margin-top: var(--space-5)">
       <a class="kk-link" href="/vilkar">Salgsvilkårene</a> står i klartekst, og
       <a class="kk-link" href="/handbok">håndboken</a> forklarer hvordan vi jobber.
     </p>
-  </Section>
+  </Scene>
 
-  <Section n={5} eyebrow="Usikker" tittel="Vet du ikke hva du trenger?" ingress="Kjør den gratis sjekken på siden du har i dag. Da ser vi begge hva som er problemet før vi snakker om pris.">
+  <Scene n={5} eyebrow="Usikker" tittel="Vet du ikke hva du trenger?" ingress="Kjør den gratis sjekken på siden du har i dag. Da ser vi begge hva som er problemet før vi snakker om pris.">
+    <Avslor>
     <div class="row">
       <Button variant="primary" href="/sjekk">Sjekk nettsiden din</Button>
       <Button variant="ghost" href="/kontakt">Book 20 minutter</Button>
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
   <ContactBlock n={6} />
 </Base>
+<style is:global>
+  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
+     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
+     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
+     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
+  .scene:first-of-type .mega .ord,
+  .scene:first-of-type .mega-blokk,
+  .scene:first-of-type .avslor {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+</style>

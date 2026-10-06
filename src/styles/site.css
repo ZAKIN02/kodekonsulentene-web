@@ -231,3 +231,89 @@ textarea.control { min-height: 120px; resize: vertical; line-height: 24px; }
 .kkterm__line:focus-within { outline: var(--focus-width) solid var(--accent); outline-offset: -2px; }
 .kkterm__hint { position: fixed; bottom: var(--space-4); right: var(--space-4); z-index: 20; font-family: var(--font-mono); font-size: 12px; line-height: 16px; color: var(--ink-faint); background: var(--bg-raised); border: var(--hairline) solid var(--line); border-radius: var(--radius-sm); padding: var(--space-1) var(--space-2); }
 @media (max-width: 720px), (pointer: coarse) { .kkterm__hint { display: none; } }
+
+/* ===================================================================
+   Mobilpolering, 6. oktober 2026.
+
+   Hele siden var bygget og vurdert på 1440 px. Gjennomgangen på 390 px
+   fant tre sider som kunne scrolles sidelengs, ett produktutdata som ble
+   klippet bort, og en rekke trykkmål under WCAG 2.5.8 sin grense på 24 px.
+   Alt under er målt før og etter, ikke anslått.
+   =================================================================== */
+
+@media (max-width: 860px) {
+  /* --- Trykkmål ---------------------------------------------------
+     WCAG 2.5.8 krever 24x24 px. Unntaket for lenker inne i en setning
+     gjelder fortsatt – inline-lenker i brødtekst røres ikke. Det som
+     rettes her er lenker som står som egne mål: logo, meny og footer. */
+
+  /* Logoen var 170x22. Bildet beholder sin høyde; lenken får treffflaten. */
+  .topbar__logo { min-height: 44px; }
+
+  /* «Om» var 23 px bred. Luft på sidene gir bredde uten å flytte teksten. */
+  .topbar nav a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding-inline: var(--space-1);
+  }
+
+  /* Footer-lenkene sto som 17 px høye mål i en liste. En lenkeliste er
+     ikke «inline i en setning», så unntaket gjelder ikke her. */
+  .kk-footer ul { gap: var(--space-2); }
+  .kk-footer ul a.kk-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+  }
+
+  /* Avkrysningsbokser og radioknapper lå på 13x13 i priskalkulatoren. */
+  .field input[type="checkbox"],
+  .field input[type="radio"],
+  input[type="checkbox"],
+  input[type="radio"] { inline-size: 24px; block-size: 24px; }
+
+  /* <summary> var 20 px høy. */
+  summary { min-height: 24px; }
+}
+
+@media (max-width: 860px) {
+  /* --- Brede tabeller ---------------------------------------------
+     Tre sider kunne scrolles sidelengs: /priser (420 px), /sikkerhet
+     (394 px) og /verktoy/priskalkulator (722 px). En side som kan dras
+     sidelengs føles ødelagt, og innholdet som stikker ut er ofte det
+     man ikke finner igjen.
+
+     Tabellene beholder `display: table`. Gjør man dem til `display: block`
+     for å restable dem, mister de rolle som tabell i tilgjengelighetstreet,
+     og skjermlesere taper koblingen mellom rad og kolonne. Innholdet her
+     ER tabulært, så den koblingen er verdt å beholde. Løsningen er at
+     tabellen får scrolle inne i sin egen ramme i stedet for å dra siden. */
+
+  .prose table { display: block; overflow-x: auto; max-width: 100%; }
+  .prose table > * { display: revert; }
+
+  /* Mindre luft i cellene henter inn mesteparten av overskytelsen på
+     /priser, som bare lå 5 px over. */
+  .prose th, .prose td { padding: var(--space-2); }
+
+  /* CheckReport klippet innholdet sitt i stedet for å la det nås.
+     `overflow: hidden` på rammen betyr at «Hva det betyr»-kolonnen var
+     usynlig og uoppnåelig på mobil – og det er produktets viktigste
+     utdata. Nå kan den nås. */
+  .kk-report { overflow-x: auto; overflow-y: hidden; }
+  .kk-report th, .kk-report td { padding-inline: var(--space-3); }
+  .kk-report td.kk-note { min-width: 16rem; }
+}
+
+/* Sperre mot sidelengs scroll.
+ *
+ * En side som kan dras sidelengs føles ødelagt, og det som stikker ut finner
+ * man sjelden igjen. `clip` og ikke `hidden`: `clip` lager ingen scroll-beholder,
+ * så `position: sticky` lenger ned i treet fortsetter å virke – og både
+ * scroll-historien og horisontseksjonen er avhengige av det. Verifisert, ikke
+ * antatt: se målingen i rapporten.
+ *
+ * Dette er en sperre, ikke en løsning. Finner målingen i .skudd/mob-alle.mjs et
+ * element som stikker ut, skal det rettes der det oppstår. */
+html, body { overflow-x: clip; }

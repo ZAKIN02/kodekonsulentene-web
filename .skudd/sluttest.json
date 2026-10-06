@@ -1,0 +1,30 @@
+{
+ "stabel": {
+  "foer": "0.000",
+  "underDra": "1.000",
+  "etterSlipp": "1.000",
+  "etterTastatur": "0.900",
+  "etterKnapp": "0.000",
+  "knappTrykt": "false",
+  "status": "Lagene er trukket helt fra hverandre: design, kode, sikkerhet og integrasjoner.",
+  "tastStatus": "Lagene er 90 prosent fra hverandre."
+ },
+ "slep": {
+  "foer": "0.500",
+  "underDra": "0.820",
+  "etterTastatur": "0.570",
+  "status": "Nesten all plass til den sjekkede siden: 3 av 6 sikkerhetsheadere, 1 feil, org.nr. mangler."
+ },
+ "pekerkort": {
+  "venstre": {
+   "p": "0.150",
+   "t": "perspective(900px) rotateY(-1.4deg) rotateX(0.6deg)"
+  },
+  "hoyre": {
+   "p": "0.847",
+   "t": "perspective(900px) rotateY(1.39deg) rotateX(-0.6deg)"
+  },
+  "vedFokus": "0.5"
+ },
+ "feil": "ingen"
+}

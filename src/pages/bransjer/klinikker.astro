@@ -1,12 +1,16 @@
 ---
 import Base from "../../layouts/Base.astro";
-import Section from "../../components/Section.astro";
+import Scene from "../../components/Scene.astro";
+import Mega from "../../components/Mega.astro";
+import Avslor from "../../components/Avslor.astro";
 import Button from "../../components/Button.astro";
 import Terminal from "../../components/Terminal.astro";
 import UrlCheck from "../../components/UrlCheck.astro";
 import ProcessSteps from "../../components/ProcessSteps.astro";
 import ContactBlock from "../../components/ContactBlock.astro";
 import { bookUrl } from "../../data/firma";
+
+import "../../styles/scener.css";
 
 const steg = [
   { title: "Kunden booker selv", time: "Døgnet rundt", text: "Ledige timer per behandler og behandlingstype. De fleste bestillinger kommer utenom åpningstiden." },
@@ -28,19 +32,22 @@ const schema = {
   beskrivelse="Timebestilling, Vipps-betaling, SMS-påminnelse og medlemsregister for klinikker, treningssentre og kampsportklubber i Oslo. System fra 60 000 kr eks. mva."
   schema={[schema]}
 >
-  <Section nivaa={1}
-    n={1}
-    eyebrow="Klinikker og trening"
-    tittel="Timer som bestilles mens dere er stengt"
-    ingress="Telefonbestilling betyr at dere bare kan selge timer i åpningstiden, og at noen må avbryte en behandling for å ta telefonen."
-  >
+  <Scene lav>
+    <Mega som="h1" merke="Klinikker og trening" n={1} tekst="Timer som bestilles mens dere er stengt" />
+    <Avslor trinn={1}>
+      <p class="scene__ingress body-lg">Telefonbestilling betyr at dere bare kan selge timer i åpningstiden, og at noen må avbryte en behandling for å ta telefonen.</p>
+    </Avslor>
+
+    <Avslor>
     <div class="row">
       <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
       <Button variant="ghost" href="#demo">Se bookingflyten</Button>
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
-  <Section n={2} eyebrow="Problemet" tittel="Tre tall dere kjenner igjen">
+  <Scene n={2} eyebrow="Problemet" tittel="Tre tall dere kjenner igjen">
+    <Avslor>
     <div class="grid-2">
       <div class="stack">
         <dl class="kv">
@@ -55,6 +62,7 @@ const schema = {
         </p>
       </div>
       <Terminal
+        skriv
         title="~/bransje/klinikk"
         lines={[
           { type: "cmd", text: "når bestiller folk time" },
@@ -67,9 +75,10 @@ const schema = {
         label="Terminalutsnitt: folk bestiller time mest kveld og helg, men klinikken tar telefonen hverdager ni til seksten. Problemet er at dere selger når kundene ikke kjøper."
       />
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
-  <Section
+  <Scene
     n={3}
     eyebrow="Demo"
     tittel="Fra bestilling til oppgjør"
@@ -85,9 +94,10 @@ const schema = {
       </p>
       <Button variant="secondary" href="/kontakt">Be om en gjennomgang</Button>
     </div>
-  </Section>
+  </Scene>
 
-  <Section n={4} eyebrow="Også aktuelt" tittel="Medlemmer, ikke bare timer">
+  <Scene n={4} eyebrow="Også aktuelt" tittel="Medlemmer, ikke bare timer">
+    <Avslor>
     <div class="grid-3">
       <div class="card">
         <h3 class="subheading">Medlemsregister</h3>
@@ -102,11 +112,25 @@ const schema = {
         <p class="muted">Behandler dere helseopplysninger, gjelder strengere krav. Da settes det opp med databehandleravtale og tilgangsstyring fra start.</p>
       </div>
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
-  <Section n={5} eyebrow="Start her" tittel="Sjekk den siden dere har" ingress="Mange klinikksider laster Google Analytics før samtykke. Det bryter ekomloven § 3-15, og det er fikset på en ettermiddag.">
+  <Scene n={5} eyebrow="Start her" tittel="Sjekk den siden dere har" ingress="Mange klinikksider laster Google Analytics før samtykke. Det bryter ekomloven § 3-15, og det er fikset på en ettermiddag.">
     <UrlCheck buttonLabel="Kjør sjekken" hint="30 sekunder. Gratis, uten innlogging." />
-  </Section>
+  </Scene>
 
   <ContactBlock n={6} tittel="Ta en prat før dere bytter system" ingress="Har dere allerede et bookingsystem dere betaler for, er ofte svaret å koble det sammen med resten i stedet for å bytte. Det sier vi gjerne før dere kjøper noe." />
 </Base>
+<style is:global>
+  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
+     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
+     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
+     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
+  .scene:first-of-type .mega .ord,
+  .scene:first-of-type .mega-blokk,
+  .scene:first-of-type .avslor {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+</style>

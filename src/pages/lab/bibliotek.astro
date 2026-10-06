@@ -1,0 +1,74 @@
+---
+/**
+ * Målelab for tredjeparts animasjonsbibliotek.
+ *
+ * Eneste kandidaten som fyller et ekte hull hos oss: scroll-timeline-polyfill.
+ * Den gir Firefox ekte scroll-spolt avdekking i stedet for den binære
+ * IntersectionObserver-reserven vi har i dag. Siden finnes for å MÅLE hva den
+ * koster, ikke for å gå i produksjon.
+ *
+ * noindex – dette er et verktøy, ikke innhold.
+ */
+import Base from "../../layouts/Base.astro";
+---
+<Base
+  tittel="Målelab: animasjonsbibliotek"
+  beskrivelse="Intern måling av hva et tredjeparts animasjonsbibliotek koster."
+  noindex
+>
+  <div class="wrap" style="padding-block: var(--space-8); display: grid; gap: var(--space-7)">
+    <div class="stack">
+      <p class="kk-eyebrow"><span class="kk-eyebrow-n">//</span> <span>Målelab</span></p>
+      <h1 class="display-lg">scroll-timeline-polyfill</h1>
+      <p class="body-lg muted">
+        Samme avdekking som <code>Avslor</code>, men drevet av polyfillen i stedet for
+        nettleserens egen <code>animation-timeline</code>. Scroll nedover og se.
+      </p>
+    </div>
+
+    {[1, 2, 3, 4, 5, 6].map((n) => (
+      <section class="maalekort">
+        <p class="mono-label faint">// rad {String(n).padStart(2, "0")}</p>
+        <h2 class="heading">Avdekking drevet av polyfill</h2>
+        <p class="muted">
+          Denne blokken tones og glir inn i takt med scrollen, ikke i ett sprang.
+          I Firefox uten polyfill ville den bare slått på.
+        </p>
+      </section>
+    ))}
+  </div>
+</Base>
+
+<style>
+  .maalekort {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-5);
+    border: var(--hairline) solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--bg-raised);
+    margin-block: 40svh;
+    animation: lab-inn linear both;
+    animation-timeline: view();
+    animation-range: entry 10% cover 40%;
+  }
+  @keyframes lab-inn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .maalekort { animation: none; opacity: 1; transform: none; }
+  }
+</style>
+
+<script>
+  // Polyfillen er AVINSTALLERT etter målingen – den ble ikke anbefalt, se
+  // docs/research-animasjon.md. Importen sto igjen og brøt bygget:
+  // «Rolldown failed to resolve import scroll-timeline-polyfill».
+  // Siden står igjen som reproduksjon av stenografi-fella, uten avhengigheter.
+  if (!CSS.supports("animation-timeline: view()")) {
+    document.querySelector("[data-polyfill-status]")?.replaceChildren(
+      "Nettleseren mangler animation-timeline. Polyfillen ble målt til 15,96 kB og ikke anbefalt.",
+    );
+  }
+</script>

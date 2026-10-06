@@ -1,0 +1,295 @@
+/* KodeKonsulentene – redaksjonell typografi.
+   Lastes av komponentene som bruker den (Astro dedupliserer importen).
+
+   Hvorfor denne filen finnes: siden var teknisk solid, men alt var like stort.
+   Referansene brukeren peker på – epic.net, bdsn.club, brand.dropbox.com – har
+   det samme grepet: ekstrem skalakontrast. Et ord på 180 px rett ved siden av
+   en etikett på 12 px. Det er den kontrasten som gjør typografi til grafikk.
+
+   Brandboken gjelder uendret: Schibsted Grotesk 700–800 på display, JetBrains
+   Mono på tall og etiketter, mørk grunn, én limegrønn aksent, hårlinjer. Vi
+   tøyer skalaen – ikke paletten.
+
+   MERK om animasjoner: langformene brukes med vilje. Skriver man
+   `animation: x linear both` og `animation-timeline: view()` som to erklæringer,
+   slår lightningcss dem sammen til `animation: linear both x view()`. Den formen
+   er ugyldig, og nettleseren forkaster tidslinjen uten å si fra – mens
+   CSS.supports fortsatt melder at view() er støttet. */
+
+/* ================================================================= mega ==== */
+
+.mega {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  /* Skalaen er poenget. 11vw gjør at ett ord fyller skjermbredden på mobil og
+     holder seg stort på desktop; taket på 200px hindrer at den sprekker på
+     veldig brede skjermer. */
+  font-size: clamp(44px, 11vw, 200px);
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+  text-wrap: balance;
+  /* Bryter ut av innholdsbredden, men aldri ut av skjermen. */
+  width: min(100vw - 2 * var(--space-5), 1600px);
+  margin-inline: auto;
+  max-width: none;
+}
+
+@media (min-width: 721px) {
+  .mega { width: min(100vw - 2 * var(--space-6), 1600px); }
+}
+
+/* Den ene detaljen per skjerm: ett ord i aksentfargen. Brandboken sier én –
+   derfor er dette en klasse du setter på ett ord, ikke en automatikk. */
+.mega .aksent { color: var(--accent-text); }
+
+.mega .ord {
+  display: inline-block;
+  /* Ordene må kunne tones uten at linjen hopper. */
+  will-change: auto;
+}
+
+/* Etiketten over megateksten. Her ligger hele skalakontrasten: 12 px mono mot
+   opptil 200 px display, i samme blokk. */
+.mega-blokk {
+  display: grid;
+  gap: var(--space-4);
+}
+.mega-blokk__merke {
+  display: flex;
+  gap: var(--space-3);
+  align-items: baseline;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.mega-blokk__merke .nr { color: var(--accent-text); }
+
+@supports (animation-timeline: view()) {
+  .mega .ord {
+    animation-name: mega-ord;
+    animation-duration: 1ms;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: view();
+    /* Flat stige: fire prosent per ord. En lang tittel skal ikke bli en bølge. */
+    animation-range: entry calc(4% + var(--i) * 4%) cover calc(24% + var(--i) * 4%);
+  }
+}
+
+@keyframes mega-ord {
+  from { opacity: 0; transform: translateY(0.12em); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Brandboken: alt over 0 ms blir 0 ms ved redusert bevegelse. Uten denne ville
+   scroll-tidslinjen kjørt videre – `animation-timeline: view()` bryr seg ikke om
+   mediespørringen av seg selv. */
+@media (prefers-reduced-motion: reduce) {
+  .mega .ord {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ============================================================= horisont ==== */
+
+/* Vertikal scroll flytter innholdet vannrett. Dette er ikke scroll-jacking:
+   sidens scroll røres aldri, vi setter bare scrollLeft på et spor som uansett
+   er vannrett scrollbart. Uten JavaScript, og med redusert bevegelse, er det
+   nettopp det brukeren får – et spor hen kan dra og pile seg gjennom selv. */
+
+.horisont {
+  position: relative;
+}
+
+.horisont__fest {
+  display: grid;
+  align-content: center;
+  gap: var(--space-5);
+}
+
+/* Tittelen står stille mens kortene glir forbi. Uten den blir den festede
+   flaten en tom skjerm med en stripe kort nederst – det var slik den så ut
+   første gang, og den manglet et anker. */
+.horisont__topp {
+  display: grid;
+  gap: var(--space-3);
+  padding-inline: max(var(--space-5), calc(50% - 560px));
+  margin-bottom: var(--space-6);
+}
+.horisont__merke {
+  display: flex;
+  gap: var(--space-3);
+  align-items: baseline;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.horisont__merke .nr { color: var(--accent-text); }
+.horisont__overskrift {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(32px, 5vw, 72px);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  max-width: 18ch;
+  text-wrap: balance;
+}
+
+.horisont__spor {
+  display: flex;
+  gap: var(--space-5);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding-inline: max(var(--space-5), calc(50% - 560px));
+  padding-block: var(--space-2);
+  /* Sporet er en fokuserbar region. Et vannrett scrollområde som ikke kan nås
+     med tastatur er et WCAG 2.1.1-brudd – axe melder scrollable-region-focusable. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+.horisont__spor:focus-visible {
+  outline: var(--focus-width) solid var(--focus);
+  outline-offset: 2px;
+}
+
+.horisont__kort {
+  flex: 0 0 auto;
+  width: min(80vw, 420px);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--bg-raised);
+  padding: var(--space-5);
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+  transition: border-color 120ms ease;
+}
+.horisont__kort:hover { border-color: var(--line-strong); }
+
+.horisont__nr {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+}
+.horisont__tittel {
+  font-family: var(--font-display);
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+.horisont__tekst { margin: 0; color: var(--ink-muted); }
+
+.horisont__hjelp {
+  padding-inline: max(var(--space-5), calc(50% - 560px));
+  color: var(--ink-faint);
+}
+
+/* Fremdriftslinje – en hårlinje som fylles. Den eneste pynten her. */
+.horisont__linje {
+  height: var(--hairline);
+  background: var(--line);
+  margin-inline: max(var(--space-5), calc(50% - 560px));
+  position: relative;
+}
+.horisont__linje::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: calc(var(--andel, 0) * 100%);
+  background: var(--accent);
+}
+
+/* Festet modus settes bare av skriptet, og bare når nettleseren faktisk kan
+   gjøre jobben. Uten den er dette en helt vanlig vannrett strimmel. */
+.horisont[data-fest] { height: var(--hoyde, 300svh); }
+.horisont[data-fest] .horisont__fest {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+}
+
+@media (max-width: 720px) {
+  .horisont__kort { width: min(86vw, 340px); }
+}
+
+/* Redusert bevegelse: ingen festing, ingen vannrett forskyvning. Kortene
+   stables som en vanlig liste, og alt innhold er i samme rekkefølge. */
+@media (prefers-reduced-motion: reduce) {
+  .horisont[data-fest] { height: auto; }
+  .horisont[data-fest] .horisont__fest { position: static; height: auto; }
+  .horisont__spor {
+    flex-direction: column;
+    overflow-x: visible;
+  }
+  .horisont__kort { width: auto; max-width: 560px; }
+  .horisont__linje { display: none; }
+}
+
+/* ========================================================== nøkkeltall ===== */
+
+/* Tallene som grafikk, ikke som liste. Hårlinjer mellom, ingen bokser. */
+.nokkeltall {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+  border-block-start: var(--hairline) solid var(--line);
+}
+
+.nokkeltall__post {
+  display: grid;
+  gap: var(--space-2);
+  padding-block: var(--space-5);
+  border-block-end: var(--hairline) solid var(--line);
+}
+
+.nokkeltall__verdi {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  /* Samme logikk som mega: tallet skal lese som grafikk, ikke som brødtekst. */
+  font-size: clamp(44px, 8vw, 120px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.nokkeltall__post--aksent .nokkeltall__verdi { color: var(--accent-text); }
+
+.nokkeltall__merke {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ink-muted);
+  max-width: 34ch;
+}
+
+@media (min-width: 861px) {
+  .nokkeltall__post {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: baseline;
+    gap: var(--space-6);
+    padding-block: var(--space-6);
+  }
+  .nokkeltall__merke { justify-self: start; }
+}

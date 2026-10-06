@@ -1,12 +1,16 @@
 ---
 import Base from "../../layouts/Base.astro";
-import Section from "../../components/Section.astro";
+import Scene from "../../components/Scene.astro";
+import Mega from "../../components/Mega.astro";
+import Avslor from "../../components/Avslor.astro";
 import Button from "../../components/Button.astro";
 import Terminal from "../../components/Terminal.astro";
 import UrlCheck from "../../components/UrlCheck.astro";
 import ProcessSteps from "../../components/ProcessSteps.astro";
 import ContactBlock from "../../components/ContactBlock.astro";
 import { bookUrl } from "../../data/firma";
+
+import "../../styles/scener.css";
 
 const steg = [
   { title: "Kunden fyller ut", time: "2 vår", text: "Fire felt og tre bilder fra telefonen. Ikke et kontaktskjema – en befaringsforespørsel." },
@@ -28,19 +32,22 @@ const schema = {
   beskrivelse="Nettside og befaringssystem for håndverkere: bilder fra kunden, tilbud samme dag, ordre rett i Tripletex eller Fiken. Fast pris fra 14 900 kr eks. mva."
   schema={[schema]}
 >
-  <Section nivaa={1}
-    n={1}
-    eyebrow="Håndverkere"
-    tittel="Slutt å kjøre på befaring du ikke ville tatt"
-    ingress="De fleste håndverkersider er et telefonnummer og et skjema. Det gir deg forespørsler du må ringe tilbake på for å finne ut om de er noe verdt."
-  >
+  <Scene lav>
+    <Mega som="h1" merke="Håndverkere" n={1} tekst="Slutt å kjøre på befaring du ikke ville tatt" />
+    <Avslor trinn={1}>
+      <p class="scene__ingress body-lg">De fleste håndverkersider er et telefonnummer og et skjema. Det gir deg forespørsler du må ringe tilbake på for å finne ut om de er noe verdt.</p>
+    </Avslor>
+
+    <Avslor>
     <div class="row">
       <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
       <Button variant="ghost" href="#demo">Se befaringsflyten</Button>
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
-  <Section n={2} eyebrow="Tallene" tittel="Bransjen henger etter – det er en fordel for deg">
+  <Scene n={2} eyebrow="Tallene" tittel="Bransjen henger etter – det er en fordel for deg">
+    <Avslor>
     <div class="grid-2">
       <div class="stack">
         <p class="body-lg muted">
@@ -60,6 +67,7 @@ const schema = {
         </p>
       </div>
       <Terminal
+        skriv
         title="~/bransje/bygg"
         lines={[
           { type: "cmd", text: "nettsidedekning --bransje=bygg --ansatte=10-19" },
@@ -72,9 +80,10 @@ const schema = {
         label="Terminalutsnitt: nettsidedekning i bygg og anlegg for foretak med ti til nitten ansatte er 72 prosent, mot 86 prosent for alle foretak med minst ti ansatte. Gapet er fjorten prosentpoeng."
       />
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
-  <Section
+  <Scene
     n={3}
     eyebrow="Demo"
     tittel="Befaring uten telefonrunde"
@@ -90,9 +99,10 @@ const schema = {
       </p>
       <Button variant="secondary" href="/kontakt">Be om en gjennomgang</Button>
     </div>
-  </Section>
+  </Scene>
 
-  <Section n={4} eyebrow="Kobles mot" tittel="Det du allerede betaler for">
+  <Scene n={4} eyebrow="Kobles mot" tittel="Det du allerede betaler for">
+    <Avslor>
     <div class="grid-3">
       <div class="card">
         <h3 class="subheading">Tripletex og Fiken</h3>
@@ -107,11 +117,25 @@ const schema = {
         <p class="muted">Siden din er det kunden sjekker etter at de har sett deg der. Da bør den si noe mer enn navnet ditt.</p>
       </div>
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
-  <Section n={5} eyebrow="Start her" tittel="Sjekk den siden du har" ingress="Før vi snakker om ny side: kjør den gratis sjekken. Mangler org.nr. eller settes det cookies før samtykke, er det raskt fikset – og det er billigere enn en ny side.">
+  <Scene n={5} eyebrow="Start her" tittel="Sjekk den siden du har" ingress="Før vi snakker om ny side: kjør den gratis sjekken. Mangler org.nr. eller settes det cookies før samtykke, er det raskt fikset – og det er billigere enn en ny side.">
     <UrlCheck buttonLabel="Kjør sjekken" hint="30 sekunder. Du ser hva som er galt før du bruker penger." />
-  </Section>
+  </Scene>
 
   <ContactBlock n={6} tittel="Ring, så tar vi det på fem minutter" ingress="Vi vet hva en befaring koster deg i tid. Fortell hvor mange forespørsler du får i uka, så regner vi på om dette lønner seg." />
 </Base>
+<style is:global>
+  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
+     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
+     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
+     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
+  .scene:first-of-type .mega .ord,
+  .scene:first-of-type .mega-blokk,
+  .scene:first-of-type .avslor {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+</style>

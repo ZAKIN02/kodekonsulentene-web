@@ -1,21 +1,26 @@
 ---
 import Base from "../layouts/Base.astro";
-import Section from "../components/Section.astro";
+import Scene from "../components/Scene.astro";
+import Mega from "../components/Mega.astro";
+import Avslor from "../components/Avslor.astro";
 import Eyebrow from "../components/Eyebrow.astro";
 import Button from "../components/Button.astro";
 import ContactBlock from "../components/ContactBlock.astro";
 import { synligeCaser } from "../data/caser";
+
+import "../styles/scener.css";
 ---
 <Base
   tittel="Caser"
   beskrivelse="Problem, løsning og resultat med tall. Egne iOS-apper, demo-systemer og konseptarbeid fra KodeKonsulentene i Oslo."
 >
-  <Section nivaa={1}
-    n={1}
-    eyebrow="Caser"
-    tittel="Problem, løsning, resultat"
-    ingress="Hver case sier hva som var problemet, hva vi bygde, og hva det ga i tall. Konseptarbeid er alltid merket, slik at du vet hva som er oppdrag og hva som er øvelse."
-  >
+  <Scene lav>
+    <Mega som="h1" merke="Caser" n={1} tekst="Problem, løsning, resultat" aksent="resultat" />
+    <Avslor trinn={1}>
+      <p class="scene__ingress body-lg">Hver case sier hva som var problemet, hva vi bygde, og hva det ga i tall. Konseptarbeid er alltid merket, slik at du vet hva som er oppdrag og hva som er øvelse.</p>
+    </Avslor>
+
+    <Avslor>
     <div class="stack">
       {synligeCaser.map((c) => (
         <article class="card">
@@ -47,7 +52,21 @@ import { synligeCaser } from "../data/caser";
         </article>
       ))}
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
   <ContactBlock n={2} tittel="Vil du bli den neste?" ingress="Vi tar inn to til tre pilotprosjekter til redusert pris mot at vi får bruke tallene som case. Si fra hvis det er aktuelt." />
 </Base>
+<style is:global>
+  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
+     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
+     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
+     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
+  .scene:first-of-type .mega .ord,
+  .scene:first-of-type .mega-blokk,
+  .scene:first-of-type .avslor {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+</style>

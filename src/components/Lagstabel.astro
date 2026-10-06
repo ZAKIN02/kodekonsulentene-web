@@ -2,64 +2,104 @@
 /**
  * Lagstabelen – sidens signaturinteraksjon.
  *
- * Dette er ikke en video. Det er fire ekte lag du kan ta tak i og dra fra
- * hverandre med musa, fingeren eller piltastene. Grunnen til at den er bygget
- * som DOM og ikke som film: den svarer på deg. En video kan bare spilles av.
+ * Ikke en video. Fire ekte lag du tar tak i og drar fra hverandre med musa,
+ * fingeren eller piltastene. Grunnen til at den er DOM og ikke film: den svarer
+ * på deg. En film kan bare spilles av.
  *
- * Vekt: null bilder, null video, under 3 kB JavaScript. Den er skarp i alle
- * oppløsninger fordi den er CSS, og den fungerer uten JavaScript – da står
- * lagene adskilt og leses som en vanlig liste.
+ * Null bilder, null video. Den er skarp i enhver oppløsning fordi den er CSS,
+ * og uten JavaScript står lagene adskilt og leses som en vanlig liste.
+ *
+ * Draretningen er VANNRETT (høyre = fra hverandre). Det er et berøringskrav,
+ * ikke en smakssak: med loddrett draing måtte vi satt `touch-action: none`, og
+ * da ville fingeren ikke lenger kunne scrolle siden over komponenten.
  */
+interface Props {
+  /** Må være unik når flere stabler står på samme side. */
+  id?: string;
+  class?: string;
+}
+const { id = "stabel", class: cls } = Astro.props;
+
 const lag = [
-  { navn: "Design", detalj: "Det kunden ser", farge: "glass" },
-  { navn: "Kode", detalj: "Det som gjør at det virker", farge: "kort" },
-  { navn: "Sikkerhet", detalj: "Det ingen spør om før det er for sent", farge: "keramikk" },
-  { navn: "Integrasjoner", detalj: "Booking, Vipps, regnskap", farge: "aluminium" },
+  { navn: "Design", detalj: "Det kunden ser" },
+  { navn: "Kode", detalj: "Det som gjør at det virker" },
+  { navn: "Sikkerhet", detalj: "Det ingen spør om før det er for sent" },
+  { navn: "Integrasjoner", detalj: "Booking, Vipps, regnskap" },
 ];
 ---
-<figure class="stabel" data-stabel>
-  <div class="stabel__scene">
+<figure class:list={["stabel", cls]} data-stabel>
+  <div class="stabel__scene" data-stabel-scene>
     <ol class="stabel__lag">
-      {lag.map((l, i) => (
-        <li class={`stabel__plate stabel__plate--${l.farge}`} style={`--i:${i}`}>
-          <span class="stabel__navn mono-label">{l.navn}</span>
-          <span class="stabel__detalj small">{l.detalj}</span>
-        </li>
+      {/* Malt i omvendt rekkefølge: Design (--i:0) skal ligge ØVERST når siden
+          er satt sammen – det er laget kunden faktisk ser. I DOM-rekkefølge
+          ville Integrasjoner dekket alt, og hvilestillingen viste bare en tom
+          ramme. Når lagene skilles har Design størst translateZ og stiger likevel
+          høyest, så begge tilstandene blir riktige. */}
+      {lag.map((_, i) => lag.length - 1 - i).map((i) => (
+        <li
+          class="stabel__plate"
+          style={`--i:${i}; --n:${lag.length}`}
+          data-aksent={i === lag.length - 1 ? "" : undefined}
+        ></li>
       ))}
     </ol>
+
+    <!-- Etikettene ligger UTENFOR 3D-rommet. Inne i det ble teksten rastrert
+         gjennom en rotert flate og ble uskarp og trang. Her er de rene 2D, og
+         følger platene med den utregnede projeksjonen under. -->
+    <ul class="stabel__merker">
+      {lag.map((l, i) => (
+        <li class="stabel__merke" style={`--i:${i}; --n:${lag.length}`}>
+          <span class="stabel__tittel">
+            <span class="stabel__nr mono-label">{String(i + 1).padStart(2, "0")}</span>
+            <span class="stabel__navn">{l.navn}</span>
+          </span>
+          <span class="stabel__detalj">{l.detalj}</span>
+        </li>
+      ))}
+    </ul>
+
+    <span class="stabel__grunnlinje" aria-hidden="true"></span>
   </div>
 
-  <figcaption class="stabel__hjelp small">
+  <div class="stabel__kontroll">
     <button class="stabel__knapp" type="button" data-stabel-knapp aria-pressed="false">
-      Dra lagene fra hverandre
+      <span class="stabel__grep" aria-hidden="true"></span>
+      <span data-stabel-knapptekst>Ta siden fra hverandre</span>
     </button>
-    <span class="faint" data-stabel-hint>eller bruk piltastene</span>
-  </figcaption>
 
-  <label class="visually-hidden" for="stabel-spak">Avstand mellom lagene</label>
-  <input
-    class="stabel__spak"
-    id="stabel-spak"
-    type="range"
-    min="0"
-    max="100"
-    value="0"
-    step="1"
-    data-stabel-spak
-    aria-describedby="stabel-status"
-  />
-  <p class="visually-hidden" id="stabel-status" aria-live="polite" data-stabel-status>Lagene ligger samlet.</p>
+    <label class="visually-hidden" for={`${id}-spak`}>Avstand mellom lagene</label>
+    <input
+      class="spak"
+      id={`${id}-spak`}
+      type="range"
+      min="0"
+      max="100"
+      value="0"
+      step="1"
+      data-stabel-spak
+      aria-describedby={`${id}-status`}
+    />
+    <p class="interaksjon-hint">Dra i stabelen, eller bruk piltastene.</p>
+  </div>
+
+  <p class="visually-hidden" id={`${id}-status`} aria-live="polite" data-stabel-status>
+    Lagene ligger samlet.
+  </p>
 </figure>
 
 <style>
-  .stabel { margin: 0; display: grid; gap: var(--space-4); justify-items: center; }
+  .stabel { margin: 0; display: grid; gap: var(--space-5); justify-items: center; }
+
   .stabel__scene {
+    position: relative;
     width: 100%;
     aspect-ratio: 4 / 3;
-    max-height: 60svh;
+    max-height: 62svh;
     display: grid;
     place-items: center;
-    perspective: 1200px;
+    perspective: 1400px;
+    /* Fingeren skal fortsatt kunne scrolle siden loddrett. Derfor drar vi vannrett. */
     touch-action: pan-y;
     cursor: grab;
   }
@@ -70,10 +110,14 @@ const lag = [
     margin: 0;
     padding: 0;
     position: relative;
-    width: min(74%, 420px);
+    width: min(70%, 380px);
     aspect-ratio: 16 / 10;
     transform-style: preserve-3d;
-    transform: rotateX(58deg) rotateZ(-38deg);
+    /* Stabelen vokser oppover. Uten denne motvekten løftes den ut av rammen når
+       lagene skilles – målt: 3 lag à 74px er 222px over midten. Halve den
+       høyden tilbake holder den sentrert hele veien. */
+    translate: 0 calc(var(--a, 0) * 111px);
+    transform: rotateX(56deg) rotateZ(-40deg);
   }
 
   .stabel__plate {
@@ -82,68 +126,161 @@ const lag = [
     border: var(--hairline) solid var(--line-strong);
     border-radius: var(--radius-sm);
     background: var(--bg-raised);
-    /* --a er andelen 0–1, satt av skriptet. Hvert lag løftes litt mer enn det under. */
-    transform: translateZ(calc(var(--a, 0) * (3 - var(--i)) * 46px));
+    /* --a er andelen 0–1, satt av skriptet. Øverste lag løftes mest. */
+    transform: translateZ(calc(var(--a, 0) * (var(--n) - 1 - var(--i)) * 80px));
     transition: transform 120ms linear;
-    display: grid;
-    align-content: end;
-    gap: 2px;
-    padding: var(--space-3);
   }
   .stabel[data-drar] .stabel__plate { transition: none; }
 
-  .stabel__plate--glass { background: color-mix(in srgb, var(--bg-raised) 70%, #ffffff 30%); }
-  .stabel__plate--kort { background: color-mix(in srgb, var(--bg-raised) 88%, var(--ok) 12%); }
-  .stabel__plate--keramikk { background: var(--bg-sunken); }
-  .stabel__plate--aluminium {
-    background: var(--bg-raised);
+  /* Det øverste laget er lysest, det nederste mørkest: dybde uten skygge,
+     slik brandboken krever. Trinnene er regnet ut fra --i. */
+  .stabel__plate {
+    background: color-mix(
+      in srgb,
+      var(--bg-raised) calc(100% - (var(--n) - 1 - var(--i)) * 9%),
+      var(--ink) calc((var(--n) - 1 - var(--i)) * 9%)
+    );
+  }
+  /* Bare ett lag bærer aksenten – «én detalj per skjerm». Knyttet til laget
+     med et data-attributt, ikke til :last-child: maledekkefølgen er snudd, så
+     posisjonen i DOM sier ingenting om hvilket lag det er. */
+  .stabel__plate[data-aksent] {
     border-color: var(--accent);
-    box-shadow: 0 0 0 1px var(--accent);
+    background: var(--bg-raised);
   }
 
-  /* Etikettene dukker opp først når lagene faktisk er adskilt. */
-  .stabel__navn,
+  /* Etikettene ligger i et eget 2D-lag til høyre for stabelen.
+     Forskyvningen er MÅLT, ikke gjettet: med 80px translateZ per lag flytter en
+     plate seg 71px oppover på skjermen (rotateX(56deg) pluss perspektiv).
+     Etikettene er absolutt plassert fra samme anker som den nederste platen,
+     slik at de sprer seg i nøyaktig samme takt. Ligger de i vanlig flyt, legger
+     rutenettets grunnavstand seg OPPÅ forskyvningen – første forsøk ga 126px
+     per lag mot platenes 46px, og lederstrekene pekte i løse lufta. */
+  .stabel__merker {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    pointer-events: none;
+    /* Samme motvekt som stabelen, ellers glipper lederstrekene. */
+    translate: 0 calc(var(--a, 0) * 111px);
+  }
+  .stabel__merke {
+    position: absolute;
+    top: 50%;
+    left: calc(50% + min(19%, 108px));
+    width: min(40%, 220px);
+    display: grid;
+    grid-template-columns: var(--space-6) auto;
+    grid-template-areas: "linje tittel" "linje detalj";
+    gap: 1px var(--space-3);
+    align-content: center;
+    translate: 0 calc(-50% + var(--a, 0) * (var(--n) - 1 - var(--i)) * -69px);
+    opacity: calc(var(--a, 0) * 2.4 - 0.75);
+    transition: translate 120ms linear, opacity 120ms linear;
+  }
+  .stabel[data-drar] .stabel__merke { transition: none; }
+  .stabel__merke::before {
+    content: "";
+    grid-area: linje;
+    align-self: center;
+    height: var(--hairline);
+    background: var(--line-strong);
+  }
+  .stabel__tittel { grid-area: tittel; display: flex; align-items: baseline; gap: var(--space-2); }
+  .stabel__nr { color: var(--accent-text); }
+  .stabel__navn {
+    font-family: var(--font-display);
+    font-size: 17px;
+    line-height: 23px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
   .stabel__detalj {
-    opacity: calc(var(--a, 0) * 1.4 - 0.25);
-    transform: rotateZ(38deg) rotateX(-58deg) translateY(calc(var(--a, 0) * -6px));
-    transform-origin: left bottom;
-    white-space: nowrap;
+    grid-area: detalj;
+    font-size: 13px;
+    line-height: 17px;
+    color: var(--ink-muted);
   }
-  .stabel__navn { color: var(--ink); letter-spacing: 0.08em; }
-  .stabel__detalj { color: var(--ink-muted); }
 
-  .stabel__hjelp { display: flex; gap: var(--space-3); align-items: baseline; flex-wrap: wrap; justify-content: center; }
+  /* Grunnlinjen gir stabelen et gulv å stå på. Den strammer seg når lagene
+     føyer seg sammen, så sammenstillingen føles som en bevegelse mot ro. */
+  .stabel__grunnlinje {
+    position: absolute;
+    left: 50%;
+    bottom: 12%;
+    width: calc(34% + var(--a, 0) * 6%);
+    height: var(--hairline);
+    translate: -50% 0;
+    background: var(--line);
+    opacity: calc(0.85 - var(--a, 0) * 0.5);
+    transition: width 120ms linear, opacity 120ms linear;
+  }
+
+  .stabel__kontroll { display: grid; gap: var(--space-3); justify-items: center; width: min(100%, 340px); }
+
   .stabel__knapp {
-    background: none;
-    border: 0;
-    border-bottom: var(--hairline) solid var(--line-strong);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    padding: var(--space-2) var(--space-4);
+    background: transparent;
+    border: var(--hairline) solid var(--line-strong);
+    border-radius: var(--radius-sm);
     color: var(--ink);
     font: inherit;
-    padding: 0 0 2px;
+    font-weight: 600;
     cursor: pointer;
+    transition: border-color 120ms ease, color 120ms ease;
   }
-  .stabel__knapp:hover { border-color: var(--accent-text); color: var(--accent-text); }
-  .stabel__knapp:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: 3px; }
+  .stabel__knapp:hover { border-color: var(--ink); }
+  .stabel__knapp:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: 2px; }
 
-  /* Spaken er den tilgjengelige inngangen: tastatur, skjermleser og berøring.
-     Den ligger synlig, ikke gjemt – en skjult kontroll er ingen kontroll. */
-  .stabel__spak { width: min(100%, 320px); accent-color: var(--accent); }
-  .stabel__spak:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: 3px; }
+  /* Grepet er affordansen: tre streker som sier «denne kan tas i». */
+  .stabel__grep {
+    width: 12px;
+    height: 14px;
+    flex: none;
+    background:
+      linear-gradient(var(--ink-faint) 0 0) 0 50% / var(--hairline) 100% no-repeat,
+      linear-gradient(var(--ink-faint) 0 0) 50% 50% / var(--hairline) 100% no-repeat,
+      linear-gradient(var(--ink-faint) 0 0) 100% 50% / var(--hairline) 100% no-repeat;
+  }
 
-  /* Uten JavaScript står lagene adskilt, så innholdet er lesbart. */
-  .stabel:not([data-klar]) .stabel__plate { --a: 0.62; }
-  .stabel:not([data-klar]) .stabel__hjelp { display: none; }
+  /* .spak og .interaksjon-hint ligger i src/styles/interaksjon.css. */
+
+  /* Uten JavaScript står lagene adskilt så innholdet er lesbart, og kontrollene
+     skjules – en kontroll som ikke gjør noe er verre enn ingen kontroll. */
+  .stabel:not([data-klar]) .stabel__lag,
+  .stabel:not([data-klar]) .stabel__merker,
+  .stabel:not([data-klar]) .stabel__plate,
+  .stabel:not([data-klar]) .stabel__merke,
+  .stabel:not([data-klar]) .stabel__grunnlinje { --a: 0.7; }
+  .stabel:not([data-klar]) .stabel__kontroll { display: none; }
+  .stabel:not([data-klar]) .stabel__scene { cursor: default; }
 
   @media (prefers-reduced-motion: reduce) {
-    .stabel__plate { transition: none; }
+    .stabel__plate,
+    .stabel__merke,
+    .stabel__grunnlinje { transition: none; }
+  }
+
+  @media (max-width: 560px) {
+    .stabel__lag { width: min(62%, 300px); }
+    .stabel__navn { font-size: 16px; line-height: 22px; }
+    .stabel__detalj { display: none; }
   }
 </style>
 
 <script>
   for (const rot of document.querySelectorAll<HTMLElement>("[data-stabel]")) {
-    const scene = rot.querySelector<HTMLElement>(".stabel__scene")!;
+    const scene = rot.querySelector<HTMLElement>("[data-stabel-scene]")!;
     const spak = rot.querySelector<HTMLInputElement>("[data-stabel-spak]")!;
     const knapp = rot.querySelector<HTMLButtonElement>("[data-stabel-knapp]")!;
+    const knapptekst = rot.querySelector<HTMLElement>("[data-stabel-knapptekst]")!;
     const status = rot.querySelector<HTMLElement>("[data-stabel-status]")!;
     rot.dataset.klar = "true";
 
@@ -152,29 +289,35 @@ const lag = [
       a = Math.min(1, Math.max(0, ny));
       rot.style.setProperty("--a", a.toFixed(3));
       spak.value = String(Math.round(a * 100));
-      knapp.setAttribute("aria-pressed", a > 0.5 ? "true" : "false");
+      const apen = a > 0.5;
+      knapp.setAttribute("aria-pressed", String(apen));
+      knapptekst.textContent = apen ? "Sett den sammen igjen" : "Ta siden fra hverandre";
       status.textContent =
-        a < 0.1 ? "Lagene ligger samlet."
-        : a > 0.9 ? "Lagene er trukket helt fra hverandre: design, kode, sikkerhet, integrasjoner."
-        : `Lagene er ${Math.round(a * 100)} prosent fra hverandre.`;
+        a < 0.08
+          ? "Lagene ligger samlet."
+          : a > 0.92
+            ? "Lagene er trukket helt fra hverandre: design, kode, sikkerhet og integrasjoner."
+            : `Lagene er ${Math.round(a * 100)} prosent fra hverandre.`;
     };
     sett(0);
 
-    // Dra: musa eller fingeren beveger seg loddrett, lagene følger.
+    // Dra. Vannrett høyre og loddrett opp gir samme retning som stabelen reiser
+    // seg i, så bevegelsen føles som å trekke lagene ut langs sin egen akse.
     let drar = false;
-    let startY = 0;
-    let startA = 0;
+    let x0 = 0;
+    let y0 = 0;
+    let a0 = 0;
     scene.addEventListener("pointerdown", (e) => {
       drar = true;
-      startY = e.clientY;
-      startA = a;
+      x0 = e.clientX;
+      y0 = e.clientY;
+      a0 = a;
       rot.dataset.drar = "";
       scene.setPointerCapture(e.pointerId);
     });
     scene.addEventListener("pointermove", (e) => {
       if (!drar) return;
-      // Opp = fra hverandre. 240 px drag dekker hele spennet.
-      sett(startA + (startY - e.clientY) / 240);
+      sett(a0 + ((e.clientX - x0) + (y0 - e.clientY)) / 320);
     });
     const slipp = (e: PointerEvent) => {
       if (!drar) return;
@@ -186,13 +329,14 @@ const lag = [
     scene.addEventListener("pointercancel", slipp);
 
     spak.addEventListener("input", () => sett(Number(spak.value) / 100));
+
     knapp.addEventListener("click", () => {
       const mal = a > 0.5 ? 0 : 1;
       if (matchMedia("(prefers-reduced-motion: reduce)").matches) return sett(mal);
       const fra = a;
       const t0 = performance.now();
       const steg = (naa: number) => {
-        const t = Math.min(1, (naa - t0) / 420);
+        const t = Math.min(1, (naa - t0) / 460);
         sett(fra + (mal - fra) * (1 - Math.pow(1 - t, 3)));
         if (t < 1) requestAnimationFrame(steg);
       };

@@ -1,0 +1,28 @@
+{
+  "_om": "Scenene siden bruker. Hver scene er to låste bilder (start og slutt) og ett klipp mellom dem. Redigeringene gjøres ut fra samme kildebilde, slik at kamera, lys og materialer holder seg like – det er dét som gjør bevegelsen kontrollert i stedet for morfende. Endrer du en prompt her, kan hele scenen bygges på nytt med `npm run scene <id>`.",
+  "_bevar": "Keep exactly identical: camera position, perspective, framing, lighting direction and intensity, rim light, the near-black #0b0d10 background, the suspension wires, and the size, thickness, material and surface finish of every plate. Nothing is added or removed. All surfaces stay plain and unmarked: no text, letters, numbers, logos or watermarks.",
+  "_bevegelse": "Locked-off static camera; the camera does not move, zoom, pan or reframe. Silent product shot. Start exactly on the first frame and end exactly on the last frame. Hold still for the first and last half second; in between, one single continuous movement at constant speed. The objects are rigid and keep their exact shape, size, thickness and material in every frame and never bend, melt, morph or rotate. The same number of objects is visible in every frame. Lighting, reflections and the background stay constant. Avoid: camera movement, camera shake, zoom, pan, cut, scene change, lens switch, morphing, melting, warping, extra objects, missing objects, text, letters, logos, watermark, flicker, particles, lens flare, motion blur.",
+
+  "scener": [
+    {
+      "id": "lag",
+      "mappe": "historie",
+      "basis": "6f5a4bd2-4820-4797-a67c-1ae32fb8444b",
+      "start": "Change only the spacing: the plates are pressed tightly together into one single compact slab, stacked flush with almost no gap between them, all perfectly level, parallel and centered on one vertical axis. The lime green edge line stays on the same plate.",
+      "slutt": "Change only the spacing: the plates are spread far apart in a tall, evenly spaced vertical exploded view, all perfectly level, parallel and centered on one vertical axis, with equal generous gaps between every plate, filling the frame from top to bottom. The lime green edge line stays on the same plate.",
+      "bevegelse": "The stacked plates separate and spread apart straight along one vertical axis, each plate staying perfectly level and parallel, until they reach the arrangement of the last frame. The suspension wires stay taut and vertical.",
+      "pingpong": true,
+      "bredder": [1920, 1280]
+    },
+    {
+      "id": "systemer",
+      "mappe": "scener",
+      "basis": "6f5a4bd2-4820-4797-a67c-1ae32fb8444b",
+      "start": "Change the arrangement: the plates are pressed together into one single slim monolithic slab, flush and perfectly aligned, with the material layers clearly distinct in the side profile. Five thin matte black braided cables hang loose in front of the slab's lower edge, their small machined aluminium connectors NOT yet plugged in, pointing toward five small empty ports along that edge.",
+      "slutt": "Change the arrangement: the plates are pressed together into one single slim monolithic slab, flush and perfectly aligned. Five thin matte black braided cables are each plugged into five ports along the slab's lower edge, running out toward the viewer in a parallel evenly spaced row. A single hair-thin lime green seam line glows softly along one joint in the slab.",
+      "bevegelse": "The five black braided cables glide straight forward and plug into the five ports along the slab's lower edge, one after another from left to right. As the last cable seats, a single hair-thin lime green seam line lights up softly along one joint in the slab.",
+      "pingpong": false,
+      "bredder": [1920, 1280]
+    }
+  ]
+}

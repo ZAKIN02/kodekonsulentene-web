@@ -1,0 +1,55 @@
+/                             13000px  overflyt:6 · små:6
+      over: a. [340→398] | a. [414→459] | a. [475→506] | li.stabel__merke [260→397] | span.stabel__tittel [304→397] | span.stabel__tittel [304→403]
+      små : a:Alle caser 62x17 | a:håndboken 81x18 | input: 129x16 | a:hei@kodekonsulente 193x18 | a:personvernerklærin 150x17 | a:hei@kodekonsulente 170x17
+/historie                      8435px  overflyt:3 · små:3
+      over: a. [340→398] | a. [414→459] | a. [475→506]
+      små : a:hei@kodekonsulente 193x18 | a:personvernerklærin 150x17 | a:hei@kodekonsulente 170x17
+/nettsider                     6652px  overflyt:3 · små:3
+      over: a. [340→398] | a. [414→459] | a. [475→506]
+      små : a:hei@kodekonsulente 193x18 | a:personvernerklærin 150x17 | a:hei@kodekonsulente 170x17
+/systemer                      5847px  overflyt:3 · små:3
+      over: a. [340→398] | a. [414→459] | a. [475→506]
+      små : a:hei@kodekonsulente 193x18 | a:personvernerklærin 150x17 | a:hei@kodekonsulente 170x17
+/apper-og-ai                   4905px  overflyt:3 · små:3
+      over: a. [340→398] | a. [414→459] | a. [475→506]
+      små : a:hei@kodekonsulente 193x18 | a:personvernerklærin 150x17 | a:hei@kodekonsulente 170x17
+/sikkerhet                     7985px  overflyt:6 · små:3
+      over: a. [340→398] | a. [414→459] | a. [475→506] | table. [25→790] | thead. [25→790] | tr. [25→790]
+      små : a:hei@kodekonsulente 193x18 | a:personvernerklærin 150x17 | a:hei@kodekonsulente 170x17
+/priser                        7398px  overflyt:6 · små:5
+      over: a. [340→398] | a. [414→459] | a. [475→506] | thead. [24→395] | tr. [24→395] | th. [221→395]
+      små : a:Salgsvilkårene 93x17 | a:håndboken 72x17 | a:hei@kodekonsulente 193x18 | a:personvernerklærin 150x17 | a:hei@kodekonsulente 170x17
+/caser                         3260px  overflyt:3 · små:3
+      over: a. [340→398] | a. [414→459] | a. [475→506]
+      små : a:hei@kodekonsulente 193x18 | a:personvernerklærin 150x17 | a:hei@kodekonsulente 170x17
+/om                            4355px  overflyt:3 · små:3
+      over: a. [340→398] | a. [414→459] | a. [475→506]
+      små : a:hei@kodekonsulente 193x18 | a:personvernerklærin 150x17 | a:hei@kodekonsulente 170x17
+/verktoy                       5729px  overflyt:5 · små:3
+      over: a. [340→398] | a. [414→459] | a. [475→506] | code.mono [66→402] | code.mono [66→419]
+      små : a:hei@kodekonsulente 193x18 | a:personvernerklærin 150x17 | a:hei@kodekonsulente 170x17
+/verktoy/priskalkulator        6643px  overflyt:6 · små:3
+      over: a. [340→398] | a. [414→459] | a. [475→506] | thead. [24→689] | tr. [24→689] | th. [300→627]
+      små : a:hei@kodekonsulente 193x18 | a:personvernerklærin 150x17 | a:hei@kodekonsulente 170x17
+/verktoy/dmarc                 4452px  overflyt:3 · små:3
+      over: a. [340→398] | a. [414→459] | a. [475→506]
+      små : a:hei@kodekonsulente 193x18 | a:personvernerklærin 150x17 | a:hei@kodekonsulente 170x17
+/verktoy/cookie-sjekk          4445px  overflyt:3 · små:3
+      over: a. [340→398] | a. [414→459] | a. [475→506]
+      små : a:hei@kodekonsulente 193x18 | a:personvernerklærin 150x17 | a:hei@kodekonsulente 170x17
+/verktoy/uu-sjekk              4385px  overflyt:3 · små:3
+      over: a. [340→398] | a. [414→459] | a. [475→506]
+      små : a:hei@kodekonsulente 193x18 | a:personvernerklærin 150x17 | a:hei@kodekonsulente 170x17
+/kontakt                       3249px  overflyt:3 · små:3 · feil:3
+      over: a. [340→398] | a. [414→459] | a. [475→506]
+      små : a:hei@kodekonsulente 193x18 | a:personvernerklærin 150x17 | a:hei@kodekonsulente 170x17
+      feil: Executing inline script violates the following Content Security Policy directive | Executing inline script violates the following Content Security Policy directive | Executing inline script violates the following Content Security Policy directive
+/handbok                         15px  h1=0 · feil:1
+      feil: Failed to load resource: the server responded with a status of 404 (Not Found)
+/status                        2121px  h1=0
+/terminal                      2121px  h1=0
+/personvern                    2121px  h1=0
+/vilkar                        2121px  h1=0
+/finnes-ikke                   2121px  h1=0
+/bransjer/handverkere          2121px  h1=0
+/bransjer/klinikker            2121px  h1=0

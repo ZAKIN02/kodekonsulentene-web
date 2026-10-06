@@ -1,0 +1,33 @@
+import { chromium } from "@playwright/test";
+import { PNG } from "pngjs";
+import { writeFileSync } from "node:fs";
+const b = await chromium.launch();
+const p = await b.newPage({ viewport: { width: 1000, height: 900 }, colorScheme: "dark" });
+await p.goto("http://127.0.0.1:4399/lab/interaksjon", { waitUntil: "networkidle" });
+await p.waitForTimeout(1200);
+const el = p.locator("[data-stabel]").first();
+await el.scrollIntoViewIfNeeded();
+await p.waitForTimeout(500);
+const skudd = [];
+skudd.push(PNG.sync.read(await el.screenshot()));
+// Dra fra hverandre
+const scene = p.locator("[data-stabel-scene]").first();
+const bb = await scene.boundingBox();
+await p.mouse.move(bb.x + bb.width / 2, bb.y + bb.height / 2);
+await p.mouse.down();
+await p.mouse.move(bb.x + bb.width / 2, bb.y + bb.height / 2 - 130, { steps: 10 });
+await p.waitForTimeout(300);
+skudd.push(PNG.sync.read(await el.screenshot()));
+await p.mouse.move(bb.x + bb.width / 2, bb.y + bb.height / 2 - 260, { steps: 10 });
+await p.waitForTimeout(300);
+skudd.push(PNG.sync.read(await el.screenshot()));
+await p.mouse.up();
+const a = await p.evaluate(() => getComputedStyle(document.querySelector("[data-stabel]")).getPropertyValue("--a"));
+console.log("--a etter draing:", a.trim());
+await b.close();
+const h = Math.max(...skudd.map(s => s.height)), w = skudd[0].width;
+const o = new PNG({ width: w * skudd.length, height: h });
+skudd.forEach((im, k) => { for (let y = 0; y < Math.min(h, im.height); y++) for (let x = 0; x < w; x++) {
+  const s = (im.width * y + x) << 2, d = (o.width * y + (k * w + x)) << 2;
+  o.data[d] = im.data[s]; o.data[d+1] = im.data[s+1]; o.data[d+2] = im.data[s+2]; o.data[d+3] = 255; } });
+writeFileSync(".skudd/komp-stabel.png", PNG.sync.write(o));

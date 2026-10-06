@@ -1,0 +1,66 @@
+MODAL ÅPEN: true
+ROLLE: dialog | aria-modal: true
+FOKUS I FELT: kkterm__in
+
+--- help ---
+  ls       list sidene
+  cat      les en side her
+  open     gå til siden
+  sjekk    kjør nettsidesjekken her
+  headere  bare sikkerhetsheaderne
+  dmarc    sjekk e-postoppsettet
+  pris     hent prislisten
+  kontakt  book 20 minutter
+  tema     bytt mørkt og lyst
+  whoami   hvem du snakker med
+  clear    tøm skjermen
+  exit     lukk terminalen
+
+--- pris ---
+$ pris
+
+Start    14 900 kr
+Bedrift  29 900 kr
+System   fra60 000 kr
+alle priser eks. mva. Hele listen: open priser
+
+--- sjekk nkom.no ---
+$ sjekk nkom.no
+
+ytelse .................. 460 ms TTFB
+sikkerhetsheadere ....... 3/6
+cookies før samtykke .... 0
+universell utforming .... 1 feil
+lovpålagt informasjon ... Org.nr. mangler
+
+3 å fikse. Samlet: 50/100.
+hele rapporten: /sjekk?url=nkom.no
+
+--- dmarc nkom.no ---
+$ dmarc nkom.no
+
+spf ..... -all · 4/10 oppslag
+dkim .... Ikke sjekket
+dmarc ... p=quarantine
+
+Alt bestått. Samlet: 83/100.
+
+--- headere vg.no ---
+$ headere vg.no
+
+6/6
+Alle headerne vi sjekker er på plass.
+
+--- sudo/ukjent ---
+$ sudo rm -rf /
+sudo: du har allerede alle rettigheter her. Det er din nettleser.
+(og «rm -rf /» hadde uansett ikke hjulpet)
+$ blah
+blah: ukjent kommando. help viser alle.
+
+--- nordlys før opplåsing ---
+$ nordlys
+nordlys: ukjent kommando. help viser alle.
+
+MODAL LUKKET: true
+FEIL: ingen

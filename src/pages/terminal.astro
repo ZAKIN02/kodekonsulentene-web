@@ -1,0 +1,70 @@
+---
+import Base from "../layouts/Base.astro";
+import Section from "../components/Section.astro";
+import Terminal from "../components/Terminal.astro";
+import { firma } from "../data/firma";
+
+/**
+ * Siden som forklarer terminalmodusen.
+ *
+ * Den finnes fordi en skjult funksjon ingen vet om, ikke finnes. Epic.net har
+ * «Puzzle», «Rabbit» og «Castle» stående synlig i footeren – det er nettopp det
+ * som gjør at siden føles som den har dybde. Vi gjør det samme med vår egen.
+ */
+const kommandoer = [
+  ["sjekk <url>", "Kjører hele nettsidesjekken og skriver resultatet her"],
+  ["headere <url>", "Bare sikkerhetsheaderne"],
+  ["dmarc <domene>", "SPF, DKIM og DMARC"],
+  ["pris", "Prisene, hentet fra prislisten"],
+  ["ls", "Sidene som finnes"],
+  ["cat <side>", "Leser en side her, uten å navigere bort"],
+  ["open <side>", "Går til siden"],
+  ["tema", "Bytter mørkt og lyst"],
+  ["help", "Alle kommandoer"],
+];
+---
+<Base
+  tittel="Terminal"
+  beskrivelse="Siden har en terminal. Trykk tilde for å åpne den, og kjør nettsidesjekken, DMARC-oppslag eller prislisten uten å forlate siden."
+>
+  <Section
+    nivaa={1}
+    n={1}
+    eyebrow="Terminal"
+    tittel="Trykk ~ hvor som helst"
+    ingress="Siden har en terminal. Den er ikke pynt – den kjører de samme sjekkene som verktøyene, mot ekte nettsider, og skriver svaret rett i vinduet."
+  >
+    <div class="grid-2">
+      <div class="stack">
+        <dl class="kv">
+          {kommandoer.map(([k, hva]) => (
+            <div><dt class="mono">{k}</dt><dd class="small" style="font-family: var(--font-sans)">{hva}</dd></div>
+          ))}
+        </dl>
+        <p class="small faint">
+          Piltastene blar i historikken, Tab fullfører kommandonavn, Esc lukker.
+          Den laster ingenting før du åpner den. På berøringsskjerm er den skrudd av,
+          siden den krever tastatur.
+        </p>
+        <p class="small faint">
+          Det finnes også noe som ikke står i <span class="mono">help</span>.
+          Folk som har spilt mye på åttitallet finner det raskest.
+        </p>
+      </div>
+      <Terminal
+        title={`~/${firma.domene}`}
+        skriv
+        cursor
+        lines={[
+          { type: "cmd", text: "dmarc nkom.no" },
+          { type: "out", text: "spf ..... -all · 4/10 oppslag" },
+          { type: "warn", text: "dkim .... Ikke sjekket" },
+          { type: "ok", text: "dmarc ... p=quarantine" },
+          { type: "out", text: "" },
+          { type: "out", text: "Ingen brudd, men 1 ikke sjekket. Samlet: 83/100." },
+        ]}
+        label="Terminalutsnitt: kommandoen dmarc nkom.no gir SPF minus-all med fire av ti oppslag, DKIM ikke sjekket, DMARC p-lik-quarantine, samlet 83 av 100."
+      />
+    </div>
+  </Section>
+</Base>

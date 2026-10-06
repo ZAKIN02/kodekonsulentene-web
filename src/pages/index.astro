@@ -5,9 +5,11 @@ import Avslor from "../components/Avslor.astro";
 import Eyebrow from "../components/Eyebrow.astro";
 import Button from "../components/Button.astro";
 import UrlCheck from "../components/UrlCheck.astro";
-import ProofStrip from "../components/ProofStrip.astro";
+import Nokkeltall from "../components/Nokkeltall.astro";
 import SceneFilm from "../components/SceneFilm.astro";
-import Demo from "../components/Demo.astro";
+import Slepesammenligning from "../components/Slepesammenligning.astro";
+import Lagstabel from "../components/Lagstabel.astro";
+import Mega from "../components/Mega.astro";
 import ServiceCard from "../components/ServiceCard.astro";
 import Terminal from "../components/Terminal.astro";
 import PriceCard from "../components/PriceCard.astro";
@@ -64,6 +66,10 @@ const heroTerminal = [
           <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
           <UrlCheck hint="Gratis sjekk av siden du har i dag. Svar på 30 sekunder." />
         </div>
+        <p class="hero__live small">
+          <span class="hero__live-prikk" aria-hidden="true"></span>
+          Skriv inn adressen, så kjører sjekken i terminalen her – uten at du forlater siden.
+        </p>
       </div>
       <Terminal
         lines={heroTerminal}
@@ -79,7 +85,7 @@ const heroTerminal = [
   <section class="scene scene--lav bevisrad">
     <div class="scene__inner">
       <Avslor>
-        <ProofStrip items={bevis} label="Målbare påstander om denne siden og dette foretaket" />
+        <Nokkeltall poster={bevis} navn="Målbare påstander om denne siden og dette foretaket" />
       </Avslor>
       <Avslor trinn={1}>
         <Button variant="ghost" href="/historie">Se hva som ligger inne i en nettside</Button>
@@ -169,13 +175,7 @@ const heroTerminal = [
         <UrlCheck id="url-seksjon" buttonLabel="Kjør sjekken" hint="Ingen innlogging. Du velger selv om rapporten skal sendes på e-post." />
       </Avslor>
       <Avslor trinn={1}>
-        <Demo
-          smal="/historie/verktoy-1280.mp4"
-          bred="/historie/verktoy-1920.mp4"
-          plakat="/historie/verktoy-poster.avif"
-          tekst="Opptak av sjekken som kjører mot nkom.no. Funnene er ekte."
-          kilde="6. oktober 2026"
-        />
+        <Slepesammenligning id="sjekk-sammenlign" />
       </Avslor>
       <Avslor trinn={2}>
         <Button variant="ghost" href="/sjekk">Kjør den på din side</Button>
@@ -200,11 +200,11 @@ const heroTerminal = [
   <Scene
     n={7}
     eyebrow="Priser"
-    tittel="Prisene står her"
     ingress="Fordi du skal kunne regne på det før du ringer. Alle priser er eks. mva."
     id="priser"
     bred
   >
+    <Mega tekst="Prisene står her" aksent="her" class="priser__mega" />
     <div class="stack">
       <div class="grid-3">
         {pakker.map((p, i) => (
@@ -254,25 +254,13 @@ const heroTerminal = [
         <p class="muted">
           Vi holder antallet prosjekter lavt med vilje, slik at du snakker med utvikleren
           som faktisk skriver koden og ingenting forsvinner i et ledd. Hvordan vi jobber,
-          hva ting koster, og hva som skjer hvis vi ikke kan fullføre, står i
+          hva ting koster, og hva som skjer hvis vi ikke kan fullføre, står i{" "}
           <a class="kk-link" href="/handbok">håndboken</a>.
         </p>
         <Button variant="ghost" href="/om">Mer om oss</Button>
       </Avslor>
       <Avslor trinn={1}>
-        <Terminal
-          title="~/kodekonsulentene/om"
-          lines={[
-            { type: "cmd", text: "whoami" },
-            { type: "out", text: "KodeKonsulentene – utvikling, Oslo" },
-            { type: "cmd", text: "cat kompetanse.txt" },
-            { type: "out", text: "sikkerhet · nettsider · iOS · integrasjoner · AI" },
-            { type: "cmd", text: "cat prinsipp.txt" },
-            { type: "ok", text: "Du eier koden. Du eier domenet. Ingen innlåsing." },
-          ]}
-          skriv
-          label="Terminalutsnitt: KodeKonsulentene, utvikling i Oslo. Kompetanse: sikkerhet, nettsider, iOS, integrasjoner, AI. Prinsipp: du eier koden og domenet, ingen innlåsing."
-        />
+        <Lagstabel id="om-stabel" />
       </Avslor>
     </div>
   </Scene>
@@ -287,3 +275,34 @@ const heroTerminal = [
   <!-- 10 Kontakt -->
   <ContactBlock n={10} />
 </Base>
+
+<style>
+  /* Hero-en har sidens eneste kort ingen konkurrent kan kopiere: terminalen
+     kjører en EKTE skanning av adressen du skriver inn, uten å forlate siden.
+     Den var usynlig – ingenting koblet feltet til terminalen. Denne linjen gjør
+     koblingen eksplisitt, og prikken i aksentfargen leser som «dette er levende».
+     Ingen påstand og ingen tall her, bare en bruksanvisning. */
+  .hero__live {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--ink-muted);
+    margin-top: var(--space-2);
+  }
+  .hero__live-prikk {
+    flex: none;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__live-prikk { animation: hero-puls 2.4s ease-in-out infinite; }
+  }
+  @keyframes hero-puls { 50% { opacity: 0.35; } }
+
+  /* Prisene er sidens ene typografiske topp. Resten av seksjonstitlene står i
+     display-lg via Scene; denne ene går til Mega. Brandboken: «én detalj per
+     skjerm» – derfor nøyaktig én slik på hele forsiden. */
+  .priser__mega { margin-bottom: var(--space-6); }
+</style>

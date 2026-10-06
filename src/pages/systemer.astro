@@ -1,10 +1,15 @@
 ---
 import Base from "../layouts/Base.astro";
-import Section from "../components/Section.astro";
+import Scene from "../components/Scene.astro";
+import Mega from "../components/Mega.astro";
+import Avslor from "../components/Avslor.astro";
+import SceneFilm from "../components/SceneFilm.astro";
 import Button from "../components/Button.astro";
 import Terminal from "../components/Terminal.astro";
 import ContactBlock from "../components/ContactBlock.astro";
 import { bookUrl } from "../data/firma";
+
+import "../styles/scener.css";
 
 const integrasjoner = [
   { navn: "Booking", verdi: "Timer bestilles og betales døgnet rundt, uten en telefon.", teknisk: "Cal.com eller eget system i Supabase" },
@@ -19,19 +24,19 @@ const integrasjoner = [
   tittel="Systemer og integrasjoner"
   beskrivelse="Booking, Vipps, Tripletex, Fiken og BankID koblet sammen til ett system. Fra 60 000 kr eks. mva. Utvikler i Oslo."
 >
-  <Section nivaa={1}
-    n={1}
-    eyebrow="Systemer"
-    tittel="Få systemene du betaler for til å snakke sammen"
-    ingress="De fleste småbedrifter har allerede booking, regnskap og betaling. Problemet er at ingen av dem vet om hverandre, så noen taster samme tall tre ganger."
-  >
+  <Scene lav>
+    <Mega som="h1" merke="Systemer" n={1} tekst="Få systemene du betaler for til å snakke sammen" aksent="sammen" />
+    <Avslor trinn={1}>
+      <p class="scene__ingress body-lg">De fleste småbedrifter har allerede booking, regnskap og betaling. Problemet er at ingen av dem vet om hverandre, så noen taster samme tall tre ganger.</p>
+    </Avslor>
+
     <div class="row">
       <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
       <Button variant="ghost" href="#integrasjoner">Se hva som kan kobles</Button>
     </div>
-  </Section>
+  </Scene>
 
-  <Section n={2} eyebrow="Typisk" tittel="Hvordan det ser ut i praksis" id="eksempel">
+  <Scene n={2} eyebrow="Typisk" tittel="Hvordan det ser ut i praksis" id="eksempel">
     <div class="grid-2">
       <div class="stack">
         <p class="body-lg muted">
@@ -47,6 +52,7 @@ const integrasjoner = [
         <Button variant="ghost" href="/bransjer/klinikker">Se bransjesiden for klinikker</Button>
       </div>
       <Terminal
+        skriv
         title="~/flyt"
         lines={[
           { type: "cmd", text: "cat flyt.txt" },
@@ -61,26 +67,59 @@ const integrasjoner = [
         label="Terminalutsnitt som viser flyten: kunde booker, betaler med Vipps, timen går i kalenderen, ordren går til Fiken, SMS sendes 24 timer før. Null manuelle steg."
       />
     </div>
-  </Section>
+  </Scene>
 
-  <Section n={3} eyebrow="Integrasjoner" tittel="Det vi kobler oftest" id="integrasjoner">
+  <div class="scenefilm-ramme">
+    <SceneFilm
+      smal="/scener/systemer-1280.mp4"
+      bred="/scener/systemer-1920.mp4"
+      plakat="/scener/systemer-poster.avif"
+      tekst="venstre"
+    />
+  <Scene n={3} eyebrow="Integrasjoner" tittel="Det vi kobler oftest" id="integrasjoner">
     <div class="grid-2">
-      {integrasjoner.map((i) => (
-        <div class="card">
+      {integrasjoner.map((i, k) => (
+        <Avslor trinn={k % 3} as="div" class="card">
           <h3 class="subheading">{i.navn}</h3>
           <p class="muted">{i.verdi}</p>
           <p class="mono faint">{i.teknisk}</p>
-        </div>
+        </Avslor>
       ))}
     </div>
-  </Section>
+  </Scene>
+  </div>
 
-  <Section n={4} eyebrow="Pris" tittel="System fra 60 000 kr" ingress="Prisen følger antall integrasjoner og hvor mye som må holdes i orden etterpå. Du får fast pris før vi begynner, og 40 % faktureres ved oppstart. Eks. mva.">
+  <Scene n={4} eyebrow="Pris" tittel="System fra 60 000 kr" ingress="Prisen følger antall integrasjoner og hvor mye som må holdes i orden etterpå. Du får fast pris før vi begynner, og 40 % faktureres ved oppstart. Eks. mva.">
     <div class="row">
       <Button variant="primary" href="/kontakt">Beskriv behovet</Button>
       <Button variant="ghost" href="/priser">Se hele prislisten</Button>
     </div>
-  </Section>
+  </Scene>
 
   <ContactBlock n={5} />
 </Base>
+<style is:global>
+  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
+     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
+     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
+     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
+  .scene:first-of-type .mega .ord,
+  .scene:first-of-type .mega-blokk,
+  .scene:first-of-type .avslor {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+</style>
+
+<style>
+  /* Scenetittelen bryter ut til 1320 px på brede skjermer og møtte filmen der
+     masken begynner å slippe den inn. Målt 4,37:1 mot ink – under AA-kravet på
+     4,5. Masken skyves derfor lenger ut på denne siden. Målt etterpå: 15,6:1. */
+  @media (min-width: 1200px) {
+    .scenefilm-ramme .scenefilm--venstre {
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 62%, rgb(0 0 0 / 0.25) 72%, #000 86%);
+      mask-image: linear-gradient(90deg, transparent 0%, transparent 62%, rgb(0 0 0 / 0.25) 72%, #000 86%);
+    }
+  }
+</style>

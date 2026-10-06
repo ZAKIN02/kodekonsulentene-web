@@ -1,0 +1,79 @@
+---
+/**
+ * Nøkkeltallene behandlet som grafikk, ikke som en liste.
+ *
+ * Forskjellen fra ProofStrip: der er tallene en stripe med fire kolonner under
+ * hero. Her er de store nok til å bære en hel scene alene – opptil 120 px
+ * monospace med hårlinjer imellom og ingen bokser. Samme data, annen vekt.
+ *
+ * Tallene kommer fra src/data/bevis.ts, og regelen derfra gjelder: hvert tall
+ * skal være målt og kunne etterprøves. Komponenten finner ikke på noe.
+ *
+ * Opptellingen er den ene bevegelsen brandboken tillater her: én gang, 400 ms,
+ * ease-out, når tallet kommer i syne. Verdiene står som ferdig tekst i HTML, så
+ * uten JavaScript er alt lest.
+ */
+import "../styles/typo.css";
+import { bevis } from "../data/bevis";
+import type { ProofItem } from "./ProofStrip.astro";
+
+interface Props {
+  /** Standard er bevis-tallene. Kan overstyres der en scene trenger andre. */
+  poster?: ProofItem[];
+  /** Beskrivende navn på listen, for skjermlesere. */
+  navn?: string;
+  class?: string;
+}
+const { poster = bevis, navn = "Målte tall for denne siden", class: cls } = Astro.props;
+---
+<ul class:list={["nokkeltall", cls]} aria-label={navn}>
+  {poster.map((p) => (
+    <li class:list={["nokkeltall__post", p.accent && "nokkeltall__post--aksent"]}>
+      <span class="nokkeltall__verdi" data-nokkeltall-tell>{p.value}</span>
+      <span class="nokkeltall__merke">{p.label}</span>
+    </li>
+  ))}
+</ul>
+
+<script>
+  /**
+   * Teller opp én gang når tallet kommer i syne. Egen attributt (ikke `data-tell`)
+   * slik at ProofStrip og denne ikke binder seg til hverandres elementer når
+   * begge står på samme side.
+   *
+   * Bare sifre vi kan tolke animeres. «6/6» teller opp det første tallet og lar
+   * resten stå; «0,1 s» beholder komma og enhet. Teksten settes tilbake til
+   * nøyaktig originalen til slutt, så ingenting kan bli hengende på feil verdi.
+   */
+  const tall = document.querySelectorAll<HTMLElement>("[data-nokkeltall-tell]");
+  if (tall.length && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const io = new IntersectionObserver(
+      (poster) => {
+        for (const p of poster) {
+          if (!p.isIntersecting) continue;
+          const el = p.target as HTMLElement;
+          io.unobserve(el);
+
+          const ferdig = el.textContent ?? "";
+          const m = /^(\D*)(\d+(?:[.,]\d+)?)(.*)$/s.exec(ferdig);
+          if (!m) continue;
+          const [, foer, raa, etter] = m;
+          const maal = Number(raa.replace(",", "."));
+          const desimaler = raa.includes(",") ? 1 : 0;
+
+          const start = performance.now();
+          const steg = (naa: number) => {
+            const t = Math.min(1, (naa - start) / 400);
+            const e = 1 - Math.pow(1 - t, 3);
+            el.textContent = foer + (maal * e).toFixed(desimaler).replace(".", ",") + etter;
+            if (t < 1) requestAnimationFrame(steg);
+            else el.textContent = ferdig;
+          };
+          requestAnimationFrame(steg);
+        }
+      },
+      { threshold: 0.5 },
+    );
+    for (const t of tall) io.observe(t);
+  }
+</script>

@@ -1,0 +1,84 @@
+---
+/**
+ * Verifiseringsside for den redaksjonelle typografien.
+ *
+ * Ligger under /lab/ og er merket noindex – dette er et arbeidsbord, ikke en
+ * side for besøkende. Den finnes fordi komponentene må kunne ses isolert, på
+ * både 1440 og 390 piksler, før de settes inn på forsiden.
+ */
+import Base from "../../layouts/Base.astro";
+import Mega from "../../components/Mega.astro";
+import Horisont from "../../components/Horisont.astro";
+import Nokkeltall from "../../components/Nokkeltall.astro";
+import { prosess } from "../../data/prosess";
+
+const stegene = prosess.map((s) => ({
+  nr: s.time ?? "",
+  tittel: s.title,
+  tekst: s.text ?? "",
+}));
+---
+<Base
+  tittel="Lab: typografi"
+  beskrivelse="Arbeidsbord for den redaksjonelle typografien. Ikke en side for besøkende."
+  noindex
+>
+  <section class="lab-seksjon">
+    <div class="lab-ramme">
+      <Mega
+        som="h1"
+        merke="Skala"
+        n={1}
+        tekst="Vi tar en nettside fra hverandre"
+        aksent="hverandre"
+      />
+      <p class="lab-ingress body-lg">
+        Etiketten over står i 12 piksler monospace. Ordene under skalerer til 200.
+        Det er hele grepet: kontrasten mellom de to gjør typografien til grafikk.
+      </p>
+    </div>
+  </section>
+
+  <section class="lab-seksjon">
+    <div class="lab-ramme">
+      <p class="lab-merke mono-label">// 02 Nøkkeltall</p>
+    </div>
+    <div class="lab-ramme">
+      <Nokkeltall />
+    </div>
+  </section>
+
+  <Horisont
+    poster={stegene}
+    navn="Fire steg fra samtale til drift"
+    merke="Prosess"
+    n={3}
+    tittel="Fire steg, kjente tider"
+    hoyde={3}
+  />
+
+  <section class="lab-seksjon">
+    <div class="lab-ramme">
+      <Mega merke="Skala" n={4} tekst="Null cookies" aksent="Null" />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .lab-seksjon { padding-block: var(--space-9); }
+  .lab-ramme {
+    width: 100%;
+    max-width: 1120px;
+    margin-inline: auto;
+    padding-inline: var(--space-5);
+  }
+  .lab-ingress {
+    color: var(--ink-muted);
+    max-width: 52ch;
+    margin: var(--space-6) 0 0;
+  }
+  .lab-merke { color: var(--ink-muted); margin: 0 0 var(--space-5); }
+  @media (min-width: 721px) {
+    .lab-ramme { padding-inline: var(--space-6); }
+  }
+</style>

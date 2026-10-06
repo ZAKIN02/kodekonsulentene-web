@@ -1,37 +1,83 @@
 ---
+/**
+ * 404 – en blindvei er det dårligste stedet å miste noen.
+ *
+ * Her er terminalen ikke en skjult detalj, men hele siden: du kan skrive
+ * kommandoer rett i den, lese andre sider med `cat`, og kjøre den ekte
+ * nettsidesjekken med `sjekk <url>` uten å gå noe sted.
+ *
+ * Uten JavaScript står feilmeldingen ferdig skrevet i HTML-en og lenkelisten
+ * under gjør jobben. Inputfeltet er `disabled` til skriptet slår det på, slik at
+ * ingen får et felt som ikke svarer.
+ */
 import Base from "../layouts/Base.astro";
 import Section from "../components/Section.astro";
 import Button from "../components/Button.astro";
-import Terminal from "../components/Terminal.astro";
 import { hovedmeny } from "../data/navigasjon";
+
+// Bare det hovedmenyen ikke allerede har – «Verktøy» ligger der fra før.
+const snarveier = [
+  { label: "Sjekk nettsiden din", href: "/sjekk" },
+  { label: "Kontakt", href: "/kontakt" },
+].filter((s) => !hovedmeny.some((h) => h.href === s.href));
 ---
-<Base tittel="Siden finnes ikke" beskrivelse="Fant ikke siden du lette etter." noindex>
-  <Section nivaa={1} n={4} eyebrow="404" tittel="Den siden finnes ikke">
-    <div class="grid-2">
-      <div class="stack">
-        <p class="body-lg muted">
-          Lenken er enten gammel eller feilskrevet. Her er de sidene som finnes:
-        </p>
-        <ul class="stack stack--tight" style="list-style: none; margin: 0; padding: 0">
-          {hovedmeny.map((l) => (
-            <li><a class="kk-link" href={l.href}>{l.label}</a></li>
-          ))}
-          <li><a class="kk-link" href="/sjekk">Sjekk nettsiden din</a></li>
-          <li><a class="kk-link" href="/kontakt">Kontakt</a></li>
+<Base tittel="Siden finnes ikke" beskrivelse="Fant ikke siden du lette etter. Men terminalen virker." noindex>
+  <Section
+    nivaa={1}
+    n={4}
+    eyebrow="404"
+    tittel="Den siden finnes ikke"
+    ingress="Lenken er gammel eller feilskrevet. Siden du står på nå er likevel ikke tom – den er en terminal. Skriv noe."
+  >
+    <div class="fire-null">
+      <div class="kkterm fire-null__term" data-kkterm-innfelt>
+        <div class="kkterm__bar">
+          <span>~/kodekonsulentene</span>
+          <span class="fire-null__tips">help for kommandoer</span>
+        </div>
+        {/* Plassholder for dem uten JavaScript. Skriptet kjenner den ekte stien
+            og bytter ut hele blokken når det kjører. */}
+        <div class="kkterm__out" role="log" aria-live="polite">{`$ cat /siden-du-ba-om
+cat: finnes ikke
+`}</div>
+        <div class="kkterm__line">
+          <span class="kkterm__ps" aria-hidden="true">$</span>
+          <label class="visually-hidden" for="kkterm-404">Kommando</label>
+          <input
+            class="kkterm__in"
+            id="kkterm-404"
+            autocomplete="off"
+            spellcheck="false"
+            autocapitalize="off"
+            autocorrect="off"
+            disabled
+            placeholder="krever JavaScript"
+          />
+        </div>
+      </div>
+
+      <nav class="fire-null__ut" aria-label="Sider som finnes">
+        <p class="kk-eyebrow"><span class="kk-eyebrow-n" aria-hidden="true">//</span> <span>Sider som finnes</span></p>
+        <ul>
+          {hovedmeny.map((l) => <li><a class="kk-link" href={l.href}>{l.label}</a></li>)}
+          {snarveier.map((l) => <li><a class="kk-link" href={l.href}>{l.label}</a></li>)}
         </ul>
         <Button variant="primary" href="/">Til forsiden</Button>
-      </div>
-      <Terminal
-        title="~/kodekonsulentene"
-        lines={[
-          { type: "cmd", text: "cat denne-siden" },
-          { type: "fail", text: "cat: denne-siden: finnes ikke" },
-          { type: "cmd", text: "ls" },
-          { type: "out", text: "nettsider systemer apper-og-ai sikkerhet" },
-          { type: "out", text: "priser caser om kontakt sjekk" },
-        ]}
-        label="Terminalutsnitt: filen finnes ikke, etterfulgt av en liste over sidene som finnes."
-      />
+      </nav>
     </div>
   </Section>
 </Base>
+
+<style>
+  .fire-null { display: grid; gap: var(--space-6); align-items: start; }
+  @media (min-width: 861px) { .fire-null { grid-template-columns: 1.6fr 1fr; gap: var(--space-7); } }
+
+  /* .kkterm arver ramme, bakgrunn og skrift fra site.css. Her bare det som
+     skiller den innfelte flaten fra modalen. */
+  .fire-null__term { width: 100%; }
+  .fire-null__term .kkterm__out { min-height: 16rem; max-height: 50svh; }
+  .fire-null__tips { color: var(--on-terminal-muted); }
+
+  .fire-null__ut { display: grid; gap: var(--space-4); justify-items: start; }
+  .fire-null__ut ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+</style>

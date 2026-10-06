@@ -6,9 +6,13 @@ const sti = Astro.url.pathname.replace(/\/$/, "") || "/";
 ---
 <header class="topbar">
   <div class="wrap topbar__inner">
+    {/* 170x22 er den FAKTISKE malte størrelsen: SVG-en er 309x40, og CSS setter
+        height: 22px med width: auto, altså 169,9 px bred. Sto det 220 her, reserverte
+        nettleseren 50 px for mye og layouten hoppet når logoen lastet – målt CLS 0,145
+        på /historie i produksjon. Usynlig lokalt, fordi fila da leses før første maling. */}
     <a class="topbar__logo" href="/" aria-label="KodeKonsulentene – til forsiden">
-      <img src="/logo/kk-lockup-dark.svg" alt="" width="220" height="22" data-logo="dark" />
-      <img src="/logo/kk-lockup-light.svg" alt="" width="220" height="22" data-logo="light" />
+      <img src="/logo/kk-lockup-dark.svg" alt="" width="170" height="22" data-logo="dark" />
+      <img src="/logo/kk-lockup-light.svg" alt="" width="170" height="22" data-logo="light" />
     </a>
     <nav aria-label="Hovedmeny">
       {hovedmeny.map((l) => (

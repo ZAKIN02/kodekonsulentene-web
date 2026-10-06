@@ -1,0 +1,147 @@
+---
+/**
+ * En seksjon som beveger seg vannrett mens du scroller vertikalt.
+ *
+ * Dette er ikke scroll-jacking. Sidens egen scroll røres aldri – vi hverken
+ * avbryter, forsinker eller overstyrer den. Det eneste som skjer er at
+ * `scrollLeft` på et spor settes i takt med hvor langt seksjonen har kommet
+ * forbi. Sporet er et helt vanlig vannrett scrollområde, så uten JavaScript får
+ * du nøyaktig samme innhold – du drar det bare selv.
+ *
+ * Tilgjengelighet:
+ *  - Sporet har tabindex og aria-label. Et vannrett scrollområde som ikke kan
+ *    nås med tastatur er et brudd på WCAG 2.1.1 (axe: scrollable-region-focusable).
+ *  - Når sporet har fokus, eller brukeren drar i det selv, slipper vi taket og
+ *    lar hen styre. Scroll-synkingen tar over igjen når fokus forsvinner.
+ *  - prefers-reduced-motion gjør hele seksjonen til en vanlig vertikal liste.
+ *
+ * Brandboken forbyr scroll-jacking og parallax. Dette er på grensen, og det er
+ * verdt å si høyt: bevegelsen er bundet til scroll, men innholdet beveger seg i
+ * en annen akse enn siden. Den er derfor bygget slik at den kan brukes helt uten
+ * bevegelse, og at bevegelsen aldri er den eneste veien til innholdet.
+ */
+import "../styles/typo.css";
+
+export interface HorisontPost {
+  tittel: string;
+  tekst: string;
+  /** Liten monospace-markør over tittelen – steg, tid eller nummer. */
+  nr?: string;
+}
+interface Props {
+  poster: HorisontPost[];
+  /** Beskrivende navn på sporet, for skjermlesere. */
+  navn: string;
+  /** Tittel som står stille mens kortene beveger seg forbi. */
+  tittel?: string;
+  /** Nummerert etikett over tittelen. */
+  merke?: string;
+  n?: number;
+  /** Hvor mange skjermhøyder seksjonen strekker seg over. Flere = roligere. */
+  hoyde?: number;
+  class?: string;
+}
+const { poster, navn, tittel, merke, n, hoyde = 3, class: cls } = Astro.props;
+const nr = typeof n === "number" ? String(n).padStart(2, "0") : null;
+---
+<section
+  class:list={["horisont", cls]}
+  data-horisont
+  style={`--hoyde:${hoyde * 100}svh`}
+>
+  <div class="horisont__fest">
+    {(merke || tittel) && (
+      <header class="horisont__topp">
+        {merke && (
+          <p class="horisont__merke">
+            <span class="nr" aria-hidden="true">//{nr ? ` ${nr}` : ""}</span>
+            <span>{merke}</span>
+          </p>
+        )}
+        {tittel && <h2 class="horisont__overskrift">{tittel}</h2>}
+      </header>
+    )}
+
+    <div
+      class="horisont__spor"
+      data-horisont-spor
+      tabindex="0"
+      role="region"
+      aria-label={`${navn}. Kan scrolles vannrett.`}
+    >
+      {poster.map((p, i) => (
+        <article class="horisont__kort">
+          <span class="horisont__nr">{p.nr ?? String(i + 1).padStart(2, "0")}</span>
+          <h3 class="horisont__tittel">{p.tittel}</h3>
+          <p class="horisont__tekst">{p.tekst}</p>
+        </article>
+      ))}
+    </div>
+
+    <div class="horisont__linje" data-horisont-linje aria-hidden="true"></div>
+
+    <p class="horisont__hjelp small">
+      Dra sporet, eller bruk piltastene når det har fokus.
+    </p>
+  </div>
+</section>
+
+<script>
+  for (const rot of document.querySelectorAll<HTMLElement>("[data-horisont]")) {
+    const spor = rot.querySelector<HTMLElement>("[data-horisont-spor]");
+    const linje = rot.querySelector<HTMLElement>("[data-horisont-linje]");
+    if (!spor) continue;
+
+    const rolig = matchMedia("(prefers-reduced-motion: reduce)");
+    let egenStyring = false;
+
+    // Fremdriftslinjen følger sporet uansett hvem som flyttet det.
+    const tegnLinje = () => {
+      const maks = spor.scrollWidth - spor.clientWidth;
+      const andel = maks > 0 ? spor.scrollLeft / maks : 0;
+      linje?.style.setProperty("--andel", andel.toFixed(4));
+    };
+    spor.addEventListener("scroll", tegnLinje, { passive: true });
+
+    // Brukeren eier sporet når hen rører det selv.
+    spor.addEventListener("focusin", () => { egenStyring = true; });
+    spor.addEventListener("focusout", () => { egenStyring = false; });
+    spor.addEventListener("pointerdown", () => { egenStyring = true; });
+    addEventListener("pointerup", () => {
+      // Lite pusterom, så siden ikke rykker sporet tilbake i samme øyeblikk.
+      setTimeout(() => { if (!spor.contains(document.activeElement)) egenStyring = false; }, 600);
+    });
+
+    let planlagt = false;
+    const synk = () => {
+      planlagt = false;
+      if (egenStyring || rolig.matches) return;
+      const r = rot.getBoundingClientRect();
+      const strekk = r.height - window.innerHeight;
+      if (strekk <= 0) return;
+      const andel = Math.min(1, Math.max(0, -r.top / strekk));
+      const maks = spor.scrollWidth - spor.clientWidth;
+      spor.scrollLeft = andel * maks;
+    };
+
+    const pa = () => {
+      if (rolig.matches) {
+        delete rot.dataset.fest;
+        spor.scrollLeft = 0;
+        return;
+      }
+      // Festing settes først her: uten JavaScript skal seksjonen aldri bli
+      // 300svh høy med et sticky innhold som ingen kan flytte.
+      rot.dataset.fest = "";
+      synk();
+      tegnLinje();
+    };
+
+    pa();
+    rolig.addEventListener("change", pa);
+    addEventListener("scroll", () => {
+      if (!planlagt) { planlagt = true; requestAnimationFrame(synk); }
+    }, { passive: true });
+    addEventListener("resize", () => { synk(); tegnLinje(); }, { passive: true });
+  }
+</script>

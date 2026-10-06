@@ -1,0 +1,35 @@
+---
+/**
+ * Verifiseringsside for røntgenlinsen. Ikke lenket fra noen meny, og noindex.
+ * Den finnes for å kunne måle og se på interaksjonen isolert, uten at resten
+ * av forsiden støyer inn i skjermbildene.
+ */
+import Base from "../../layouts/Base.astro";
+import Rontgen from "../../components/Rontgen.astro";
+import Button from "../../components/Button.astro";
+import { bookUrl } from "../../data/firma";
+---
+<Base
+  tittel="Lab: røntgen"
+  beskrivelse="Intern verifiseringsside for røntgenlinsen."
+  noindex
+>
+  <section class="section">
+    <div class="wrap">
+      <p class="kk-eyebrow"><span class="kk-eyebrow-n" aria-hidden="true">//</span> <span>Lab</span></p>
+      <h1 class="display-lg" style="margin-bottom: var(--space-6)">Røntgen</h1>
+
+      <Rontgen merke="Innsiden av denne flaten">
+        <h2 class="display-lg">Hvordan ser siden din ut innvendig?</h2>
+        <p class="body-lg muted" style="max-width: 46ch">
+          Designet er det kunden ser. Under ligger sikkerhetsheaderne, lovkravene
+          og lagene som avgjør om siden holder. Flytt pekeren.
+        </p>
+        <div class="row">
+          <Button variant="primary" href="/sjekk">Sjekk nettsiden din</Button>
+          <Button variant="ghost" href={bookUrl}>Book 20 minutter</Button>
+        </div>
+      </Rontgen>
+    </div>
+  </section>
+</Base>

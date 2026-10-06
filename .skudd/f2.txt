@@ -1,0 +1,13 @@
+etter «pris» i 404-terminalen:
+  $ pris
+  
+  Start    14 900 kr
+  Bedrift  29 900 kr
+  System   fra 60 000 kr
+  alle priser eks. mva. Hele listen: open priser
+navigerte bort? http://127.0.0.1:4399/finnes-ikke
+exit-kommando i innfelt modus:
+  denne terminalen er siden. Prøv open hjem.
+FEIL: [
+  'Failed to load resource: the server responded with a status of 404 (Not Found)'
+]

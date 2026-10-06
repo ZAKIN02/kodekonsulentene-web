@@ -1,8 +1,13 @@
 ---
 import Base from "../../layouts/Base.astro";
-import Section from "../../components/Section.astro";
+import Scene from "../../components/Scene.astro";
+import Mega from "../../components/Mega.astro";
+import Avslor from "../../components/Avslor.astro";
+import Demo from "../../components/Demo.astro";
 import ServiceCard from "../../components/ServiceCard.astro";
 import ContactBlock from "../../components/ContactBlock.astro";
+
+import "../../styles/scener.css";
 
 /**
  * Samleside for gratisverktøyene. Verktøyene er sidens viktigste salgsargument:
@@ -58,15 +63,15 @@ const verktoy = [
   tittel="Gratisverktøy"
   beskrivelse="Gratis verktøy for norske bedrifter: nettsidesjekk, priskalkulator, e-postsikkerhet, cookie-sjekk og universell utforming. Ingen innlogging."
 >
-  <Section
-    nivaa={1}
-    n={1}
-    eyebrow="Verktøy"
-    tittel="Verktøy du kan bruke gratis"
-    ingress="Vi selger sikkerhet og etterlevelse. Da er det rimelig at du får se at vi kan det, før du betaler for noe. Ingen innlogging, ingen e-post før du selv ber om rapporten."
-  >
+  <Scene lav>
+    <Mega som="h1" merke="Verktøy" n={1} tekst="Verktøy du kan bruke gratis" />
+    <Avslor trinn={1}>
+      <p class="scene__ingress body-lg">Vi selger sikkerhet og etterlevelse. Da er det rimelig at du får se at vi kan det, før du betaler for noe. Ingen innlogging, ingen e-post før du selv ber om rapporten.</p>
+    </Avslor>
+
     <div class="grid-3">
-      {verktoy.map((v) => (
+      {verktoy.map((v, k) => (
+        <Avslor trinn={k % 3}>
         <ServiceCard
           n={v.n}
           title={v.tittel}
@@ -75,15 +80,28 @@ const verktoy = [
           items={v.punkter}
           linkLabel="Kjør den"
         />
+        </Avslor>
       ))}
     </div>
     <p class="small faint" style="margin-top: var(--space-5)">
       Kortene uten lenke er under arbeid. De dukker opp her når de faktisk virker –
       ikke før.
     </p>
-  </Section>
+  </Scene>
 
-  <Section n={2} eyebrow="Åpent" tittel="Motoren er åpen kildekode" ingress="Sjekkene kjører også som kommandolinjeverktøy og som GitHub Action, slik at du kan ha dem i ditt eget bygg i stedet for å besøke denne siden.">
+  <Scene n={2} eyebrow="Slik ser det ut" tittel="Sjekken som kjører">
+    <Avslor>
+      <Demo
+        smal="/historie/verktoy-1280.mp4"
+        bred="/historie/verktoy-1920.mp4"
+        plakat="/historie/verktoy-poster.avif"
+        tekst="Opptak av sjekken som kjører mot nkom.no. Funnene er ekte."
+        kilde="6. oktober 2026"
+      />
+    </Avslor>
+  </Scene>
+
+  <Scene n={3} eyebrow="Åpent" tittel="Motoren er åpen kildekode" ingress="Sjekkene kjører også som kommandolinjeverktøy og som GitHub Action, slik at du kan ha dem i ditt eget bygg i stedet for å besøke denne siden.">
     <div class="grid-2">
       <div class="card">
         <h3 class="subheading">Kommandolinje</h3>
@@ -98,7 +116,20 @@ const verktoy = [
     url: https://dinbedrift.no</code></pre>
       </div>
     </div>
-  </Section>
+  </Scene>
 
   <ContactBlock n={3} />
 </Base>
+<style is:global>
+  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
+     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
+     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
+     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
+  .scene:first-of-type .mega .ord,
+  .scene:first-of-type .mega-blokk,
+  .scene:first-of-type .avslor {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+</style>

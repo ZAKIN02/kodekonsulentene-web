@@ -1,0 +1,51 @@
+---
+/**
+ * Tekst i skjermfyllende skala – sidens største typografiske grep.
+ *
+ * Hele poenget er skalakontrast: en etikett på 12 px monospace rett over et ord
+ * på opptil 200 px display. Det er den kontrasten referansene (epic.net,
+ * brand.dropbox.com) bruker for å gjøre typografi til grafikk, og den koster
+ * ingenting i ytelse.
+ *
+ * Null JavaScript. Avdekkingen er ren CSS med `animation-timeline: view()`.
+ * Nettlesere uten støtte (Firefox i stabil versjon) viser teksten ferdig med én
+ * gang – standardtilstanden er synlig, så ingenting kan bli hengende skjult.
+ *
+ * Brandboken: «én detalj per skjerm». Derfor maks ett Mega-element i hvert
+ * visningsområde, og aksentfargen på maks ett ord. Begge deler er ditt ansvar
+ * som bruker komponenten – den håndhever det ikke selv.
+ */
+import "../styles/typo.css";
+
+interface Props {
+  tekst: string;
+  /** Ordet som skal stå i aksentfargen. Må finnes i `tekst`. Maks ett. */
+  aksent?: string;
+  /** h1 brukes bare der siden ikke har en h1 fra før. */
+  som?: "h1" | "h2" | "p";
+  /** Nummerert etikett over teksten, i brandbokens eyebrow-form. */
+  merke?: string;
+  n?: number;
+  class?: string;
+}
+const { tekst, aksent, som = "h2", merke, n, class: cls } = Astro.props;
+const Tag = som;
+const ord = tekst.split(" ");
+const nr = typeof n === "number" ? String(n).padStart(2, "0") : null;
+---
+<div class:list={["mega-blokk", cls]}>
+  {merke && (
+    <p class="mega-blokk__merke">
+      <span class="nr" aria-hidden="true">//{nr ? ` ${nr}` : ""}</span>
+      <span>{merke}</span>
+    </p>
+  )}
+  <Tag class="mega">
+    {ord.map((o, i) => (
+      <Fragment>
+        <span class:list={["ord", aksent && o.replace(/[.,:;!?]/g, "") === aksent && "aksent"]} style={`--i:${i}`}>{o}</span>
+        {i < ord.length - 1 ? " " : ""}
+      </Fragment>
+    ))}
+  </Tag>
+</div>

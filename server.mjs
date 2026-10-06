@@ -20,6 +20,7 @@ import zlib from "node:zlib";
 import { promisify } from "node:util";
 
 import { handler as astro } from "./dist/server/entry.mjs";
+import { createHash } from "node:crypto";
 import { inlineSkriptHasher, lagSikkerhetsheadere } from "./sikkerhet.mjs";
 
 const brotli = promisify(zlib.brotliCompress);
@@ -31,7 +32,8 @@ const ROT = path.join(path.dirname(fileURLToPath(import.meta.url)), "dist", "cli
  * CSP-en må kjenne hashen til hvert inline-skript Astro la i HTML-en. Regnes ut
  * én gang ved oppstart fra det ferdige bygget – ikke per forespørsel.
  */
-const HEADERE = lagSikkerhetsheadere(inlineSkriptHasher(ROT));
+const SKRIPTHASHER = inlineSkriptHasher(ROT);
+const HEADERE = lagSikkerhetsheadere(SKRIPTHASHER);
 
 const PORT = Number(process.env.PORT ?? 8080);
 const HOST = process.env.HOST ?? "0.0.0.0";
@@ -178,6 +180,80 @@ async function serverFil(req, res, funn) {
   res.end(req.method === "HEAD" ? undefined : kropp);
 }
 
+
+/**
+ * CSP for serverrendrede sider.
+ *
+ * Hashene for inline-skript leses ut av det ferdige bygget ved oppstart, men
+ * sider med `prerender = false` havner aldri i dist/client – HTML-en finnes først
+ * når forespørselen kommer. /kontakt er en slik side, og den hadde tre blokkerte
+ * skript: terminalen skrev seg ikke inn og temabryteren virket ikke, uten at noe
+ * feilet synlig.
+ *
+ * Løsningen er å beregne CSP per svar for disse sidene: vi fanger HTML-en på vei
+ * ut, hasher skriptene den faktisk inneholder, og legger dem til. Bufringen gjelder
+ * bare HTML fra Astro – statiske filer og API-svar går uberørt forbi.
+ */
+function medSsrCsp(res) {
+  const skrivHode = res.writeHead.bind(res);
+  const skriv = res.write.bind(res);
+  const slutt = res.end.bind(res);
+
+  let biter = null;      // samler HTML-en
+  let hodeArgs = null;   // utsatt writeHead
+
+  res.writeHead = (...a) => {
+    // Content-type kan ligge i headerobjektet Astro sender med, ikke bare i
+    // setHeader. Begge må sjekkes, ellers går HTML-svar rett forbi bufringen.
+    const fraHode = a.find((x) => x && typeof x === "object");
+    const type = String(fraHode?.["content-type"] ?? fraHode?.["Content-Type"] ?? res.getHeader("content-type") ?? "");
+    if (!/text\/html/i.test(type)) return skrivHode(...a);
+    // Utsettes: vi kjenner ikke hashene før hele HTML-en er skrevet, og
+    // headerne kan ikke endres etter at writeHead har sendt dem.
+    hodeArgs = a;
+    biter = [];
+    return res;
+  };
+
+  res.write = (chunk, ...a) => {
+    if (biter && chunk) { biter.push(Buffer.from(chunk)); return true; }
+    return skriv(chunk, ...a);
+  };
+
+  res.end = (chunk, ...a) => {
+    if (!biter) return slutt(chunk, ...a);
+    if (chunk && typeof chunk !== "function") biter.push(Buffer.from(chunk));
+    const html = Buffer.concat(biter).toString("utf8");
+
+    const ekstra = new Set();
+    for (const m of html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)) {
+      if (m[1].trim()) ekstra.add(`'sha256-${createHash("sha256").update(m[1], "utf8").digest("base64")}'`);
+    }
+    const csp = ekstra.size
+      ? lagSikkerhetsheadere([...SKRIPTHASHER, ...ekstra])["content-security-policy"]
+      : null;
+
+    biter = null;
+    if (hodeArgs) {
+      // Astro sender sine egne headere som andre argument til writeHead, og det
+      // ERSTATTER alt vi har satt med setHeader. Derfor må CSP-en flettes inn i
+      // nettopp det objektet – ikke settes ved siden av. Uten dette fikk /kontakt
+      // bare temaskriptets hash, og tre skript ble blokkert.
+      const [status, ...rest] = hodeArgs;
+      const hodeObj = rest.find((x) => x && typeof x === "object") ?? {};
+      if (csp) hodeObj["content-security-policy"] = csp;
+      hodeObj["content-length"] = Buffer.byteLength(html);
+      skrivHode(status, hodeObj);
+    } else {
+      if (csp) res.setHeader("content-security-policy", csp);
+      res.setHeader("content-length", Buffer.byteLength(html));
+    }
+    return slutt(html);
+  };
+
+  return res;
+}
+
 const server = createServer(async (req, res) => {
   settHeadere(res);
 
@@ -195,7 +271,9 @@ const server = createServer(async (req, res) => {
     }
   }
 
-  astro(req, res, () => ikkeFunnet(res));
+  // Serverrendret HTML får CSP beregnet av sitt eget innhold.
+  const svar = medSsrCsp(res);
+  astro(req, svar, () => ikkeFunnet(svar));
 });
 
 async function ikkeFunnet(res) {

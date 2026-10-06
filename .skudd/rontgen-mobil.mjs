@@ -1,0 +1,12 @@
+import { chromium, devices } from "@playwright/test";
+const b = await chromium.launch();
+const ctx = await b.newContext({ ...devices["Pixel 7"], colorScheme: "dark", hasTouch: true });
+const p = await ctx.newPage();
+await p.goto("http://127.0.0.1:4399/lab/rontgen", { waitUntil: "networkidle" });
+await p.locator("[data-rontgen-flate]").scrollIntoViewIfNeeded();
+await p.waitForTimeout(300);
+const bk = await p.locator("[data-rontgen-flate]").boundingBox();
+await p.touchscreen.tap(bk.x + bk.width * 0.55, bk.y + bk.height * 0.42);
+await p.waitForTimeout(400);
+await p.locator("[data-rontgen]").screenshot({ path: ".skudd/rontgen-mobil.png" });
+await b.close();

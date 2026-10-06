@@ -1,6 +1,8 @@
 ---
 import Base from "../layouts/Base.astro";
-import Section from "../components/Section.astro";
+import Scene from "../components/Scene.astro";
+import Mega from "../components/Mega.astro";
+import Avslor from "../components/Avslor.astro";
 import Button from "../components/Button.astro";
 import Terminal from "../components/Terminal.astro";
 import ProcessSteps from "../components/ProcessSteps.astro";
@@ -8,6 +10,8 @@ import ContactBlock from "../components/ContactBlock.astro";
 import { prosess } from "../data/prosess";
 import { pakker } from "../data/priser";
 import { bookUrl } from "../data/firma";
+
+import "../styles/scener.css";
 
 const schema = {
   "@context": "https://schema.org",
@@ -29,19 +33,22 @@ const schema = {
   beskrivelse="Nettside til fast pris i Oslo: Lighthouse 95+, lokal SEO, WCAG 2.2 AA og cookieløs analyse. Start 14 900 kr, Bedrift 29 900 kr eks. mva."
   schema={[schema]}
 >
-  <Section nivaa={1}
-    n={1}
-    eyebrow="Nettsider"
-    tittel="En nettside som faktisk blir funnet"
-    ingress="De fleste småbedriftssider er for trege på mobil, bryter cookie-reglene og mangler org.nr. Det er tre ting som koster kunder, og alle tre er løsbare."
-  >
+  <Scene lav>
+    <Mega som="h1" merke="Nettsider" n={1} tekst="En nettside som faktisk blir funnet" aksent="funnet" />
+    <Avslor trinn={1}>
+      <p class="scene__ingress body-lg">De fleste småbedriftssider er for trege på mobil, bryter cookie-reglene og mangler org.nr. Det er tre ting som koster kunder, og alle tre er løsbare.</p>
+    </Avslor>
+
+    <Avslor>
     <div class="row">
       <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
       <Button variant="ghost" href="/sjekk">Sjekk siden du har i dag</Button>
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
-  <Section n={2} eyebrow="Hva du får" tittel="Fire krav vi setter selv">
+  <Scene n={2} eyebrow="Hva du får" tittel="Fire krav vi setter selv">
+    <Avslor>
     <div class="grid-2">
       <div class="card">
         <h3 class="heading">Rask på mobil</h3>
@@ -76,11 +83,14 @@ const schema = {
         </p>
       </div>
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
-  <Section n={3} eyebrow="Teknisk" tittel="Hva det er bygget av" ingress="Du trenger ikke å bry deg om dette. Det står her fordi noen spør, og fordi du skal kunne ta det med deg til en annen utvikler.">
+  <Scene n={3} eyebrow="Teknisk" tittel="Hva det er bygget av" ingress="Du trenger ikke å bry deg om dette. Det står her fordi noen spør, og fordi du skal kunne ta det med deg til en annen utvikler.">
+    <Avslor>
     <div class="grid-2">
       <Terminal
+        skriv
         title="~/din-side"
         lines={[
           { type: "cmd", text: "npm run build" },
@@ -102,15 +112,29 @@ const schema = {
         <div><dt>Eierskap</dt><dd>Ditt Git-repo</dd></div>
       </dl>
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
-  <Section n={4} eyebrow="Prosess" tittel="Fra samtale til lansering">
+  <Scene n={4} eyebrow="Prosess" tittel="Fra samtale til lansering">
     <ProcessSteps steps={prosess} />
-  </Section>
+  </Scene>
 
-  <Section n={5} eyebrow="Pris" tittel="14 900 kr eller 29 900 kr" ingress="Start-pakken er for deg som trenger å finnes og bli ringt. Bedrift er for deg som skal rangere lokalt og endre teksten selv. Begge eks. mva.">
+  <Scene n={5} eyebrow="Pris" tittel="14 900 kr eller 29 900 kr" ingress="Start-pakken er for deg som trenger å finnes og bli ringt. Bedrift er for deg som skal rangere lokalt og endre teksten selv. Begge eks. mva.">
     <Button variant="primary" href="/priser">Se hele prislisten</Button>
-  </Section>
+  </Scene>
 
   <ContactBlock n={6} />
 </Base>
+<style is:global>
+  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
+     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
+     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
+     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
+  .scene:first-of-type .mega .ord,
+  .scene:first-of-type .mega-blokk,
+  .scene:first-of-type .avslor {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+</style>

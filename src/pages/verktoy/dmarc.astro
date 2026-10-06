@@ -1,10 +1,14 @@
 ---
 import Base from "../../layouts/Base.astro";
-import Section from "../../components/Section.astro";
+import Scene from "../../components/Scene.astro";
+import Mega from "../../components/Mega.astro";
+import Avslor from "../../components/Avslor.astro";
 import Button from "../../components/Button.astro";
 import Terminal from "../../components/Terminal.astro";
 import ContactBlock from "../../components/ContactBlock.astro";
 import { firma } from "../../data/firma";
+
+import "../../styles/scener.css";
 
 const forhandsutfylt = Astro.url.searchParams.get("domene") ?? "";
 ---
@@ -12,13 +16,13 @@ const forhandsutfylt = Astro.url.searchParams.get("domene") ?? "";
   tittel="Sjekk e-posten din: SPF, DKIM og DMARC"
   beskrivelse="Gratis sjekk av SPF, DKIM og DMARC på domenet ditt. Se om noen kan sende e-post i bedriftens navn, og om din egen e-post havner i søppelposten."
 >
-  <Section
-    nivaa={1}
-    n={1}
-    eyebrow="Verktøy"
-    tittel="Kan noen sende e-post i ditt navn?"
-    ingress="Tre poster i DNS avgjør det: SPF, DKIM og DMARC. Mangler de, kan hvem som helst sende faktura som ser ut til å komme fra bedriften din – og din egen e-post havner oftere i søppelposten."
-  >
+  <Scene lav>
+    <Mega som="h1" merke="Verktøy" n={1} tekst="Kan noen sende e-post i ditt navn?" />
+    <Avslor trinn={1}>
+      <p class="scene__ingress body-lg">Tre poster i DNS avgjør det: SPF, DKIM og DMARC. Mangler de, kan hvem som helst sende faktura som ser ut til å komme fra bedriften din – og din egen e-post havner oftere i søppelposten.</p>
+    </Avslor>
+
+    <Avslor>
     <div class="stack">
       <form class="stack stack--tight" id="dmarc-skjema" style="max-width: 560px">
         <div class="kk-urlcheck">
@@ -55,9 +59,11 @@ const forhandsutfylt = Astro.url.searchParams.get("domene") ?? "";
         </p>
       </noscript>
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
-  <Section n={2} eyebrow="Hva det betyr" tittel="De tre postene, forklart">
+  <Scene n={2} eyebrow="Hva det betyr" tittel="De tre postene, forklart">
+    <Avslor>
     <div class="grid-2">
       <div class="stack">
         <dl class="kv">
@@ -78,6 +84,7 @@ const forhandsutfylt = Astro.url.searchParams.get("domene") ?? "";
       </div>
       <div class="stack">
         <Terminal
+          skriv
           title="~/kodekonsulentene/dmarc"
           lines={[
             { type: "cmd", text: "dig +short TXT _dmarc.dinbedrift.no" },
@@ -95,17 +102,33 @@ const forhandsutfylt = Astro.url.searchParams.get("domene") ?? "";
         </p>
       </div>
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
-  <Section n={3} eyebrow="Etterpå" tittel="Vil du at vi ordner det?" ingress="Å sette opp SPF, DKIM og DMARC riktig tar vanligvis en til to timer, og det gjøres én gang. Timeprisen er 950 kr eks. mva.">
+  <Scene n={3} eyebrow="Etterpå" tittel="Vil du at vi ordner det?" ingress="Å sette opp SPF, DKIM og DMARC riktig tar vanligvis en til to timer, og det gjøres én gang. Timeprisen er 950 kr eks. mva.">
+    <Avslor>
     <div class="row">
       <Button variant="primary" href="/kontakt">Book 20 minutter</Button>
       <Button variant="ghost" href="/verktoy">Se de andre verktøyene</Button>
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
   <ContactBlock n={4} />
 </Base>
+<style is:global>
+  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
+     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
+     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
+     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
+  .scene:first-of-type .mega .ord,
+  .scene:first-of-type .mega-blokk,
+  .scene:first-of-type .avslor {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+</style>
 
 <script>
   const ORD = { ok: "Bestått", warn: "Bør fikses", fail: "Brudd", neutral: "Ikke sjekket" } as const;

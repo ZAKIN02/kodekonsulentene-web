@@ -18,6 +18,10 @@ export const footerLenker: NavLenke[] = [
   { label: "Gratisverktøy", href: "/verktoy" },
   { label: "Håndbok", href: "/handbok" },
   { label: "Driftsstatus", href: "/status" },
+  // Synlige, litt rare innganger. Epic.net har «Puzzle», «Rabbit» og «Castle»
+  // stående i footeren – det er hele hemmeligheten bak følelsen av dybde. En
+  // skjult funksjon ingen vet om, finnes ikke.
+  { label: "Terminal (~)", href: "/terminal" },
   { label: "Personvern", href: "/personvern" },
   { label: "Salgsvilkår", href: "/vilkar" },
 ];

@@ -1,0 +1,51 @@
+/* Delte stiler for direkte manipulasjon.
+ *
+ * Alle tre komponentene – Lagstabel, Pekerkort og Slepesammenligning – følger
+ * samme to regler:
+ *
+ *   1. Én tilstandsvariabel. `--a` eller `--p`, et tall mellom 0 og 1 satt av
+ *      skriptet på rotelementet. CSS regner ut alt annet. Det gjør at draing,
+ *      spak og knapp deler nøyaktig samme vei inn, og at det bare finnes én
+ *      sannhet om tilstanden.
+ *
+ *   2. Spaken er den tilgjengelige inngangen. Den er en ekte
+ *      `input[type=range]`, synlig og fokuserbar, ikke en skjult hjelpekontroll.
+ *      Alt musa kan gjøre, kan tastaturet gjøre. En skjult kontroll er ingen
+ *      kontroll.
+ *
+ * Draing går vannrett i alle tre. Det er et berøringskrav: med loddrett draing
+ * måtte vi satt `touch-action: none`, og da ville fingeren ikke lenger kunne
+ * scrolle siden over komponenten.
+ */
+
+/* Gjelder alle skyvekontroller, ikke bare de med .spak-klassen. Lagstabelens
+   egen spak heter noe annet og lå på 16 px høyde – under WCAG 2.5.8 sin grense
+   på 24. Målt på forsiden, ikke antatt. */
+.spak,
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+  min-height: 24px;
+}
+.spak:focus-visible,
+input[type="range"]:focus-visible {
+  outline: var(--focus-width) solid var(--focus);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+.interaksjon-hint {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ink-faint);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Interaksjonene skal fortsatt virke – bare uten utglattingen. */
+  [data-stabel] *,
+  [data-slep] *,
+  [data-pekerkort] {
+    transition-duration: 0.01ms !important;
+  }
+}

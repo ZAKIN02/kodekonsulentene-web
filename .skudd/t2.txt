@@ -1,0 +1,48 @@
+--- pris (rettet) ---
+KodeKonsulentene – terminalmodus. help for kommandoer, Esc for å lukke.
+$ pris
+
+Start    14 900 kr
+Bedrift  29 900 kr
+System   fra 60 000 kr
+alle priser eks. mva. Hele listen: open priser
+
+--- dmarc (rettet oppsummering) ---
+$ dmarc nkom.no
+
+spf ..... -all · 4/10 oppslag
+dkim .... Ikke sjekket
+dmarc ... p=quarantine
+
+Ingen brudd, men 1 ikke sjekket. Samlet: 83/100.
+
+--- sudo / ukjent / låst nordlys ---
+$ sudo rm -rf /
+sudo: du har allerede alle rettigheter her. Det er din nettleser.
+(og «rm -rf /» hadde uansett ikke hjulpet)
+$ blah
+blah: ukjent kommando. help viser alle.
+$ nordlys
+nordlys: ukjent kommando. help viser alle.
+
+TAB «he» -> "he"
+TAB «s» (flere treff) -> sjekk  sudo
+PIL OPP -> "nordlys"
+lukket: true
+
+konami åpnet terminal: false
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+page.fill: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('.kkterm__in')[22m
+
+    at skriv (/Users/zakaria/Zakaria/02-Prosjekter/kodekonsulentene-web/.skudd/term-test2.mjs:8:47)
+    at /Users/zakaria/Zakaria/02-Prosjekter/kodekonsulentene-web/.skudd/term-test2.mjs:42:7 {
+  log: [ "  - waiting for locator('.kkterm__in')" ],
+  name: 'TimeoutError'
+}
+
+Node.js v22.20.0

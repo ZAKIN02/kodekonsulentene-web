@@ -1,9 +1,13 @@
 ---
 import Base from "../layouts/Base.astro";
-import Section from "../components/Section.astro";
+import Scene from "../components/Scene.astro";
+import Mega from "../components/Mega.astro";
+import Avslor from "../components/Avslor.astro";
 import Button from "../components/Button.astro";
 import Terminal from "../components/Terminal.astro";
 import { firma, bookUrl } from "../data/firma";
+
+import "../styles/scener.css";
 
 // Siden rendres på serveren, ikke ved bygg. Grunnen er kvitteringen: skjemaet poster
 // til /api/kontakt, som sender deg tilbake hit med ?sendt=1. Var siden statisk, måtte
@@ -25,12 +29,12 @@ const feilmelding =
   beskrivelse="Book 20 minutter på telefon, eller skriv kort hva som tar tid i dag. Svar innen 24 timer. Utvikler i Oslo."
   noindex={sendt || Boolean(feil)}
 >
-  <Section nivaa={1}
-    n={1}
-    eyebrow="Kontakt"
-    tittel="Snakk med den som koder"
-    ingress="20 minutter på telefon, ingen presentasjon. Du får et prisspenn og en ærlig vurdering av om du trenger det du tror du trenger."
-  >
+  <Scene lav>
+    <Mega som="h1" merke="Kontakt" n={1} tekst="Snakk med den som koder" />
+    <Avslor trinn={1}>
+      <p class="scene__ingress body-lg">20 minutter på telefon, ingen presentasjon. Du får et prisspenn og en ærlig vurdering av om du trenger det du tror du trenger.</p>
+    </Avslor>
+
     {sendt && (
       <div class="card" style="border-color: var(--ok)">
         <h2 class="heading">Takk – meldingen kom fram</h2>
@@ -48,6 +52,7 @@ const feilmelding =
       </div>
     )}
 
+    <Avslor>
     <div class="grid-2" style="margin-top: var(--space-6)">
       <div class="stack">
         <div class="card">
@@ -66,6 +71,7 @@ const feilmelding =
         </div>
 
         <Terminal
+          skriv
           title="~/kodekonsulentene/kontakt"
           lines={[
             { type: "cmd", text: "hva koster en prat" },
@@ -108,9 +114,23 @@ const feilmelding =
         </p>
       </form>
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
-  <Section n={2} eyebrow="Før du ringer" tittel="Kjør sjekken først" ingress="Har du en side i dag, bruk et halvt minutt på den gratis sjekken. Da ser vi begge hva som faktisk er problemet før vi snakker om pris.">
+  <Scene n={2} eyebrow="Før du ringer" tittel="Kjør sjekken først" ingress="Har du en side i dag, bruk et halvt minutt på den gratis sjekken. Da ser vi begge hva som faktisk er problemet før vi snakker om pris.">
     <Button variant="secondary" href="/sjekk">Sjekk nettsiden din</Button>
-  </Section>
+  </Scene>
 </Base>
+<style is:global>
+  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
+     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
+     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
+     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
+  .scene:first-of-type .mega .ord,
+  .scene:first-of-type .mega-blokk,
+  .scene:first-of-type .avslor {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+</style>

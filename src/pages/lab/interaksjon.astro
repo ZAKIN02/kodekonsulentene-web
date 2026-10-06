@@ -1,0 +1,52 @@
+---
+/**
+ * Laboratorium for direkte manipulasjon.
+ *
+ * Siden finnes for å verifisere komponentene isolert: draing, tastatur,
+ * skjermleserstatus, uten-JS og redusert bevegelse. Den er `noindex` og lenkes
+ * ikke fra navigasjonen.
+ */
+import Base from "../../layouts/Base.astro";
+import Section from "../../components/Section.astro";
+import Lagstabel from "../../components/Lagstabel.astro";
+import Pekerkort from "../../components/Pekerkort.astro";
+import Slepesammenligning from "../../components/Slepesammenligning.astro";
+import "../../styles/interaksjon.css";
+import { tjenester } from "../../data/tjenester";
+---
+<Base
+  tittel="Lab: direkte manipulasjon"
+  beskrivelse="Verifisering av lagstabel, pekerkort og slepesammenligning."
+  noindex
+>
+  <Section
+    nivaa={1}
+    n={1}
+    eyebrow="Lab"
+    tittel="Direkte manipulasjon"
+    ingress="Tre komponenter som svarer på deg. Alt som kan gjøres med musa kan gjøres med tastaturet."
+  />
+
+  <Section n={2} eyebrow="Lagstabel" tittel="Ta siden fra hverandre" ingress="Dra i stabelen, bruk spaken eller knappen. Lagene er ekte DOM, ikke en video.">
+    <Lagstabel id="lab-stabel" />
+  </Section>
+
+  <Section n={3} eyebrow="Pekerkort" tittel="Kort som peker tilbake" ingress="Markøren på overkanten følger pekeren. Med tastatur vises den ved fokus.">
+    <div class="grid-3">
+      {tjenester.map((t) => (
+        <Pekerkort nr={t.n} tittel={t.tittel} tekst={t.beskrivelse} href={t.href} lenketekst={t.lenketekst} />
+      ))}
+    </div>
+  </Section>
+
+  <Section n={4} eyebrow="Sammenligning" tittel="Dra skillelinjen" ingress="To ekte målinger fra samme verktøy, samme dag.">
+    <Slepesammenligning id="lab-slep" />
+  </Section>
+
+  <Section n={5} eyebrow="Uten vipp" tittel="Pekerkort uten 3D" ingress="Samme kort med vippen slått av, for sammenligning mot brandbokens «ingen 3D».">
+    <div class="grid-2">
+      <Pekerkort nr={1} tittel="Med vipp" tekst="Kortet heller noen få grader mot pekeren." />
+      <Pekerkort nr={2} tittel="Uten vipp" tekst="Bare markøren beveger seg. Ingen transform." vipp={false} />
+    </div>
+  </Section>
+</Base>

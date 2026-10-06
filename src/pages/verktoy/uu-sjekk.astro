@@ -1,11 +1,15 @@
 ---
 import Base from "../../layouts/Base.astro";
-import Section from "../../components/Section.astro";
+import Scene from "../../components/Scene.astro";
+import Mega from "../../components/Mega.astro";
+import Avslor from "../../components/Avslor.astro";
 import UrlCheck from "../../components/UrlCheck.astro";
 import Button from "../../components/Button.astro";
 import Terminal from "../../components/Terminal.astro";
 import ContactBlock from "../../components/ContactBlock.astro";
 import { firma } from "../../data/firma";
+
+import "../../styles/scener.css";
 
 const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
 ---
@@ -13,12 +17,13 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
   tittel="Sjekk universell utforming"
   beskrivelse="Automatisk WCAG-sjekk av nettsiden din mot kravene som gjelder private virksomheter. Vi sier også hva sjekken ikke kan avgjøre. Gratis."
 >
-  <Section nivaa={1}
-    n={1}
-    eyebrow="Verktøy"
-    tittel="Sjekk universell utforming"
-    ingress="Private virksomheter skal oppfylle 35 krav i WCAG 2.0 nivå A og AA. Vi kjører siden gjennom axe-core og viser de bruddene en maskin kan finne."
-  >
+  <Scene lav>
+    <Mega som="h1" merke="Verktøy" n={1} tekst="Sjekk universell utforming" />
+    <Avslor trinn={1}>
+      <p class="scene__ingress body-lg">Private virksomheter skal oppfylle 35 krav i WCAG 2.0 nivå A og AA. Vi kjører siden gjennom axe-core og viser de bruddene en maskin kan finne.</p>
+    </Avslor>
+
+    <Avslor>
     <div class="stack">
       <UrlCheck
         id="url-uu"
@@ -38,14 +43,16 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
         </p>
       </noscript>
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
-  <Section
+  <Scene
     n={2}
     eyebrow="Ærlighet"
     tittel="Hva en automatisk test ikke kan se"
     ingress="Dette er den viktigste seksjonen på siden. En grønn rapport her betyr ikke at kravene er oppfylt."
   >
+    <Avslor>
     <div class="grid-2">
       <div class="stack">
         <p class="muted">
@@ -66,6 +73,7 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
       </div>
       <div class="stack">
         <Terminal
+          skriv
           title="~/kodekonsulentene/uu"
           lines={[
             { type: "cmd", text: "uu-sjekk --dekning" },
@@ -78,18 +86,34 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
         />
       </div>
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
-  <Section n={3} eyebrow="Etterpå" tittel="Vil du ha en full gjennomgang?" ingress="En manuell revisjon dekker det automatiske tester ikke når: tastaturnavigasjon, skjermleser, kontrast over bilder og forståelig språk.">
+  <Scene n={3} eyebrow="Etterpå" tittel="Vil du ha en full gjennomgang?" ingress="En manuell revisjon dekker det automatiske tester ikke når: tastaturnavigasjon, skjermleser, kontrast over bilder og forståelig språk.">
+    <Avslor>
     <div class="row">
       <Button variant="primary" href="/priser">Se hva det koster</Button>
       <Button variant="ghost" href="/sjekk">Kjør den fulle sjekken</Button>
       <Button variant="ghost" href="/verktoy/cookie-sjekk">Sjekk cookies</Button>
     </div>
-  </Section>
+    </Avslor>
+  </Scene>
 
   <ContactBlock n={4} tittel="Spørsmål om funnene?" ingress="Har du rapporten foran deg og vil vite hva som haster, tar det fem minutter på telefon." />
 </Base>
+<style is:global>
+  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
+     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
+     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
+     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
+  .scene:first-of-type .mega .ord,
+  .scene:first-of-type .mega-blokk,
+  .scene:first-of-type .avslor {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+</style>
 
 <script>
   interface Brudd {

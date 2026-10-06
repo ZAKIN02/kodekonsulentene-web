@@ -1,0 +1,226 @@
+/* KodeKonsulentene – røntgenlinsen.
+   Lastes av src/components/Rontgen.astro.
+
+   Ideen: firmaet selger å se hva som ligger INNE i en nettside. Flaten her gjør
+   det bokstavelig. To ekte lag ligger oppå hverandre – designet øverst, innsiden
+   under – og en maske skjærer et hull i designet der pekeren er.
+
+   Grunnen til at dette er DOM og CSS og ikke video: det svarer på brukeren, det
+   er knivskarpt i alle oppløsninger, og det veier ingenting. En video kan bare
+   spilles av.
+
+   Brandboken gjelder: hårlinjer, monospace på kode og tall, én aksent (ringen),
+   ingen gradientflater, ingen glassmorphism, ingen 3D. */
+
+.rontgen {
+  position: relative;
+  isolation: isolate;
+}
+
+/* ------------------------------------------------------------ lagene ---- */
+
+.rontgen__lag {
+  grid-area: 1 / 1;
+  min-height: inherit;
+}
+
+.rontgen__flate {
+  position: relative;
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  /* Klippingen hører hjemme HER, ikke på .rontgen. Lå den på komponenten, rant
+     designlaget ut av flaten og la seg over knappen under – som dermed ikke
+     kunne klikkes på mobil. Fanget av at et klikk i testen ble avvist med
+     «subtree intercepts pointer events». */
+  overflow: hidden;
+  display: grid;
+  min-height: clamp(320px, 56svh, 560px);
+  /* Taket er bevisst: innsiden har flere rader enn som får plass, og på smal
+     skjerm brøt de til nesten 1700 px høyde. Flaten er et VINDU inn i noe
+     større – at innholdet fortsetter utenfor kanten er riktig, ikke en feil.
+     Hele innsiden er uansett ett knappetrykk unna. */
+  max-height: clamp(360px, 72svh, 620px);
+}
+
+/* Innsiden ligger nederst og er alltid der. Designet over skjuler den. */
+.rontgen__innside {
+  background: var(--terminal);
+  color: var(--on-terminal);
+  padding: var(--space-5);
+  display: grid;
+  /* Innholdet skal fylle hele flaten. Lå det samlet i toppen, traff linsen
+     tomrom i nedre halvdel, og da ser det ut som om det ikke er noe der. */
+  grid-template-rows: auto 1fr;
+  gap: var(--space-3);
+}
+
+/* Finrutenettet: wireframe-følelsen, ren CSS, ingen bildefil.
+   Holdes under 6 % opasitet så det aldri konkurrerer med teksten. */
+.rontgen__innside::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(to right, var(--on-terminal) var(--hairline), transparent var(--hairline)),
+    linear-gradient(to bottom, var(--on-terminal) var(--hairline), transparent var(--hairline));
+  background-size: 32px 32px;
+  opacity: 0.075;
+  pointer-events: none;
+}
+
+.rontgen__design {
+  background: var(--bg);
+  padding: var(--space-5);
+  display: grid;
+  align-content: center;
+  gap: var(--space-4);
+  /* --h er hullets radius. 0 betyr ingen maske i det hele tatt (fallback og
+     «røntgen av»), så flaten er helt ugjennomsiktig til noe aktivt åpner den. */
+  --h: 0px;
+  --x: 50%;
+  --y: 50%;
+  --maske: radial-gradient(
+    circle var(--h) at var(--x) var(--y),
+    transparent 0,
+    transparent 62%,
+    #000 100%
+  );
+}
+
+/* Masken settes først når skriptet har tatt over. Uten JS står designet helt,
+   og innsiden leses under det – se .rontgen:not([data-klar]) lenger nede. */
+.rontgen[data-klar] .rontgen__design {
+  -webkit-mask-image: var(--maske);
+  mask-image: var(--maske);
+}
+
+/* --------------------------------------------------------------- ringen ---- */
+
+.rontgen__ring {
+  position: absolute;
+  z-index: 2;
+  /* MERK: prosent i `translate` regnes mot elementets EGEN størrelse, ikke mot
+     forelderen. Ringen lå derfor låst oppe til venstre uansett hvor pekeren var.
+     Posisjonen må settes med top/left, og sentreringen med en ren -50 %. */
+  top: var(--y, 50%);
+  left: var(--x, 50%);
+  width: calc(var(--h, 0px) * 1.24);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border: var(--hairline) solid var(--accent);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+}
+.rontgen[data-klar][data-linse] .rontgen__ring { opacity: 1; }
+
+/* Krysshåret i midten – en presisjonsdetalj, ikke pynt. */
+.rontgen__ring::before,
+.rontgen__ring::after {
+  content: "";
+  position: absolute;
+  background: var(--accent);
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+}
+.rontgen__ring::before { width: 9px; height: var(--hairline); translate: -50% 0; }
+.rontgen__ring::after { width: var(--hairline); height: 9px; translate: 0 -50%; }
+
+/* ------------------------------------------------------------ innholdet ---- */
+
+.rontgen__merk {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  color: var(--on-terminal-muted);
+}
+.rontgen__merk b { color: var(--accent); font-weight: 500; }
+
+.rontgen__liste {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  align-content: space-evenly;
+  gap: var(--space-2);
+}
+.rontgen__liste li {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  gap: var(--space-2) var(--space-3);
+  align-items: baseline;
+  border-top: var(--hairline) solid color-mix(in srgb, var(--on-terminal) 16%, transparent);
+  padding-top: var(--space-2);
+}
+.rontgen__nokkel { color: var(--on-terminal); white-space: nowrap; }
+.rontgen__verdi {
+  color: var(--on-terminal-muted);
+  overflow-wrap: anywhere;
+}
+.rontgen__ja { color: var(--ok); }
+
+/* ------------------------------------------------------------ kontroller ---- */
+
+.rontgen__styring {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: baseline;
+  margin-top: var(--space-3);
+}
+.rontgen__bryter {
+  min-height: 44px;
+  padding: var(--space-2) var(--space-4);
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-raised);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.rontgen__bryter:hover { border-color: var(--ink); }
+.rontgen__bryter[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+.rontgen__bryter:focus-visible,
+.rontgen__flate:focus-visible {
+  outline: var(--focus-width) solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------- uten JS og rolig ---- */
+
+/* Uten JavaScript er det ingen maske og ingen linse. Da skal begge lagene
+   leses – innsiden legges UNDER designet i stedet for bak det, slik at
+   ingenting er skjult for den som ikke kjører skript. */
+.rontgen:not([data-klar]) .rontgen__flate { display: block; }
+.rontgen:not([data-klar]) .rontgen__lag { min-height: 0; }
+.rontgen:not([data-klar]) .rontgen__innside {
+  border-top: var(--hairline) solid var(--line);
+}
+.rontgen:not([data-klar]) .rontgen__styring { display: none; }
+
+/* Bevegelse: linsen følger pekeren direkte, uten utjevning. Ved
+   prefers-reduced-motion fjernes også den myke kanten på hullet, slik at
+   ingenting pulserer i utkanten av synsfeltet. */
+/* Smal skjerm: strammere rader, så flere får plass i vinduet. */
+@media (max-width: 640px) {
+  .rontgen__innside { padding: var(--space-4); }
+  .rontgen__liste li { grid-template-columns: 1fr; gap: 0; }
+  .rontgen__design { padding: var(--space-4); }
+  /* Innsiden er høyere enn vinduet på smal skjerm. Da har space-evenly ingen
+     slakk å fordele, og radene ble skjøvet nedover slik at toppen sto tom.
+     Start-justering fyller vinduet fra første rad. */
+  .rontgen__liste { align-content: start; gap: var(--space-2); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rontgen[data-klar] .rontgen__design {
+    --maske: radial-gradient(circle var(--h) at var(--x) var(--y), transparent 0, transparent 92%, #000 100%);
+  }
+}

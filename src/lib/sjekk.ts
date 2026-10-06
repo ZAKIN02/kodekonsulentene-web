@@ -260,6 +260,13 @@ export function analyserUu(html: string): UuFunn {
 
 export interface LovFunn extends Funn {
   orgnr: string | null;
+  /**
+   * Fra Enhetsregisteret, satt av API-ruten etter at analyserLovpaalagt har
+   * funnet et kandidatnummer. null betyr enten «ikke slått opp» eller
+   * «finnes ikke» – byggRapport skiller på det via `oppslagKjort`.
+   */
+  foretak?: { navn: string; form: string; slettet: boolean } | null;
+  oppslagKjort?: boolean;
   epost: boolean;
   telefon: boolean;
   adresse: boolean;
@@ -416,16 +423,45 @@ export function byggRapport(args: {
         : `${uu.feil} brudd mot WCAG funnet i koden. Private virksomheter skal oppfylle 35 krav i WCAG 2.0 A og AA.`,
   };
 
-  const lovRad: Rad = {
-    name: "Lovpålagt informasjon",
-    status: lov.status,
-    value: lov.orgnr ? "Org.nr. funnet" : "Org.nr. mangler",
-    note: lov.orgnr
-      ? lov.detaljer.length === 0
-        ? "Org.nr., kontaktinfo og personvernerklæring er på plass."
-        : `Org.nr. er på plass, men ${lov.detaljer.length} ${lov.detaljer.length === 1 ? "opplysning" : "opplysninger"} mangler. Ehandelsloven § 8 krever adresse, e-post og telefon.`
-      : "Foretaksnavn og organisasjonsnummer skal stå på nettsiden. Det er det første en kunde ser etter når de skal sjekke om du er et ekte foretak.",
-  };
+  // Org.nr.-raden tar hensyn til om nummeret faktisk finnes i Enhetsregisteret.
+  // Et nummer som består mod 11 men ikke finnes, er verre enn ingen nummer –
+  // da står det noe på siden som ser riktig ut og ikke er det.
+  const lovRad: Rad = (() => {
+    if (!lov.orgnr) {
+      return {
+        name: "Lovpålagt informasjon",
+        status: "fail" as Status,
+        value: "Org.nr. mangler",
+        note: "Foretaksnavn og organisasjonsnummer skal stå på nettsiden. Det er det første en kunde ser etter når de skal sjekke om foretaket er ekte.",
+      };
+    }
+    if (lov.oppslagKjort && !lov.foretak) {
+      return {
+        name: "Lovpålagt informasjon",
+        status: "fail" as Status,
+        value: "Org.nr. finnes ikke",
+        note: `Nummeret på siden (${lov.orgnr}) står ikke i Enhetsregisteret. Enten er det en skrivefeil, eller så er det ikke foretakets eget nummer.`,
+      };
+    }
+    if (lov.foretak?.slettet) {
+      return {
+        name: "Lovpålagt informasjon",
+        status: "fail" as Status,
+        value: "Foretaket er slettet",
+        note: `${lov.foretak.navn} er registrert som slettet i Enhetsregisteret. Nummeret på nettsiden peker på et foretak som ikke lenger finnes.`,
+      };
+    }
+    const bekreftet = lov.foretak ? ` Nummeret tilhører ${lov.foretak.navn}.` : "";
+    return {
+      name: "Lovpålagt informasjon",
+      status: lov.status,
+      value: lov.foretak ? "Org.nr. bekreftet" : "Org.nr. funnet",
+      note:
+        lov.detaljer.length === 0
+          ? `Org.nr., kontaktinfo og personvernerklæring er på plass.${bekreftet}`
+          : `Org.nr. er på plass, men ${lov.detaljer.length} ${lov.detaljer.length === 1 ? "opplysning" : "opplysninger"} mangler. Ehandelsloven § 8 krever adresse, e-post og telefon.${bekreftet}`,
+    };
+  })();
 
   const rader = [ytelseRad, headerRad, cookieRad, uuRad, lovRad];
   const totalt = Math.round((rader.reduce((s, r) => s + VEKT[r.status], 0) / rader.length) * 100);
@@ -440,6 +476,7 @@ export function byggRapport(args: {
       "Sjekken leser forsiden slik en besøkende får den første gang, uten å kjøre JavaScript.",
       "Kontrast, tastaturnavigasjon og skjermleserflyt kan ikke måles maskinelt og er ikke vurdert her.",
       "Cookies som settes av JavaScript etter innlasting, vises ikke. Tallet er et minimum.",
+      "Organisasjonsnummeret slås opp i Enhetsregisteret. Vi sjekker at nummeret finnes, ikke at det er riktig foretak for nettsiden.",
       "Dette er ikke juridisk rådgivning.",
     ],
   };

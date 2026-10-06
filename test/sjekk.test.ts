@@ -433,3 +433,57 @@ describe("fjernKommentarer", () => {
     assert.ok(fjernKommentarer("<p>Hei</p>").includes("Hei"));
   });
 });
+
+describe("org.nr. verifisert mot Enhetsregisteret", () => {
+  const rapportMed = (lovOverstyring: Record<string, unknown>) =>
+    byggRapport({
+      url: "dinbedrift.no",
+      dato: "6. okt. 2026",
+      ytelse: analyserYtelseLokalt("<html><head></head></html>", 1200, 90),
+      headere: analyserHeadere(new Headers()),
+      cookies: analyserCookies(new Headers(), "<html></html>"),
+      uu: analyserUu('<html lang="nb"><head><title>T</title></head><body><h1>H</h1></body></html>'),
+      lov: {
+        ...analyserLovpaalagt(
+          '<html><body><address>Gata 1, 0150 Oslo</address> Org.nr. 974 760 673 ' +
+            '<a href="mailto:p@d.no">p@d.no</a> <a href="tel:+4722000000">22 00 00 00</a> ' +
+            '<a href="/personvern">Personvern</a></body></html>',
+        ),
+        ...lovOverstyring,
+      },
+    });
+
+  const lovRad = (r: ReturnType<typeof rapportMed>) =>
+    r.rader.find((x) => x.name === "Lovpålagt informasjon")!;
+
+  test("bekreftet nummer nevner foretaksnavnet", () => {
+    const rad = lovRad(rapportMed({ oppslagKjort: true, foretak: { navn: "Statistisk sentralbyrå", form: "ORGL", slettet: false } }));
+    assert.equal(rad.status, "ok");
+    assert.equal(rad.value, "Org.nr. bekreftet");
+    assert.match(rad.note, /Statistisk sentralbyrå/);
+  });
+
+  test("nummer som består mod 11 men ikke finnes, er brudd", () => {
+    const rad = lovRad(rapportMed({ oppslagKjort: true, foretak: null }));
+    assert.equal(rad.status, "fail");
+    assert.equal(rad.value, "Org.nr. finnes ikke");
+    assert.match(rad.note, /står ikke i Enhetsregisteret/);
+  });
+
+  test("slettet foretak er brudd, selv om nummeret finnes", () => {
+    const rad = lovRad(rapportMed({ oppslagKjort: true, foretak: { navn: "Nedlagt AS", form: "AS", slettet: true } }));
+    assert.equal(rad.status, "fail");
+    assert.equal(rad.value, "Foretaket er slettet");
+  });
+
+  test("uten oppslag faller den tilbake på «funnet», ikke «bekreftet»", () => {
+    const rad = lovRad(rapportMed({ oppslagKjort: false, foretak: null }));
+    assert.equal(rad.value, "Org.nr. funnet");
+    assert.equal(rad.status, "ok");
+  });
+
+  test("forbeholdet sier hva oppslaget ikke beviser", () => {
+    const r = rapportMed({ oppslagKjort: true, foretak: { navn: "X", form: "AS", slettet: false } });
+    assert.ok(r.forbehold.some((f) => /ikke at det er riktig foretak/.test(f)));
+  });
+});

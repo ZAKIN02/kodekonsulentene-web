@@ -103,3 +103,48 @@ export async function hentPageSpeed(url: URL, nokkel: string): Promise<PageSpeed
     return { score: null, lcp: null };
   }
 }
+
+export interface Foretak {
+  orgnr: string;
+  navn: string;
+  form: string;
+  slettet: boolean;
+}
+
+/**
+ * Slår opp et organisasjonsnummer i Enhetsregisteret.
+ *
+ * Mod 11-kontrollen sier bare at sifrene henger sammen – den sier ikke at
+ * foretaket finnes. (Den slapp i sin tid gjennom «000000000» på vår egen side.)
+ * Dette oppslaget svarer på det mod 11 ikke kan: finnes foretaket, hva heter det,
+ * og er det slettet.
+ *
+ * API-et er åpent og krever ingen nøkkel. Feiler stille: en sjekk skal ikke
+ * stoppe fordi Brønnøysund er nede, den skal bare si mindre.
+ */
+export async function hentForetak(orgnr: string): Promise<Foretak | null> {
+  const nr = orgnr.replace(/\D/g, "");
+  if (nr.length !== 9) return null;
+  try {
+    const svar = await fetch(`https://data.brreg.no/enhetsregisteret/api/enheter/${nr}`, {
+      headers: { accept: "application/json" },
+      signal: AbortSignal.timeout(8_000),
+    });
+    if (!svar.ok) return null;
+    const d = (await svar.json()) as {
+      organisasjonsnummer?: string;
+      navn?: string;
+      organisasjonsform?: { kode?: string };
+      slettedato?: string;
+    };
+    if (!d.organisasjonsnummer || !d.navn) return null;
+    return {
+      orgnr: d.organisasjonsnummer,
+      navn: d.navn,
+      form: d.organisasjonsform?.kode ?? "",
+      slettet: Boolean(d.slettedato),
+    };
+  } catch {
+    return null;
+  }
+}

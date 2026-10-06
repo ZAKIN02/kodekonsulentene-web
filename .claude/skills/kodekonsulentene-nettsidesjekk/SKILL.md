@@ -1,6 +1,6 @@
 ---
 name: kodekonsulentene-nettsidesjekk
-description: Bruk når du skal kjøre nettsidesjekken mot en nettside, tolke rapporten, eller skrive en kald e-post med funnene. Dekker både verktøyet på /sjekk og oppfølgingen etterpå.
+description: Bruk når du skal kjøre nettsidesjekken mot en nettside, tolke rapporten, eller følge opp funnene. Dekker verktøyet på /sjekk, hvordan funnene formuleres for en bedriftseier, og når det er lov å ta kontakt på e-post (markedsføringsloven § 15 – et enkeltpersonforetak er en fysisk person).
 ---
 
 # Nettsidesjekken
@@ -58,29 +58,72 @@ Oversett alltid til konsekvens for bedriften, ikke for utvikleren:
 | Org.nr. mangler | «Det er det første en kunde ser etter når de skal sjekke om du er et ekte foretak.» | «Brudd på foretaksregisterloven» |
 | 2/6 headere | «Siden kan misbrukes til å lure dine egne kunder.» | «CSP og HSTS ikke satt» |
 
-## Kald e-post med funnene
+## Oppfølging med funnene
 
-Verdi først. Under 120 ord. Mønster:
+### Først: har du lov til å sende e-posten?
 
-> Emne: Tre ting jeg fant på [domene]
+Markedsføringsloven § 15 forbyr markedsføring på e-post til **fysiske personer**
+uten forhåndssamtykke. Juridiske personer (AS, kommuner, foreninger) kan kontaktes
+på generiske adresser.
+
+Fellen i vår målgruppe: **et enkeltpersonforetak er en fysisk person.** Det er den
+vanligste selskapsformen blant håndverkere og små klinikker, altså nettopp dem vi
+retter oss mot. En e-post til `ola@olasrorlegger.no` der Ola driver ENK, er
+markedsføring til en fysisk person.
+
+Sjekk selskapsformen før du sender. Enhetsregisteret er åpent og gratis:
+
+```
+https://data.brreg.no/enhetsregisteret/api/enheter?navn=<firmanavn>
+```
+
+Feltet `organisasjonsform.kode` gir `ENK`, `AS`, `ANS` og så videre.
+
+| Mottaker | Adresse | Lov å sende kaldt? |
+|---|---|---|
+| AS, kommune, forening | `post@`, `firmapost@`, `kontakt@` | Ja |
+| AS, kommune, forening | `fornavn@` | Nei uten samtykke – personlig adresse |
+| **Enkeltpersonforetak** | **enhver adresse** | **Nei uten samtykke** |
+| Hvem som helst | de ba selv om rapporten | Ja – det er samtykket |
+
+Er du i tvil, ikke send. Dette er ikke juridisk rådgivning.
+
+### Den trygge veien: la dem be om rapporten
+
+Verktøyet på `/sjekk` er bygget for dette. Brukeren skriver inn adressen sin og
+ber selv om rapporten på e-post. Da er samtykket gitt, det er dokumentert, og
+oppfølging er uproblematisk. Legg kruttet i å få folk til verktøyet – ikke i å
+sende e-post til folk som ikke har spurt.
+
+Lovlige veier til oppmerksomhet: LinkedIn-innlegg med funn fra egne skanninger
+(aggregert, aldri navngitt), innlegg i bransjegrupper, partnerskap med
+regnskapsførere som har kunderelasjonen fra før, og telefon – som § 15 ikke
+regulerer på samme måte, men der Reservasjonsregisteret gjelder.
+
+### Når du først har lov: malen
+
+Verdi først. Under 120 ord.
+
+> Emne: Tre ting vi fant på [domene]
 >
-> Hei [navn],
+> Hei,
 >
-> Jeg kjørte en rask sjekk av [domene] og fant tre ting du antagelig vil vite om:
+> Vi kjørte en rask sjekk av [domene] og fant tre ting dere antagelig vil vite om:
 > [funn 1 i klartekst]. [funn 2]. [funn 3].
 >
 > Det første bryter ekomloven § 3-15, som har gjeldt siden 1. januar 2025.
-> De to andre koster deg antagelig kunder på mobil.
+> De to andre koster dere antagelig kunder på mobil.
 >
-> Hele rapporten ligger vedlagt. Vil du at jeg fikser det, tar det en ettermiddag
-> og koster [lovsjekk-prisen fra src/data/priser.ts] eks. mva. Vil du ikke, er
-> rapporten din uansett – den sier hva som må gjøres.
+> Hele rapporten ligger vedlagt. Vil dere at vi fikser det, koster det
+> [lovsjekk-prisen fra src/data/priser.ts] eks. mva. Vil dere ikke, er rapporten
+> deres uansett – den sier hva som må gjøres.
 >
-> [navn]
-> Svar «nei takk», så hører du ikke fra meg igjen.
+> KodeKonsulentene
+> Svar «nei takk», så hører dere ikke fra oss igjen.
 
-Regler: aldri overdriv funnene, aldri påstå noe sjekken ikke målte, alltid avmelding.
-Se `kodekonsulentene-tekst` for stemmen og `kodekonsulentene-lovsjekk` for paragrafene.
+Regler: aldri overdriv funnene, aldri påstå noe sjekken ikke målte, alltid avmelding,
+og aldri send til en ENK uten samtykke. Se `kodekonsulentene-tekst` for stemmen og
+`kodekonsulentene-lovsjekk` for paragrafene.
 
 ## Når du endrer motoren
 

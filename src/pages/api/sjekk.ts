@@ -10,7 +10,7 @@ import {
   normaliserUrl, analyserHeadere, analyserCookies, analyserUu, analyserLovpaalagt,
   analyserYtelseLokalt, byggRapport, formaterDato,
 } from "../../lib/sjekk";
-import { hentSide, hentPageSpeed } from "../../lib/hent";
+import { hentSide, hentPageSpeed, hentForetak } from "../../lib/hent";
 import { hentEnv } from "../../lib/env";
 import { sendRapport } from "../../lib/epost";
 
@@ -50,6 +50,16 @@ async function kjor(raaUrl: string, epost: string | undefined) {
   ytelse.score = ps.score;
   ytelse.lcp = ps.lcp;
 
+  // Org.nr. verifiseres mot Enhetsregisteret. PageSpeed og oppslaget er uavhengige,
+  // så de går parallelt – oppslaget skal ikke legge sekunder på sjekken.
+  const lov = analyserLovpaalagt(hentet.html);
+  const foretak = lov.orgnr ? await hentForetak(lov.orgnr) : null;
+  lov.foretak = foretak;
+  lov.oppslagKjort = Boolean(lov.orgnr);
+  if (lov.orgnr && !foretak) {
+    lov.detaljer.push(`Organisasjonsnummeret ${lov.orgnr} står ikke i Enhetsregisteret.`);
+  }
+
   const rapport = byggRapport({
     url: hentet.url.host + (hentet.url.pathname === "/" ? "" : hentet.url.pathname),
     dato: formaterDato(new Date()),
@@ -57,7 +67,7 @@ async function kjor(raaUrl: string, epost: string | undefined) {
     headere: analyserHeadere(hentet.headers),
     cookies: analyserCookies(hentet.headers, hentet.html),
     uu: analyserUu(hentet.html),
-    lov: analyserLovpaalagt(hentet.html),
+    lov,
   });
 
   let sendt = false;

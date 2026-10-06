@@ -1,0 +1,16 @@
+import { chromium } from "@playwright/test";
+const b = await chromium.launch();
+const p = await b.newPage({ viewport: { width: 1600, height: 900 }, deviceScaleFactor: 2, colorScheme: "dark", reducedMotion: "reduce" });
+await p.goto("https://kodekonsulentene.no/", { waitUntil: "networkidle" });
+await p.waitForTimeout(700);
+await p.keyboard.press("~");
+await p.waitForTimeout(500);
+const inn = p.locator(".kkterm input").first();
+const h = async (m) => { const r = await p.evaluate(()=>{const d=document.querySelector(".kkterm").getBoundingClientRect();return {y:Math.round(d.y),h:Math.round(d.height)};}); console.log(`  ${m.padEnd(22)} y=${r.y} h=${r.h}`); return r; };
+await h("tom");
+await inn.fill("sjekk kodekonsulentene.no"); await inn.press("Enter");
+await p.waitForTimeout(3500); await h("etter sjekk");
+await inn.fill("pris"); await inn.press("Enter");
+await p.waitForTimeout(3500); const r = await h("etter pris");
+await p.screenshot({ path: ".skudd/opptak-se/term-to.png", clip: { x: 420, y: 12, width: 760, height: Math.min(900-12, r.y + r.h + 20 - 12) } });
+await b.close();

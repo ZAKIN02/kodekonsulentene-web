@@ -6,8 +6,10 @@ import Avslor from "../components/Avslor.astro";
 import SceneFilm from "../components/SceneFilm.astro";
 import Button from "../components/Button.astro";
 import Terminal from "../components/Terminal.astro";
+import Flyt from "../components/Flyt.astro";
 import ContactBlock from "../components/ContactBlock.astro";
 import { bookUrl } from "../data/firma";
+import { flyter } from "../data/flyter";
 
 import "../styles/scener.css";
 
@@ -51,22 +53,28 @@ const integrasjoner = [
         </p>
         <Button variant="ghost" href="/bransjer/klinikker">Se bransjesiden for klinikker</Button>
       </div>
+      {/*
+        Terminalen tegnet tidligere hele flyten med ASCII-piler – nøyaktig det
+        Flyt-figuren under gjør, bare uleselig. To fremstillinger av samme flyt i
+        samme seksjon er støy, så terminalen beholder bare poenget.
+      */}
       <Terminal
         skriv
         title="~/flyt"
         lines={[
-          { type: "cmd", text: "cat flyt.txt" },
-          { type: "out", text: "kunde → booking → Vipps → kalender" },
-          { type: "out", text: "                        ↓" },
-          { type: "out", text: "                  ordre i Fiken" },
-          { type: "out", text: "                        ↓" },
-          { type: "ok", text: "            SMS 24 t før time" },
           { type: "cmd", text: "echo $MANUELLE_STEG" },
           { type: "ok", text: "0" },
         ]}
-        label="Terminalutsnitt som viser flyten: kunde booker, betaler med Vipps, timen går i kalenderen, ordren går til Fiken, SMS sendes 24 timer før. Null manuelle steg."
+        label="Terminalutsnitt: antall manuelle steg i flyten er null."
       />
     </div>
+
+    {/*
+      Figuren, ikke et bilde av aluminiumsplater. Boksene bærer navnene på
+      systemene vi faktisk kobler, så en klinikkeier ser på to sekunder hva hun
+      får kjøpt. Koster 0 kB JavaScript.
+    */}
+    <Flyt flyt={flyter.systemer} />
   </Scene>
 
   <div class="scenefilm-ramme">

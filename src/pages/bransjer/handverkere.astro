@@ -1,5 +1,7 @@
 ---
 import Base from "../../layouts/Base.astro";
+import Flyt from "../../components/Flyt.astro";
+import { flyter } from "../../data/flyter";
 import Scene from "../../components/Scene.astro";
 import Mega from "../../components/Mega.astro";
 import Avslor from "../../components/Avslor.astro";
@@ -90,6 +92,13 @@ const schema = {
         label="Terminalutsnitt: nettsidedekning i bygg og anlegg for foretak med ti til nitten ansatte er 72 prosent, mot 86 prosent for alle foretak med minst ti ansatte. Gapet er fjorten prosentpoeng."
       />
     </div>
+    </Avslor>
+
+    <Avslor trinn={2}>
+      {/* Diagram med EKTE navn på systemene, ikke abstrakte former. Brandboken
+          rangerer dette over generert materiale: det forklarer hva kunden får,
+          og koster 0 kB. */}
+      <Flyt flyt={flyter.handverkere} />
     </Avslor>
   </Scene>
 

@@ -1,5 +1,7 @@
 ---
 import Base from "../../layouts/Base.astro";
+import Flyt from "../../components/Flyt.astro";
+import { flyter } from "../../data/flyter";
 import Scene from "../../components/Scene.astro";
 import Mega from "../../components/Mega.astro";
 import Avslor from "../../components/Avslor.astro";
@@ -100,6 +102,13 @@ const schema = {
         label="Terminalutsnitt: folk bestiller time mest kveld og helg, men klinikken tar telefonen hverdager ni til seksten. Problemet er at dere selger når kundene ikke kjøper."
       />
     </div>
+    </Avslor>
+
+    <Avslor trinn={2}>
+      {/* Diagram med EKTE navn på systemene, ikke abstrakte former. Brandboken
+          rangerer dette over generert materiale: det forklarer hva kunden får,
+          og koster 0 kB. */}
+      <Flyt flyt={flyter.klinikker} />
     </Avslor>
   </Scene>
   </div>

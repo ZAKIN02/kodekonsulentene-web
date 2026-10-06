@@ -1,0 +1,84 @@
+{
+  "_om": "Fire klipp som gjør stillbildene på /om, /caser, /handbok og /status levende. Hver scene er den SAMME komposisjonen som stillbildet siden allerede viser – samme basisbilde, samme redigeringstekst – men delt i en før- og en ettertilstand, slik at bildet forteller noe i stedet for å stå stille.\n\nALLE FIRE ER REN LYSENDRING. Geometrien står bom stille: ingen plate flytter seg, roterer eller endrer form mellom første og siste ramme. Det er et bevisst valg, ikke forsiktighet. Morfing oppstår når objektet er ULIKT i de to rammene, og det er nettopp det som får AI-video til å se billig ut. Når bare lyset endrer seg, kan Kling ikke morfe – den har ingenting å morfe.\n\nBygg: node scripts/scene.mjs lev-om --fil assets/prompter/levende.json",
+  "_bevegelse": "Locked-off static camera; the camera does not move, zoom, pan or reframe. Silent product shot. Start exactly on the first frame and end exactly on the last frame. Hold still for the first and last half second; in between, one single continuous change at constant speed. ONLY THE LIGHT CHANGES. Every object is rigid and keeps its exact position, shape, size, thickness, spacing and material in every single frame; nothing slides, bends, melts, morphs, rotates, grows or shrinks. The same number of objects is visible in every frame, in exactly the same places. The background stays constant. Avoid: camera movement, camera shake, zoom, pan, cut, scene change, lens switch, morphing, melting, warping, objects moving, objects rotating, extra objects, missing objects, text, letters, logos, watermark, flicker, particles, lens flare, motion blur.",
+  "_bevar": "Keep exactly identical: camera position, perspective, framing, the near-black #0b0d10 background, the overall lighting direction and intensity, the rim light, the suspension wires, and the position, count, spacing, size, thickness, material and surface finish of every plate. Nothing is added, removed or moved. All surfaces stay plain and unmarked: no text, letters, numbers, logos or watermarks. No people, no hands.",
+  "basis": "6f5a4bd2-4820-4797-a67c-1ae32fb8444b",
+  "scener": [
+    {
+      "id": "lev-om",
+      "mappe": "scener",
+      "basis": "6f5a4bd2-4820-4797-a67c-1ae32fb8444b",
+      "bredder": [
+        1920,
+        1280,
+        960
+      ],
+      "crf": {
+        "1920": "19",
+        "1280": "19",
+        "960": "20"
+      },
+      "_hvorfor": "/om sier «du snakker med den som koder», og bildet er et makronærbilde av kantene der hvert lags tykkelse er lesbar. Påstanden er at du får se hva som ligger inne. Når den limegrønne linjen vandrer fra den ytterste platekanten og innover gjennom stabelen, blir det bokstavelig: inspeksjonen går lag for lag, ikke bare over overflaten.",
+      "start": "Change only the camera distance and crop: move in to a tight macro close-up of the right-hand edges of the plate stack, so the frame is filled by the stacked edges seen almost side-on. Each plate's exact thickness, its 45-degree chamfer and the fine bead-blasted texture are clearly readable. The left third of the frame stays calm empty near-black negative space. Exactly one hair-thin lime green emissive edge line is lit, and it sits on the OUTERMOST plate edge, the one nearest the viewer at the very front of the stack. Every other plate edge is unlit plain grey aluminium.",
+      "slutt": "Change ONLY which plate edge carries the lime green light. Every plate stays in exactly the same place with exactly the same thickness, spacing and texture, and the camera does not move. The single hair-thin lime green emissive edge line is now lit on a plate edge DEEP INSIDE the stack, several layers back from the front. The outermost plate edge is now unlit plain grey aluminium like all the others. Still exactly one lit line in the frame.",
+      "bevegelse": "Over the eight seconds, the single hair-thin lime green edge line travels steadily from the frontmost plate edge backwards into the stack, passing across each plate edge in turn and briefly lighting it as it goes, like an inspection light moving layer by layer deeper into the material. The plates themselves never move at all."
+    },
+    {
+      "id": "lev-caser",
+      "mappe": "scener",
+      "basis": "6f5a4bd2-4820-4797-a67c-1ae32fb8444b",
+      "bredder": [
+        1920,
+        1280,
+        960
+      ],
+      "crf": {
+        "1920": "19",
+        "1280": "19",
+        "960": "20"
+      },
+      "_hvorfor": "/caser viser én case fordi resten er merket TODO og filtreres bort. Fire stabler som trekker seg bakover, der bare den nærmeste tennes, sier nøyaktig det: listen er kort med vilje. De tre bak finnes, de er bare ikke noe vi kan vise fram ennå.",
+      "start": "Change the arrangement: there are now four separate plate stacks receding into the distance in a row from left to right, each progressively smaller and softer as it recedes, all made of the same material and lit by the same light. Each stack holds a different number of plates and a slightly different spacing, but every plate stays level and parallel on its own vertical axis. Exactly one hair-thin lime green emissive edge line appears, on a single plate in the NEAREST stack only, and it is lit along only a SHORT segment at its left-hand end; the rest of that edge is unlit grey aluminium. The three stacks further back carry no green at all.",
+      "slutt": "Change ONLY the length of the lime green line. All four stacks stay in exactly the same places, the same sizes, the same spacing; the camera does not move. The single hair-thin lime green emissive edge line on the NEAREST stack now runs the FULL length of that plate edge, from its left end to its right end, in one unbroken straight line. The three stacks further back still carry no green at all and stay exactly as dark as before.",
+      "bevegelse": "Over the eight seconds, the lime green edge line on the nearest stack draws itself steadily from its left end to its right end, growing along the plate edge at constant speed until it spans the full edge. Nothing else changes: the three stacks behind stay unlit and completely still, and no stack moves."
+    },
+    {
+      "id": "lev-handbok",
+      "mappe": "scener",
+      "basis": "6f5a4bd2-4820-4797-a67c-1ae32fb8444b",
+      "bredder": [
+        1920,
+        1280,
+        960
+      ],
+      "crf": {
+        "1920": "19",
+        "1280": "19",
+        "960": "20"
+      },
+      "_hvorfor": "Håndboken er metoden lagt åpen. Stabelen er allerede viftet opp fra ett hengsel, så mellomrommene finnes. Når lyset vandrer utover fra hengselet og tenner én innerflate av gangen, ser du inn i hvert lag etter tur – det er bokstavelig talt det siden gjør med arbeidsmåten.",
+      "start": "Change only the arrangement: the stack is now fanned open from one hinge at the back left, like a sample fan or a fanned deck, so that the plates splay apart at even increasing angles and the viewer looks straight into the gaps between every single layer. The plates stay the same count and the same material. The left third of the frame stays calm empty near-black negative space. The lighting inside the fan is UNEVEN: only the one or two innermost gaps nearest the hinge are lit and readable, while the interior faces further out along the fan fall away into near-black shadow. Exactly one hair-thin lime green edge line appears, on a single plate near the middle of the fan.",
+      "slutt": "Change ONLY the lighting inside the fan. Every plate stays at exactly the same angle, in exactly the same place, the same count and the same spacing; the fan does not open further or close, and the camera does not move. Now EVERY interior face along the whole fan is evenly lit and clearly readable, right out to the outermost plate; nothing is left in shadow. The single hair-thin lime green edge line stays on the same plate near the middle of the fan.",
+      "bevegelse": "Over the eight seconds, the light inside the fan spreads steadily outward from the hinge at the back left towards the outermost plate, lighting each interior face in turn until every layer is readable. The plates themselves never move, never change angle and never open further; only the light travels."
+    },
+    {
+      "id": "lev-status",
+      "mappe": "scener",
+      "basis": "6f5a4bd2-4820-4797-a67c-1ae32fb8444b",
+      "bredder": [
+        1920,
+        1280,
+        960
+      ],
+      "crf": {
+        "1920": "19",
+        "1280": "19",
+        "960": "20"
+      },
+      "_hvorfor": "/status sier at ingenting har kommet ut av stilling. Linjen kan bare bli ubrutt hvis hvert eneste lag ligger der det skal – var ett forskjøvet, ville den knekt. Å la den tegne seg nedover hele stabelen er selve sjekken som kjører, og den lander på nøyaktig det bildet siden har vist hele tiden.",
+      "start": "Change only the alignment and the accent: the plate stack is now perfectly regular, every plate exactly level, exactly parallel, and separated by exactly the same gap as every other, forming an even rhythm from top to bottom. Nothing is offset or tilted. The left third of the frame stays calm empty near-black negative space. One single hair-thin lime green emissive line is lit on the right-hand edge of the TOPMOST plate only, a short segment at the very top of the stack. Every plate edge below it is unlit plain grey aluminium.",
+      "slutt": "Change ONLY how far the lime green line reaches down the stack. Every plate stays exactly level, exactly parallel and exactly where it was, with the same even gaps; the camera does not move. The single hair-thin lime green emissive line now runs vertically down the right-hand edges in ONE CONTINUOUS UNBROKEN STRAIGHT LINE, crossing every plate edge from the topmost plate all the way to the bottommost. The line is perfectly straight because every plate is perfectly aligned.",
+      "bevegelse": "Over the eight seconds, the lime green line extends steadily downward along the right-hand plate edges at constant speed, crossing one plate edge after another, until it reaches the bottommost plate and runs unbroken from top to bottom. The plates never move; only the lit length of the line grows."
+    }
+  ]
+}

@@ -17,6 +17,17 @@ interface Props {
   /** Valgfritt 2560-trinn. Hentes bare på brede skjermer og rask forbindelse. */
   stor?: string;
   /**
+   * Speilvend filmen vannrett.
+   *
+   * Masken skjuler den halvdelen teksten står på. Er motivet komponert med
+   * hovedobjektet der, blir det usynlig: på /apper-og-ai lå stabelen på sju plater
+   * i venstre tredel, og kunden så bare kabelen og to små plater kuttet av
+   * bildekanten. `object-position` hjelper ikke – object-fit: cover på en 16:9-film
+   * i en 16:9-flate har ingenting å panorere i. Speilvending flytter motivet dit
+   * masken faktisk slipper det fram, og et abstrakt materialmotiv tåler det.
+   */
+  vend?: boolean;
+  /**
    * Hvor masken begynner å slippe filmen inn, i prosent av bredden.
    *
    * Dette MÅ være en prop. Sider forsøkte å overstyre masken med en scoped
@@ -31,9 +42,9 @@ interface Props {
   tekst?: "venstre" | "hoyre";
   class?: string;
 }
-const { smal, bred, stor, plakat, tekst = "venstre", maske = 46, class: cls } = Astro.props;
+const { smal, bred, stor, plakat, tekst = "venstre", maske = 46, vend = false, class: cls } = Astro.props;
 ---
-<div class:list={["scenefilm", `scenefilm--${tekst}`, cls]} style={`--maske: ${maske}%`} data-scenefilm aria-hidden="true">
+<div class:list={["scenefilm", `scenefilm--${tekst}`, cls]} style={`--maske: ${maske}%`} data-vend={vend ? "" : undefined} data-scenefilm aria-hidden="true">
   <video data-scenefilm-video muted playsinline preload="none" poster={plakat} width="1920" height="1080">
     <source data-smal={smal} data-bred={bred} data-stor={stor} type="video/mp4" />
   </video>
@@ -42,6 +53,7 @@ const { smal, bred, stor, plakat, tekst = "venstre", maske = 46, class: cls } = 
 <style>
   .scenefilm { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; opacity: 0.85; }
   .scenefilm video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .scenefilm[data-vend] video { transform: scaleX(-1); }
   .scenefilm--venstre {
     -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent var(--maske), rgb(0 0 0 / 0.25) calc(var(--maske) + 12%), #000 calc(var(--maske) + 30%));
     mask-image: linear-gradient(90deg, transparent 0%, transparent var(--maske), rgb(0 0 0 / 0.25) calc(var(--maske) + 12%), #000 calc(var(--maske) + 30%));

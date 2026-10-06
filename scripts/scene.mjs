@@ -211,6 +211,14 @@ if (scene.pingpong) {
     "-map", "[v]", "-an", "-c:v", "libx264", "-preset", "slow", "-crf", "12", "-y", kilde]);
 }
 
+/**
+ * Filnavnet foelger `utnavn` naar det er satt, ellers scene-id.
+ *
+ * Scenen «lag» leverer til historie-*.mp4 fordi ScrollHistorie.astro refererer
+ * de navnene. Uten dette maatte filene kopieres for haand etter hver kjoering,
+ * og da er scenen ikke lenger reproduserbar med én kommando.
+ */
+const utnavn = scene.utnavn ?? id;
 const ut = join("public", scene.mappe);
 mkdirSync(ut, { recursive: true });
 
@@ -232,7 +240,7 @@ const CRF = { 2560: "20", 1920: "19", 1280: "19" };
 const maalt = [];
 for (const bredde of scene.bredder) {
   const crf = scene.crf?.[bredde] ?? CRF[bredde] ?? "17";
-  const fil = join(ut, `${id}-${bredde}.mp4`);
+  const fil = join(ut, `${utnavn}-${bredde}.mp4`);
   sh("ffmpeg", ["-v", "error", "-i", kilde, "-vf", `scale=${bredde}:-2:flags=lanczos,fps=24`,
     "-c:v", "libx264", "-preset", "slow", "-crf", crf,
     "-g", "8", "-keyint_min", "8", "-sc_threshold", "0",
@@ -249,7 +257,7 @@ console.log(`  master: ${master}  ${(execFileSync("stat", ["-f%z", master]).toSt
 
 const plakatPng = join(tmp, `${id}-plakat.png`);
 sh("ffmpeg", ["-v", "error", "-i", join(ut, `${id}-${scene.bredder[0]}.mp4`), "-frames:v", "1", "-y", plakatPng]);
-const plakat = join(ut, `${id}-poster.avif`);
+const plakat = join(ut, `${utnavn}-poster.avif`);
 try {
   sh("npx", ["--yes", "sharp-cli", "-i", plakatPng, "-o", plakat, "-f", "avif", "-q", "55", "resize", String(scene.bredder[0])]);
 } catch {
@@ -260,7 +268,7 @@ console.log(`  ${plakat}`);
 
 // Lisensloggen er beviset vårt. En fil som ikke står der, skal ikke ligge i repoet.
 const dato = new Date().toISOString().slice(0, 10);
-const rad = `| \`public/${scene.mappe}/${id}-*.mp4\`, \`${id}-poster.avif\` | Higgsfield: Qwen Image 3 (redigering) → Kling 3.0 4K (bilde-til-video), betalt API | assets/prompter/scener.json, scene «${id}» | Generert av oss, kommersiell bruk tillatt etter leverandørens vilkår pkt. 4.4 | ${dato} | KodeKonsulentene |\n`;
+const rad = `| \`public/${scene.mappe}/${utnavn}-*.mp4\`, \`${utnavn}-poster.avif\` | Higgsfield: Qwen Image 3 (redigering) → Kling 3.0 4K (bilde-til-video), betalt API | assets/prompter/scener.json, scene «${id}» | Generert av oss, kommersiell bruk tillatt etter leverandørens vilkår pkt. 4.4 | ${dato} | KodeKonsulentene |\n`;
 // Én fil per scene i stedet for én delt logg: flere scener kan bygges samtidig
 // uten at to prosesser skriver over hverandre i assets/LICENSES.md.
 const lis = join("assets/lisenser", `${id}.md`);

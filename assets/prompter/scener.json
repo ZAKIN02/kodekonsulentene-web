@@ -29,12 +29,12 @@
       "bevegelse": "The stacked plates separate and spread apart straight along one vertical axis, each plate staying perfectly level and parallel, until they reach the arrangement of the last frame. The suspension wires stay taut and vertical.",
       "pingpong": false,
       "bredder": [
-        2560,
         1920,
         1280
       ],
       "_pingpong_hvorfor": "Scroll-spoling knytter scroll til tid, saa oppoverrulling reverserer av seg selv. Ping-pong la reversen inn i fila i tillegg og doblet den uten aa tilfore noe. Maalt paa hero: start mot slutt skilte 1,17 av 255 - klippet endte der det begynte.",
-      "bevar": "Keep exactly identical: camera position, perspective, framing, lighting direction and intensity, rim light, the near-black #0b0d10 background, the suspension wires, and the number, size, thickness, material and surface finish of every plate. The stack keeps exactly the same plate count as the supplied image, and the lime green edge line stays on the same single plate. No plate is added or removed. All surfaces stay plain and unmarked: no text, letters, numbers, logos or watermarks."
+      "bevar": "Keep exactly identical: camera position, perspective, framing, lighting direction and intensity, rim light, the near-black #0b0d10 background, the suspension wires, and the number, size, thickness, material and surface finish of every plate. The stack keeps exactly the same plate count as the supplied image, and the lime green edge line stays on the same single plate. No plate is added or removed. All surfaces stay plain and unmarked: no text, letters, numbers, logos or watermarks.",
+      "utnavn": "historie"
     },
     {
       "id": "systemer",

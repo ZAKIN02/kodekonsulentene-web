@@ -136,3 +136,22 @@ describe("CSS-stenografi ødelegger ikke scroll-tidslinjer", () => {
     }
   });
 });
+
+describe("tomme lenker kan ikke snike seg inn igjen", () => {
+  /**
+   * firma.telefon er tomt til vi har et ekte nummer, og to steder manglet vakten.
+   * Resultatet var <a href="tel:"></a> – en lenke uten mål og uten tekst, som lå
+   * live. Bryter WCAG 2.4.4 (lenkens formål) og 4.1.2 (navn, rolle, verdi).
+   */
+  test("ingen tomme tel:- eller mailto:-lenker i bygget", () => {
+    for (const f of filer) {
+      const html = readFileSync(f, "utf8");
+      for (const skjema of ["tel:", "mailto:"]) {
+        assert.ok(
+          !html.includes(`href="${skjema}"`),
+          `${f} har <a href="${skjema}"> uten verdi. Feltet er tomt – da skal lenken ikke rendres.`,
+        );
+      }
+    }
+  });
+});

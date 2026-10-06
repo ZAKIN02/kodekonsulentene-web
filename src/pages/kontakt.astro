@@ -38,9 +38,16 @@ const feilmelding =
     {sendt && (
       <div class="card kvittering" style="border-color: var(--ok)">
         <h2 class="heading">Takk – meldingen kom fram</h2>
+        {/* firma.telefon er tomt til vi har et ekte nummer. Uten vakten her ble
+            setningen «Haster det, ring .» med en tom <a href="tel:"> uten tekst –
+            en lenke skjermlesere annonserer uten å kunne si hvor den fører.
+            Bryter WCAG 2.4.4 og 4.1.2, og lå live. ContactBlock hadde vakten,
+            denne hadde den ikke. */}
         <p class="muted">
-          Vi svarer innen {firma.svartid}, som regel raskere. Haster det, ring
-          <a class="kk-link" href={`tel:${firma.telefon.replace(/\s/g, "")}`}>{firma.telefon}</a>.
+          Vi svarer innen {firma.svartid}, som regel raskere.
+          {firma.telefon && (
+            <> Haster det, ring <a class="kk-link" href={`tel:${firma.telefon.replace(/\s/g, "")}`}>{firma.telefon}</a>.</>
+          )}
         </p>
       </div>
     )}
@@ -64,7 +71,12 @@ const feilmelding =
           <Button variant="primary" href={bookUrl}>Åpne kalenderen</Button>
           <dl class="kv">
             <div><dt>E-post</dt><dd><a class="kk-link" href={`mailto:${firma.epost}`}>{firma.epost}</a></dd></div>
-            <div><dt>Telefon</dt><dd><a class="kk-link" href={`tel:${firma.telefon.replace(/\s/g, "")}`}>{firma.telefon}</a></dd></div>
+            {/* Samme vakt som i ContactBlock. Uten den ble raden «Telefon» stående
+                med en tom <a href="tel:"> uten tekst – lenken gjorde ingenting, og
+                skjermlesere annonserte «lenke» uten å kunne si hvor. */}
+            {firma.telefon && (
+              <div><dt>Telefon</dt><dd><a class="kk-link" href={`tel:${firma.telefon.replace(/\s/g, "")}`}>{firma.telefon}</a></dd></div>
+            )}
             <div><dt>Svartid</dt><dd>{firma.svartid}</dd></div>
             <div><dt>Sted</dt><dd>{firma.adresse}</dd></div>
           </dl>

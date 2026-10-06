@@ -50,7 +50,13 @@ async function api(sti, init = {}) {
   const svar = await fetch(`${BASE}${sti}`, {
     ...init,
     headers: {
-      authorization: `sso-key ${NOKKEL}:${HEMMELIGHET}`,
+      // GoDaddy dokumenterer `sso-key <key>:<secret>`, men det gir 401 med dagens
+      // personlige tilgangstokener (gd_pat_…). Målt 5. oktober 2026: `Bearer <token>`
+      // virker, `sso-key` gjør det ikke – uansett om hemmeligheten er med eller ikke.
+      // HEMMELIGHET er derfor valgfri og brukes bare for eldre nøkkelpar.
+      authorization: HEMMELIGHET
+        ? `sso-key ${NOKKEL}:${HEMMELIGHET}`
+        : `Bearer ${NOKKEL}`,
       "content-type": "application/json",
       accept: "application/json",
       ...init.headers,
@@ -130,14 +136,15 @@ function skrivPlan(endringer) {
 
 /* ------------------------------------------------------------------ kjør ---- */
 async function main() {
-  if (!NOKKEL || !HEMMELIGHET) {
+  // HEMMELIGHET kreves ikke lenger: gd_pat_-tokener autentiserer alene med Bearer.
+  if (!NOKKEL) {
     stopp(
       [
-        "Mangler GODADDY_API_KEY og/eller GODADDY_API_SECRET.",
+        "Mangler GODADDY_API_KEY.",
         "",
-        "Lag et nøkkelpar på https://developer.godaddy.com/keys (velg Production, ikke OTE), og:",
+        "Lag en nøkkel på https://developer.godaddy.com/keys (velg Production, ikke OTE), og:",
         "  export GODADDY_API_KEY=...",
-        "  export GODADDY_API_SECRET=...",
+        "  export GODADDY_API_SECRET=...   # bare for eldre nøkkelpar",
       ].join("\n"),
     );
   }

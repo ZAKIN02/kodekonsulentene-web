@@ -61,3 +61,16 @@ Full pre-flight: `docs/sjekklister/lansering.md`.
 `npm run test` er **rød med vilje** til `src/data/firma.ts` har ekte org.nr. og
 telefonnummer. Siden rapporterer brudd hos andre når org.nr. mangler – den kan ikke
 lanseres uten sitt eget.
+
+## Lisens og forbehold
+
+Koden er MIT-lisensiert, se `LICENSE`. Det gjelder også sjekkmotoren, CLI-en og
+GitHub Action-en – de er ment å brukes av andre.
+
+Dokumentene under `docs/` er åpne med vilje: håndboken, prislisten og metoden bak
+skanningene står der fordi åpenhet er en del av hvordan vi selger. `docs/avtale-b2b.md`
+og `docs/tilbud-mal.md` er våre egne arbeidsmaler, ikke juridisk rådgivning, og de er
+ikke kvalitetssikret av advokat. Bruker du dem, gjør du det for egen regning.
+
+Innholdet på selve nettsiden – tekst, logo og designsystem – er ikke dekket av
+MIT-lisensen.

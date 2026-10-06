@@ -1,0 +1,104 @@
+{
+  "nart": {
+    "alt": "Nærbilde av kantene på en stabel aluminiumsplater, der hvert lags tykkelse er synlig.",
+    "side": "/om",
+    "bredde": 1600,
+    "hoyde": 900,
+    "avif": [
+      {
+        "fil": "/bilder/nart-1600.avif",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/nart-1200.avif",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/nart-800.avif",
+        "bredde": 800
+      }
+    ],
+    "webp": [
+      {
+        "fil": "/bilder/nart-1600.webp",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/nart-1200.webp",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/nart-800.webp",
+        "bredde": 800
+      }
+    ]
+  },
+  "tre": {
+    "alt": "Tre stabler aluminiumsplater side om side, stadig høyere fra venstre mot høyre. Den midterste har én limegrønn kantlinje.",
+    "side": "/priser",
+    "bredde": 1600,
+    "hoyde": 900,
+    "avif": [
+      {
+        "fil": "/bilder/tre-1600.avif",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/tre-1200.avif",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/tre-800.avif",
+        "bredde": 800
+      }
+    ],
+    "webp": [
+      {
+        "fil": "/bilder/tre-1600.webp",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/tre-1200.webp",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/tre-800.webp",
+        "bredde": 800
+      }
+    ]
+  },
+  "rekke": {
+    "alt": "Fire stabler aluminiumsplater på rad som trekker seg bakover i dybden.",
+    "side": "/caser",
+    "bredde": 1600,
+    "hoyde": 900,
+    "avif": [
+      {
+        "fil": "/bilder/rekke-1600.avif",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/rekke-1200.avif",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/rekke-800.avif",
+        "bredde": 800
+      }
+    ],
+    "webp": [
+      {
+        "fil": "/bilder/rekke-1600.webp",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/rekke-1200.webp",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/rekke-800.webp",
+        "bredde": 800
+      }
+    ]
+  }
+}

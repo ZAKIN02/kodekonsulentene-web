@@ -3,21 +3,30 @@
 // Ikke inkludert vises som strek i ink-faint, aldri kryss i fail: det er ikke en feil at
 // Start-pakken mangler CMS.
 import Button from "./Button.astro";
+import Ikon from "./Ikon.astro";
 export interface PriceFeature { text: string; included?: boolean }
 interface Props {
   name: string; price: string; prefix?: string; unit?: string; description?: string;
   features: Array<string | PriceFeature>; recommended?: boolean; flagLabel?: string;
   cta?: string; href?: string; class?: string;
+  /**
+   * Overskriftsnivå på pakkenavnet. 3 er riktig når kortene står under en
+   * seksjonsoverskrift, slik de gjør på forsiden. Står de rett under sidens h1
+   * uten noe imellom – som på /priser – skal de være 2, ellers hopper
+   * rekkefølgen fra h1 til h3 og axe melder «heading-order».
+   */
+  nivaa?: 2 | 3;
 }
 const {
   name, price, prefix, unit = "eks. mva", description, features,
-  recommended = false, flagLabel = "Anbefalt", cta, href, class: cls,
+  recommended = false, flagLabel = "Anbefalt", cta, href, class: cls, nivaa = 3,
 } = Astro.props;
+const Navn = nivaa === 2 ? "h2" : "h3";
 const rows = features.map((f) => (typeof f === "string" ? { text: f, included: true } : { included: true, ...f }));
 ---
 <div class:list={["kk-price", recommended && "is-recommended", cls]}>
   <div class="kk-price-top">
-    <h3>{name}</h3>
+    <Navn class="kk-price-navn">{name}</Navn>
     {recommended && <span class="kk-flag">{flagLabel}</span>}
   </div>
   <p class="kk-amount">
@@ -29,11 +38,7 @@ const rows = features.map((f) => (typeof f === "string" ? { text: f, included: t
     <ul>
       {rows.map((f) => (
         <li class:list={[f.included ? "is-in" : "is-out"]}>
-          {f.included ? (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-          ) : (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg>
-          )}
+          <Ikon navn={f.included ? "check" : "minus"} storrelse={16} />
           <span>{f.text}<span class="visually-hidden">{f.included ? " – inkludert" : " – ikke inkludert"}</span></span>
         </li>
       ))}
@@ -41,3 +46,20 @@ const rows = features.map((f) => (typeof f === "string" ? { text: f, included: t
   </div>
   {cta && <Button variant={recommended ? "primary" : "secondary"} href={href}>{cta}</Button>}
 </div>
+
+<style>
+  /*
+   * components.css styrer pakkenavnet med `.kk-price h3`, altså på taggen. Da
+   * mister navnet all styling i det `nivaa` gjør det til en h2. Komponenten eier
+   * derfor sin egen overskriftsstil, uavhengig av nivå; regelen i components.css
+   * er nå overflødig og kan fjernes av den som eier den fila.
+   */
+  .kk-price .kk-price-navn {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+</style>

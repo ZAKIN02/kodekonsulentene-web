@@ -1,21 +1,21 @@
 ---
 // Status med ord OG ikon – fargen er aldri alene bærer av mening (WCAG 1.4.1).
+// Ikonene er faste i brandboken: ok = hake, warn = trekant med utropstegn,
+// fail = kryss i sirkel. De står alltid ved ordet, så de er dekorasjon og
+// aria-hidden; Ikon gjør det selv når `tittel` ikke er satt.
+import Ikon, { type IkonNavn } from "./Ikon.astro";
 interface Props { status: "ok" | "warn" | "fail" | "neutral"; class?: string }
 const { status, class: cls } = Astro.props;
 const ord = { ok: "Bestått", warn: "Bør fikses", fail: "Brudd", neutral: "Ikke sjekket" } as const;
+const ikon: Record<Props["status"], IkonNavn> = {
+  ok: "check",
+  warn: "triangle-alert",
+  fail: "circle-x",
+  neutral: "circle-minus",
+};
+// 14 px er det components.css faktisk maler merket i (.kk-badge svg).
 ---
 <span class:list={["kk-badge", `kk-badge-${status}`, cls]}>
-  {status === "ok" && (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-  )}
-  {status === "warn" && (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
-  )}
-  {status === "fail" && (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
-  )}
-  {status === "neutral" && (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg>
-  )}
+  <Ikon navn={ikon[status]} storrelse={14} />
   <slot>{ord[status]}</slot>
 </span>

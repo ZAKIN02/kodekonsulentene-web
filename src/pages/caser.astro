@@ -4,6 +4,7 @@ import Scene from "../components/Scene.astro";
 import Mega from "../components/Mega.astro";
 import Avslor from "../components/Avslor.astro";
 import Eyebrow from "../components/Eyebrow.astro";
+import Stillbilde from "../components/Stillbilde.astro";
 import Button from "../components/Button.astro";
 import ContactBlock from "../components/ContactBlock.astro";
 import { synligeCaser } from "../data/caser";
@@ -18,6 +19,11 @@ import "../styles/scener.css";
     <Mega som="h1" merke="Caser" n={1} tekst="Problem, løsning, resultat" aksent="resultat" />
     <Avslor trinn={1}>
       <p class="scene__ingress body-lg">Hver case sier hva som var problemet, hva vi bygde, og hva det ga i tall. Konseptarbeid er alltid merket, slik at du vet hva som er oppdrag og hva som er øvelse.</p>
+    </Avslor>
+
+    <Avslor trinn={2}>
+      {/* Leser som en portefølje uten å påstå noe om kunder vi ikke kan navngi. */}
+      <Stillbilde id="rekke" sizes="(min-width: 60rem) 60rem, 100vw" />
     </Avslor>
 
     <Avslor>

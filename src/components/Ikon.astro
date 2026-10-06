@@ -37,13 +37,23 @@ export type IkonNavn = keyof typeof IKONER;
 
 interface Props {
   navn: IkonNavn;
-  /** Brandboken: 20 px er standard. */
+  /**
+   * Brandboken: 20 px er standard. Sett den til den størrelsen CSS faktisk maler
+   * ikonet i – står det noe annet i attributtet, reserverer nettleseren feil
+   * plass før SVG-en er tolket. Det var nøyaktig den feilen som ga CLS 0,145 på
+   * logoen i produksjon.
+   */
   storrelse?: number;
   /** Settes bare når ikonet må bære mening alene. Ellers er det dekorasjon. */
   tittel?: string;
   class?: string;
+  [attr: string]: unknown;
 }
-const { navn, storrelse = 20, tittel, class: cls } = Astro.props;
+/**
+ * Resten sendes videre til <svg>. Topbar trenger `data-icon`, fordi site.css
+ * velger på `[data-icon="sun"]` for å bytte ikon med temaet.
+ */
+const { navn, storrelse = 20, tittel, class: cls, ...rest } = Astro.props;
 ---
 <svg
   class:list={["ikon", cls]}
@@ -58,6 +68,7 @@ const { navn, storrelse = 20, tittel, class: cls } = Astro.props;
   role={tittel ? "img" : undefined}
   aria-label={tittel}
   aria-hidden={tittel ? undefined : "true"}
+  {...rest}
   set:html={IKONER[navn]}
 />
 

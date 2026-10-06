@@ -26,7 +26,8 @@
     "ytelse": "node .skudd/lh.mjs",
     "ytelse:prod": "node .skudd/lh.mjs https://kodekonsulentene.no",
     "lhci": "lhci autorun",
-    "og": "node scripts/og.mjs"
+    "og": "node scripts/og.mjs",
+    "bilde": "node scripts/stillbilde.mjs"
   },
   "dependencies": {
     "@astrojs/node": "^11.1.6",

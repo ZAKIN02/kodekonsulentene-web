@@ -4,6 +4,7 @@ import Scene from "../components/Scene.astro";
 import Mega from "../components/Mega.astro";
 import Avslor from "../components/Avslor.astro";
 import ProofStrip from "../components/ProofStrip.astro";
+import Stillbilde from "../components/Stillbilde.astro";
 import Button from "../components/Button.astro";
 import ContactBlock from "../components/ContactBlock.astro";
 import { bevis } from "../data/bevis";
@@ -19,6 +20,12 @@ import "../styles/scener.css";
     <Mega som="h1" merke="Om" n={1} tekst="Du snakker med den som koder" aksent="koder" />
     <Avslor trinn={1}>
       <p class="scene__ingress body-lg">Det er hele forskjellen mellom oss og et byrå. Det er også grunnen til at vi ikke kan ta inn tjue prosjekter i måneden.</p>
+    </Avslor>
+
+    <Avslor trinn={2}>
+      {/* Materiale, ikke mennesker. Brandboken tillater genererte bilder av
+          struktur og lag, aldri av personer eller leveranser vi ikke har gjort. */}
+      <Stillbilde id="nart" sizes="(min-width: 60rem) 60rem, 100vw" />
     </Avslor>
 
     <Avslor>

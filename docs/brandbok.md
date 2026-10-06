@@ -62,7 +62,12 @@ Tre familier med klare roller; ingen av dem heter Inter eller Roboto.
 
 - Ikoner: strektegnede, 1,5px strek, 20px standard, i `currentColor`. Bruk Lucide (MIT) som sett; ikke bland med andre sett. Ikoner står alltid ved et ord – aldri alene som eneste bærer av mening.
 - Statusikoner er faste: `ok` = hake, `warn` = trekant med utropstegn, `fail` = kryss i sirkel. Fargene følger `ok`/`warn`/`fail`.
-- Bilder er ekte skjermbilder av ting som er bygget, eller ett portrettfoto under «Om». Skjermbilder får `hairline` kant i `line` og `radius-md`. Ingen stockfoto, ingen AI-genererte bilder, ingen abstrakte 3D-figurer.
+- Bilder er ekte skjermbilder av ting som er bygget, eller ett portrettfoto under «Om». Skjermbilder får `hairline` kant i `line` og `radius-md`. Ingen stockfoto.
+- Genererte bilder og filmscener er tillatt, men BARE som materiale og struktur: lag, kanter, stabler, raster. De skal aldri forestille mennesker, kunder, kontorer, skjermbilder eller arbeid vi ikke har gjort.
+
+  Regelen het før «ingen AI-genererte bilder», og den sto i veien for materialet vi faktisk produserer. Det den var ment å verne om, er noe annet: at et bilde aldri skal fremstå som bevis på noe som ikke finnes. Et generert portrett eller et oppdiktet kundeskjermbilde er løgn om vår egen historikk. En generert aluminiumsstabel påstår ingenting – den er typografiens tredimensjonale fetter, og den er vår fordi vi lager den selv.
+
+  Et generert bilde som forestiller et menneske, en kunde eller et leveranseresultat er fortsatt forbudt, uten unntak.
 - Logo: monogrammet «KK» på en flis i `accent` (`assets/Logo/kk-mark.svg`) og ordmerket «KodeKonsulentene» som baner. Bruk `kk-lockup-dark.svg` i mørkt tema og `kk-lockup-light.svg` i lyst tema i header og footer; merket alene som favicon og app-ikon. Reglene for friareal og farger står i `assets/Logo/README.md`. I `Terminal` kan navnet fortsatt stå som `~/kodekonsulentene` i `mono` – det er en signatur, ikke logoen.
 
 ## Komponenter

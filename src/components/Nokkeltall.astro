@@ -9,9 +9,9 @@
  * Tallene kommer fra src/data/bevis.ts, og regelen derfra gjelder: hvert tall
  * skal være målt og kunne etterprøves. Komponenten finner ikke på noe.
  *
- * Opptellingen er den ene bevegelsen brandboken tillater her: én gang, 400 ms,
- * ease-out, når tallet kommer i syne. Verdiene står som ferdig tekst i HTML, så
- * uten JavaScript er alt lest.
+ * Opptellingen er den ene bevegelsen brandboken tillater her: én gang, ease-out,
+ * når raden kommer i syne. Verdiene står som ferdig tekst i HTML, så uten
+ * JavaScript er alt lest.
  */
 import "../styles/typo.css";
 import { bevis } from "../data/bevis";
@@ -27,13 +27,52 @@ interface Props {
 const { poster = bevis, navn = "Målte tall for denne siden", class: cls } = Astro.props;
 ---
 <ul class:list={["nokkeltall", cls]} aria-label={navn}>
-  {poster.map((p) => (
+  {poster.map((p, i) => (
     <li class:list={["nokkeltall__post", p.accent && "nokkeltall__post--aksent"]}>
-      <span class="nokkeltall__verdi" data-nokkeltall-tell>{p.value}</span>
+      <span class="nokkeltall__verdi" data-nokkeltall-tell style={`--rad:${i}`}>{p.value}</span>
       <span class="nokkeltall__merke">{p.label}</span>
     </li>
   ))}
 </ul>
+
+<style>
+  /**
+   * Layouten rettes her, ikke i typo.css, fordi sju andre agenter skriver i
+   * stilarkene samtidig. Astro scoper disse reglene til komponenten og legger på
+   * et data-attributt, så de vinner over typo.css uten !important.
+   *
+   * Feilen som rettes: typo.css ga raden `minmax(0,1fr) minmax(0,1fr)`, to like
+   * kolonner. Tallet maler bare sin egen bredde, så resten av kolonnen ble tomrom
+   * – målt 202 til 478 px på forsiden, ulikt per rad fordi «0» er smalere enn
+   * «0,1 s». Etikettene fikk én fast kant mens tallene sluttet fire ulike steder,
+   * og paret leses ikke lenger som et par.
+   *
+   * Subgrid gir alle radene SAMME kolonnebredder: første kolonne blir så bred som
+   * det bredeste tallet, ikke halve raden.
+   */
+  @media (min-width: 861px) {
+    .nokkeltall {
+      /* Første kolonne så bred som det bredeste tallet, ikke halve raden.
+         Andre kolonne tar resten, slik at raden – og dermed hårlinja – fortsatt
+         spenner hele bredden. Krympes grida i stedet, stopper hårlinjene midt
+         på siden og ser avkappet ut. */
+      grid-template-columns: max-content minmax(0, 1fr);
+    }
+    .nokkeltall__post {
+      grid-column: 1 / -1;
+      grid-template-columns: subgrid;
+      column-gap: var(--space-6);
+    }
+  }
+
+  /**
+   * Opptellingen trappes 80 ms per rad. Uten trappen starter og stopper alle fire
+   * samtidig, og seksjonen leses fortsatt som et stillbilde.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .nokkeltall__verdi { --tell-av: 1; }
+  }
+</style>
 
 <script>
   /**
@@ -44,9 +83,16 @@ const { poster = bevis, navn = "Målte tall for denne siden", class: cls } = Ast
    * Bare sifre vi kan tolke animeres. «6/6» teller opp det første tallet og lar
    * resten stå; «0,1 s» beholder komma og enhet. Teksten settes tilbake til
    * nøyaktig originalen til slutt, så ingenting kan bli hengende på feil verdi.
+   *
+   * Varigheten er 900 ms og ikke 400: på 400 ms er fire store tall ferdige før
+   * øyet har rukket fram til dem, og seksjonen leses som et stillbilde – som er
+   * nettopp det den ble meldt inn for.
    */
   const tall = document.querySelectorAll<HTMLElement>("[data-nokkeltall-tell]");
   if (tall.length && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const VARIGHET = 900;
+    const TRAPP = 80;
+
     const io = new IntersectionObserver(
       (poster) => {
         for (const p of poster) {
@@ -60,14 +106,22 @@ const { poster = bevis, navn = "Målte tall for denne siden", class: cls } = Ast
           const [, foer, raa, etter] = m;
           const maal = Number(raa.replace(",", "."));
           const desimaler = raa.includes(",") ? 1 : 0;
+          const forsinkelse = Number(el.style.getPropertyValue("--rad") || 0) * TRAPP;
 
-          const start = performance.now();
+          // Bredden låses til sluttverdien før tellingen, ellers vokser cellen
+          // mens sifrene skifter og hele raden rykker sidelengs.
+          el.style.minInlineSize = `${el.getBoundingClientRect().width}px`;
+
+          const start = performance.now() + forsinkelse;
           const steg = (naa: number) => {
-            const t = Math.min(1, (naa - start) / 400);
+            const t = Math.min(1, Math.max(0, (naa - start) / VARIGHET));
             const e = 1 - Math.pow(1 - t, 3);
             el.textContent = foer + (maal * e).toFixed(desimaler).replace(".", ",") + etter;
             if (t < 1) requestAnimationFrame(steg);
-            else el.textContent = ferdig;
+            else {
+              el.textContent = ferdig;
+              el.style.minInlineSize = "";
+            }
           };
           requestAnimationFrame(steg);
         }

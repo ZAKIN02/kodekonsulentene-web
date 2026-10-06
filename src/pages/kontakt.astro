@@ -36,7 +36,7 @@ const feilmelding =
     </Avslor>
 
     {sendt && (
-      <div class="card" style="border-color: var(--ok)">
+      <div class="card kvittering" style="border-color: var(--ok)">
         <h2 class="heading">Takk – meldingen kom fram</h2>
         <p class="muted">
           Vi svarer innen {firma.svartid}, som regel raskere. Haster det, ring
@@ -46,7 +46,7 @@ const feilmelding =
     )}
 
     {feilmelding && (
-      <div class="card" style="border-color: var(--fail)">
+      <div class="card kvittering" style="border-color: var(--fail)">
         <h2 class="heading">Det stoppet opp</h2>
         <p class="muted">{feilmelding}</p>
       </div>

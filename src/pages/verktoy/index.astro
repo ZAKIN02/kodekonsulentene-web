@@ -69,6 +69,18 @@ const verktoy = [
       <p class="scene__ingress body-lg">Vi selger sikkerhet og etterlevelse. Da er det rimelig at du får se at vi kan det, før du betaler for noe. Ingen innlogging, ingen e-post før du selv ber om rapporten.</p>
     </Avslor>
 
+    {/*
+      Kortene fra ServiceCard er h3. Uten noe imellom hopper rekkefølgen rett fra
+      sidens h1 til h3, og axe melder «heading-order» – /verktoy lå på 98 i
+      tilgjengelighet bare på grunn av dette. Overskriften er skjult visuelt fordi
+      Mega-tittelen over allerede sier det samme med store bokstaver, men den gir
+      kortlisten et navn for den som navigerer på overskrifter.
+
+      Den strukturelt riktige løsningen er en `nivaa`-prop på ServiceCard, slik
+      Section og PriceCard har. Komponenten eies av en annen agent akkurat nå.
+    */}
+    <h2 class="visually-hidden">Verktøyene du kan kjøre nå</h2>
+
     <div class="grid-3">
       {verktoy.map((v, k) => (
         <Avslor trinn={k % 3}>

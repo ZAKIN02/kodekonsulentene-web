@@ -268,9 +268,27 @@ const lag = [
     .stabel__grunnlinje { transition: none; }
   }
 
+  /* Etikettene stakk 433px ut på en 390px skjerm: left var
+     calc(50% + min(19%, 108px)) og bredden min(40%, 220px), som til sammen gir
+     425px+ høyre kant. Den globale overflow-x: clip hindret at siden kunne dras,
+     men teksten ble klippet bort i stedet. Her trekkes de inn og smalnes. */
+  @media (max-width: 860px) {
+    .stabel__merke {
+      left: calc(50% + min(13%, 64px));
+      width: min(36%, 150px);
+    }
+    .stabel__merke { grid-template-columns: var(--space-4) auto; }
+  }
+
   @media (max-width: 560px) {
+    /* Enda strammere her: på 390px landet høyre kant nøyaktig på viewportkanten,
+       uten luft. Nå er det 24px igjen. */
+    .stabel__merke {
+      left: calc(50% + min(10%, 48px));
+      width: min(34%, 132px);
+    }
     .stabel__lag { width: min(62%, 300px); }
-    .stabel__navn { font-size: 16px; line-height: 22px; }
+    .stabel__navn { font-size: 15px; line-height: 21px; }
     .stabel__detalj { display: none; }
   }
 </style>
@@ -284,6 +302,15 @@ const lag = [
     const status = rot.querySelector<HTMLElement>("[data-stabel-status]")!;
     rot.dataset.klar = "true";
 
+    /**
+     * Hvilestillingen er ikke 0. Helt sammenslått leses stabelen som én grå
+     * plate, og at den er lagdelt er usynlig til noen tilfeldigvis drar i den.
+     * 0,15 løfter lagene nok til at kanten på hver plate synes, men holder
+     * etikettene skjult (opasiteten deres blir negativ under ~0,32), så
+     * hvilebildet er rent.
+     */
+    const HVILE = 0.15;
+
     let a = 0;
     const sett = (ny: number) => {
       a = Math.min(1, Math.max(0, ny));
@@ -293,13 +320,13 @@ const lag = [
       knapp.setAttribute("aria-pressed", String(apen));
       knapptekst.textContent = apen ? "Sett den sammen igjen" : "Ta siden fra hverandre";
       status.textContent =
-        a < 0.08
+        a <= HVILE + 0.02
           ? "Lagene ligger samlet."
           : a > 0.92
             ? "Lagene er trukket helt fra hverandre: design, kode, sikkerhet og integrasjoner."
             : `Lagene er ${Math.round(a * 100)} prosent fra hverandre.`;
     };
-    sett(0);
+    sett(HVILE);
 
     // Dra. Vannrett høyre og loddrett opp gir samme retning som stabelen reiser
     // seg i, så bevegelsen føles som å trekke lagene ut langs sin egen akse.
@@ -331,7 +358,7 @@ const lag = [
     spak.addEventListener("input", () => sett(Number(spak.value) / 100));
 
     knapp.addEventListener("click", () => {
-      const mal = a > 0.5 ? 0 : 1;
+      const mal = a > 0.5 ? HVILE : 1;
       if (matchMedia("(prefers-reduced-motion: reduce)").matches) return sett(mal);
       const fra = a;
       const t0 = performance.now();

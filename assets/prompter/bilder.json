@@ -1,0 +1,32 @@
+{
+  "_om": "Stillbildene siden bruker. Alle redigeres ut fra SAMME basisbilde som videoscenene i scener.json – den opphengte stabelen av aluminiumsplater. Det er med vilje: bilder og film skal høre til samme objekt, ikke se ut som tre løsrevne AI-renders. Hver endring nedenfor er en OMSTOKKING av den samme stabelen, der selve arrangementet bærer sidens innhold. Bygg på nytt med `npm run bilde -- <id>`.",
+  "_bevar": "Keep exactly identical: the near-black #0b0d10 background, the lighting direction and intensity, the rim light, the material and surface finish of every plate (matte bead-blasted anodized aluminium with fine chamfered edges), and the thin suspension wires. All surfaces stay plain and unmarked: no text, letters, numbers, logos, icons or watermarks anywhere. No people, no hands.",
+  "basis": "6f5a4bd2-4820-4797-a67c-1ae32fb8444b",
+  "bilder": [
+    {
+      "id": "nart",
+      "side": "/om",
+      "endring": "Change only the camera distance and crop: move in to a tight macro close-up of the right-hand edges of the plate stack, so the frame is filled by the stacked edges seen almost side-on. Each plate's exact thickness, its 45-degree chamfer and the fine bead-blasted texture are clearly readable. The single hair-thin lime green edge line runs along one plate near the lower third. The left third of the frame stays calm empty near-black negative space.",
+      "forhold": "16:9",
+      "alt": "Nærbilde av kantene på en stabel aluminiumsplater, der hvert lags tykkelse er synlig.",
+      "hvorfor": "/om handler om håndverket, ikke om en person. Et nærbilde av kantene viser hvert lag for seg – nøyaktig det vi selger: du får se hva som ligger inne."
+    },
+    {
+      "id": "tre",
+      "side": "/priser",
+      "endring": "Change the arrangement: there are now three separate plate stacks standing side by side in a row, evenly spaced and all lit identically by the same light. The stacks differ clearly in HEIGHT because they hold different numbers of plates. The LEFT stack is short: it holds only THREE plates and reaches about one third of the height of the right stack. The MIDDLE stack is medium: it holds FIVE plates and reaches about two thirds of the height of the right stack. The RIGHT stack is tall: it holds EIGHT plates and is the tallest. Count the plates carefully: 3, then 5, then 8. Every plate stays level, parallel and centered on its own vertical axis, hanging from thin wires. Exactly one hair-thin lime green edge line appears, on a single plate in the MIDDLE stack only; the left and right stacks have no green at all. Every metal surface is strictly neutral grey aluminium with no colour tint whatsoever.",
+      "forhold": "16:9",
+      "alt": "Tre stabler aluminiumsplater side om side, stadig høyere fra venstre mot høyre. Den midterste har én limegrønn kantlinje.",
+      "hvorfor": "De tre pakkene gjort fysiske. Antall lag er prisforskjellen, og den grønne linjen står bare på den anbefalte midterste – aksentfargen brukes én gang, slik brandboken krever."
+    },
+    {
+      "id": "rekke",
+      "side": "/caser",
+      "endring": "Change the arrangement: there are now four separate plate stacks receding into the distance in a row from left to right, each progressively smaller and softer as it recedes, all made of the same material and lit by the same light. Each stack holds a different number of plates and a slightly different spacing, but every plate stays level and parallel on its own vertical axis. Exactly one hair-thin lime green edge line appears, on a single plate in the nearest stack only.",
+      "forhold": "16:9",
+      "alt": "Fire stabler aluminiumsplater på rad som trekker seg bakover i dybden.",
+      "hvorfor": "Hvert prosjekt er samme håndverk i ulik form. Rekken leser som en portefølje uten å påstå noe om kunder vi ikke kan navngi ennå."
+    }
+  ],
+  "_negativt": "text, letters, numbers, logos, watermark, people, hands, faces, glossy plastic, neon glow, purple, violet, magenta, lilac, blue tint, colour cast, tinted metal, blue gradient, mesh gradient, glassmorphism, bokeh, lens flare, sparkles, hologram, floating screens, motion blur, vignette"
+}

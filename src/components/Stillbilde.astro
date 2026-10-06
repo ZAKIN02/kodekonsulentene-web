@@ -1,0 +1,77 @@
+---
+/**
+ * Et generert stillbilde med riktige mål og moderne formater.
+ *
+ * Dimensjonene kommer fra src/data/bilder.json, som scripts/stillbilde.mjs
+ * skriver ETTER at filene er laget, målt med sharp. Ingen tall er skrevet for
+ * hånd noe sted i kjeden – en håndskrevet dimensjon på logoen ga oss CLS 0,145
+ * i produksjon og brøt ytelsesløftet vi selger på.
+ *
+ * AVIF først, WebP som reserve. Begge er bygget fra samme kilde, så nettleseren
+ * velger selv uten at vi trenger å vite hva den støtter.
+ */
+import bilder from "../data/bilder.json";
+
+interface Props {
+  /** Nøkkel i src/data/bilder.json: «nart», «tre» eller «rekke». */
+  id: keyof typeof bilder;
+  /** Overstyrer alt-teksten fra manifestet. Tom streng gjør bildet dekorativt. */
+  alt?: string;
+  /** Hvor bred flaten er i oppsettet, til sizes. */
+  sizes?: string;
+  /** Første skjermbilde lastes med en gang; resten venter. */
+  prioritert?: boolean;
+  class?: string;
+}
+const {
+  id,
+  alt,
+  sizes = "(min-width: 1120px) 1120px, 100vw",
+  prioritert = false,
+  class: cls,
+} = Astro.props;
+
+const b = bilder[id];
+if (!b) throw new Error(`Stillbilde: fant ingen «${id}» i src/data/bilder.json. Kjør: npm run bilde -- ${id}`);
+
+const srcset = (liste: { fil: string; bredde: number }[]) =>
+  liste.map((v) => `${v.fil} ${v.bredde}w`).join(", ");
+const minst = b.avif[b.avif.length - 1].fil;
+const tekst = alt ?? b.alt;
+---
+<figure class:list={["stillbilde", cls]}>
+  <picture>
+    <source type="image/avif" srcset={srcset(b.avif)} sizes={sizes} />
+    <source type="image/webp" srcset={srcset(b.webp)} sizes={sizes} />
+    <img
+      src={minst}
+      alt={tekst}
+      width={b.bredde}
+      height={b.hoyde}
+      loading={prioritert ? "eager" : "lazy"}
+      decoding="async"
+      fetchpriority={prioritert ? "high" : "auto"}
+    />
+  </picture>
+  {Astro.slots.has("default") && <figcaption class="stillbilde__tekst small"><slot /></figcaption>}
+</figure>
+
+<style>
+  .stillbilde {
+    margin: 0;
+  }
+  /* Hårlinje og liten radius, som brandboken krever for bildeflater.
+     Dybde kommer fra kanten, aldri fra skygge. */
+  .stillbilde img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--bg-sunken);
+  }
+  .stillbilde__tekst {
+    margin-top: var(--space-3, 12px);
+    color: var(--ink-faint);
+  }
+</style>

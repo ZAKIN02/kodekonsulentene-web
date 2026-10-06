@@ -156,6 +156,40 @@ html[data-theme="light"] .iconbtn [data-icon="moon"] { display: none; }
 .faq details[open] summary::after { content: "–"; }
 .faq details > div { padding-bottom: var(--space-4); color: var(--ink-muted); max-width: 68ch; }
 
+/* FAQ-en spratt åpen. Her glir den.
+ *
+ * Hele blokken står bak `@supports (interpolate-size: allow-keywords)` – ikke av
+ * forsiktighet, men fordi `block-size: 0` i lukket tilstand er farlig uten den.
+ * Kan ikke nettleseren interpolere mot `auto`, risikerer vi svar som blir
+ * stående på høyde 0, altså usynlig innhold. Med vakten får Firefox og Safari
+ * nøyaktig dagens oppførsel: innholdet spretter fram, men det ER der.
+ *
+ * `content-visibility` må være med i overgangen med `allow-discrete`. Uten den
+ * er innholdet skjult gjennom hele animasjonen, og man ser en tom boks vokse. */
+@supports (interpolate-size: allow-keywords) {
+  :root { interpolate-size: allow-keywords; }
+
+  .faq details::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition:
+      block-size 240ms cubic-bezier(0.2, 0, 0, 1),
+      content-visibility 240ms allow-discrete;
+  }
+  .faq details[open]::details-content { block-size: auto; }
+
+  /* Den globale regelen for redusert bevegelse treffer `*`, `*::before` og
+     `*::after` – men ikke `::details-content`. Målt: FAQ-en animerte fortsatt
+     61 → 155 px med `prefers-reduced-motion: reduce` satt. Den må nevnes
+     eksplisitt.
+     Som egen regel, ikke lagt til i den globale selektorlisten: kjenner en
+     nettleser ikke `::details-content`, forkastes HELE listen, og da hadde vi
+     mistet dempingen for alt annet også. */
+  @media (prefers-reduced-motion: reduce) {
+    .faq details::details-content { transition-duration: 0.01ms !important; }
+  }
+}
+
 /* ---- Kort uten egen komponent (caser, demoer, kontakt) ---- */
 .card { border: var(--hairline) solid var(--line); border-radius: var(--radius-md); background: var(--bg-raised); padding: var(--space-5); display: grid; gap: var(--space-4); align-content: start; }
 .card--sunken { background: var(--bg-sunken); }
@@ -176,9 +210,78 @@ html[data-theme="light"] .iconbtn [data-icon="moon"] { display: none; }
   border: var(--hairline) solid var(--line-strong); border-radius: var(--radius-sm);
   font-family: var(--font-sans); font-size: 16px; line-height: 20px;
 }
-textarea.control { min-height: 120px; resize: vertical; line-height: 24px; }
+textarea.control {
+  min-height: 120px; resize: vertical; line-height: 24px;
+  /* Feltet vokser med teksten. Erstatter mønsteret der JavaScript måler
+     scrollHeight og setter høyden ved hvert tastetrykk – her gjør nettleseren
+     det selv, for 0 kB. Nettlesere uten støtte får fast høyde med scroll,
+     altså nøyaktig det vi hadde før.
+     max-height er nødvendig: uten den kan en lang melding dytte knappen under
+     skjermkanten, og da ser det ut som skjemaet ikke kan sendes. */
+  field-sizing: content;
+  max-height: 60vh;
+}
 .control:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: 2px; }
 .control::placeholder { color: var(--ink-faint); }
+
+/* ---- Feltstatus uten en linje JavaScript ----
+ *
+ * `:user-invalid` og ikke `:invalid`: den slår inn FØRST etter at brukeren har
+ * skrevet noe og forlatt feltet. Et skjema som lyser rødt før du har rørt det,
+ * er en feil i seg selv – og det er nøyaktig det `:invalid` ville gjort, siden
+ * tre av feltene er `required` og tomme ved innlasting.
+ *
+ * Grønt bare på `:required`. Feltet «Nettside i dag» er valgfritt og har ingen
+ * regel å bryte, så det er alltid teknisk gyldig – en grønn ramme der ville
+ * bekreftet noe vi ikke har sjekket.
+ *
+ * Fargen står ikke alene. WCAG 1.4.1 krever at farge ikke er eneste visuelle
+ * kjennetegn, så merket etter etiketten sier det samme i form. Nettleserens
+ * egen validering melder fortsatt feilen til skjermleser. */
+.field:has(.control:user-invalid) > .control { border-color: var(--fail); }
+.field:has(.control:required:user-valid) > .control { border-color: var(--ok); }
+
+.field > label::after { font-family: var(--font-mono); font-weight: 400; }
+.field:has(.control:user-invalid) > label::after { content: " \2715"; color: var(--fail); }
+.field:has(.control:required:user-valid) > label::after { content: " \2713"; color: var(--ok); }
+
+/* ---- Kvitteringen på /kontakt kommer inn, i stedet for å poppe ----
+ *
+ * Siden rendres på serveren og kommer tilbake med ?sendt=1, så kortet finnes i
+ * HTML-en ved første maling. Før `@starting-style` måtte man sette en klasse fra
+ * JavaScript ett bilde etter innsetting for å få til dette – og da virket det
+ * ikke uten JavaScript, som er hele poenget med at skjemaet poster på vanlig vis.
+ *
+ * Rekkefølgen er ikke valgfri: `@starting-style` har SAMME spesifisitet som
+ * hovedregelen. Står den først, vinner hovedregelen og ingenting skjer. Den må
+ * stå etter.
+ *
+ * Degraderingen går mot synlig: hovedregelen setter full opasitet, og
+ * `@starting-style` beskriver bare det første bildet. Mangler støtten, står
+ * kortet der med én gang. Redusert bevegelse fanges av regelen lenger nede, som
+ * setter alle overganger til 0,01 ms. */
+.scene .card.kvittering {
+  opacity: 1;
+  translate: 0 0;
+  /* border-color MÅ være med. `.scene .card` i scener.css setter
+     `transition: border-color 120ms` med høyere spesifisitet, og en stenografi
+     erstatter hele listen – ikke bare det den nevner. Skrev vi bare opacity og
+     translate her, ville hover-effekten på kortkanten forsvunnet; skriver vi dem
+     uten nok spesifisitet, vinner scener.css og INGENTING toner inn.
+     Målt: computed transition-property var `border-color` alene, og kvitteringen
+     sto på full opasitet fra første bilde. */
+  transition:
+    opacity 260ms ease-out,
+    translate 260ms cubic-bezier(0.2, 0, 0, 1),
+    border-color 120ms ease;
+}
+/* Selektoren må ha SAMME spesifisitet som hovedregelen over. Reglene inne i
+   @starting-style kaskaderer på vanlig vis, så en hovedregel på (0,3,0) slår en
+   startverdi på (0,1,0) – og da er startverdien lik sluttverdien, altså ingen
+   overgang. Målt: opasiteten lå på 1 fra første bilde selv med 5 s overgang. */
+@starting-style {
+  .scene .card.kvittering { opacity: 0; translate: 0 -10px; }
+}
 
 /* ---- Hjelpeklasser ---- */
 .muted { color: var(--ink-muted); }

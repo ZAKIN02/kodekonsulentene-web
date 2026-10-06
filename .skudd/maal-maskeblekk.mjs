@@ -21,18 +21,22 @@ for (const s of sider) {
     c.getContext("2d").drawImage(v, 0, 0, 160, 90);
     const d = c.getContext("2d").getImageData(0, 0, 160, 90).data;
     const maske = parseFloat(getComputedStyle(el).getPropertyValue("--maske")) || 46;
+    const vendtFlagg = el.hasAttribute("data-vend");
     let skjult = 0, synlig = 0, skjultVendt = 0, total = 0;
     for (let y = 0; y < 90; y++) for (let x = 0; x < 160; x++) {
       const i = (y * 160 + x) * 4;
       const lys = (d[i] + d[i + 1] + d[i + 2]) / 3;
       if (lys < 45) continue;            // nesten svart bakgrunn teller ikke
       total++;
-      const pst = (x / 160) * 100;
+      // Verktøyet leser videorammen, ikke det malte resultatet. Er flaten
+      // speilvendt, må x speiles før den sammenlignes med masken – ellers meldes
+      // en rettet side fortsatt som feil.
+      const pst = vendtFlagg ? 100 - (x / 160) * 100 : (x / 160) * 100;
       if (pst < maske) skjult++; else synlig++;
       // Speilvending avbilder x -> 100 - x.
       if (100 - pst < maske) skjultVendt++;
     }
-    const vendt = el.hasAttribute("data-vend");
+    const vendt = vendtFlagg;
     return {
       maske, vendt,
       naa: Math.round((skjult / (total || 1)) * 100),

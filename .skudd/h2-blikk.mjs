@@ -8,7 +8,7 @@ const g = await p.evaluate((n) => {
   const r = document.querySelectorAll(".scenefilm-ramme")[n].getBoundingClientRect();
   return { top: r.top + scrollY, h: r.height };
 }, N);
-await p.evaluate(v => scrollTo(0, Math.round(v)), g.top - 500 + (g.h + 900) * 0.3);
+await p.evaluate(v => scrollTo(0, Math.round(v)), g.top - 500 + (g.h + 900) * (+(process.argv[5] || 0.3)));
 await p.waitForTimeout(650);
 await p.screenshot({ path: ut });
 const info = await p.evaluate((n) => {

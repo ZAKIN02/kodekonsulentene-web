@@ -65,7 +65,32 @@ Samme blokk, samme kamera, samme lys, to akter:
 Akt 1 lå ferdig i `public/historie/hero-*` i tre oppløsninger, 10,5 MB, og
 **ingen side refererte den** — `HeroFilm` importeres ikke av noen side.
 
-## Funn 3: film bak en firekolonners tekstrad
+## Funn 3: min egen retiming skapte en doed hale
+
+Aa holde siste ramme flyttet poenget inn i det synlige vinduet, men gjorde andre
+halvdel av klippet stillestaaende. Kvartalsmaaling av fila (`maal-doedhale.mjs`)
+fanget det: akt 2 laa paa 7,6 / 3,8 / **0,4** / **0,1**.
+
+Kvartaler av FILA er likevel ikke det brukeren merker. Det som teller er endring
+per SCROLL i det omraadet flaten er synlig. Foerste forsoek paa aa maale det var
+feil: jeg differet hele skjermbilder, og da dominerer sidens egen bevegelse -
+alle steg saa «levende» ut. Riktig maaling tegner videoens ramme til canvas ved
+hvert scrollsteg, saa bare filmen sammenlignes.
+
+| | foer | etter |
+|---|---|---|
+| Akt 1, frosne scrollsteg | 3 av 7 | **2 av 7** |
+| Akt 2, frosne scrollsteg | **5 av 7** | **1 av 7** |
+
+De gjenvaerende ligger paa 38-65 % synlighet, altsaa der seksjonen er paa vei inn
+eller ut. Hele det godt synlige omraadet har bevegelse.
+
+Rettingen: `steg`-masteren hadde et doedt siste kvartal (0,1) som ble beskaaret
+tapsfritt med stroemkopi (8,0 -> 6,2 s), og paddingen ble kuttet fra 6,0/6,5 s til
+2,7/2,1 s, slik at bevegelsen varer ut i ~75 % av klippet. Filene ble samtidig
+mindre: 2,28 -> 1,74 MB og 1,96 -> 1,16 MB.
+
+## Funn 4: film bak en firekolonners tekstrad
 
 Akt 2 ligger bak `ProcessSteps`, som er fire kolonner over hele bredden. Masken
 hjelper ikke: kolonne 04 står lengst til høyre, altså midt i den delen masken

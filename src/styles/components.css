@@ -81,7 +81,6 @@
 .kk-term .kk-ps { color: var(--accent); }
 .kk-term .kk-cmd { color: var(--on-terminal); }
 .kk-term .kk-out { color: var(--on-terminal-muted); }
-.kk-term .kk-ok { color: var(--ok); }
 /* Terminalen er MØRK i begge temaer (--terminal: #060708), men --warn og --fail
    bytter med temaet. I lyst tema ble derfor mørk tekst malt på mørk flate:
    warn 3,31:1 og fail 2,96:1, mot WCAG-kravet på 4,5. Ni brudd på vår EGEN forside,

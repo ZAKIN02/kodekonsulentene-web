@@ -7,7 +7,7 @@ import Button from "../../components/Button.astro";
 import Terminal from "../../components/Terminal.astro";
 import UrlCheck from "../../components/UrlCheck.astro";
 import ProcessSteps from "../../components/ProcessSteps.astro";
-import Stillbilde from "../../components/Stillbilde.astro";
+import SceneFilm from "../../components/SceneFilm.astro";
 import Pekerkort from "../../components/Pekerkort.astro";
 import ContactBlock from "../../components/ContactBlock.astro";
 import { bookUrl } from "../../data/firma";
@@ -48,6 +48,18 @@ const schema = {
     </Avslor>
   </Scene>
 
+  {/* Filmen ERSTATTER stillbildet som lå her. Første ramme av klippet er nøyaktig
+      den komposisjonen stillbildet viste – en målestokk der de aller fleste feltene
+      står tomme – og gjennom klippet fylles de. Stillbildet viste problemet; filmen
+      viser at det løser seg. */}
+  <div class="scenefilm-ramme">
+    <SceneFilm
+      smal="/scener/lev2-klinikk-960.mp4"
+      bred="/scener/lev2-klinikk-1280.mp4"
+      stor="/scener/lev2-klinikk-1920.mp4"
+      plakat="/scener/lev2-klinikk-poster.avif"
+      tekst="venstre"
+    />
   <Scene n={2} eyebrow="Problemet" tittel="Tre tall dere kjenner igjen">
     <Avslor>
     <div class="grid-2">
@@ -83,9 +95,9 @@ const schema = {
         label="Terminalutsnitt: folk bestiller time mest kveld og helg, men klinikken tar telefonen hverdager ni til seksten. Problemet er at dere selger når kundene ikke kjøper."
       />
     </div>
-    <Stillbilde id="bransje-klinikk" sizes="(min-width: 1120px) 1120px, 100vw" />
     </Avslor>
   </Scene>
+  </div>
 
   <Scene
     n={3}

@@ -443,3 +443,95 @@ html, body { overflow-x: clip; }
     min-height: 24px;
   }
 }
+
+
+/* ---- Prosessen: linjen tegner seg, steg for steg ------------------------- */
+
+/*
+ * De fire stegene er fire kolonner som bare står der. Hvert steg har allerede en
+ * hårlinje over seg, og hårlinjen er merkevarens tegneredskap – scenestreken gjør
+ * akkurat dette. Her utvides prinsippet: linjene tegner seg ETTER HVERANDRE, så
+ * stripen leses som en prosess som skrider fram og ikke som fire bokser.
+ *
+ * ALT LIGGER PÅ EKTE ELEMENTER, ikke pseudoelementer. Målt i dette repoet:
+ * en scroll-drevet animasjon på `::before` slo ikke inn i det hele tatt – malt
+ * tilstand og computed transform sto på utgangsverdien i hver scroll-posisjon,
+ * mens et ekte barn på nøyaktig samme navngitte tidslinje gikk 0,00 → 0,22 → 1,00.
+ * Derfor males linjen som et background-image på `li` selv, og `background-size`
+ * animeres. Da er den både synlig OG målbar.
+ *
+ * Tidslinjen er navngitt på `li` og brukes av både `li` og nummeret inni.
+ * Nummeret er bare 16 px høyt; med `view()` på seg selv ville entry-fasen vært
+ * noen få piksler scroll, og gesten ville snappet i stedet for å gå.
+ *
+ * Nummeret skrives fram fra venstre med clip-path i stedet for å tone inn. Det er
+ * en ANNEN gest enn resten av siden bruker, og det er hele poenget: ordforrådet
+ * vårt var to gester fordelt på 59 bevegelser. Monospace som skrives fram hører
+ * dessuten sammen med terminalene.
+ *
+ * DEGRADERING: alt står bak `@supports (animation-timeline: view())`. Mangler
+ * støtten – Firefox i dag – beholder `li` sin vanlige border og nummeret står
+ * ferdig. Ingenting kan bli usynlig av at en tidslinje mangler. Samme krav som
+ * bet oss da et skjema ble stående på 0,56 opasitet.
+ *
+ * Langformer, aldri stenografi: lightningcss slår `animation` + `animation-timeline`
+ * sammen til en ugyldig form som begge nettlesere forkaster uten å si fra.
+ */
+@supports (animation-timeline: view()) {
+  .kk-steps li {
+    view-timeline-name: --steg-syn;
+    /* Sporet blir stående – samme linje, bare ufarget. Ingen layoutendring,
+       fordi borderen fortsatt tar sin plass. */
+    border-top-color: transparent;
+    background-image: linear-gradient(var(--line-strong), var(--line-strong));
+    background-repeat: no-repeat;
+    background-origin: border-box;
+    background-clip: border-box;
+    background-position: left top;
+    background-size: 100% var(--hairline);
+    animation-name: steg-strek;
+    animation-duration: 1ms;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: --steg-syn;
+    animation-range: entry 0% entry 70%;
+  }
+  /* Trappen gjør det til en sekvens. Fire steg står side om side og kommer inn
+     samtidig, så forskyvningen må ligge i rekkevidden, ikke i posisjonen.
+     `nth-child` fordi ProcessSteps ikke setter noen indeksvariabel. */
+  .kk-steps li:nth-child(2) { animation-range: entry 10% entry 80%; }
+  .kk-steps li:nth-child(3) { animation-range: entry 20% entry 90%; }
+  .kk-steps li:nth-child(4) { animation-range: entry 30% entry 100%; }
+
+  .kk-steps .kk-step-n {
+    display: inline-block;
+    animation-name: steg-nr;
+    animation-duration: 1ms;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: --steg-syn;
+    animation-range: entry 20% entry 55%;
+  }
+  .kk-steps li:nth-child(2) .kk-step-n { animation-range: entry 30% entry 65%; }
+  .kk-steps li:nth-child(3) .kk-step-n { animation-range: entry 40% entry 75%; }
+  .kk-steps li:nth-child(4) .kk-step-n { animation-range: entry 50% entry 85%; }
+}
+
+@keyframes steg-strek {
+  from { background-size: 0 var(--hairline); }
+  to { background-size: 100% var(--hairline); }
+}
+@keyframes steg-nr {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Tilbake til den ferdige tilstanden: synlig linje, helt nummer. */
+  .kk-steps li {
+    border-top-color: var(--line-strong);
+    background-image: none;
+    animation: none !important;
+  }
+  .kk-steps .kk-step-n { animation: none !important; clip-path: none !important; }
+}

@@ -94,11 +94,32 @@ const heroTerminal = [
   </section>
 
   <!-- 03 Tjenester -->
+  {/*
+    AKT 1 AV FORSIDENS HISTORIE, og den gaar over TRE seksjoner.
+
+    .scenefilm-ramme er position: relative og SceneFilm er absolute inset 0, saa
+    filmen dekker hele rammen. Spolingen regnes ut fra RAMMENS plass i vinduet, og
+    naar rammen spenner tre seksjoner spoler ETT klipp gjennom alle tre i stedet
+    for aa spille av og stoppe i en. Det er forskjellen paa en historie og tre
+    kapitler ved siden av hverandre: blokken er forseglet ved «Tre ting vi gjoer»,
+    kjerneproeven er paa vei ut ved «Hva vi bygger», og det indre ligger aapent med
+    den limegroenne linjen tent naar du kommer til «Sjekk nettsiden din gratis».
+    Seksjon fem gir bare mening fordi du har sett seksjon tre.
+
+    Klippet laa ferdig i public/historie/ i tre opploesninger, 10,5 MB, og INGEN
+    side refererte det: HeroFilm, som var ment aa vise det, importeres ikke av noen
+    side. Motivet er dessuten noeyaktig det vi selger - utsiden er blank, og jobben
+    er aa vise hva som ligger inne.
+
+    Forsiden brukte foer samme systemer-klipp som /systemer, altsaa identisk film
+    paa to sider. Det er naa frigjort til /systemer alene.
+  */}
   <div class="scenefilm-ramme">
     <SceneFilm
-      smal="/scener/systemer-1280.mp4"
-      bred="/scener/systemer-1920.mp4"
-      plakat="/scener/systemer-poster.avif"
+      smal="/scener/hist2-apne-960.mp4"
+      bred="/scener/hist2-apne-1280.mp4"
+      stor="/scener/hist2-apne-1920.mp4"
+      plakat="/scener/hist2-apne-poster.avif"
       tekst="venstre"
     />
   <Scene
@@ -122,7 +143,6 @@ const heroTerminal = [
       ))}
     </div>
   </Scene>
-
   </div>
 
   <!-- 04 Caser -->
@@ -183,6 +203,20 @@ const heroTerminal = [
     </div>
   </Scene>
 
+  {/*
+    AKT 2. Samme blokk, samme kamera, samme lys som akt 1 - men naa settes
+    innholdet inn igjen, ett lag om gangen, mens den limegroenne linjen vokser.
+    «Fire steg, kjente tider» gjort fysisk. Seksjonen gir bare mening fordi du
+    har sett akt 1 lenger oppe: der ble blokken aapnet, her fylles den.
+  */}
+  <div class="scenefilm-ramme">
+    <SceneFilm
+      smal="/scener/hist2-steg-960.mp4"
+      bred="/scener/hist2-steg-1280.mp4"
+      stor="/scener/hist2-steg-1920.mp4"
+      plakat="/scener/hist2-steg-poster.avif"
+      tekst="venstre"
+    />
   <!-- 06 Prosess -->
   <Scene
     n={6}
@@ -195,6 +229,7 @@ const heroTerminal = [
       <ProcessSteps steps={prosess} />
     </Avslor>
   </Scene>
+  </div>
 
   <!-- 07 Priser -->
   <Scene

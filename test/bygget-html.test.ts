@@ -205,7 +205,7 @@ describe("terminalen har fast mørk flate i begge temaer", () => {
   test("terminalfargene er faste, ikke temavariabler", () => {
     const css = readFileSync("src/styles/components.css", "utf8");
     for (const klasse of ["kk-ok", "kk-warn", "kk-fail"]) {
-      const regel = css.match(new RegExp(`\\\\.kk-term \\\\.${klasse}\\\\s*\\\\{[^}]*\\\\}`));
+      const regel = css.match(new RegExp("\\.kk-term \\." + klasse + "\\s*\\{[^}]*\\}"));
       assert.ok(regel, `Fant ingen regel for .kk-term .${klasse}`);
       assert.ok(
         !regel![0].includes("var(--"),

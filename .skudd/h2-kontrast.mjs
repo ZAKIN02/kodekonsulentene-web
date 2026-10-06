@@ -18,9 +18,11 @@ await p.waitForTimeout(800);
 
 const mål = await p.evaluate(() => {
   const ut = [];
-  const ramme = document.querySelector(".scenefilm-ramme");
-  if (!ramme) return ut;
-  ramme.querySelectorAll(":scope > section").forEach((sek, si) => {
+  // Flertall. Forsiden har NA to filmrammer, og singular querySelector maalte
+  // bare den foerste - den andre seksjonen ble stille utelatt fra rapporten.
+  const rammer = [...document.querySelectorAll(".scenefilm-ramme")];
+  if (!rammer.length) return ut;
+  rammer.flatMap((r) => [...r.querySelectorAll(":scope > section")]).forEach((sek, si) => {
     const navn = (sek.querySelector("h2,.mega")?.textContent || `seksjon ${si}`).trim().slice(0, 26);
     // Klasselister traff ikke ProcessSteps, som har sin egen markup - da ble
     // seksjonen rapportert som «ingen funn» i stedet for aa bli maalt. Velg

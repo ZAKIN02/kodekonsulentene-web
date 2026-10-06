@@ -58,6 +58,14 @@ const steg = [
       plakat="/scener/apper-poster.avif"
       maske={52}
       tekst="venstre"
+      {/* Speilvendt fordi motivets tyngde – stabelen på sju plater – ligger i
+          venstre halvdel, og masken slipper bare fram fra 52 % og utover. Målt på
+          sluttrammen: snittlysstyrke 30-37 i båndet 20-50 %, mot 17-29 i det
+          synlige båndet. Uten vending ser kunden bare de to små platene og en
+          kabel som kuttes av bildekanten, altså halve motivet uten mening.
+          object-position hjelper ikke: object-fit: cover på en 16:9-film i en
+          16:9-flate har ingenting å panorere i. */}
+      vend
     />
     <Scene n={2} eyebrow="Sammenhengen" tittel="To flater, én kobling">
       <Avslor>

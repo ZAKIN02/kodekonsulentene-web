@@ -241,7 +241,31 @@ const maalt = [];
 for (const bredde of scene.bredder) {
   const crf = scene.crf?.[bredde] ?? CRF[bredde] ?? "17";
   const fil = join(ut, `${utnavn}-${bredde}.mp4`);
-  sh("ffmpeg", ["-v", "error", "-i", kilde, "-vf", `scale=${bredde}:-2:flags=lanczos,fps=24`,
+  /**
+   * `forskyv` flytter motivet vannrett, i prosent av bredden, foer nedskalering.
+   *
+   * Masken skjuler den halvdelen teksten staar paa - 46 til 62 prosent av bredden.
+   * Alle masterne har motivet midtstilt (tyngdepunkt rundt 48 %, utstrekning 28-71 %),
+   * saa masken skar motivet i to og kunden saa en avkappet rest. Maalt paa forsiden:
+   * 85 % av det lyse blekket laa i den skjulte halvdelen.
+   *
+   * object-position hjelper ikke: object-fit: cover paa en 16:9-film i en 16:9-flate
+   * har ingenting aa panorere i. Forskyvningen maa derfor ligge i selve fila.
+   * Bakgrunnen er flat #0b0d10, saa feltet som blir til venstre er usynlig.
+   */
+  const forskyv = scene.forskyv ?? 0;
+  const skala = scene.skala ?? 1;
+  const ledd = [];
+  // Krymp motivet foerst, slik at det faar plass i baandet masken viser.
+  if (skala !== 1) ledd.push(`scale=iw*${skala}:ih*${skala}`,
+    `pad=w=iw/${skala}:h=ih/${skala}:x=(ow-iw)/2:y=(oh-ih)/2:color=0x0b0d10`);
+  // Flytt det deretter vannrett inn i baandet. Bakgrunnen er flat, saa feltet
+  // som blir staaende igjen til venstre er usynlig.
+  if (forskyv) ledd.push(
+    `pad=w=iw+iw*${forskyv}/100:h=ih:x=iw*${forskyv}/100:y=0:color=0x0b0d10`,
+    `crop=w=iw/(1+${forskyv}/100):h=ih:x=0:y=0`);
+  const flytt = ledd.length ? ledd.join(",") + "," : "";
+  sh("ffmpeg", ["-v", "error", "-i", kilde, "-vf", `${flytt}scale=${bredde}:-2:flags=lanczos,fps=24`,
     "-c:v", "libx264", "-preset", "slow", "-crf", crf,
     "-g", "8", "-keyint_min", "8", "-sc_threshold", "0",
     "-pix_fmt", "yuv420p", "-movflags", "+faststart", "-an",
@@ -256,7 +280,10 @@ for (const bredde of scene.bredder) {
 console.log(`  master: ${master}  ${(execFileSync("stat", ["-f%z", master]).toString().trim() / 1024 / 1024).toFixed(1)} MB`);
 
 const plakatPng = join(tmp, `${id}-plakat.png`);
-sh("ffmpeg", ["-v", "error", "-i", join(ut, `${id}-${scene.bredder[0]}.mp4`), "-frames:v", "1", "-y", plakatPng]);
+// Plakaten klippes fra den ferdige fila, saa den arver skala og forskyv.
+// Kilden maa bruke `utnavn`, ikke `id`: scenen «lag» leverer til historie-*.mp4,
+// og et oppslag paa lag-1920.mp4 traff bare saa lenge en gammel fil laa igjen.
+sh("ffmpeg", ["-v", "error", "-i", join(ut, `${utnavn}-${scene.bredder[0]}.mp4`), "-frames:v", "1", "-y", plakatPng]);
 const plakat = join(ut, `${utnavn}-poster.avif`);
 try {
   sh("npx", ["--yes", "sharp-cli", "-i", plakatPng, "-o", plakat, "-f", "avif", "-q", "55", "resize", String(scene.bredder[0])]);

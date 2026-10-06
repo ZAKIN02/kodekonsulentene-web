@@ -18,7 +18,9 @@
         1920,
         1280
       ],
-      "_pingpong_hvorfor": "Ping-pong var paa og la reversen inn i fila. Maalt: start mot slutt skilte 1,17 av 255 - klippet endte der det begynte, og halve fila var bortkastet. Scroll-spoling knytter scroll til tid, saa oppoverrulling reverserer av seg selv."
+      "_pingpong_hvorfor": "Ping-pong var paa og la reversen inn i fila. Maalt: start mot slutt skilte 1,17 av 255 - klippet endte der det begynte, og halve fila var bortkastet. Scroll-spoling knytter scroll til tid, saa oppoverrulling reverserer av seg selv.",
+      "forskyv": 21,
+      "_ramme": "Klippet vises na som maskert SceneFilm pa forsiden, ikke som full-bleed HeroFilm (HeroFilm importeres ikke av noen side). Masken skjuler venstre 46 %, og motivet lа midtstilt 29-69 % - altsa halvt bortgjemt. 21 % forskyvning legger det pa 50-90 %."
     },
     {
       "id": "lag",
@@ -50,7 +52,10 @@
         1280
       ],
       "bevar": "Keep exactly identical: camera position, perspective, framing, lighting direction and intensity, rim light, the near-black #0b0d10 background, the suspension wires, and the number, size, thickness, spacing, material and surface finish of every plate in the stack. The stack keeps exactly the same total height and the same plate count as the supplied image. No plate is added or removed. All surfaces stay plain and unmarked: no text, letters, numbers, logos or watermarks.",
-      "_hvorfor": "Startbildet hadde rundt 40 tynne plater, sluttbildet rundt 8 tykke, og kameravinkelen var ulik - fordi begge rammer ble redigert uavhengig ut fra basisbildet. Klippet mellom dem ville vaert en morf. Sluttbildet kjedes na fra startbildet, og bevar laaser platetallet eksplisitt."
+      "_hvorfor": "Startbildet hadde rundt 40 tynne plater, sluttbildet rundt 8 tykke, og kameravinkelen var ulik - fordi begge rammer ble redigert uavhengig ut fra basisbildet. Klippet mellom dem ville vaert en morf. Sluttbildet kjedes na fra startbildet, og bevar laaser platetallet eksplisitt.",
+      "skala": 0.84,
+      "forskyv": 31,
+      "_ramme": "Masken skjuler den halvdelen teksten staar paa. Masteren har motivet midtstilt (tyngdepunkt 48 %, utstrekning 28-71 %), saa 70-85 % av det lyse blekket laa i den skjulte halvdelen. skala og forskyv flytter motivet inn i baandet masken faktisk viser."
     },
     {
       "id": "apper",

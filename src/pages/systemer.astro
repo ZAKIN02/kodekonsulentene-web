@@ -73,6 +73,7 @@ const integrasjoner = [
     <SceneFilm
       smal="/scener/systemer-1280.mp4"
       bred="/scener/systemer-1920.mp4"
+      stor="/scener/systemer-2560.mp4"
       plakat="/scener/systemer-poster.avif"
       maske={62}
       tekst="venstre"
@@ -125,13 +126,14 @@ const integrasjoner = [
   }
 </style>
 
-<style>
-  /* Scenetittelen bryter ut til 1320 px på brede skjermer og møtte filmen der
-     masken begynner å slippe den inn. Målt 4,37:1 mot ink – under AA-kravet på
-     4,5. Masken skyves derfor lenger ut på denne siden. Målt etterpå: 15,6:1. */
-  /* Maskeoverstyringen lå her som en scoped <style>-regel og var DØD CSS:
-     .scenefilm--venstre bærer SceneFilms scope-id, .scenefilm-ramme bærer denne
-     sidens, og en regel som krever begge matcher ingenting. Bevis: maske 46 % og
-     92 % ga identisk måling. Nå settes den med maske={62} på komponenten. */
-  }
-</style>
+{/*
+  Maskeoverstyringen laa her som en scoped <style>-regel og var DOED CSS:
+  .scenefilm--venstre baerer SceneFilms scope-id mens .scenefilm-ramme baerer denne
+  sidens, saa en regel som krever begge matcher ingenting. Bevis: maske 46 % og 92 %
+  ga identisk maaling. Den settes naa med maske={62} paa komponenten.
+
+  Da regelen ble fjernet, ble en forvillet kroellparentes staaende igjen i en ellers
+  tom <style>-blokk. Den brakk hele bygget: lightningcss stoppet paa «Unexpected
+  token Ident». En tom style-blokk med bare en parentes i er ikke synlig som feil
+  foer noen bygger.
+*/}

@@ -11,9 +11,8 @@
   position: relative;
   padding-block: var(--space-8);
 }
-.scene::before {
+.scene__strek {
   /* Hårlinjen som skiller scenene. Ligger i innholdsbredden, ikke helt ut i kanten. */
-  content: "";
   position: absolute;
   inset-block-start: 0;
   inset-inline: max(var(--space-5), calc(50% - 560px));
@@ -34,13 +33,26 @@
    slås sammen av lightningcss til `animation: linear both x view()`, som er ugyldig –
    og både Chromium og Firefox forkaster tidslinjen uten å si fra. */
 @supports (animation-timeline: view()) {
-  .scene::before {
+  /* MÅLT FEIL, OG RETTET: `animation-timeline: view()` på et pseudoelement gjør
+     PSEUDOELEMENTET til subjekt. Streken er 1 px høy, så entry-fasen er omtrent
+     én piksel scroll – animasjonen er over før den begynner, og `fill-mode: both`
+     holder sluttbildet. Streken sto derfor ferdig tegnet hele tiden.
+
+     Verifisert med 1 px oppløsning over 120 px rundt grensen: scaleX var 1.000
+     i hver eneste posisjon. Den forrige verifikasjonen av denne streken var feil.
+
+     Rettingen er en navngitt tidslinje på SCENEN, som er høy nok til å ha en
+     ekte entry-fase. Pseudoelementet er et barn av scenen og kan referere den. */
+  .scene { view-timeline-name: --scene-syn; }
+  .scene__strek {
     animation-name: scene-strek;
     animation-duration: 1ms;
     animation-timing-function: linear;
     animation-fill-mode: both;
-    animation-timeline: view();
-    animation-range: entry 0% entry 85%;
+    animation-timeline: --scene-syn;
+    /* Kort vindu tidlig i inngangen: streken skal tegne seg mens den fortsatt er
+       nede på skjermen, ikke mens den er på vei ut av toppen. */
+    animation-range: entry 0% entry 35%;
   }
 }
 
@@ -48,7 +60,7 @@
   from { transform: scaleX(0); }
   to { transform: scaleX(1); }
 }
-.scene:first-of-type::before { display: none; }
+.scene:first-of-type .scene__strek { display: none; }
 
 .scene__inner {
   width: 100%;
@@ -132,7 +144,26 @@
     animation-timing-function: linear;
     animation-fill-mode: both;
     animation-timeline: view();
-    animation-range: entry 8% cover 32%;
+    /* `--trinn` settes av Avslor på hver bruk (f.eks. trinn={k % 3} på de seks
+       kortene under «Det vi kobler oftest»). Den var LEVENDE BARE i Firefox-
+       reserven, som bruker den som transition-delay. I view()-grenen – altså for
+       de ~95 % som har scroll-drevne animasjoner – sto den ubrukt, så alle kort
+       på samme rad kom inn i nøyaktig samme øyeblikk.
+
+       Målt på /systemer før: kort 1 og 2 identiske, 3 og 4 identiske, 5 og 6
+       identiske, gjennom hele gjennomløpet. Trappen 0,1,2,0,1,2 ga null utslag;
+       bare radplasseringen talte.
+
+       Seks prosent per trinn, samme prinsipp som ordene i .stortekst bruker med
+       --i. Flatt med vilje: trinn 2 blir entry 20 %, ikke en bølge.
+
+       Taket på 4 er ikke pynt: tre lister bruker trinn={i}, altså array-indeksen.
+       Uten tak ville en liste på ti elementer gitt entry 68 %, og det siste
+       elementet stått halvgjennomsiktig langt inn i synsranden. Nettopp den
+       feilen – innhold som blir stående halvsynlig – har truffet oss før. */
+    animation-range:
+      entry calc(8% + min(var(--trinn, 0), 4) * 6%)
+      cover calc(32% + min(var(--trinn, 0), 4) * 6%);
   }
   .avslor--venstre { animation-name: avslor-venstre; }
 
@@ -186,7 +217,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .scene::before {
+  .scene__strek {
     animation: none !important;
     transform: none !important;
   }

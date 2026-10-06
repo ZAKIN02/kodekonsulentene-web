@@ -29,6 +29,12 @@ const { n, eyebrow, tittel, ingress, id, bred = false, lav = false, class: cls }
   id={id}
   class:list={["scene", bred && "scene--bred", lav && "scene--lav", cls]}
 >
+  {/* Skillestreken er et EKTE element, ikke ::before.
+      Scroll-drevne animasjoner slo ikke inn på pseudoelementet: malt tilstand og
+      computed transform sto på utgangsverdien i hver eneste scroll-posisjon, mens
+      et ekte barn på nøyaktig samme navngitte tidslinje gikk 0,00 → 0,22 → 1,00.
+      Streken har derfor aldri tegnet seg, selv om regelen så riktig ut. */}
+  <span class="scene__strek" aria-hidden="true"></span>
   <div class="scene__inner">
     {(eyebrow || tittel) && (
       <header class="scene__head">

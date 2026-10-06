@@ -3,7 +3,6 @@ import Base from "../../layouts/Base.astro";
 import Scene from "../../components/Scene.astro";
 import Mega from "../../components/Mega.astro";
 import Avslor from "../../components/Avslor.astro";
-import Stillbilde from "../../components/Stillbilde.astro";
 import Demo from "../../components/Demo.astro";
 import opptak from "../../data/opptak.json";
 import ContactBlock from "../../components/ContactBlock.astro";
@@ -126,11 +125,22 @@ const kr = (n: number) => `${n.toLocaleString("nb-NO").replace(/ /g, " ")} kr`;
       />
     </Avslor>
 
-    <Avslor trinn={3}>
-      <Stillbilde id="verktoy-pris" sizes="(min-width: 1120px) 1120px, 100vw">
-        Like trinn, så de kan telles. Den grønne linjen markerer høyden du har valgt – en målestokk, ikke et tilbud.
-      </Stillbilde>
-    </Avslor>
+    {/* HER LÅ ET GENERERT STILLBILDE (verktoy-pris), OG DET ER FJERNET MED VILJE.
+
+        Det sto rett under det EKTE skjermopptaket av priskalkulator – samme bredde, samme
+        plass i rekken, med en bildetekst som forklarte en metafor (like trinn i en stabel).
+        To figurer etter hverandre der den ene er bevis og den andre er pynt, gjør at
+        leseren vurderer dem likt. Da taper beviset.
+
+        Fire slike bilder lå på de fire verktøysidene. Lagt ved siden av hverandre er
+        de praktisk talt det samme bildet: hengende aluminiumsplater, forskjellen er
+        hvilken kant den grønne streken ligger på. At de er utbyttbare ER beviset på at
+        de ikke bærer informasjon.
+
+        Brandboken rangerer opptak av verktøyet i bruk først, diagram med ekte navn
+        nummer to, og ingenting som nummer tre. Generert materiale står ikke på listen,
+        bortsett fra som bakgrunnstekstur under tekst. Opptaket over er førsteplassen,
+        og det står nå alene. */}
   </Scene>
 
   <Scene n={3} eyebrow="Markedet" tittel="Hva andre tar" ingress="Tallene under er ikke våre. De er hentet fra leverandørenes egne nettsider, med kilde og dato, slik at du kan etterprøve dem.">

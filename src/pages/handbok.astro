@@ -5,10 +5,11 @@ import Mega from "../components/Mega.astro";
 import Avslor from "../components/Avslor.astro";
 import Button from "../components/Button.astro";
 import ContactBlock from "../components/ContactBlock.astro";
-import Stillbilde from "../components/Stillbilde.astro";
+import Flyt from "../components/Flyt.astro";
 import Horisont from "../components/Horisont.astro";
 import { firma } from "../data/firma";
 import { prisvilkaar } from "../data/priser";
+import { flyter } from "../data/flyter";
 
 // Rutinene sto som seks kulepunkter midt i en vegg av fjorten overskrifter.
 // De er det mest konkrete på siden, og det eneste en kunde kan etterprøve –
@@ -35,10 +36,25 @@ import "../styles/scener.css";
     </Avslor>
 
     <Avslor trinn={2} fra="dybde" dybde={60}>
-      {/* Samme stabel som ellers er lukket, her viftet opp fra ett hengsel slik at
-          mellomrommet mellom hvert lag er synlig. Det er det siden gjør med
-          arbeidsmåten vår. Dovent lastet – teksten er poenget, ikke bildet. */}
-      <Stillbilde id="side-handbok" sizes="(min-width: 60rem) 60rem, 100vw" />
+      {/* HER LÅ ET GENERERT STILLBILDE (side-handbok), BYTTET UT MED EN FIGUR SOM
+          SIER NOE.
+
+          Bildet var en stabel aluminiumsplater viftet opp fra ett hengsel, med
+          bildeteksten «det er det siden gjør med arbeidsmåten vår». Dekk over den
+          setningen og prøven i brandboken: en rørleggeren ser grå hyller. Metaforen
+          bodde i bildeteksten, ikke i bildet – og da er det bildeteksten som gjør
+          jobben, ikke bildet.
+
+          I stedet står flyten `prosess`, som allerede fantes i src/data/flyter.ts og
+          som INGEN side brukte. Den har ekte navn og våre egne tider: Samtale 20 min,
+          Prototype 72 timer, Bygging 2–3 uker, Drift løpende. Det er nøyaktig det
+          håndboken handler om, og det er andreplassen i brandbokens rangering.
+
+          Den beveger seg også hele tiden, i løkke, med begynnelse, midte og slutt –
+          en pakke som reiser gjennom kjeden og tenner ett ledd om gangen – til 0 kB
+          JavaScript. Tidene er de samme som i src/data/prosess.ts; endres den ene,
+          skal den andre endres i samme slengen, ellers lyver figuren om tilbudet. */}
+      <Flyt flyt={flyter.prosess} />
     </Avslor>
 
     <Avslor>

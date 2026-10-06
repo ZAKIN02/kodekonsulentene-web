@@ -147,3 +147,90 @@ dekorasjon, skrevet inn i et dokument som ellers krever at alt skal gjøre en jo
 Masterne i `assets/mastere/` er 81 MB. De er riktige å beholde — de gjør omkoding
 gratis — men hvis det meste av det genererte materialet skal ut, bør det ryddes der
 også, ikke bare i `public/`.
+
+---
+
+## Gjennomført 6. oktober 2026 — målt, sett og fjernet
+
+Denne gjennomgangen var redaksjonell. Runden under la til to ting den manglet:
+**opptak i headless Chrome av hver flate slik en besøkende faktisk ser den**, og
+**måling av hvor mye hvert klipp i det hele tatt beveger seg** (samme metrikk som
+`.skudd/klipp-endring.mjs`: 160×90, R-kanal, snitt absolutt differanse mellom
+rammer ved 0/25/50/75/100 % av tidslinjen).
+
+### Hva målingen viste
+
+| Klipp | Slutt mot start | Tyngdepunkt | Dom |
+|---|---|---|---|
+| `nettsider` | 20,62 | Q2 | tydelig |
+| `priser` | **19,16** | **Q3 (39 %)** | **beholdt** |
+| `sikkerhet` | 9,21 | Q1 | tydelig nok |
+| `hist2-steg` | 7,96 | Q1 (47 %) | beholdt, løkkeflate |
+| `systemer` | 5,83 | **Q1 (78 %)** | **fjernet** |
+| `lev2-klinikk` | 5,52 | Q1 | står (annen eier) |
+| `apper` | 4,95 | **Q1 (60 %)** | **fjernet** |
+| `hist2-apne` | 4,76 | Q3 (45 %) | beholdt, ny åpningssekvens |
+| `sjekk-scan` | 2,77 | Q4 | står (annen eier) |
+| `lev-om` | 2,69 | Q1 | **fjernet** |
+| `lev-status` | 2,55 | Q1 | **fjernet** |
+| `lev-caser` | **2,11** | Q1 | **fjernet** |
+
+Referansen er ~18,6 for de klippene vi selv kaller tydelige. Alt under 6 er i praksis
+et stillbilde som koster båndbredde, og et tyngdepunkt i Q1 betyr at bevegelsen er
+over før øyet har kommet dit — prosjektets egen regel er at poenget skal ligge rundt
+50 % av tidslinjen.
+
+### Fjernet
+
+| Hva | Hvor | Erstattet med |
+|---|---|---|
+| `lev-caser` (løkke, full opasitet) | `/caser` | ingenting — Horisont-blokken bærer bevegelsen |
+| `lev-status` (Demo-ramme) | `/status` | ingenting — terminalutsnittet og Horisont bærer den |
+| `lev-om` (Demo-ramme) | `/om` | ingenting — det ekte `flyt`-opptaket over står nå alene |
+| `systemer` (bakgrunn) | `/systemer` | Flyt-figuren som allerede sto rett over |
+| `apper` (bakgrunn) | `/apper-og-ai` | Flyt-figuren som allerede sto rett under |
+| `apper-par`, `apper-lag` | `/apper-og-ai` | ingenting — begge sto uten bildetekst |
+| `verktoy-uu/-cookie/-dmarc/-pris` | verktøysidene | ingenting — det ekte opptaket over står alene |
+| `side-handbok` | `/handbok` | **`flyter.prosess`** — Samtale 20 min → Prototype 72 timer → Bygging 2–3 uker → Drift |
+
+`flyter.prosess` lå ferdig i `src/data/flyter.ts` og var ikke i bruk på noen side. Den
+har ekte navn og våre egne tider, går i løkke med begynnelse, midte og slutt, og koster
+0 kB JavaScript.
+
+### Hva det ga
+
+Førstelast, Pixel 7, uten scroll:
+
+| Side | Før | Etter |
+|---|---|---|
+| `/apper-og-ai` | **535 kB** | 221 kB |
+| `/caser` | **532 kB** | 197 kB |
+| `/status` | **466 kB** | 204 kB |
+| `/om` | 258 kB | 234 kB |
+| `/systemer` | 227 kB | 214 kB |
+| verktøysidene | 236–244 kB | 230–241 kB |
+| `/handbok` | 210 kB | 216 kB |
+
+Taket er 400 kB. **Tre sider brøt det, og alle tre brøt det på grunn av et generert
+klipp som ikke betydde noe.** `/handbok` steg 6 kB: det er figuren, og den er verdt det.
+
+31 MB foreldreløse filer slettet fra `public/scener/` og `public/bilder/`. Masterne i
+`assets/mastere/` er urørt.
+
+### Hva som står igjen, og hvorfor
+
+`priser` er det eneste genererte klippet som består prøven. Stabelen deler seg i tre
+grupper, og siden selger tre pakker — dekk over teksten og motivet sier fortsatt
+«tre nivåer». Det er også det klippet som faktisk beveger seg mest, og det eneste med
+tyngdepunktet etter midten.
+
+Forsidens to klipp (`hist2-apne`, `hist2-steg`) er nybygde og ble ikke rørt.
+`hist2-apne` har tyngdepunkt i Q3 (45 %), altså riktig rytme etter vår egen regel.
+
+`rontgen`-opptaket er fortsatt ikke i bruk noe sted. Det er ekte materiale og
+førsteplassen i rangeringen, men 960-trinnet veier 676 kB — for tungt for `/status`,
+som er siden der vi publiserer ytelsesbudsjettet. Det venter på en side med plass.
+
+Fem genererte stillbilder lå allerede uten referanse før denne runden: `nart`, `tre`,
+`rekke`, `side-status`, `bransje-klinikk`. De er ikke slettet her fordi andre agenter
+jobber på `/nettsider`, `/sikkerhet` og `/sjekk` akkurat nå. 1,1 MB, lavt prioritert.

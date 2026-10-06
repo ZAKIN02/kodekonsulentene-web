@@ -4,7 +4,6 @@ import Scene from "../components/Scene.astro";
 import Mega from "../components/Mega.astro";
 import Avslor from "../components/Avslor.astro";
 import Eyebrow from "../components/Eyebrow.astro";
-import SceneFilm from "../components/SceneFilm.astro";
 import Horisont from "../components/Horisont.astro";
 import Button from "../components/Button.astro";
 import ContactBlock from "../components/ContactBlock.astro";
@@ -33,27 +32,25 @@ import "../styles/scener.css";
       <p class="scene__ingress body-lg">Hver case sier hva som var problemet, hva vi bygde, og hva det ga i tall. Konseptarbeid er alltid merket, slik at du vet hva som er oppdrag og hva som er øvelse.</p>
     </Avslor>
 
-    <Avslor trinn={2} fra="skjev" skjev={2.2}>
-      {/* Ekte bevegelse, ikke et stillbilde. Bare LYSET endrer seg mellom første og
-          siste ramme – geometrien står bom stille, så Kling har ingenting å morfe.
-          Det er den tekniske grunnen til at klippet ikke ser ut som billig AI-video. */}
-      {/* LØKKE i full styrke, ikke scroll-spolt og ikke maskert.
-          Målt mot referansene: siden vår beveget seg BARE når brukeren scroller.
-          jeton.com har tre ganger vårt pikselavvik når siden står helt stille,
-          fordi video går i løkke uavhengig av leseren. Og vi viste ni klipp på
-          42 % opasitet bak tekst – vi betalte megabyte uten å få effekten. */}
-      <SceneFilm
-        loope
-        smal="/scener/lev-caser-960.mp4"
-        bred="/scener/lev-caser-1280.mp4"
-        stor="/scener/lev-caser-1920.mp4"
-        plakat="/scener/lev-caser-poster.avif"
-      />
-      <p class="small muted" style="margin-top: var(--space-3)">
-        Fire stabler, én tent. Linjen tegner seg bare på den nærmeste – de tre bak
-        finnes, men er ikke noe vi kan vise fram ennå.
-      </p>
-    </Avslor>
+    {/* HER STO ET GENERERT KLIPP, OG DET ER FJERNET MED VILJE.
+        lev-caser gikk i løkke i full styrke rett under h1 – sidens mest
+        framtredende flate. Målt med samme metrikk som .skudd/klipp-endring.mjs
+        endret det seg 2,11 av 255 fra første til siste ramme, mot ~18,6 for de
+        klippene vi kaller tydelige. Fire grå plater som hang stille mens en tynn
+        grønn strek flyttet seg noen piksler.
+
+        Brandbokens prøve: dekk over teksten – ville en rørlegger skjønt hva dette
+        handlet om? Nei. Og generert materiale står ikke på rangeringen i det hele
+        tatt, bortsett fra som bakgrunnstekstur under tekst; dette var en innrammet
+        figur i full opasitet.
+
+        Det kostet 316 kB av førstelasten fordi en løkke spiller av seg selv og
+        derfor lastes med en gang. Siden lå på 532 kB mot et tak på 400 kB – hele
+        bruddet var dette ene klippet.
+
+        Bevegelsen på siden ligger nå i Horisont-blokken «Derfor er listen kort»,
+        som er en ren CSS-sekvens med fire navngitte krav. Den betyr noe.
+        Tredjeplassen i rangeringen vår er «ingenting», og den slår dekorasjon. */}
 
     <Avslor>
     <div class="stack">

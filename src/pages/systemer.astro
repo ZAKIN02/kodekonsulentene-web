@@ -3,7 +3,6 @@ import Base from "../layouts/Base.astro";
 import Scene from "../components/Scene.astro";
 import Mega from "../components/Mega.astro";
 import Avslor from "../components/Avslor.astro";
-import SceneFilm from "../components/SceneFilm.astro";
 import Button from "../components/Button.astro";
 import Terminal from "../components/Terminal.astro";
 import Flyt from "../components/Flyt.astro";
@@ -77,15 +76,20 @@ const integrasjoner = [
     <Flyt flyt={flyter.systemer} />
   </Scene>
 
-  <div class="scenefilm-ramme">
-    <SceneFilm
-      smal="/scener/systemer-1280.mp4"
-      bred="/scener/systemer-1920.mp4"
-      stor="/scener/systemer-2560.mp4"
-      plakat="/scener/systemer-poster.avif"
-      maske={62}
-      tekst="venstre"
-    />
+  {/* HER STO ET GENERERT KLIPP BAK DENNE SEKSJONEN, OG DET ER FJERNET MED VILJE.
+      systemer-klippet lå på 85 % opasitet bak «Det vi kobler oftest», med masken
+      satt til 62 % – altså sluppet fram i en smal stripe helt til høyre. Opptak i
+      headless Chrome viser at det i praksis var en mørk flekk i ytterkanten.
+
+      Og det sto nesten stille. Målt med .skudd/klipp-endring.mjs-metrikken endret
+      det seg 5,83 av 255 fra første til siste ramme, og 78 % av den endringen lå i
+      FØRSTE kvartal – klippet var ferdig etter to av åtte sekunder, mens prosjektets
+      egen regel sier at poenget skal ligge rundt 50 % av tidslinjen.
+
+      Det som faktisk forklarer denne seksjonen står rett over den: Flyt-figuren
+      «Fra booking til regnskap», med Kunde, Booking, Vipps, Fiken og SMS i bokser.
+      Ekte navn, en pakke som reiser gjennom kjeden i løkke, 0 kB JavaScript. Det er
+      andreplassen i brandbokens rangering, og den slår et nedtonet motiv i kanten. */}
   <Scene n={3} eyebrow="Integrasjoner" tittel="Det vi kobler oftest" id="integrasjoner">
     {/* Rutenettet brytes her. Seks like kort i to rette kolonner leses som en
         tabell; litt helning og ulik dybde leses som ting som ligger oppa hverandre.
@@ -113,7 +117,6 @@ const integrasjoner = [
       ))}
     </div>
   </Scene>
-  </div>
 
   <Scene n={4} class="flate--varm" eyebrow="Pris" tittel="System fra 60 000 kr" ingress="Prisen følger antall integrasjoner og hvor mye som må holdes i orden etterpå. Du får fast pris før vi begynner, og 40 % faktureres ved oppstart. Eks. mva.">
     <div class="row">
@@ -155,10 +158,15 @@ const integrasjoner = [
   Maskeoverstyringen laa her som en scoped <style>-regel og var DOED CSS:
   .scenefilm--venstre baerer SceneFilms scope-id mens .scenefilm-ramme baerer denne
   sidens, saa en regel som krever begge matcher ingenting. Bevis: maske 46 % og 92 %
-  ga identisk maaling. Den settes naa med maske={62} paa komponenten.
+  ga identisk maaling.
 
-  Da regelen ble fjernet, ble en forvillet kroellparentes staaende igjen i en ellers
-  tom <style>-blokk. Den brakk hele bygget: lightningcss stoppet paa «Unexpected
-  token Ident». En tom style-blokk med bare en parentes i er ikke synlig som feil
-  foer noen bygger.
+  Hele SceneFilm-blokken er naa borte fra denne siden – klippet sto nesten stille og
+  forklarte ingenting – saa masken har ingenting aa overstyre lenger. Notatet staar
+  igjen fordi feilen er lett aa gjenta: en scoped regel kan ikke naa et barn med en
+  annen scope-id, og den feiler STILLE.
+
+  Da regelen ble fjernet foerste gang, ble en forvillet kroellparentes staaende igjen
+  i en ellers tom <style>-blokk. Den brakk hele bygget: lightningcss stoppet paa
+  «Unexpected token Ident». En tom style-blokk med bare en parentes i er ikke synlig
+  som feil foer noen bygger.
 */}

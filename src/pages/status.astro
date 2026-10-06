@@ -7,7 +7,6 @@ import Nokkeltall from "../components/Nokkeltall.astro";
 import StatusBadge from "../components/StatusBadge.astro";
 import Terminal from "../components/Terminal.astro";
 import Button from "../components/Button.astro";
-import Demo from "../components/Demo.astro";
 import Horisont from "../components/Horisont.astro";
 import { firma } from "../data/firma";
 
@@ -82,16 +81,26 @@ const budsjett = [
         og vi oppgir ingen før vi måler den over tid – et tall uten historikk er bare
         en påstand.
       </p>
-      {/* Ekte bevegelse, ikke et stillbilde. Bare LYSET endrer seg mellom første og
-          siste ramme – geometrien står bom stille, så Kling har ingenting å morfe.
-          Det er den tekniske grunnen til at klippet ikke ser ut som billig AI-video. */}
-      <Demo
-        smal="/scener/lev-status-960.mp4"
-        bred="/scener/lev-status-1280.mp4"
-        stor="/scener/lev-status-1920.mp4"
-        plakat="/scener/lev-status-poster.avif"
-        tekst="Linjen tegner seg nedover kantene. Den blir ubrutt bare fordi hvert lag ligger der det skal."
-      />
+      {/* HER STO ET GENERERT KLIPP, OG DET ER FJERNET MED VILJE.
+          lev-status lå i en Demo-ramme – altså presentert som BEVIS, med hårlinje
+          og bildetekst, akkurat som de ekte skjermopptakene av verktøyene våre.
+          Det var et bilde av aluminiumsplater. Målt endret det seg 2,55 av 255 fra
+          første til siste ramme (de vi kaller tydelige ligger på ~18,6), og
+          bevegelsen var over før en fjerdedel av tidslinjen.
+
+          Dekk over bildeteksten: en rørlegger ser grå hyller. Siden handler om at
+          serveren svarer og at vi holder et ytelsesbudsjett. Platene sa ingenting
+          om noen av delene, og en Demo-ramme rundt generert materiale er verre enn
+          ingen ramme – den låner troverdighet fra de ekte opptakene.
+
+          Klippet kostet 249 kB av førstelasten fordi det lå i første skjermbilde.
+          /status lå på 466 kB mot et tak på 400 kB.
+
+          Ingenting satt inn i stedet, og det er et valg: dette er siden som
+          publiserer ytelsesbudsjettet. Det ene ekte opptaket som ikke er i bruk
+          (rontgen, røntgenlinsen på vår egen forside) veier 676 kB på 960-trinnet,
+          og å legge det her ville brutt nøyaktig det løftet siden selger. Bevegelsen
+          på siden ligger i terminalutsnittet og i Horisont-blokken lenger nede. */}
     </div>
   </Scene>
 

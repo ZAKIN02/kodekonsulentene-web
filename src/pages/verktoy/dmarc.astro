@@ -7,7 +7,6 @@ import Mega from "../../components/Mega.astro";
 import Avslor from "../../components/Avslor.astro";
 import Button from "../../components/Button.astro";
 import Terminal from "../../components/Terminal.astro";
-import Stillbilde from "../../components/Stillbilde.astro";
 import Demo from "../../components/Demo.astro";
 import opptak from "../../data/opptak.json";
 import ContactBlock from "../../components/ContactBlock.astro";
@@ -130,11 +129,22 @@ const forhandsutfylt = Astro.url.searchParams.get("domene") ?? "";
       />
     </Avslor>
 
-    <Avslor trinn={3}>
-      <Stillbilde id="verktoy-dmarc" sizes="(min-width: 1120px) 1120px, 100vw">
-        Tre poster. Nesten alle som feiler sjekken har to på plass og én som ikke står der den skal.
-      </Stillbilde>
-    </Avslor>
+    {/* HER LÅ ET GENERERT STILLBILDE (verktoy-dmarc), OG DET ER FJERNET MED VILJE.
+
+        Det sto rett under det EKTE skjermopptaket av dmarc – samme bredde, samme
+        plass i rekken, med en bildetekst som forklarte en metafor (tre plater over hverandre).
+        To figurer etter hverandre der den ene er bevis og den andre er pynt, gjør at
+        leseren vurderer dem likt. Da taper beviset.
+
+        Fire slike bilder lå på de fire verktøysidene. Lagt ved siden av hverandre er
+        de praktisk talt det samme bildet: hengende aluminiumsplater, forskjellen er
+        hvilken kant den grønne streken ligger på. At de er utbyttbare ER beviset på at
+        de ikke bærer informasjon.
+
+        Brandboken rangerer opptak av verktøyet i bruk først, diagram med ekte navn
+        nummer to, og ingenting som nummer tre. Generert materiale står ikke på listen,
+        bortsett fra som bakgrunnstekstur under tekst. Opptaket over er førsteplassen,
+        og det står nå alene. */}
   </Scene>
 
   <Scene n={3} eyebrow="Etterpå" tittel="Vil du at vi ordner det?" ingress="Å sette opp SPF, DKIM og DMARC riktig tar vanligvis en til to timer, og det gjøres én gang. Timeprisen er 950 kr eks. mva.">

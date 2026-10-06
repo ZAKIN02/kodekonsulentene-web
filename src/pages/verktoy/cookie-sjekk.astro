@@ -6,7 +6,6 @@ import Avslor from "../../components/Avslor.astro";
 import UrlCheck from "../../components/UrlCheck.astro";
 import Button from "../../components/Button.astro";
 import Terminal from "../../components/Terminal.astro";
-import Stillbilde from "../../components/Stillbilde.astro";
 import Demo from "../../components/Demo.astro";
 import opptak from "../../data/opptak.json";
 import ContactBlock from "../../components/ContactBlock.astro";
@@ -106,11 +105,22 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
       />
     </Avslor>
 
-    <Avslor trinn={3}>
-      <Stillbilde id="verktoy-cookie" sizes="(min-width: 1120px) 1120px, 100vw">
-        Lokket løftet av. Det som allerede ligger der, lå der før du fikk spørsmålet.
-      </Stillbilde>
-    </Avslor>
+    {/* HER LÅ ET GENERERT STILLBILDE (verktoy-cookie), OG DET ER FJERNET MED VILJE.
+
+        Det sto rett under det EKTE skjermopptaket av cookie-sjekk – samme bredde, samme
+        plass i rekken, med en bildetekst som forklarte en metafor (et lokk som er løftet av).
+        To figurer etter hverandre der den ene er bevis og den andre er pynt, gjør at
+        leseren vurderer dem likt. Da taper beviset.
+
+        Fire slike bilder lå på de fire verktøysidene. Lagt ved siden av hverandre er
+        de praktisk talt det samme bildet: hengende aluminiumsplater, forskjellen er
+        hvilken kant den grønne streken ligger på. At de er utbyttbare ER beviset på at
+        de ikke bærer informasjon.
+
+        Brandboken rangerer opptak av verktøyet i bruk først, diagram med ekte navn
+        nummer to, og ingenting som nummer tre. Generert materiale står ikke på listen,
+        bortsett fra som bakgrunnstekstur under tekst. Opptaket over er førsteplassen,
+        og det står nå alene. */}
   </Scene>
 
   <Scene n={3} eyebrow="Etterpå" tittel="Vil du at vi rydder opp?" ingress="Lovsjekk-pakken dekker cookies, universell utforming, lovpålagt informasjon og personvernerklæring på den siden du har i dag. Du trenger ikke ny nettside for det.">

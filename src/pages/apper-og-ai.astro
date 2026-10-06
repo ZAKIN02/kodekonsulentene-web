@@ -5,8 +5,6 @@ import { flyter } from "../data/flyter";
 import Scene from "../components/Scene.astro";
 import Mega from "../components/Mega.astro";
 import Avslor from "../components/Avslor.astro";
-import SceneFilm from "../components/SceneFilm.astro";
-import Stillbilde from "../components/Stillbilde.astro";
 import Pekerkort from "../components/Pekerkort.astro";
 import Horisont from "../components/Horisont.astro";
 import Button from "../components/Button.astro";
@@ -51,24 +49,24 @@ const steg = [
     </Avslor>
   </Scene>
 
-  {/* Filmen ligger BAK seksjonen, med masken som slipper motivet fram på høyre
-      side mens teksten står trygt til venstre. Kontrast målt etterpå, ikke antatt. */}
-  <div class="scenefilm-ramme">
-    <SceneFilm
-      smal="/scener/apper-960.mp4"
-      bred="/scener/apper-1920.mp4"
-      plakat="/scener/apper-poster.avif"
-      maske={52}
-      tekst="venstre"
-      {/* Speilvendt fordi motivets tyngde – stabelen på sju plater – ligger i
-          venstre halvdel, og masken slipper bare fram fra 52 % og utover. Målt på
-          sluttrammen: snittlysstyrke 30-37 i båndet 20-50 %, mot 17-29 i det
-          synlige båndet. Uten vending ser kunden bare de to små platene og en
-          kabel som kuttes av bildekanten, altså halve motivet uten mening.
-          object-position hjelper ikke: object-fit: cover på en 16:9-film i en
-          16:9-flate har ingenting å panorere i. */}
-      vend
-    />
+  {/* HER STO ET GENERERT KLIPP BAK DENNE SEKSJONEN, OG DET ER FJERNET MED VILJE.
+
+      Motivet var faktisk det nærmeste et av de ni klippene kom en mening: en stabel
+      og en liten plate forbundet med en kabel, og et grønt signal som reiser over og
+      tenner den lille – altså «To flater, én kobling». Men meningen overlevde ikke
+      masken. Masken sto på 52 % og vi hadde allerede måttet speilvende motivet for
+      å dytte det inn i båndet som slippes fram. Opptak i headless Chrome viser at
+      kunden ser stabelen, ikke kabelen og ikke den lille platen – altså akkurat den
+      halvdelen som BÆRER poenget, borte.
+
+      Og bevegelsen var frontlastet: total endring 4,95 av 255, hvorav 60 % i første
+      kvartal. Klippet var over lenge før øyet kom dit. Prosjektets regel er at
+      poenget skal ligge rundt 50 % av tidslinjen.
+
+      Det klippet prøvde å si, sier Flyt-figuren nederst i denne seksjonen bedre:
+      App → Database → Nettside med ekte navn og en pakke som reiser gjennom kjeden.
+
+      Klippet kostet 296 kB av førstelasten. Siden lå på 535 kB mot et tak på 400 kB. */}
     <Scene n={2} eyebrow="Sammenhengen" tittel="To flater, én kobling">
       <Avslor>
       <div class="stack" style="max-width: 34rem">
@@ -92,7 +90,6 @@ const steg = [
       <Flyt flyt={flyter.apper} />
     </Avslor>
     </Scene>
-  </div>
 
   <Scene n={3} eyebrow="Apper" tittel="Tre ting en app løser som en nettside ikke gjør" id="apper">
     <Avslor>
@@ -103,9 +100,11 @@ const steg = [
     </div>
     </Avslor>
 
-    <Avslor trinn={2}>
-      <Stillbilde id="apper-par" sizes="(min-width: 70rem) 68rem, 100vw" class="scene__flate" />
-    </Avslor>
+    {/* Her lå et generert stillbilde (apper-par) uten bildetekst, rett under tre
+        kort som allerede sier hva en app løser. Et bilde av to hengende stabler
+        aluminiumsplater forklarer ikke push-varsler, offline-synk eller kamera.
+        Brandboken tillater generert materiale som bakgrunnstekstur under tekst –
+        ikke som frittstående figur. Fjernet. */}
 
     {apper.length > 0 && (
       <dl class="kv" style="margin-top: var(--space-6)">
@@ -163,9 +162,9 @@ const steg = [
     </div>
     </Avslor>
 
-    <Avslor trinn={2}>
-      <Stillbilde id="apper-lag" sizes="(min-width: 70rem) 68rem, 100vw" class="scene__flate" />
-    </Avslor>
+    {/* Her lå et generert stillbilde (apper-lag) uten bildetekst, rett under
+        terminalutsnittet med de fem AI-reglene. Terminalen skriver seg selv og sier
+        noe konkret; platen sa ingenting. Fjernet av samme grunn som apper-par. */}
   </Scene>
 
   <ContactBlock n={7} />

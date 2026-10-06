@@ -125,6 +125,141 @@ function skannOpptak({ url, domene, tekst, plass }) {
 
 const OPPTAK = {
   /**
+   * Flytdiagrammet som tegner seg selv: hva vi faktisk kobler sammen.
+   *
+   * Dette er det eneste opptaket der motivet BÅDE er ekte og bokstavelig. Nodene
+   * heter Kunde, Booking, Vipps, Fiken og SMS – ikke abstrakte former. Brandboken
+   * rangerer «diagram med ekte navn» som nivå 2 og «opptak av verktøyet i drift»
+   * som nivå 1; dette er begge deler samtidig, fordi diagrammet ER en komponent
+   * på siden som tegner seg mens du scroller.
+   *
+   * ÉN GEST: scroll. Ingen peker, ingen klikk, ingenting som konkurrerer.
+   *
+   * REDUSERT BEVEGELSE MÅ AV HER. Opptakskonteksten setter ellers
+   * `reducedMotion: reduce` globalt – riktig for de andre scenene, der sidens
+   * egen inntoning bare er støy. Men Flyt slår da av tegningen og står ferdig
+   * (`animation: none !important`), så opptaket ville vist et stillbilde.
+   * Her er tegningen selve motivet.
+   *
+   * IKKE KLIPPET, med vilje. Figuren vandrer 829 px opp gjennom visningsvinduet
+   * mens den tegnes – målt: rammen står på topp 900 når første strek begynner og
+   * på topp 71 når den siste er ferdig. Et fast utsnitt kan ikke romme den, og et
+   * utsnitt per ramme ville ristet. Hele vinduet er dessuten det brukeren faktisk
+   * ser, og overskriften over figuren hører med i historien.
+   */
+  flyt: {
+    url: "/systemer",
+    sek: 7,
+    bevegelse: "no-preference",
+    tekst: "Flytdiagrammet på /systemer tegner seg selv mens du scroller. Nodene er systemene vi faktisk kobler sammen, og figuren koster null kilobyte JavaScript.",
+    plass: "/nettsider eller /om – den forklarer hva «systemer som snakker sammen» betyr, uten metafor",
+    async klar(p) {
+      // Start like før figuren kommer inn i synsranden, så første ramme er tom
+      // og tegningen begynner i bildet i stedet for å være halvveis unnagjort.
+      const g = await p.evaluate(() => {
+        const r = document.querySelector(".flyt__ramme").getBoundingClientRect();
+        return { topp: Math.round(r.top + scrollY), vh: innerHeight };
+      });
+      await p.evaluate((y) => scrollTo(0, y), g.topp - g.vh + 20);
+      await p.waitForTimeout(600);
+    },
+    /**
+     * Ett jevnt scroll gjennom tegnevinduet.
+     *
+     * Grensene er målt, ikke gjettet: ved y=620 står alle fem boksene på
+     * `stroke-dashoffset: 1` (utegnet), ved y=1460 på 0 (ferdige). Myk inn og ut,
+     * så scrollen ikke starter og stopper brått – det er det som skiller en rolig
+     * avdekking fra et rykk.
+     */
+    async ramme(p, a, st) {
+      if (!st.vindu) {
+        st.vindu = await p.evaluate(() => {
+          const r = document.querySelector(".flyt__ramme").getBoundingClientRect();
+          const topp = r.top + scrollY;
+          return { fra: Math.round(topp - innerHeight + 20), til: Math.round(topp - 60) };
+        });
+      }
+      const { fra, til } = st.vindu;
+      await p.evaluate((y) => scrollTo(0, y), Math.round(fra + (til - fra) * mykt(a)));
+    },
+  },
+
+  /**
+   * Kontaktskjemaet som sier fra før du sender: `:has()` og `:user-invalid`.
+   *
+   * Dette beviser en håndverkspåstand vi ellers bare kan hevde – at skjemaet
+   * validerer uten en eneste linje JavaScript. Kanten slår om til rød med ✕ når
+   * e-posten er ufullstendig, og til grønn med ✓ når den er hel. Ingenting av det
+   * er skript; det er `:has(.control:user-invalid)` i `site.css`.
+   *
+   * TRE SLAG, ikke flere: navnet fylles ut, e-posten er halvferdig og blir rød,
+   * e-posten fullføres og blir grønn. En peker som farer mellom felt ville vært
+   * travel – derfor TAB, som dessuten er måten en tastaturbruker fyller ut et
+   * skjema på.
+   *
+   * `:user-invalid` og ikke `:invalid` er med vilje i CSS-en, og det styrer
+   * opptaket: tilstanden slår først inn når feltet forlates. Derfor må hvert slag
+   * ende med et tabulatortrykk – uten det skjer ingenting synlig.
+   */
+  skjema: {
+    url: "/kontakt",
+    sek: 7,
+    tetthet: 3,
+    tekst: "Kontaktskjemaet sier fra før du sender. Den røde kanten og ✕ kommer fra CSS alene – :has() og :user-invalid – uten en linje JavaScript.",
+    plass: "/kontakt, over skjemaet – eller /nettsider, som bevis på at vi bygger skjemaer som virker uten skript",
+    async klar(p) {
+      // Løft skjemaet opp i bildet. Måles utsnittet der det ligger ved innlasting,
+      // havner nederste felt utenfor visningsvinduet.
+      await p.evaluate(() => {
+        const f = document.querySelector("form .field");
+        scrollTo(0, f.getBoundingClientRect().top + scrollY - 150);
+      });
+      await p.waitForTimeout(700);
+    },
+    async ramme(p, a, st) {
+      const navn = p.locator('input[name="navn"]');
+      const epost = p.locator('input[name="epost"]');
+
+      // 1. Navnet, tegn for tegn, og tab videre så ✓ kommer fram.
+      if (a < 0.30) {
+        const ord = "Kari Nordmann";
+        const n = Math.min(ord.length, Math.ceil((a / 0.28) * ord.length));
+        st.n ??= 0;
+        if (st.n === 0) await navn.click({ timeout: 3000 }).catch(() => {});
+        while (st.n < n) { await navn.press(ord[st.n], { timeout: 3000 }).catch(() => {}); st.n++; }
+        return;
+      }
+
+      // 2. Halvferdig e-post, og tab ut – da slår :user-invalid inn.
+      if (a < 0.58) {
+        if (!st.tab1) { st.tab1 = true; await navn.press("Tab").catch(() => {}); }
+        const ord = "kari@eksempel";
+        const n = Math.min(ord.length, Math.ceil(((a - 0.30) / 0.24) * ord.length));
+        st.m ??= 0;
+        while (st.m < n) { await epost.press(ord[st.m], { timeout: 3000 }).catch(() => {}); st.m++; }
+        return;
+      }
+      if (!st.rod) {
+        st.rod = true;
+        await epost.press("Tab").catch(() => {});
+        return;
+      }
+
+      // La den røde tilstanden stå noen rammer – den er halve poenget.
+      if (a < 0.72) return;
+
+      // 3. Fullfør e-posten og tab ut igjen: ✕ blir ✓.
+      if (!st.fikset) {
+        st.fikset = true;
+        await epost.click({ timeout: 3000 }).catch(() => {});
+        await epost.press("End").catch(() => {});
+        for (const c of ".no") await epost.press(c, { timeout: 3000 }).catch(() => {});
+        await epost.press("Tab").catch(() => {});
+      }
+    },
+  },
+
+  /**
    * Lagstabelen: hva en nettside FAKTISK består av.
    *
    * Dette er det eneste materialet på nettstedet som svarer på spørsmålet en
@@ -466,8 +601,16 @@ const ctx = await nettleser.newContext({
   viewport: { width: BREDDE, height: HOYDE },
   deviceScaleFactor: tetthet,
   colorScheme: "dark",
-  // Opptaket skal vise bevegelsen i verktøyet, ikke sidens egen inntoning.
-  reducedMotion: "reduce",
+  /**
+   * Opptaket skal vise bevegelsen i VERKTØYET, ikke sidens egen inntoning – derfor
+   * dempes sidebevegelse som standard.
+   *
+   * Én scene må overstyre det. Flytdiagrammet tegner seg med
+   * `animation-timeline: view()`, og under redusert bevegelse står det ferdig
+   * (`animation: none !important`). Da ville opptaket vist et stillbilde av den
+   * eneste figuren vi har der tegningen SELV er motivet.
+   */
+  reducedMotion: scene.bevegelse ?? "reduce",
 });
 const p = await ctx.newPage();
 const feil = [];

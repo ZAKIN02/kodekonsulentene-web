@@ -511,14 +511,18 @@ html, body { overflow-x: clip; }
     animation-timing-function: linear;
     animation-fill-mode: both;
     animation-timeline: --steg-syn;
-    animation-range: entry 0% entry 70%;
+    /* `entry`-fasen er over lenge foer seksjonen er behagelig i syne: maalt sto alle
+       fire strekene paa 100 % allerede ved 25 % av scrollen, saa tegningen var ferdig
+       foer oeyet kom dit. Omraadet strekker seg naa inn i `cover`, der leseren faktisk
+       ser paa seksjonen. Samme feil som animation-range: cover 32 % hadde. */
+    animation-range: entry 70% cover 25%;
   }
   /* Trappen gjør det til en sekvens. Fire steg står side om side og kommer inn
      samtidig, så forskyvningen må ligge i rekkevidden, ikke i posisjonen.
      `nth-child` fordi ProcessSteps ikke setter noen indeksvariabel. */
-  .kk-steps li:nth-child(2) { animation-range: entry 10% entry 80%; }
-  .kk-steps li:nth-child(3) { animation-range: entry 20% entry 90%; }
-  .kk-steps li:nth-child(4) { animation-range: entry 30% entry 100%; }
+  .kk-steps li:nth-child(2) { animation-range: entry 80% cover 32%; }
+  .kk-steps li:nth-child(3) { animation-range: entry 90% cover 39%; }
+  .kk-steps li:nth-child(4) { animation-range: cover 6% cover 53%; }
 
   .kk-steps .kk-step-n {
     display: inline-block;
@@ -527,11 +531,11 @@ html, body { overflow-x: clip; }
     animation-timing-function: linear;
     animation-fill-mode: both;
     animation-timeline: --steg-syn;
-    animation-range: entry 20% entry 55%;
+    animation-range: entry 85% cover 20%;
   }
-  .kk-steps li:nth-child(2) .kk-step-n { animation-range: entry 30% entry 65%; }
-  .kk-steps li:nth-child(3) .kk-step-n { animation-range: entry 40% entry 75%; }
-  .kk-steps li:nth-child(4) .kk-step-n { animation-range: entry 50% entry 85%; }
+  .kk-steps li:nth-child(2) .kk-step-n { animation-range: entry 95% cover 27%; }
+  .kk-steps li:nth-child(3) .kk-step-n { animation-range: cover 2% cover 34%; }
+  .kk-steps li:nth-child(4) .kk-step-n { animation-range: cover 15% cover 48%; }
 }
 
 @keyframes steg-strek {

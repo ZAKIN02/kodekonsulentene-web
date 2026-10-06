@@ -117,7 +117,13 @@ const nr = (i: number) => String(i + 1).padStart(2, "0");
       {noder.map((node, i) => (
         <g class:list={["flyt__node", i === n - 1 && "flyt__node--siste"]} style={`--i:${i}`}>
           <path class="flyt__boks" d={boksBane(i)} pathLength="1" fill="none" />
-          <text class="flyt__nr" x={cx(i)} y={13} text-anchor="middle">{nr(i)}</text>
+          {/* Tiden erstatter løpenummeret der den finnes – på prosessflyten er
+              tiden poenget, og to tall over hverandre ville konkurrert. */}
+          <text
+            class:list={["flyt__nr", node.tid && "flyt__nr--tid"]}
+            x={cx(i)}
+            y={13}
+            text-anchor="middle">{node.tid ?? nr(i)}</text>
           <text class="flyt__navn" x={cx(i)} y={MIDT_Y + 6} text-anchor="middle">{node.navn}</text>
           <text class="flyt__detalj" x={cx(i)} y={VB_H - 6} text-anchor="middle">{node.detalj}</text>
         </g>
@@ -132,7 +138,9 @@ const nr = (i: number) => String(i + 1).padStart(2, "0");
     <ol class="flyt__liste visually-hidden">
       {noder.map((node, i) => (
         <li>
-          <span class="mono-label flyt__liste-nr">{nr(i)}</span>
+          {/* Samme bytte som i figuren. På mobil ER denne lista innholdet, så
+              tiden må stå her – rekkefølgen bæres uansett av <ol>. */}
+          <span class="mono-label flyt__liste-nr">{node.tid ?? nr(i)}</span>
           <strong class="body-strong">{node.navn}</strong>
           <span class="small muted">{node.detalj}</span>
         </li>
@@ -189,6 +197,9 @@ const nr = (i: number) => String(i + 1).padStart(2, "0");
     letter-spacing: 0.08em;
     fill: var(--ink-faint);
   }
+  /* Sperring kler et tosifret løpenummer, men gjør «2–3 uker» luftig og vanskelig
+     å lese som én enhet. Tiden er et tall, så den beholder monospace. */
+  .flyt__nr--tid { letter-spacing: 0; fill: var(--ink-muted); }
   .flyt__navn {
     font-family: var(--font-mono);
     font-size: 17px;

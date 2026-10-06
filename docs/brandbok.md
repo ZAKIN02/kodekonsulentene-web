@@ -62,12 +62,35 @@ Tre familier med klare roller; ingen av dem heter Inter eller Roboto.
 
 - Ikoner: strektegnede, 1,5px strek, 20px standard, i `currentColor`. Bruk Lucide (MIT) som sett; ikke bland med andre sett. Ikoner står alltid ved et ord – aldri alene som eneste bærer av mening.
 - Statusikoner er faste: `ok` = hake, `warn` = trekant med utropstegn, `fail` = kryss i sirkel. Fargene følger `ok`/`warn`/`fail`.
-- Bilder er ekte skjermbilder av ting som er bygget, eller ett portrettfoto under «Om». Skjermbilder får `hairline` kant i `line` og `radius-md`. Ingen stockfoto.
-- Genererte bilder og filmscener er tillatt, men BARE som materiale og struktur: lag, kanter, stabler, raster. De skal aldri forestille mennesker, kunder, kontorer, skjermbilder eller arbeid vi ikke har gjort.
+- **Hvert bilde må bestå én prøve: dekk til teksten ved siden av. Skjønner en rørlegger
+  eller klinikkeier hva bildet handler om?** Gjør han ikke det, forklarer bildet ingenting,
+  og da skal det ikke stå der. Prøven ble kjørt på hele nettstedet: 14 av 16 genererte
+  motiver strøk. Alle fem skjermopptakene besto.
 
-  Regelen het før «ingen AI-genererte bilder», og den sto i veien for materialet vi faktisk produserer. Det den var ment å verne om, er noe annet: at et bilde aldri skal fremstå som bevis på noe som ikke finnes. Et generert portrett eller et oppdiktet kundeskjermbilde er løgn om vår egen historikk. En generert aluminiumsstabel påstår ingenting – den er typografiens tredimensjonale fetter, og den er vår fordi vi lager den selv.
+- **Rangordningen er bindende. Velg alltid det høyeste alternativet som er mulig:**
 
-  Et generert bilde som forestiller et menneske, en kunde eller et leveranseresultat er fortsatt forbudt, uten unntak.
+  1. **Opptak av verktøyet eller arbeidet i drift.** Ekte kjøring mot ekte adresse, med
+     resultatet verktøyet faktisk gir. Dette beviser at produktet virker i stedet for å
+     antyde det, og kan ikke kopieres av noen som ikke har bygget det.
+  2. **Diagram med ekte navn.** «Booking → Vipps → Fiken → SMS 24 t før», ikke abstrakte
+     former. Tegnet i SVG, animert i CSS, null kilobyte.
+  3. **Ingenting.** En ren tekstflate er bedre enn et bilde som ikke sier noe.
+
+  Generert materiale står ikke på listen, og er bare tillatt som bakgrunnstekstur under
+  tekst – aldri som motiv noen skal se på og forstå.
+
+- Skjermbilder får `hairline` kant i `line` og `radius-md`. Ingen stockfoto.
+
+- Et bilde skal aldri fremstå som bevis på noe som ikke finnes. Genererte mennesker,
+  kunder, kontorer eller leveranseresultater er forbudt uten unntak.
+
+  Denne regelen het først «ingen AI-genererte bilder». Jeg myknet den opp 6. oktober 2026
+  for å slippe til generert materiale, og stilte spørsmålet «lyver bildet?» – men glemte det
+  viktigere: «sier bildet noe i det hele tatt?» Et generert motiv kan være fullstendig
+  sannferdig og likevel verdiløst. Formuleringen «typografiens tredimensjonale fetter» var et
+  forsvar for dekorasjon, skrevet inn i et dokument som ellers krever at alt gjør en jobb.
+  Kunden så det med én gang: «bildene gir ingen historie eller mening».
+
 - Logo: monogrammet «KK» på en flis i `accent` (`assets/Logo/kk-mark.svg`) og ordmerket «KodeKonsulentene» som baner. Bruk `kk-lockup-dark.svg` i mørkt tema og `kk-lockup-light.svg` i lyst tema i header og footer; merket alene som favicon og app-ikon. Reglene for friareal og farger står i `assets/Logo/README.md`. I `Terminal` kan navnet fortsatt stå som `~/kodekonsulentene` i `mono` – det er en signatur, ikke logoen.
 
 ## Komponenter

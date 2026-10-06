@@ -6,7 +6,7 @@
     "plakat": "/opptak/rontgen-poster.avif",
     "bredde": 1920,
     "hoyde": 1120,
-    "tekst": "Røntgenlinsen på vår egen side. Headerne og WCAG-kravene som kommer fram er hentet fra svaret du akkurat fikk.",
+    "tekst": "Røntgenlinsen på vår egen forside. Sikkerhetsheaderne som kommer fram er de serveren faktisk sender; WCAG-punktene er kravene siden måles mot.",
     "kilde": "6. oktober 2026"
   },
   "priskalkulator": {
@@ -16,7 +16,7 @@
     "plakat": "/opptak/priskalkulator-poster.avif",
     "bredde": 1920,
     "hoyde": 1080,
-    "tekst": "Priskalkulatoren regner mens du velger. Tallet er den samme utregningen du får i et tilbud.",
+    "tekst": "Priskalkulatoren regner mens du velger. Den gir et spenn med gulv, ikke et tilbud – postene er de samme vi bruker når vi regner.",
     "kilde": "6. oktober 2026"
   },
   "dmarc": {
@@ -26,7 +26,7 @@
     "plakat": "/opptak/dmarc-poster.avif",
     "bredde": 1920,
     "hoyde": 1080,
-    "tekst": "DMARC-sjekken gjør ekte DNS-oppslag. Her mot nkom.no, og funnene er det serveren faktisk svarte.",
+    "tekst": "DMARC-sjekken gjør ekte DNS-oppslag. Her mot nkom.no, og statusene er det DNS faktisk svarte.",
     "kilde": "6. oktober 2026"
   }
 }

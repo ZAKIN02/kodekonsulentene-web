@@ -10,13 +10,22 @@
  *
  * Spoles av scroll, spiller aldri av seg selv.
  */
-interface Props { smal: string; bred: string; plakat: string; tekst: string; kilde?: string }
-const { smal, bred, plakat, tekst, kilde } = Astro.props;
+interface Props {
+  smal: string;
+  bred: string;
+  /** Valgfritt 1920-trinn. Uten dette blir de største filene liggende ubrukt –
+   *  SceneFilm og HeroFilm hadde begge den feilen, til sammen 28 MB dødvekt. */
+  stor?: string;
+  plakat: string;
+  tekst: string;
+  kilde?: string;
+}
+const { smal, bred, stor, plakat, tekst, kilde } = Astro.props;
 ---
 <figure class="demo" data-demo>
   <div class="demo__ramme">
     <video data-demo-video muted playsinline preload="none" poster={plakat} width="1920" height="1080">
-      <source data-smal={smal} data-bred={bred} type="video/mp4" />
+      <source data-smal={smal} data-bred={bred} data-stor={stor} type="video/mp4" />
     </video>
   </div>
   <figcaption class="small">
@@ -57,7 +66,15 @@ const { smal, bred, plakat, tekst, kilde } = Astro.props;
     const io = new IntersectionObserver((poster) => {
       if (!poster.some((p) => p.isIntersecting)) return;
       io.disconnect();
-      kilde.src = window.innerWidth >= 1024 ? kilde.dataset.bred! : kilde.dataset.smal!;
+      const nett = (navigator as Navigator & { connection?: { effectiveType?: string; saveData?: boolean } }).connection;
+      const treigt = nett?.saveData === true || /2g|3g/.test(nett?.effectiveType ?? "");
+      const px = window.innerWidth * (window.devicePixelRatio || 1);
+      kilde.src =
+        !treigt && px >= 2200 && kilde.dataset.stor
+          ? kilde.dataset.stor
+          : window.innerWidth >= 1024
+            ? kilde.dataset.bred!
+            : kilde.dataset.smal!;
       film.preload = "auto";
       film.load();
     }, { rootMargin: "200% 0px" });

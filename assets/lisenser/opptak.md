@@ -1,0 +1,22 @@
+# Opptak av våre egne verktøy
+
+Disse filene er skjermopptak av KodeKonsulentenes egne verktøy mens de kjører.
+Ingenting er generert, og ingenting er iscenesatt: tallene og statusene i bildet
+er det verktøyet faktisk svarte da opptaket ble gjort.
+
+Lages med `node scripts/opptak.mjs <id>`. Opptaket er en bildesekvens, ikke en
+videoinnspilling, fordi klippene spoles av scroll og hver ramme leses som et
+stillbilde.
+
+| Fil | Hva det viser | Kilde | Rettigheter | Dato | Av |
+|---|---|---|---|---|---|
+| `public/opptak/rontgen-{1920,1280,960}.mp4`, `rontgen-poster.avif` | Røntgenlinsen på vår egen forside. Sikkerhetsheaderne er de serveren faktisk sender (`sikkerhet.mjs`); WCAG-punktene er kravene fra `src/data/wcag.ts`. | `scripts/opptak.mjs`, opptak «rontgen» | Eget verk | 2026-10-06 | KodeKonsulentene |
+| `public/opptak/priskalkulator-{1920,1280,960}.mp4`, `priskalkulator-poster.avif` | Priskalkulatoren som regner mens valgene krysses av. Summen går fra 29 900 kr til 288 000–373 500 kr med postene som egne linjer. | `scripts/opptak.mjs`, opptak «priskalkulator» | Eget verk | 2026-10-06 | KodeKonsulentene |
+| `public/opptak/dmarc-{1920,1280,960}.mp4`, `dmarc-poster.avif` | DMARC-sjekken med ekte DNS-oppslag mot nkom.no: SPF bestått (`-all`, 4/10 oppslag), DKIM ikke sjekket, DMARC `p=quarantine`, samlet 83 av 100. | `scripts/opptak.mjs`, opptak «dmarc» | Eget verk | 2026-10-06 | KodeKonsulentene |
+
+## Om nkom.no
+
+Oppslaget er et offentlig DNS-oppslag mot et offentlig domene, slik hvem som
+helst kan gjøre det. Vi leser bare DNS; ingen e-post sendes og ingenting lagres.
+Resultatet er dessuten positivt for nkom.no – 83 av 100 – så opptaket henger
+ingen ut.

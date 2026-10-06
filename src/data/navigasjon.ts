@@ -13,6 +13,7 @@ export const hovedmeny: NavLenke[] = [
 export const footerLenker: NavLenke[] = [
   { label: "Priser", href: "/priser" },
   { label: "Caser", href: "/caser" },
+  { label: "Historie", href: "/historie" },
   { label: "Sjekk nettsiden din", href: "/sjekk" },
   { label: "Gratisverktøy", href: "/verktoy" },
   { label: "Håndbok", href: "/handbok" },

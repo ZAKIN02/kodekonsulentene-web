@@ -1,0 +1,24 @@
+---
+import Base from "../layouts/Base.astro";
+import Section from "../components/Section.astro";
+import ScrollHistorie from "../components/ScrollHistorie.astro";
+import ContactBlock from "../components/ContactBlock.astro";
+---
+<Base
+  tittel="Fra rot til system"
+  beskrivelse="En scroll-historie om hva som ligger inne i en nettside som faktisk henger sammen: design, kode, sikkerhet og integrasjoner."
+>
+  <Section
+    nivaa={1}
+    n={1}
+    eyebrow="Historie"
+    tittel="Fra rot til system"
+    ingress="Scroll nedover. Siden tas fra hverandre lag for lag, og settes sammen igjen."
+  />
+
+  <div class="wrap">
+    <ScrollHistorie />
+  </div>
+
+  <ContactBlock n={2} tittel="Vil du se det på din egen side?" ingress="Sjekken tar under ett minutt og sier hva som er i orden og hva som ikke er det. Vil du heller snakke med noen, tar det 20 minutter." />
+</Base>

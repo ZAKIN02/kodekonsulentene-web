@@ -1,0 +1,38 @@
+[
+  {
+    "id": "rot",
+    "akt": "01 / Rot",
+    "tittel": "Fem verktøy. Null samtaler.",
+    "tekst": "Nettside, booking, betaling og regnskap lever hvert sitt liv. Du er limet mellom dem.",
+    "mediaTid": 0
+  },
+  {
+    "id": "demonter",
+    "akt": "02 / Demontering",
+    "tittel": "Vi tar siden fra hverandre",
+    "tekst": "Lag for lag: design, kode, sikkerhet og integrasjoner. Først da ser du hva som faktisk mangler.",
+    "mediaTid": 2.2
+  },
+  {
+    "id": "gjennomlys",
+    "akt": "03 / Gjennomlysning",
+    "tittel": "Hvert lag får en jobb",
+    "tekst": "Universell utforming etter 35 krav. Kryptert trafikk. Vipps inn, regnskap ut. Ingen cookies før samtykke.",
+    "kilde": "WCAG 2.0 A/AA for private virksomheter (uutilsynet). Ekomloven § 3-15 fra 1. januar 2025.",
+    "mediaTid": 4.6
+  },
+  {
+    "id": "monter",
+    "akt": "04 / Montering",
+    "tittel": "Ett system som henger sammen",
+    "tekst": "Når lagene passer, slutter du å være limet. Timen booker seg selv, og tallet havner der det skal.",
+    "mediaTid": 7.2
+  },
+  {
+    "id": "cta",
+    "akt": "05 / Din tur",
+    "tittel": "Hvordan ser din side ut innvendig?",
+    "tekst": "Sjekken leser forsiden din slik en besøkende får den, og sier hva som er i orden og hva som ikke er det.",
+    "mediaTid": 9.6
+  }
+]

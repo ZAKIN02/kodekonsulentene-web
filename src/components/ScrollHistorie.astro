@@ -1,0 +1,206 @@
+---
+/**
+ * Scroll-styrt historie. Teknikken er én kort video med tette keyframes som
+ * spoles med scroll – ikke en bildesekvens, og ikke 3D. Grunnen står i
+ * docs/sidemonstre.md: en bildesekvens av samme klipp er flere ganger tyngre,
+ * og WebGL spiser ytelsesbudsjettet forsiden lever av.
+ *
+ * All tekst ligger i HTML. Videoen er dekorasjon (aria-hidden) og bærer ingen
+ * mening alene – siden skal kunne leses uten den, uten JavaScript, og med
+ * redusert bevegelse.
+ */
+import scener from "../data/historie.json";
+import Button from "./Button.astro";
+import { bookUrl } from "../data/firma";
+---
+<section class="hist" data-story aria-label="Historien om en nettside som henger sammen">
+  <a class="skip hist__hopp" href="#etter-historien">Hopp over historien</a>
+
+  <div class="hist__media" aria-hidden="true">
+    <video
+      data-story-video
+      muted
+      playsinline
+      preload="none"
+      poster="/historie/poster.avif"
+      width="1280"
+      height="720"
+    >
+      <source
+        data-mobil="/historie/historie-720.mp4"
+        data-desktop="/historie/historie-1080.mp4"
+        type="video/mp4"
+      />
+    </video>
+  </div>
+
+  <ol class="hist__scener">
+    {scener.map((s) => (
+      <li class="hist__scene" id={s.id}>
+        <div class="hist__kort">
+          <p class="kk-eyebrow"><span class="kk-eyebrow-n">//</span> <span>{s.akt}</span></p>
+          <h2 class="display-lg">{s.tittel}</h2>
+          <p class="body-lg">{s.tekst}</p>
+          {s.kilde && <p class="small faint">{s.kilde}</p>}
+        </div>
+      </li>
+    ))}
+  </ol>
+
+  <div class="hist__slutt" id="etter-historien">
+    <div class="row">
+      <Button variant="primary" href="/sjekk">Sjekk nettsiden din</Button>
+      <Button variant="ghost" href={bookUrl}>Eller book 20 minutter</Button>
+    </div>
+    <p class="small faint">
+      Illustrasjonen er laget med KI. Motivet er oppfunnet – ingen logoer, ingen
+      personer, ingen ekte kundeside. Kilde og prompt står i lisensloggen.
+    </p>
+  </div>
+</section>
+
+<style>
+  .hist { position: relative; }
+  .hist__hopp { top: -100px; }
+  .hist__hopp:focus { top: var(--space-4); }
+
+  /* Uten JS, med redusert bevegelse eller Save-Data står dette som en vanlig
+     artikkel: plakaten øverst, så scenene under hverandre. */
+  .hist__media video {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: var(--hairline) solid var(--line);
+    border-radius: var(--radius-md);
+  }
+  .hist__scener { list-style: none; margin: 0; padding: var(--space-7) 0 0; display: grid; gap: var(--space-7); }
+  .hist__scene { max-width: 46ch; }
+  .hist__kort { display: grid; gap: var(--space-3); }
+  .hist__kort .body-lg { color: var(--ink-muted); }
+  .hist__slutt { display: grid; gap: var(--space-4); padding-top: var(--space-8); max-width: 60ch; }
+
+  /* Aktiv modus: mediet festes, scenene glir over. Settes bare av skriptet. */
+  .hist[data-aktiv] .hist__media {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    z-index: 0;
+    display: grid;
+    place-items: center;
+  }
+  .hist[data-aktiv] .hist__media video {
+    width: 100%;
+    height: 100svh;
+    object-fit: cover;
+    border: 0;
+    border-radius: 0;
+  }
+  .hist[data-aktiv] .hist__scener {
+    position: relative;
+    z-index: 1;
+    margin-top: -100svh;
+    padding: 0;
+    gap: 0;
+  }
+  .hist[data-aktiv] .hist__scene {
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    padding-inline: var(--space-5);
+  }
+  .hist[data-aktiv] .hist__kort {
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    border-left: var(--focus-width) solid var(--accent);
+    padding: var(--space-5);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    backdrop-filter: blur(2px);
+  }
+  .hist[data-aktiv] .hist__slutt {
+    position: relative;
+    z-index: 1;
+    margin-inline: auto;
+    padding: var(--space-8) var(--space-5) var(--space-9);
+    background: var(--bg);
+  }
+
+  /* Den eneste bevegelsen utover spolingen: scenen tones inn når den kommer.
+     Ren CSS, og bare der nettleseren støtter det. Firefox får ingenting – ufarlig. */
+  @supports (animation-timeline: view()) {
+    .hist[data-aktiv] .hist__kort {
+      animation: hist-inn linear both;
+      animation-timeline: view();
+      animation-range: entry 15% cover 40%;
+    }
+    @keyframes hist-inn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: none; }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hist[data-aktiv] .hist__kort { animation: none !important; opacity: 1 !important; transform: none !important; }
+  }
+</style>
+
+<script>
+  // Spoling av video med scroll. Ingen bibliotek – dette er hele mekanikken.
+  const rot = document.querySelector<HTMLElement>("[data-story]");
+  const video = rot?.querySelector<HTMLVideoElement>("[data-story-video]");
+  const kilde = video?.querySelector<HTMLSourceElement>("source");
+
+  const redusert = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const sparData =
+    (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
+
+  if (rot && video && kilde && !redusert && !sparData) {
+    rot.dataset.aktiv = "";
+
+    let planlagt = false;
+    const oppdater = () => {
+      planlagt = false;
+      // Én layout-lesing per ramme, inne i rAF.
+      const r = rot.getBoundingClientRect();
+      const strekk = r.height - window.innerHeight;
+      if (strekk <= 0 || !video.duration) return;
+      const andel = Math.min(1, Math.max(0, -r.top / strekk));
+      video.currentTime = andel * video.duration;
+    };
+
+    // Videoen lastes først når seksjonen nærmer seg. Plakaten står i mellomtiden.
+    const io = new IntersectionObserver(
+      (poster) => {
+        if (!poster.some((p) => p.isIntersecting)) return;
+        io.disconnect();
+        kilde.src = window.innerWidth >= 1024 ? kilde.dataset.desktop! : kilde.dataset.mobil!;
+        video.preload = "auto";
+        video.load();
+      },
+      { rootMargin: "200% 0px" },
+    );
+    io.observe(rot);
+
+    video.addEventListener("loadedmetadata", () => {
+      oppdater();
+      rot.dataset.klar = "true";
+    });
+
+    addEventListener(
+      "scroll",
+      () => {
+        if (!planlagt) {
+          planlagt = true;
+          requestAnimationFrame(oppdater);
+        }
+      },
+      { passive: true },
+    );
+
+    // Får vi ikke metadata – treg mobil, blokkert medie – skal siden likevel
+    // være lesbar. Da står plakaten, og scenene scroller som vanlig.
+    setTimeout(() => {
+      if (!rot.dataset.klar) rot.dataset.klar = "true";
+    }, 4000);
+  } else if (rot) {
+    rot.dataset.klar = "true";
+  }
+</script>

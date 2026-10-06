@@ -191,3 +191,8 @@
 /* Bevis-stripen ligger rett under hero og skal ikke ha scene-luft over seg. */
 .bevisrad { padding-block: var(--space-6) var(--space-7); }
 .bevisrad .scene__inner { display: grid; gap: var(--space-5); }
+
+/* Ramme for en seksjon med film bak. Isolerer stablingen slik at innholdet
+   alltid ligger over, og lar filmen gå helt ut i kanten. */
+.scenefilm-ramme { position: relative; isolation: isolate; }
+.scenefilm-ramme > section { position: relative; z-index: 1; }

@@ -18,7 +18,10 @@
     "dns:plan": "node scripts/dns-godaddy.mjs plan",
     "dns:apply": "node scripts/dns-godaddy.mjs apply",
     "se": "node .skudd/filmstripe.mjs",
-    "kontrast": "node .skudd/herokontrast.mjs"
+    "kontrast": "node .skudd/herokontrast.mjs",
+    "visuell": "playwright test",
+    "visuell:prod": "BASE_URL=https://kodekonsulentene.no playwright test --grep @overvaak",
+    "visuell:ui": "playwright test --ui"
   },
   "dependencies": {
     "@astrojs/node": "^11.1.6",
@@ -27,7 +30,9 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.63.0",
+    "@types/pngjs": "^6.0.5",
     "pngjs": "^7.0.0",
     "typescript": "^5.9.3"
   }

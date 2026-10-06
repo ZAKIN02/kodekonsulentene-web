@@ -11,3 +11,7 @@ dist/
 
 # Skjermbilder er lokale; skriptene beholdes.
 .skudd/*.png
+
+# Playwright
+playwright-report/
+test-results/

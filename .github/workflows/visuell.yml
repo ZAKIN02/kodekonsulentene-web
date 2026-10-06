@@ -1,0 +1,48 @@
+name: Visuell QA
+
+# Kjører den visuelle testpakken i headless Chrome på hver endring.
+# node:test-suiten dekker logikk; denne dekker det bare en ekte nettleser ser:
+# blokkerte skript, video som ikke kan spoles, og kontrast mot faktisk malte piksler.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: visuell-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  visuell:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Installer Chromium
+        run: npx playwright install --with-deps chromium
+
+      # playwright.config.ts bygger og starter server.mjs selv når BASE_URL ikke er satt.
+      - name: Kjør visuell QA
+        run: npx playwright test
+
+      - name: Last opp rapport ved feil
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-rapport
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

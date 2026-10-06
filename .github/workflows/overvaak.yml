@@ -1,0 +1,83 @@
+name: Overvåkning av produksjon
+
+# Sjekker kodekonsulentene.no 48 ganger i døgnet med en ekte nettleser.
+#
+# Minutt 17 og 47, ikke 0 og 30: GitHub skriver selv at starten av hver time er et
+# høylastvindu, og at køede jobber kan bli droppet når lasten er høy nok.
+#
+# Repoet er offentlig, så Actions-minutter er gratis. Blir repoet privat, må
+# intervallet ned til én gang i timen for å holde seg innenfor 2 000 minutter.
+
+on:
+  schedule:
+    - cron: "17,47 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: overvaak
+  cancel-in-progress: false
+
+jobs:
+  sjekk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BASE_URL: https://kodekonsulentene.no
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Installer Chromium
+        run: npx playwright install --with-deps chromium
+
+      # BASE_URL er satt, så Playwright starter ingen server – den går rett på produksjon.
+      - name: Røyktest mot produksjon
+        run: npx playwright test --grep @overvaak
+
+      - name: Opprett issue ved feil, uten duplikater
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create overvaak --color B60205 --description "Feil funnet av planlagt overvåkning" --force
+          APNE=$(gh issue list --label overvaak --state open --json number --jq 'length')
+          if [ "$APNE" = "0" ]; then
+            gh issue create \
+              --label overvaak \
+              --title "Overvåkning feilet: $BASE_URL" \
+              --body "$(cat <<EOF
+          Den planlagte røyktesten mot \`$BASE_URL\` feilet.
+
+          Kjøring: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          Testene som kjøres her er merket \`@overvaak\` i \`tests/\`. De dekker:
+          ruter som svarer, konsollfeil og CSP-brudd, at videoene kan lastes og spoles,
+          og at mediefiler har riktig MIME-type og \`accept-ranges\`.
+
+          Dette issuet lukkes manuelt. Så lenge det står åpent, opprettes ingen nye –
+          overvåkningen skal ikke fylle backloggen med duplikater.
+          EOF
+          )"
+          else
+            echo "Et åpent overvåknings-issue finnes allerede. Oppretter ikke nytt."
+          fi
+
+      - name: Last opp rapport ved feil
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: overvaak-rapport
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

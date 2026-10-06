@@ -7,6 +7,7 @@ import Button from "../components/Button.astro";
 import UrlCheck from "../components/UrlCheck.astro";
 import ProofStrip from "../components/ProofStrip.astro";
 import HeroFilm from "../components/HeroFilm.astro";
+import SceneFilm from "../components/SceneFilm.astro";
 import ServiceCard from "../components/ServiceCard.astro";
 import Terminal from "../components/Terminal.astro";
 import CheckReport from "../components/CheckReport.astro";
@@ -96,6 +97,13 @@ const eksempelRapport = [
   </section>
 
   <!-- 03 Tjenester -->
+  <div class="scenefilm-ramme">
+    <SceneFilm
+      smal="/scener/systemer-1280.mp4"
+      bred="/scener/systemer-1920.mp4"
+      plakat="/scener/systemer-poster.avif"
+      tekst="venstre"
+    />
   <Scene
     n={3}
     eyebrow="Tjenester"
@@ -117,6 +125,8 @@ const eksempelRapport = [
       ))}
     </div>
   </Scene>
+
+  </div>
 
   <!-- 04 Caser -->
   <Scene

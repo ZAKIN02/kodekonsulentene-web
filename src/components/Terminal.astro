@@ -27,7 +27,7 @@ const cl = { cmd: "kk-cmd", out: "kk-out", ok: "kk-ok", warn: "kk-warn", fail: "
     <span class="kk-dot" aria-hidden="true"></span>
     <span>{title}</span>
   </div>
-  <pre aria-hidden="true">{lines.map((l, i) => (
+  <pre tabindex="0" role="group" aria-label="Terminalutsnitt, kan scrolles vannrett">{lines.map((l, i) => (
     <span class="kk-term-linje">{l.type === "cmd" && <span class="kk-ps">{l.prompt ?? "$"} </span>}<span class={cl[l.type ?? "out"]}>{l.text}</span>{i < lines.length - 1 ? "\n" : ""}</span>
   ))}{cursor && <span class="kk-cursor"></span>}</pre>
 </div>

@@ -1,0 +1,200 @@
+---
+/**
+ * «Kode blir til en nettside» – det vi faktisk selger, vist i stedet for påstått.
+ *
+ * Venstre side er oppskriften: ekte kode, lest fra disk ved bygg, skrevet inn
+ * linje for linje. Høyre side er resultatet: den SAMME komponenten, rendret.
+ * Overskriften dukker opp når overskriftslinja kommer, figuren når figurkoden
+ * kommer, knappen når knappelinja kommer.
+ *
+ * BRANDBOKENS BILDEPRØVE: dekk til teksten. En rørlegger skal ikke forstå koden.
+ * Han skal se at det står noe uleselig til venstre, at det blir en side til
+ * høyre, og at de to henger sammen linje for linje. Derfor heter merkelappene
+ * «Oppskriften» og «Resultatet», og derfor tennes linja og elementet i samme
+ * aksentfarge i samme øyeblikk.
+ *
+ * KODEN ER EKTE, OG KAN IKKE SLUTTE Å VÆRE DET. Utsnittet leses fra
+ * src/components/KodeEksempel.astro med readFileSync ved bygg – ingen kopi, ingen
+ * pyntet pseudokode. Døper noen om en klasse der, finner ikke trinnsøket under
+ * ankeret sitt, og byggingen stopper med en feilmelding i stedet for å vise noe
+ * som ikke stemmer. Linjenumrene i flaten er filas EGNE.
+ *
+ * Siden er prerendret, så lesingen skjer bare ved bygg. Blir /nettsider en dag
+ * satt til `prerender = false`, må stien bli absolutt – i drift er cwd /app, og
+ * src/ følger ikke med i imaget.
+ *
+ * TIDEN ER IKKE SCROLL. Se src/styles/kodebygg.css for hvorfor, og for
+ * kontrastmålingene på kodeflaten.
+ */
+import { readFileSync } from "node:fs";
+import KodeEksempel from "./KodeEksempel.astro";
+import "../styles/kodebygg.css";
+
+const STI = "src/components/KodeEksempel.astro";
+
+const alle = readFileSync(STI, "utf8").split("\n");
+const fra = alle.findIndex((l) => l.includes('<article class="kodeeks"'));
+const til = alle.findIndex((l) => l.includes("</article>"));
+if (fra < 0 || til <= fra) {
+  throw new Error(`KodeBygg: fant ikke <article class="kodeeks"> … </article> i ${STI}`);
+}
+const linjer = alle.slice(fra, til + 1);
+
+/**
+ * Trinnene, i den rekkefølgen barna står i KodeEksempel.astro. Hver streng er et
+ * anker i kilden. Linjene fra og med ankeret til og med linja før neste anker
+ * hører til samme trinn, og trinnets element på høyre side kommer når den SISTE
+ * av dem er skrevet. Rekkefølgen her må være rekkefølgen på barna der, fordi
+ * CSS-en plukker dem med :nth-child.
+ */
+const ANKRE = ['class="merke', 'class="tittel', 'class="tekst', 'class="figur', "<Button"];
+for (const a of ANKRE) {
+  if (!linjer.some((l) => l.includes(a))) {
+    throw new Error(`KodeBygg: ankeret ${a} finnes ikke i utsnittet fra ${STI}`);
+  }
+}
+
+let teller = 0;
+const trinnPerLinje = linjer.map((l) => {
+  if (teller < ANKRE.length && l.includes(ANKRE[teller])) teller++;
+  return teller;
+});
+
+/** Takten. 22 linjer × 95 ms ≈ 2,4 s skriving; hele sekvensen under 4 s. */
+const START = 300;
+const LINJE = 95;
+const ETTER = 160;
+
+const naarLinje = (i: number) => START + i * LINJE;
+/** Elementet kommer når trinnets SISTE linje er skrevet, ikke når den første er. */
+const naarTrinn = (n: number) => naarLinje(trinnPerLinje.lastIndexOf(n)) + ETTER;
+
+const stil = [1, 2, 3, 4, 5].map((n) => `--d${n}:${naarTrinn(n)}ms`).join(";");
+
+/**
+ * Minste mulige fargelegging, nok til at en tagg leses som en tagg: taggnavn og
+ * vinkelparenteser, attributtnavn, strenger i hermetegn og {uttrykk}. Ingen
+ * tredjepart – highlight.js er 120 kB for noe vi trenger fem regler til.
+ * Fargene og målingene deres står i src/styles/kodebygg.css.
+ */
+const MONSTER = /(<\/?[A-Za-z][\w.-]*)|(\/?>)|("[^"]*")|(\{[^}]*\})|([A-Za-z-]+(?==))/g;
+type Bit = { k: string | null; v: string };
+function del(linje: string): Bit[] {
+  const ut: Bit[] = [];
+  let sist = 0;
+  for (const m of linje.matchAll(MONSTER)) {
+    const i = m.index ?? 0;
+    if (i > sist) ut.push({ k: null, v: linje.slice(sist, i) });
+    const k = m[1] || m[2] ? "kode-t" : m[3] ? "kode-s" : m[4] ? "kode-u" : "kode-a";
+    ut.push({ k, v: m[0] });
+    sist = i + m[0].length;
+  }
+  if (sist < linje.length) ut.push({ k: null, v: linje.slice(sist) });
+  return ut;
+}
+
+const etikett =
+  `Kodeutsnitt fra ${STI}, linje ${fra + 1} til ${til + 1}. ` +
+  "Den samme koden er rendret som ferdig resultat ved siden av.";
+---
+<div class="kodebygg" style={stil}>
+  <div class="kodebygg__par">
+    <figure class="kodebygg__rute">
+      <figcaption class="kodebygg__hode">
+        <span class="kodebygg__rolle body-strong">Oppskriften</span>
+        <span class="kodebygg__kilde">{STI} · linje {fra + 1}–{til + 1}</span>
+      </figcaption>
+      {/* tabindex og role: flaten kan scrolles vannrett, og da må den kunne nås
+          med tastatur (WCAG 2.1.1). Teksten er ikke aria-hidden – koden ER
+          innholdet, og den som bruker skjermleser skal kunne lese den. */}
+      <div class="kodebygg__flate">
+        <pre class="kodebygg__kode" tabindex="0" role="group" aria-label={etikett}>{linjer.map((l, i) => (
+          <span class="kodebygg__linje" style={`--d:${naarLinje(i)}ms`}><span class="kodebygg__nr" aria-hidden="true">{fra + 1 + i}</span>{del(l).map((b) => (b.k ? <span class={b.k}>{b.v}</span> : b.v))}</span>
+        ))}</pre>
+      </div>
+    </figure>
+
+    <figure class="kodebygg__rute">
+      <figcaption class="kodebygg__hode">
+        <span class="kodebygg__rolle body-strong">Resultatet</span>
+        <span class="kodebygg__kilde">det kunden ser i nettleseren</span>
+      </figcaption>
+      <div class="kodebygg__ut"><KodeEksempel /></div>
+    </figure>
+  </div>
+
+  <p class="kodebygg__under small">
+    Venstre side er koden vi skriver. Høyre side er siden som blir av den. Hver
+    linje bygger én ting: overskriften kommer når overskriftslinja kommer,
+    figuren når figurkoden kommer, knappen til slutt.
+  </p>
+
+  {/* Knappen er skjult til JavaScript har slått på sekvensen. Uten JavaScript
+      står alt ferdig, og da er det ingenting å spille om. */}
+  <button class="kk-btn kk-btn-ghost kodebygg__om" type="button" hidden>
+    Spill sekvensen om<span class="kk-arrow" aria-hidden="true">→</span>
+  </button>
+</div>
+
+<script>
+  /**
+   * Sekvensen er tidsdrevet, ikke scroll-drevet. Den starter når blokken kommer i
+   * syne, spiller én gang, og slutter i ferdig tilstand. Scroller brukeren
+   * forbi, er den over – ingen loop som står og drar i øyekroken.
+   *
+   * Rekkefølgen er den samme som i Avslor.astro: data-klar (skjul) settes FØR
+   * data-gaar (spill), i samme oppgave, slik at ingenting rekker å stå halvveis.
+   * Uten dette skriptet settes ingen av dem, og CSS-ens standardtilstand er
+   * ferdig bygget – all koden skrevet, hele resultatet på plass.
+   */
+  const blokker = document.querySelectorAll<HTMLElement>(".kodebygg");
+  if (blokker.length && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    for (const blokk of blokker) {
+      /**
+       * Skjul FØR blokken kan komme i syne, ikke i det den gjør det.
+       *
+       * Målt: med `data-klar` satt inne i start() sto blokken ferdig bygget mens
+       * den kom inn nedenfra, og nullstilte seg synlig i det observeren fyrte på
+       * 30 %. Se .skudd/kode/ark-1440-morkt.png, ramme 1 mot ramme 2: hele
+       * resultatet står, og er borte i neste bilde. Satt her ligger blokken langt
+       * under folden når skriptet kjører, og ingen ser den bli tømt.
+       */
+      blokk.dataset.klar = "";
+
+      const start = () => {
+        delete blokk.dataset.gaar;
+        // Tvinger fram en ny stilberegning. Uten den ser nettleseren bare at
+        // attributtet står der både før og etter, og starter ingenting på nytt.
+        void blokk.offsetWidth;
+        blokk.dataset.gaar = "";
+      };
+
+      const io = new IntersectionObserver(
+        (poster) => {
+          for (const p of poster) {
+            if (!p.isIntersecting) continue;
+            io.disconnect();
+            start();
+          }
+        },
+        { threshold: 0.3 },
+      );
+      io.observe(blokk);
+
+      // Sikkerhetsnett: rekker ikke observeren å fyre – blokkert, bakgrunnsfane
+      // eller en feil et annet sted – skal begge sider stå synlige uansett.
+      setTimeout(() => {
+        if (blokk.dataset.gaar === undefined) {
+          io.disconnect();
+          delete blokk.dataset.klar;
+        }
+      }, 8000);
+
+      const om = blokk.querySelector<HTMLButtonElement>(".kodebygg__om");
+      if (om) {
+        om.hidden = false;
+        om.addEventListener("click", start);
+      }
+    }
+  }
+</script>

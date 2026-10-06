@@ -7,6 +7,7 @@ import Demo from "../components/Demo.astro";
 import Scene from "../components/Scene.astro";
 import Mega from "../components/Mega.astro";
 import Avslor from "../components/Avslor.astro";
+import KodeBygg from "../components/KodeBygg.astro";
 import SceneFilm from "../components/SceneFilm.astro";
 import Button from "../components/Button.astro";
 import Terminal from "../components/Terminal.astro";
@@ -59,7 +60,18 @@ const schema = {
     </Avslor>
   </Scene>
 
-  <Scene n={2} eyebrow="Hva du får" tittel="Fire krav vi setter selv">
+  {/* Det vi selger, vist én gang i stedet for påstått fem ganger.
+      Her, rett etter overskriften, fordi det er sidens eneste innhold som
+      forklarer HVA en nettside er for den som ikke har bygget en. Den står
+      bevisst IKKE i en Avslor: avdekkingen er scroll-drevet og beveger seg bare
+      mens noen scroller, og KodeBygg har sin egen tidsdrevne sekvens som spiller
+      av seg selv når blokken er i syne. To lag bevegelse på samme element ville
+      dessuten gjort at koden sto halvgjennomsiktig mens den ble skrevet. */}
+  <Scene n={2} eyebrow="Slik blir den til" tittel="Fra kode til ferdig side" ingress="Til venstre står en ekte fil fra dette nettstedet, linje for linje. Til høyre står den samme fila rendret. Du trenger ikke lese koden – se hvor hver linje havner.">
+    <KodeBygg />
+  </Scene>
+
+  <Scene n={3} eyebrow="Hva du får" tittel="Fire krav vi setter selv">
     {/* Karakteren paa denne sida er LAG – det er det snittegningen over viser, og
         det er det vi selger. De fire kravene ligger derfor i ulik dybde og drar fra
         hverandre mens du scroller, i stedet for aa staa som fire like ruter.
@@ -115,7 +127,7 @@ const schema = {
     </Avslor>
   </Scene>
 
-  <Scene n={3} class="flate--varm" eyebrow="Teknisk" tittel="Hva det er bygget av" ingress="Du trenger ikke å bry deg om dette. Det står her fordi noen spør, og fordi du skal kunne ta det med deg til en annen utvikler.">
+  <Scene n={4} class="flate--varm" eyebrow="Teknisk" tittel="Hva det er bygget av" ingress="Du trenger ikke å bry deg om dette. Det står her fordi noen spør, og fordi du skal kunne ta det med deg til en annen utvikler.">
     <Avslor>
     <div class="grid-2">
       <Terminal
@@ -160,16 +172,16 @@ const schema = {
       plakat="/scener/nettsider-poster.avif"
       tekst="venstre"
     />
-  <Scene n={4} eyebrow="Prosess" tittel="Fra samtale til lansering">
+  <Scene n={5} eyebrow="Prosess" tittel="Fra samtale til lansering">
     <ProcessSteps steps={prosess} />
   </Scene>
   </div>
 
-  <Scene n={5} eyebrow="Pris" tittel="14 900 kr eller 29 900 kr" ingress="Start-pakken er for deg som trenger å finnes og bli ringt. Bedrift er for deg som skal rangere lokalt og endre teksten selv. Begge eks. mva.">
+  <Scene n={6} eyebrow="Pris" tittel="14 900 kr eller 29 900 kr" ingress="Start-pakken er for deg som trenger å finnes og bli ringt. Bedrift er for deg som skal rangere lokalt og endre teksten selv. Begge eks. mva.">
     <Button variant="primary" href="/priser">Se hele prislisten</Button>
   </Scene>
 
-  <ContactBlock n={6} />
+  <ContactBlock n={7} />
 </Base>
 <style is:global>
   /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig

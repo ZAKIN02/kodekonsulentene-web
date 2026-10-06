@@ -1,0 +1,357 @@
+/* KodeBygg – «kode blir til en nettside».
+   Lastes bare av KodeBygg.astro, som bare står på /nettsider.
+
+   HVORFOR EN VANLIG CSS-FIL OG IKKE <style> I KOMPONENTEN:
+   Halvparten av reglene her må treffe barna til KodeEksempel.astro, altså en
+   ANNEN komponent. Astros scoping gir de barna KodeEksempel sin scope-id, mens
+   en <style> i KodeBygg kompilerer til selektorer som krever KodeBygg sin – og
+   matcher da ingenting. Det er nøyaktig feilen som gjorde maskeoverstyringen på
+   /nettsider til død CSS, dokumentert i den fila. En ren .css-fil er global av
+   natur, og da finnes problemet ikke.
+
+   LANGFORMER, ALDRI STENOGRAFI, OG ALLTID HELE SETTET:
+   `animation: x 900ms linear both` ser riktig ut og virker her, men nettstedet
+   har brent seg to ganger på stenografi + manglende langformer: lightningcss
+   slår sammen, og en regel kan ha riktig animation-name mens fill-mode er
+   «none» og bevegelsen aldri skjer. Hver regel under setter name, duration,
+   timing-function, fill-mode, iteration-count og delay.
+
+   TIDEN ER IKKE SCROLL. Resten av nettstedet bruker `animation-timeline: view()`,
+   som bare beveger seg mens brukeren scroller. Målt mot referansene var dét
+   forskjellen: siden vår sto stille i det øyeblikket noen sluttet å gjøre noe.
+   Denne sekvensen er tidsdrevet. Den starter når blokken kommer i syne, spiller
+   ÉN gang, og slutter i ferdig tilstand. Ingen evig loop.
+
+   DEGRADERINGEN GÅR MOT SYNLIG:
+   Standardtilstanden i CSS er ferdig bygget – all koden skrevet, hele resultatet
+   på plass. Bare `[data-klar]`, som JavaScript setter, skjuler noe, og bare
+   `[data-gaar]` animerer. Uten JavaScript, ved prefers-reduced-motion og i
+   forced-colors står begge sider komplett og lesbare.
+
+   FARGENE PÅ KODEFLATEN ER FASTE HEX, IKKE TOKENS:
+   Flaten er mørk i begge temaer. Leste den var(--accent) eller var(--ok), ville
+   fargene snudd med temaet på en flate som sto stille – det skjedde i
+   terminalblokken og endte på 2,96:1. Alle seks målt mot #060708:
+     tekst   #dfe4ea 15,77:1   tagg    #7ee787 13,12:1
+     attr    #ffab6b 10,84:1   streng  #9ecbff 11,94:1
+     uttrykk #c8f24a 15,61:1   linjenr #8b95a1  6,64:1
+   Og mot den markerte linja, som males til rgb(32,38,17):
+     tekst 12,19:1  tagg 10,15:1  attributt 8,38:1  streng 9,24:1
+     uttrykk 12,07:1  linjenr 5,13:1. Alle over 4,5:1.
+
+   Linjenummeret var #7b8591 og målte 4,16:1 mot den markerte linja – altså
+   under kravet i nøyaktig de 900 millisekundene markeringen varer. Det er den
+   samme feilklassen som terminalfargene: fargen ble valgt mot grunnen og aldri
+   målt mot tilstanden den faktisk opptrer i. */
+
+.kodebygg {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.kodebygg__par {
+  display: grid;
+  gap: var(--space-5);
+  align-items: start;
+}
+
+@media (min-width: 861px) {
+  .kodebygg__par {
+    /* Kodespalten er bredest fordi den LENGSTE linja i KodeEksempel.astro er 68
+       tegn: 68 × 7,8 px + linjenummer + polstring ≈ 590 px. Smalere spalte, og
+       kodeflaten må scrolles vannrett på skrivebordet også. */
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: var(--space-6);
+    /* Like høye flater. Med `start` ble resultatet en liten hvit lapp ved siden
+       av en halvmeter kode, og paret leste som kode med en fotnote i stedet for
+       som to vinduer. Ingenting hopper av å strekke dem: elementene som venter
+       er `visibility: hidden`, ikke `display: none`, så høyden står fra start. */
+    align-items: stretch;
+  }
+  .kodebygg__rute { grid-template-rows: auto 1fr; }
+}
+
+/* min-width: 0 er ikke pynt: uten den nekter grid-sporet å bli smalere enn
+   innholdet, og en 590 px bred kodeflate drar hele siden sidelengs på 390 px. */
+.kodebygg__rute {
+  margin: 0;
+  min-width: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.kodebygg__hode {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  align-items: baseline;
+  justify-content: space-between;
+}
+.kodebygg__rolle { color: var(--ink); }
+.kodebygg__kilde {
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 16px;
+  overflow-wrap: anywhere;
+}
+
+/* ------------------------------------------------------------ kodeflaten --- */
+
+/* min-width: 0 er HELE grunnen til at kodeflaten scroller i seg selv.
+   .kodebygg__rute er en grid, så denne er et grid-element, og et grid-element
+   har `min-width: auto` – altså minst bredden til sitt eget innhold. Innholdet
+   er en <pre> med `white-space: pre`, og min-innholdsbredden til den er den
+   LENGSTE LINJA. Målt på 390 px: blokken ble 250 px bredere enn skjermen.
+   Siden har en global `overflow-x: clip` som skjuler akkurat dette i stedet for
+   å avsløre det, så feilen ga ikke sidelengs drag – den klipte bare bort koden. */
+.kodebygg__flate {
+  min-width: 0;
+  background: #060708;
+  border: var(--hairline) solid #23282f;
+  border-radius: var(--radius-md);
+}
+
+.kodebygg__kode {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  /* Vannrett scroll i flaten SELV, ikke på siden. overscroll-behavior hindrer at
+     fingeren fortsetter inn i sidens egen scroll når koden er scrollet til enden. */
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  white-space: pre;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 21px;
+  color: #dfe4ea;
+  tab-size: 2;
+}
+/* En scrollbar flate må kunne nås med tastatur (WCAG 2.1.1). Ringen er fast
+   lime fordi flaten er mørk i begge temaer; var(--focus) er #14171b i lyst tema
+   og hadde vært nesten usynlig her. */
+.kodebygg__kode:focus-visible {
+  outline: var(--focus-width) solid #c8f24a;
+  outline-offset: -3px;
+}
+
+/* width: max-content + min-width: 100% gjør linja presis så bred som teksten,
+   men aldri smalere enn flaten. Da dekker den markerte bakgrunnen nøyaktig
+   koden, og scrollbredden blir den lengste linja – ikke flatens bredde. */
+.kodebygg__linje {
+  display: block;
+  width: max-content;
+  min-width: 100%;
+  border-radius: var(--radius-sm);
+}
+.kodebygg__nr {
+  display: inline-block;
+  width: 2ch;
+  margin-right: 1.5ch;
+  text-align: right;
+  color: #8b95a1;
+  user-select: none;
+}
+.kode-t { color: #7ee787; }
+.kode-a { color: #ffab6b; }
+.kode-s { color: #9ecbff; }
+.kode-u { color: #c8f24a; }
+
+/* ----------------------------------------------------------- resultatet --- */
+
+.kodebygg__ut {
+  background: var(--bg-raised);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--kk-hvile);
+  padding: var(--space-5);
+  display: grid;
+  align-content: center;
+}
+
+.kodebygg__under {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--ink-muted);
+}
+
+.kodebygg__om { justify-self: start; }
+
+/* ============================================================ sekvensen ====
+   Rekkefølgen er: JavaScript setter [data-klar] (skjul), så [data-gaar] (spill).
+   Finnes ingen av dem – ingen JS, redusert bevegelse – gjelder ingen av reglene
+   under, og alt står ferdig. */
+
+@media (prefers-reduced-motion: no-preference) {
+  .kodebygg[data-klar] .kodebygg__linje,
+  .kodebygg[data-klar] .kodebygg__ut .kodeeks > * {
+    visibility: hidden;
+  }
+
+  .kodebygg[data-gaar] .kodebygg__linje {
+    animation-name: kode-linje;
+    animation-duration: 900ms;
+    animation-timing-function: ease-out;
+    animation-fill-mode: both;
+    animation-iteration-count: 1;
+    animation-delay: var(--d);
+  }
+
+  /* Markøren står ved enden av linja mens den skrives, og flytter seg videre.
+     Den blinker ikke i ro: når sekvensen er ferdig, er den borte. Brandboken
+     tillater markør bare i terminalmodus, og da som del av innholdet – det er
+     nøyaktig det den er her. */
+  .kodebygg[data-gaar] .kodebygg__linje::after {
+    content: "";
+    display: inline-block;
+    width: 7px;
+    height: 13px;
+    margin-left: 2px;
+    vertical-align: -2px;
+    background: #c8f24a;
+    animation-name: kode-markor;
+    animation-duration: 190ms;
+    animation-timing-function: steps(1, end);
+    animation-fill-mode: both;
+    animation-iteration-count: 1;
+    animation-delay: var(--d);
+  }
+
+  /* Resultatet. Hvert barn av .kodeeks hører til ett trinn, i samme rekkefølge
+     som klassenavnene står i kilden. --d1 … --d5 regnes ut i KodeBygg.astro av
+     de FAKTISKE linjenumrene, så koden og resultatet ikke kan komme i utakt. */
+  .kodebygg[data-gaar] .kodebygg__ut .kodeeks > * {
+    animation-name: kode-ut;
+    animation-duration: 1100ms;
+    animation-timing-function: ease-out;
+    animation-fill-mode: both;
+    animation-iteration-count: 1;
+  }
+  /* Knappen får sin EGEN keyframe, uten background-color.
+     kode-ut tenner en kort aksenttone bak elementet som kvittering på at det kom
+     av linja som nettopp ble skrevet. Men `animation-fill-mode: both` holder
+     sluttverdien for alltid, og sluttverdien er `transparent` – på knappen hadde
+     det betydd at aksentfyllet forsvant permanent etter sekvensen. Samme grunn
+     til at ringen IKKE er en outline: en outline her ville overstyrt knappens
+     egen fokusring, og en usynlig fokusring er verre enn ingen effekt. */
+  .kodebygg[data-gaar] .kodebygg__ut .kodeeks > .kk-btn {
+    animation-name: kode-ut-rein;
+  }
+  .kodebygg[data-gaar] .kodebygg__ut .kodeeks > *:nth-child(1) { animation-delay: var(--d1); }
+  .kodebygg[data-gaar] .kodebygg__ut .kodeeks > *:nth-child(2) { animation-delay: var(--d2); }
+  .kodebygg[data-gaar] .kodebygg__ut .kodeeks > *:nth-child(3) { animation-delay: var(--d3); }
+  .kodebygg[data-gaar] .kodebygg__ut .kodeeks > *:nth-child(4) { animation-delay: var(--d4); }
+  .kodebygg[data-gaar] .kodebygg__ut .kodeeks > *:nth-child(5) { animation-delay: var(--d5); }
+}
+
+/* visibility er med i keyframene, ikke bare opacity: et usynlig element som
+   fortsatt kan få tastaturfokus er en felle for den som tabber gjennom siden
+   mens sekvensen spiller. visibility: hidden tar det ut av fokusrekkefølgen. */
+@keyframes kode-linje {
+  0% {
+    visibility: hidden;
+    clip-path: inset(0 100% 0 0);
+    background-color: rgba(200, 242, 74, 0);
+  }
+  1% { visibility: visible; }
+  14% {
+    clip-path: inset(0 0 0 0);
+    background-color: rgba(200, 242, 74, 0.14);
+  }
+  100% {
+    visibility: visible;
+    clip-path: inset(0 0 0 0);
+    background-color: rgba(200, 242, 74, 0);
+  }
+}
+
+@keyframes kode-markor {
+  0%, 100% { opacity: 0; }
+  1%, 99% { opacity: 1; }
+}
+
+/* Tonen bak elementet er den samme gesten som den markerte kodelinja, med vilje:
+   det er det som leses som «denne linja ga dette». Den forsvinner helt.
+   var(--accent-soft) er riktig her, i motsetning til på kodeflaten –
+   resultatflaten følger temaet, akkurat som resten av nettstedet. */
+@keyframes kode-ut {
+  0% {
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(10px);
+    background-color: transparent;
+  }
+  1% { visibility: visible; }
+  24% {
+    opacity: 1;
+    transform: none;
+    background-color: var(--accent-soft);
+  }
+  100% {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    background-color: transparent;
+  }
+}
+
+@keyframes kode-ut-rein {
+  0% { visibility: hidden; opacity: 0; transform: translateY(10px); }
+  1% { visibility: visible; }
+  24% { opacity: 1; transform: none; }
+  100% { visibility: visible; opacity: 1; transform: none; }
+}
+
+/* Polstringen gir tonen noe å dekke, og den negative margen gjør at teksten står
+   nøyaktig der den sto. Uten begge ville tonen klistret seg til glyffene. */
+.kodebygg__ut .kodeeks > *:not(.kk-btn) {
+  padding-inline: var(--space-1);
+  margin-inline: calc(-1 * var(--space-1));
+  border-radius: var(--radius-sm);
+}
+
+/* I høykontrastmodus bestemmer systemet fargene, og en sekvens som skjuler noe
+   er bare en risiko for at det blir stående skjult. Alt står ferdig.
+
+   FARGENE SETTES EKSPLISITT TIL SYSTEMFARGER. Nettleseren skal overstyre både
+   tekst og grunn av seg selv, men målt i Chromium ble GRUNNEN tvunget til hvit
+   mens tekstfargen beholdt forfatterverdien: axe leste #9ecbff på #ffffff, altså
+   1,68:1, på 128 noder. Enten er det en feil i emuleringen eller i nettleseren –
+   uansett er det billigere å si det selv enn å forklare bort en måling. Med
+   Canvas og CanvasText forsvinner syntaksfargene i høykontrast, og det er riktig:
+   den som har slått den på, har bedt om systemets palett og ingen andres. */
+@media (forced-colors: active) {
+  .kodebygg__flate { background: Canvas; border-color: CanvasText; }
+  .kodebygg__kode,
+  .kodebygg__nr,
+  .kodebygg__rolle,
+  .kodebygg__kilde,
+  .kodebygg__under,
+  .kode-t, .kode-a, .kode-s, .kode-u { color: CanvasText; }
+  .kodebygg__kode:focus-visible { outline-color: Highlight; }
+  /* Knappen arver farge fra .kk-btn-ghost, som leser var(--ink). Resten av
+     nettstedets knapper har samme sak; den rettes der komponenten bor, ikke her.
+     Denne ene instansen er vår, og da setter vi den. */
+  .kodebygg__om { color: CanvasText; }
+  /* Resultatflaten og dens innhold hører til samme blokk, og KodeEksempel har
+     ingen egen fil for dette. Figurens stolper ville ellers blitt usynlige: to
+     fyll som begge tvinges til samme systemfarge er én flate, ikke to. */
+  .kodebygg__ut { background: Canvas; border-color: CanvasText; }
+  .kodebygg__ut .kodeeks > *,
+  .kodebygg__ut .kodeeks text,
+  .kodebygg__ut .kodeeks figcaption { color: CanvasText; fill: CanvasText; }
+  .kodebygg__ut .kodeeks .spor { fill: Canvas; stroke: CanvasText; }
+  .kodebygg__ut .kodeeks .fyll { fill: GrayText; }
+  .kodebygg__ut .kodeeks .fyll.oss { fill: Highlight; }
+
+  .kodebygg[data-klar] .kodebygg__linje,
+  .kodebygg[data-klar] .kodebygg__ut .kodeeks > *,
+  .kodebygg[data-gaar] .kodebygg__linje,
+  .kodebygg[data-gaar] .kodebygg__ut .kodeeks > * {
+    animation-name: none;
+    visibility: visible;
+    opacity: 1;
+    clip-path: none;
+  }
+  .kodebygg[data-gaar] .kodebygg__linje::after { content: none; }
+}

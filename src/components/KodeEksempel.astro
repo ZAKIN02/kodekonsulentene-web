@@ -1,0 +1,92 @@
+---
+/**
+ * Den EKTE komponenten KodeBygg forteller historien om.
+ *
+ * KodeBygg.astro leser denne fila fra disk ved bygg, viser markeringen under som
+ * kode til venstre, og rendrer den samme komponenten til høyre. Det er hele
+ * poenget: ingen av de to sidene er en tegning av den andre. Endrer du en linje
+ * her, endrer begge seg i neste bygg, og de kan ikke drive fra hverandre.
+ *
+ * DERFOR ER DEN KORT. Alt som står her blir lest av en besøkende som ikke kan
+ * kode. Tjue linjer kan hun følge; åtti kan hun ikke. Hun skal ikke forstå
+ * koden – hun skal se at overskriften dukker opp når overskriftslinjen kommer.
+ *
+ * REKKEFØLGEN PÅ BARNA ER KOBLINGEN. KodeBygg finner hvert trinn ved å søke
+ * etter klassenavnene «merke», «tittel», «tekst», «figur» og `<Button` i
+ * kildekoden, og tidsstyrer resultatet med :nth-child i samme rekkefølge.
+ * Bytter du om på barna, eller døper om en klasse, må KodeBygg.astro følge med.
+ *
+ * TALLENE ER MÅLT, IKKE SKREVET. Alt som ser ut som data kommer fra
+ * src/data/maalinger.json, der «oss» er vår egen side og «typisk» er medianen
+ * fra masseskanningen. Ingen av tallene står som tekst i denne fila.
+ *
+ * ETT LINJESKIFT RETT FØR ET {uttrykk} SPISER MELLOMROMMET. Astro følger JSX:
+ * et linjeskift inntil en uttrykksparentes fjernes helt, ikke komprimeres til et
+ * mellomrom. «samtykke,\n  {oss.ttfbMs}» ble rendret som «samtykke,133». Setninger
+ * med data i står derfor på ÉN linje her, og linjene er korte nok til det.
+ */
+import Button from "./Button.astro";
+import maalinger from "../data/maalinger.json";
+
+const oss = maalinger.oss;
+const t = maalinger.typisk;
+
+/** Stolpelengder i viewBox-enheter. 180 enheter = alle seks headerne. */
+const SPOR = 180;
+const b1 = Math.round((SPOR * t.headereAv6) / 6);
+const b2 = Math.round((SPOR * oss.headereAv6) / 6);
+---
+<article class="kodeeks">
+  <p class="merke mono-label">// MÅLT {oss.maalt}</p>
+  <h3 class="tittel subheading">Siden du ser på nå</h3>
+  <p class="tekst body">
+    {oss.cookiesForSamtykke} cookies, {oss.ttfbMs} ms svartid.
+  </p>
+  <figure class="figur">
+    <svg viewBox="0 0 300 50" aria-hidden="true">
+      <rect class="spor" x="80" y="6" width="180" height="14" />
+      <rect class="fyll" x="80" y="6" width={b1} height="14" />
+      <rect class="spor" x="80" y="30" width="180" height="14" />
+      <rect class="fyll oss" x="80" y="30" width={b2} height="14" />
+      <text x="0" y="17">Typisk</text>
+      <text x="272" y="17">{t.headereAv6}</text>
+      <text x="0" y="41">Vår side</text>
+      <text x="272" y="41">{oss.headereAv6}</text>
+    </svg>
+    <figcaption class="small">Sikkerhetsheadere, av 6</figcaption>
+  </figure>
+  <Button variant="primary" href="/sjekk">Sjekk siden din</Button>
+</article>
+
+<style>
+  /* Flaten følger temaet, i motsetning til kodeflaten ved siden av. Det er med
+     vilje: dette ER en bit av nettstedet, og skal se ut som resten av det. */
+  .kodeeks { display: grid; gap: var(--space-4); justify-items: start; }
+  .kodeeks .merke { margin: 0; color: var(--ink-muted); }
+  .kodeeks .tittel { margin: 0; color: var(--ink); }
+  .kodeeks .tekst { margin: 0; max-width: 32ch; color: var(--ink-muted); }
+  .kodeeks .figur { margin: 0; display: grid; gap: var(--space-2); width: 100%; }
+
+  /* viewBox-bredden er 300 og maksbredden 300 px, så skalaen er 1:1 eller
+     mindre. Samme grunn som i Snitt.astro: skaleres figuren opp, males 14 px
+     tekst i 24, og skaleres den ned, males den under lesbar størrelse. */
+  .kodeeks svg { width: 100%; max-width: 300px; height: auto; }
+  .kodeeks text {
+    font-family: var(--font-mono);
+    font-size: 14px; /* = .small */
+    fill: var(--ink-muted);
+  }
+  /* Sporet er bare en ramme for stolpen. Tallene står i figuren, så stolpene
+     bærer ikke mening alene – derfor er fargevalget fritt. Fyllet bruker likevel
+     --accent-text og --ink-faint, som begge er lesbare i BEGGE temaer, i stedet
+     for --accent, som er 1,9:1 mot hvitt og bare er godkjent som knappefyll. */
+  .kodeeks .spor { fill: var(--line); }
+  .kodeeks .fyll { fill: var(--ink-faint); }
+  .kodeeks .fyll.oss { fill: var(--accent-text); }
+  /* --ink-muted, ikke --ink-faint. Begge er lesbare mot flaten, men KodeBygg
+     tenner en kort --accent-soft bak elementet når det kommer, og der måler
+     --ink-faint 4,04:1 i lyst tema (#7b8591 mot #1d2a08). --ink-muted måler
+     5,98:1 der og 6,58:1 i motsatt tema. En farge skal måles i den tilstanden
+     den faktisk opptrer i, ikke bare mot hvileflaten. */
+  .kodeeks figcaption { color: var(--ink-muted); }
+</style>

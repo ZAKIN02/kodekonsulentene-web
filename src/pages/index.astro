@@ -189,6 +189,11 @@ const heroTerminal = [
     ingress="Skriv inn adressen. På 30 sekunder får du ytelse, sikkerhetsheadere, cookies satt før samtykke, WCAG-feil og om org.nr. står på siden."
     id="sjekk"
     bred
+    {/* `lav` fjerner minstehøyden. Seksjonen er innholdsrik nok i seg selv, og uten
+        den la den 109 px slakk til tomrommet mot neste seksjon – som visuelt leste
+        som rundt 290 px, fordi det neste elementet er en filmflate der motivet er
+        maskert bort på venstre side nettopp der øyet leter. */}
+    lav
   >
     <div class="stack">
       <Avslor>

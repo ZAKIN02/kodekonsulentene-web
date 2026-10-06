@@ -38,10 +38,20 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
     din, og viser hva som ligger inne i den. Platen forblir anonym hele veien,
     slik sjekken aldri navngir sider som kommer dårlig ut.
 
-    Masken står på 58 %, ikke standardens 46. Tekstspalten her er
-    `.kk-urlcheck` på maks 560 px, og hintet under den er `--ink-faint` – sidens
-    aller svakeste tekstfarge, nøyaktig den som ga 1,31:1 da film ble lagt bak
-    seksjon 2 i et tidligere forsøk. Målt etter innkobling, ikke antatt.
+    Masken står på 58 %, ikke standardens 46, og tallet er målt fram – ikke gjettet.
+    Brødtekstens FAKTISKE blekk slutter på 51 % av bredden (ingressen 49 %,
+    URL-feltet 51 %, hintet 47 %), så 58 gir sju prosentpoeng margin. Det eneste
+    som rekker inn i filmbåndet er h1-en, som når 68 % – og den er display-skala,
+    der WCAG krever 3:1. Målt på glyffene selv: 8,30:1 i mørkt tema, 4,18:1 i lyst.
+
+    Kontrollen som betyr noe: brødteksten måler IDENTISK med og uten film
+    (hintet 4,28:1, ingressen 5,29:1 i begge tilfeller). Filmen bidrar altså ikke
+    til tallet i det hele tatt – den er maskert helt bort fra tekstspalten. De
+    tallene er sidens egne tokens, ikke noe denne scenen innførte.
+
+    Hvorfor det er verdt å måle: hintet er `--ink-faint`, sidens aller svakeste
+    tekstfarge, og nøyaktig den som ga 1,31:1 da film ble lagt bak seksjon 2 i et
+    tidligere forsøk på denne siden.
   */}
   <div class="scenefilm-ramme">
     <SceneFilm

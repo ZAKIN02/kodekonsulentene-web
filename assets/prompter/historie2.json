@@ -1,31 +1,31 @@
 {
   "_om": "Forsidens historie, akt 2. Akt 1 er scenen «hero» i scener.json: en blank, umerket blokk der kjerneprøven skyves ut og blottlegger et konstruert indre. Denne fila fortsetter DEN historien med samme objekt, samme kamera og samme lys. Poenget er at seksjon seks bare gir mening fordi du har sett seksjon tre.",
-
   "_feilretting": "6. okt 2026: forrige versjon morfet. To årsaker, begge i prompten. (1) basisPrompt la hulrommet i HØYRE ende av frontflaten mens start la platene til VENSTRE for blokken – platene måtte passere gjennom ~900 px massiv aluminium for å nå fram. Kling løser umulig geometri ved å tegne et nytt objekt. Hulrommet ligger nå i VENSTRE ende, så banen er fri. (2) Blokken drev 43 px ned og vokste 29 px i høyde, målt på kolonneprofil. Posisjonen er nå låst eksplisitt i bildekoordinater i både bevar, start og slutt.",
-
   "_bevar": "Keep exactly identical: camera position, perspective, framing, lighting direction and intensity, rim light, the near-black #0b0d10 background, and the size, proportions, position, material and surface finish of the main block. The block itself never moves, rotates or changes shape. Its outer faces stay plain, blank and unmarked. No text, letters, numbers, logos or watermarks anywhere.",
-
   "_bevegelse": "Locked-off static camera; the camera does not move, zoom, pan or reframe. Silent product shot. Start exactly on the first frame and end exactly on the last frame. Hold still for the first and last half second; in between, one single continuous movement at constant speed. The objects are rigid and keep their exact shape, size, thickness and material in every frame and never bend, melt, morph or rotate. The same number of objects is visible in every frame. Lighting, reflections and the background stay constant. Avoid: camera movement, camera shake, zoom, pan, cut, scene change, lens switch, morphing, melting, warping, extra objects, missing objects, text, letters, logos, watermark, flicker, particles, lens flare, motion blur.",
-
   "scener": [
     {
       "id": "steg",
       "mappe": "scener",
       "_hvorfor": "Akt 2. Akt 1 endte med at kjerneprøven er trukket ut og hulrommet står åpent. Her settes innholdet inn igjen, ett lag om gangen, mens den limegrønne linjen vokser. Det er «Fire steg, kjente tider» gjort fysisk, i samme blokk, kamera og lys som akt 1 – derfor leses de to som én historie.",
-
       "basisPrompt": "A single solid rectangular block of matte bead-blasted anodised aluminium, seen in three-quarter view from slightly above, resting on an invisible floor against a near-black #0b0d10 background. The block occupies the RIGHT HALF of the frame: its left face sits near the horizontal centre of the image and its right edge stops short of the right border, leaving a clear margin. The block is twice as wide as it is tall. Its outer faces are completely plain, blank and featureless, with fine 45-degree chamfers along every edge. A precise rectangular cavity is cut into the front face at its LEFT END, immediately beside the block's left edge, open and empty, its inner walls showing bare machined aluminium. The cavity is exactly large enough to hold four thin flat plates stacked horizontally. The entire left half of the frame is empty black space. Nothing protrudes from the block.",
-
       "bevar": "Keep exactly identical: camera position, perspective, three-quarter viewing angle, framing, lighting direction and intensity, rim light, and the near-black #0b0d10 background. The main block keeps exactly the same size, width-to-height proportion, position in frame, material and surface finish in every image: its top edge, bottom edge, left face and right edge stay at precisely the same pixel positions, and its rectangular cavity stays the same size and in the same place at the LEFT END of the front face. The block never moves, shifts, rises, sinks, grows, shrinks, rotates or changes shape. Its outer faces stay plain, blank and unmarked. No text, letters, numbers, logos or watermarks anywhere.",
-
       "start": "Change only the four plates. Exactly FOUR thin flat rectangular plates of the same matte aluminium float in open black space to the LEFT of the block, clear of it and touching nothing, stacked one above the other with equal gaps, all perfectly level and parallel. They are the same width as the cavity and sit at exactly the same height as the cavity, lined up with it so a straight horizontal path leads them into it with nothing in the way. The cavity at the left end of the front face is completely empty and reads as an open dark rectangle. No green light anywhere in the frame.",
-
       "slutt": "Change only the four plates. The same FOUR thin flat plates are now fully seated inside the rectangular cavity at the LEFT END of the front face, stacked horizontally one above the other with equal hair-thin gaps, their front edges flush with the block's front face. The open black space to the LEFT of the block is now completely empty. Exactly one hair-thin lime green #c8f24a line runs horizontally along the front edge of the stacked plates inside the cavity, covering less than three percent of the image. Nothing else is green. The block is unchanged in every respect.",
-
       "bevegelse": "The four thin plates glide straight sideways to the right, along a clear unobstructed horizontal path, into the open cavity at the left end of the block's front face, one after another, each staying perfectly level and parallel, until all four are seated flush inside. The block stays completely still and keeps its exact shape, size and position throughout. As each plate seats, the hair-thin lime green line along the front edge of the stack grows a little longer, reaching full length as the fourth plate arrives.",
-
       "pingpong": false,
-      "crf": { "1920": "19", "1280": "19", "960": "20" },
-      "bredder": [1920, 1280, 960]
+      "crf": {
+        "1920": "19",
+        "1280": "19",
+        "960": "20"
+      },
+      "bredder": [
+        1920,
+        1280,
+        960
+      ],
+      "utnavn": "hist2-steg",
+      "_utnavn_hvorfor": "Forsiden refererer hist2-steg-*.mp4, mens scene-id-en er «steg». Uten utnavn skrev roerledningen til steg-*.mp4 og forsiden fortsatte aa vise det gamle, morfende klippet."
     }
   ]
 }

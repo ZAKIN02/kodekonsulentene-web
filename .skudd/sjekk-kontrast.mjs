@@ -17,9 +17,15 @@ const lum = (r, g, b) => { const f = (c) => { c /= 255; return c <= 0.03928 ? c 
   return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b); };
 const kontrast = (a, b) => { const [h, l] = a > b ? [a, b] : [b, a]; return (h + 0.05) / (l + 0.05); };
 
+const tema = process.env.TEMA === "dark" ? "dark" : "light";
 const br = await chromium.launch();
-const p = await br.newPage({ viewport: { width: bredde, height: 900 } });
+const ctx = await br.newContext({ viewport: { width: bredde, height: 900 }, colorScheme: tema });
+const p = await ctx.newPage();
+console.log(`  [tema: ${tema}]`);
 await p.goto(base + side, { waitUntil: "networkidle" });
+// Med UTENFILM=1 skjules scenefilmen, saa vi ser hva tekstfargen gir HELT UTEN
+// film bak. Da kan en maaling under 4,5:1 tilskrives riktig aarsak.
+if (process.env.UTENFILM) await p.addStyleTag({ content: "[data-scenefilm]{display:none !important}" });
 const H = await p.evaluate(() => document.documentElement.scrollHeight);
 for (let y = 0; y < H; y += 500) { await p.evaluate((v) => scrollTo(0, v), y); await p.waitForTimeout(140); }
 
@@ -51,11 +57,20 @@ for (const vel of velgere) {
   }, vel);
   const A = PNG.sync.read(readFileSync("/tmp/k-a.png"));
   const B = PNG.sync.read(readFileSync("/tmp/k-b.png"));
-  let verst = Infinity, n = 0, fg = null, bg = null;
+  // Antialiaserte KANTpiksler ligger alltid naer bakgrunnen, saa den verste
+  // enkeltpikselen i en glyf er alltid ~1:1 uansett hvor lesbar teksten er.
+  // Foerste versjon av dette verktoeyet maalte nettopp det og meldte 1,20:1 paa
+  // tekst som er fullt lesbar. Her brukes bare glyffens KJERNE: pikslene der
+  // forskjellen mot bakgrunnen er minst 70 % av den stoerste forskjellen.
+  const diff = [];
   for (let i = 0; i < A.data.length; i += 4) {
-    const dr = Math.abs(A.data[i] - B.data[i]), dg = Math.abs(A.data[i + 1] - B.data[i + 1]), db = Math.abs(A.data[i + 2] - B.data[i + 2]);
-    if (dr + dg + db < 60) continue;                    // ikke en glyffpiksel
-    n++;
+    const d = Math.abs(A.data[i] - B.data[i]) + Math.abs(A.data[i + 1] - B.data[i + 1]) + Math.abs(A.data[i + 2] - B.data[i + 2]);
+    if (d >= 60) diff.push([i, d]);
+  }
+  const maksDiff = diff.reduce((m, [, d]) => Math.max(m, d), 0);
+  const kjerne = diff.filter(([, d]) => d >= maksDiff * 0.9);
+  let verst = Infinity, n = kjerne.length, fg = null, bg = null;
+  for (const [i] of kjerne) {
     const c = kontrast(lum(A.data[i], A.data[i + 1], A.data[i + 2]), lum(B.data[i], B.data[i + 1], B.data[i + 2]));
     if (c < verst) { verst = c; fg = [A.data[i], A.data[i + 1], A.data[i + 2]]; bg = [B.data[i], B.data[i + 1], B.data[i + 2]]; }
   }

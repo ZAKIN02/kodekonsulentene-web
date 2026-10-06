@@ -15,6 +15,10 @@ const ctx = await b.newContext({
   bypassCSP: false,
 });
 const p = await ctx.newPage();
+// Med BLOKKVIDEO=1 blokkeres videofiler, saa vi faar sidens vekt UTEN film.
+// Den gamle siden hadde filmen i seksjon 3, langt under folden, og lastet den
+// derfor ikke ved foerstelast - det tallet er altsaa sammenlignbart.
+if (process.env.BLOKKVIDEO) await p.route(/\.(mp4|webm)$/, (r) => r.abort());
 const sum = new Map();
 p.on("response", (r) => {
   const n = +(r.headers()["content-length"] ?? 0);

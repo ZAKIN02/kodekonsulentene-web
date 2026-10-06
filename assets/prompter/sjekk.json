@@ -25,7 +25,8 @@
       "_komposisjon": "Panelet dekker 37-89 % av bredden i masteren, maalt med .skudd/sjekk-geo.mjs. Masken skjuler venstre side, saa motivet skyves 8 % til hoeyre. Det trengs ikke mer: motivet er ROMLIG JEVNT - en gjentakende rutestruktur og en linje som spenner hele panelet - saa en maskert venstrekant tar ikke bort noe man maa se. Det er forskjellen fra /apper-og-ai, der motivet var ETT objekt i venstre tredel og masken skar bort 80 % av det.",
       "forskyv": 8,
       "pingpong": false,
-      "crf": { "1920": "19", "1280": "19", "960": "20" },
+      "_crf": "960-trinnet staar paa 28, ikke 19-20 som de stoerre. Paa mobil viser SceneFilm filmen med opacity 0.42 bak en LODDRETT maske som skjuler de oeverste 52 % - den er saa vidt synlig. Maalt i den faktiske mobilvisningen (390 px bred, 0,42 opasitet over sidens bakgrunn) er forskjellen mellom crf 20 og crf 28 YAVG 0,13 og YMAX 5 av 255, altsaa usynlig. Det sparer 476 kB av 689 over folden paa den viktigste konverteringssiden vaar. De stoerre trinnene staar urоert: der vises filmen paa 0,85 opasitet og detalj teller.",
+      "crf": { "1920": "19", "1280": "19", "960": "28" },
       "bredder": [1920, 1280, 960]
     }
   ]

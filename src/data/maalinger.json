@@ -1,0 +1,54 @@
+{
+  "_om": "Aggregerte tall fra en masseskanning. Ingen domenenavn – repoet er offentlig, og vi publiserer ikke navn på sider som kommer dårlig ut. Rådata ligger utenfor repoet.",
+  "maalt": "2026-10-06",
+  "utvalg": {
+    "kilde": "Enhetsregisteret, foretak med registrert hjemmeside",
+    "naeringskoder": [
+      "43.221",
+      "43.210",
+      "43.320",
+      "43.341",
+      "86.230",
+      "86.901",
+      "86.211"
+    ],
+    "unikeDomener": 80,
+    "trukket": 45,
+    "svarte": 38,
+    "stengtAvRobots": 1,
+    "svarteIkke": 6,
+    "stoerrelse": "1–20 ansatte registrert i Enhetsregisteret"
+  },
+  "typisk": {
+    "headereAv6": 1,
+    "cookiesForSamtykke": 1,
+    "uuFeil": 1,
+    "ttfbMs": 264,
+    "sumAv100": 30
+  },
+  "andelProsent": {
+    "settercookiesForSamtykke": 79,
+    "harSporereForSamtykke": 63,
+    "manglerOrgnr": 66,
+    "harAlleSeksHeadere": 0,
+    "harMinstEnUuFeil": 68
+  },
+  "forbehold": [
+    "Forsiden er hentet én gang, uten å kjøre JavaScript. Cookies som settes av skript etterpå er ikke med, så tallet er et minimum.",
+    "Kontrast, tastaturnavigasjon og skjermleserflyt kan ikke måles maskinelt og er ikke vurdert.",
+    "Utvalget er foretak som har registrert hjemmeside i Enhetsregisteret. Foretak uten registrert adresse er ikke med, og utvalget er derfor ikke representativt for bransjen som helhet.",
+    "Sider som stenger oss i robots.txt, eller som ikke svarte, er hoppet over og teller ikke. Begge tallene står i utvalget."
+  ],
+  "oss": {
+    "maalt": "2026-10-06",
+    "url": "kodekonsulentene.no",
+    "headereAv6": 6,
+    "cookiesForSamtykke": 0,
+    "uuFeil": 0,
+    "axeBrudd": 4,
+    "bestaar": false,
+    "ttfbMs": 127,
+    "sumAv100": 90,
+    "orgnr": true
+  }
+}

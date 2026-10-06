@@ -1,0 +1,265 @@
+---
+/**
+ * Fire målte forskjeller mellom en typisk småbedriftsside og vår egen.
+ *
+ * HVORFOR DENNE FINNES: resten av nettstedet forklarer hva vi gjør med bilder av
+ * materiale. Et bilde av en aluminiumsstabel sier ingenting til en rørlegger.
+ * Et tall han kan etterprøve gjør det.
+ *
+ * ALLE TALL ER MÅLT, INGEN ER SKREVET INN.
+ *  - Bransjetallene kommer fra .skudd/maaling-skann.mjs, som trekker et utvalg
+ *    fra Enhetsregisteret og kjører vår egen analysemotor mot hver forside.
+ *  - Våre egne tall kommer fra .skudd/maaling-egen.mjs, som kjører NØYAKTIG
+ *    samme motor mot vår egen side. Skriver man inn sine egne tall for hånd,
+ *    sammenligner man en måling med en påstand.
+ *
+ * INGEN SIDER NAVNGIS. docs/metode-skanning.md er bindende: vi publiserer aldri
+ * navn på en side som kommer dårlig ut. Bare aggregerte tall.
+ *
+ * DEN VIKTIGE SPERREN: `oss.bestaar` er false hvis enten den statiske motoren
+ * eller axe finner noe. Den statiske motoren kan ikke se kontrast, og vår egen
+ * forside strøk nylig på ni kontrastbrudd mens den statiske sjekken sa null.
+ * Når sperren slår inn, viser raden hva som faktisk er funnet – ikke et nulltall
+ * vi ikke har dekning for.
+ */
+import maalinger from "../data/maalinger.json";
+
+interface Props {
+  class?: string;
+}
+const { class: cls } = Astro.props;
+
+const { typisk, andelProsent: andel, oss, utvalg } = maalinger;
+
+/** ISO-dato er for maskiner. Leseren skal se «6. oktober 2026». */
+const norskDato = (iso: string) =>
+  new Intl.DateTimeFormat("nb-NO", { day: "numeric", month: "long", year: "numeric" })
+    .format(new Date(`${iso}T12:00:00Z`));
+
+/** En rad er bare med hvis begge sidene faktisk er målt. */
+const rader = [
+  {
+    navn: "Sikkerhetsheadere",
+    andel: 100 - andel.harAlleSeksHeadere,
+    andelTekst: `${100 - andel.harAlleSeksHeadere} % mangler minst én`,
+    typisk: `${typisk.headereAv6}/6`,
+    oss: `${oss.headereAv6}/6`,
+    bra: oss.headereAv6 === 6,
+    hva: "Seks headere forteller nettleseren hva den ikke skal tillate. Uten dem er siden lettere å misbruke mot dine egne kunder.",
+  },
+  {
+    navn: "Cookies før samtykke",
+    andel: andel.settercookiesForSamtykke,
+    andelTekst: `${andel.settercookiesForSamtykke} % setter minst én`,
+    typisk: String(typisk.cookiesForSamtykke),
+    oss: String(oss.cookiesForSamtykke),
+    bra: oss.cookiesForSamtykke === 0,
+    hva: `${andel.harSporereForSamtykke} % laster en sporer før noen har sagt ja. Ekomloven § 3-15 har krevd gyldig samtykke siden 1. januar 2025.`,
+  },
+  {
+    navn: "Universell utforming",
+    andel: andel.harMinstEnUuFeil,
+    andelTekst: `${andel.harMinstEnUuFeil} % har minst én feil`,
+    typisk: `${typisk.uuFeil} feil`,
+    // Sperren: vi påstår ikke null før begge målingene er enige.
+    oss: oss.bestaar ? `${oss.uuFeil} feil` : `${oss.axeBrudd} feil`,
+    bra: oss.bestaar,
+    hva: oss.bestaar
+      ? "Private virksomheter skal oppfylle 35 krav i WCAG 2.0 A og AA."
+      : `Vår egen side har ${oss.axeBrudd} kontrastbrudd akkurat nå. Vi skriver det her fordi vi ellers ville vist et nulltall vi ikke har dekning for.`,
+  },
+  {
+    navn: "Org.nr. på siden",
+    andel: andel.manglerOrgnr,
+    andelTekst: `${andel.manglerOrgnr} % mangler det`,
+    typisk: "Mangler",
+    oss: oss.orgnr ? "Står der" : "Mangler",
+    bra: oss.orgnr,
+    hva: "Foretaksnavn og organisasjonsnummer skal stå på nettsiden. Det er det første en kunde ser etter for å sjekke at foretaket er ekte.",
+  },
+] as const;
+---
+<figure class:list={["foreroget", cls]}>
+  <figcaption class="foreroget__topp">
+    <p class="mono-label foreroget__merke">Målt, ikke påstått</p>
+    <p class="foreroget__ingress body-lg">
+      Vi kjørte vår egen sjekk mot {utvalg.svarte} tilfeldig trukne
+      småbedriftssider. Her er hva vi fant, og hvor vi selv står.
+    </p>
+  </figcaption>
+
+  <ul class="foreroget__rader">
+    {rader.map((r, i) => (
+      <li class="foreroget__rad" style={`--rad:${i}`}>
+        <p class="foreroget__navn">{r.navn}</p>
+
+        <p class="foreroget__andel mono-stat" aria-hidden="true">{r.andel}<span class="foreroget__pst">%</span></p>
+
+        <div class="foreroget__felt">
+          {/* Stolpen er dekor; tallet ved siden av bærer meningen. Derfor skjult
+              for skjermlesere, og derfor står andelTekst som ekte tekst under. */}
+          <div class="foreroget__stolpe" aria-hidden="true">
+            <span class="foreroget__fyll" style={`--andel:${r.andel}%`}></span>
+          </div>
+          <p class="foreroget__tekst small">{r.andelTekst} · {r.hva}</p>
+        </div>
+
+        <dl class="foreroget__par">
+          <div>
+            <dt>Typisk</dt>
+            <dd class="foreroget__verdi foreroget__verdi--typisk">{r.typisk}</dd>
+          </div>
+          <div>
+            <dt>Denne siden</dt>
+            <dd class:list={["foreroget__verdi", r.bra ? "foreroget__verdi--bra" : "foreroget__verdi--daarlig"]}>{r.oss}</dd>
+          </div>
+        </dl>
+      </li>
+    ))}
+  </ul>
+
+  <p class="foreroget__metode small">
+    <strong>Metode.</strong> {utvalg.svarte} forsider hentet {norskDato(maalinger.maalt)},
+    trukket fra Enhetsregisteret blant foretak med 1–20 ansatte og registrert hjemmeside.
+    {" "}{utvalg.stengtAvRobots === 1 ? "Én side stengte" : `${utvalg.stengtAvRobots} sider stengte`} oss
+    i robots.txt og {utvalg.svarteIkke} svarte ikke; de er ikke med.
+    Ingen sider navngis — vi publiserer ikke navn på sider som kommer dårlig ut.
+    Vår egen side er målt med nøyaktig samme sjekk {norskDato(oss.maalt)}.
+    Kontrast og tastaturbruk kan ikke måles av den statiske sjekken, så den er
+    kjørt med nettleser i tillegg.
+  </p>
+</figure>
+
+<style>
+  .foreroget { margin: 0; display: grid; gap: var(--space-6); }
+
+  .foreroget__topp { display: grid; gap: var(--space-2); }
+  .foreroget__merke { color: var(--ink-faint); }
+  .foreroget__ingress { margin: 0; max-width: 46ch; color: var(--ink-muted); }
+
+  .foreroget__rader {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0;
+    border-block-start: var(--hairline) solid var(--line);
+  }
+
+  .foreroget__rad {
+    display: grid;
+    gap: var(--space-2) var(--space-5);
+    padding-block: var(--space-5);
+    border-block-end: var(--hairline) solid var(--line);
+    grid-template-areas:
+      "navn   andel"
+      "felt   felt"
+      "par    par";
+    grid-template-columns: 1fr auto;
+    align-items: start;
+  }
+
+  .foreroget__navn {
+    grid-area: navn;
+    margin: 0;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  /* Andelen er poenget i raden, så den er det største elementet. */
+  .foreroget__andel {
+    grid-area: andel;
+    margin: 0;
+    font-size: clamp(32px, 5vw, 56px);
+    line-height: 1;
+    color: var(--warn);
+    font-variant-numeric: tabular-nums;
+  }
+  .foreroget__pst { font-size: 0.45em; color: var(--ink-faint); }
+
+  .foreroget__felt { grid-area: felt; display: grid; gap: var(--space-2); }
+
+  .foreroget__stolpe {
+    height: 3px;
+    background: var(--line);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+  }
+  .foreroget__fyll {
+    display: block;
+    height: 100%;
+    width: var(--andel);
+    background: var(--warn);
+    border-radius: inherit;
+    /* Utgangspunktet er FERDIG fylt. Animasjonen under vokser den fram der
+       nettleseren støtter scroll-tidslinjer; der den ikke gjør det – Firefox –
+       står stolpen ferdig. Degradering skal gå mot «synlig», aldri mot «borte». */
+    transform-origin: left center;
+  }
+
+  .foreroget__tekst { margin: 0; color: var(--ink-muted); max-width: 62ch; }
+
+  .foreroget__par {
+    grid-area: par;
+    margin: 0;
+    display: flex;
+    gap: var(--space-6);
+    flex-wrap: wrap;
+  }
+  .foreroget__par div { display: grid; gap: 2px; }
+  .foreroget__par dt {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--ink-faint);
+  }
+  .foreroget__verdi {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 18px;
+    font-variant-numeric: tabular-nums;
+  }
+  .foreroget__verdi--typisk { color: var(--ink-muted); }
+  .foreroget__verdi--bra { color: var(--ok); }
+  .foreroget__verdi--daarlig { color: var(--fail); }
+
+  /* Metoden er ikke pynt. Et tall uten metode er det samme som konkurrentenes
+     tall vi selv nekter å sitere, så den skal kunne leses – ikke stå i --ink-faint. */
+  .foreroget__metode { margin: 0; max-width: 72ch; color: var(--ink-muted); }
+  .foreroget__metode strong { color: var(--ink); font-weight: 600; }
+
+  @media (min-width: 721px) {
+    .foreroget__rad {
+      grid-template-areas: "navn andel felt par";
+      grid-template-columns: minmax(10rem, 1fr) auto minmax(0, 2fr) auto;
+      align-items: center;
+      gap: var(--space-5);
+    }
+    .foreroget__par { gap: var(--space-5); }
+  }
+
+  /**
+   * Stolpen vokser fram når raden kommer i syne.
+   *
+   * LANGFORMER, ikke stenografi: minifieren slår `animation` og
+   * `animation-timeline` sammen til noe BÅDE Chromium og Firefox forkaster
+   * stille, og da står animasjonen i koden uten å kjøre. En test fanger det.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .foreroget__fyll {
+        animation-name: foreroget-vokst;
+        animation-duration: 1ms;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: view();
+        animation-range: entry 20% cover 45%;
+      }
+    }
+  }
+
+  @keyframes foreroget-vokst {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+</style>

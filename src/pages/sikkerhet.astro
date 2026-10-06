@@ -154,24 +154,38 @@ const tiltak = [
      Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
   .scene:first-of-type .mega .ord,
   .scene:first-of-type .mega-blokk,
-  .scene:first-of-type .avslor {
+  /* Bare FØRSTE avdekking i første scene, ikke hele scenen.
+     Regelen fantes for at innhold over folden ikke skal ligge usynlig og vente på
+     en scroll som aldri kommer. Men `.scene:first-of-type .avslor` traff ALLE
+     avdekkinger i scenen – og /caser og /handbok er én eneste scene, så den slo av
+     all bevegelse på hele siden. Målt: 0 bevegelsesøyeblikk, 5,5 skjermhøyder uten
+     at ett element endrer seg. */
+  .scene:first-of-type > .avslor:first-of-type {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
   }
 </style>
 <style is:global>
-  /* Scenetittelen bryter ut til 1320 px på skjermer over 1200 px (se
-     .scene__head .stortekst i scener.css) og møter da filmen der masken
-     begynner å slippe den inn. Målt med standardmasken: 5,11:1 på tittelen.
-     Det består AA – store overskrifter har 3:1 som krav – men en overskrift
-     som ligger oppå bevegelse er urolig å lese. Masken skyves derfor ut.
-     Kortene under trenger ikke dette: .card har ugjennomsiktig flate og
-     skjermer sin egen tekst. */
-  @media (min-width: 1200px) {
-    .scenefilm-ramme .scenefilm--venstre {
-      -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 62%, rgb(0 0 0 / 0.25) 72%, #000 86%);
-      mask-image: linear-gradient(90deg, transparent 0%, transparent 62%, rgb(0 0 0 / 0.25) 72%, #000 86%);
-    }
-  }
+  /* Filmen dempes i stedet for å maskeres bort.
+
+     Scenetittelen bryter ut til 1320 px over 1200 px bredde (se
+     .scene__head .stortekst i scener.css). Å skyve masken langt nok ut til å
+     klarere den krevde 72 %, og da var filmen praktisk talt usynlig – den
+     løste kontrasten ved å fjerne grunnen til at den var der. Lavere opasitet
+     med standardmasken gir filmen tilbake over hele høyre halvdel og består
+     likevel AA.
+
+     Målt 6. oktober 2026 på /nettsider, verste tekst i rammen:
+       opasitet 0,85 maske 62 %  ->  2,75:1  stryker
+       opasitet 0,85 maske 72 %  ->  7,16:1  består, men filmen er borte
+       opasitet 0,45 maske 52 %  ->  3,86:1  stryker
+       opasitet 0,35 maske 46 %  ->  5,32:1  består, filmen synlig  <- valgt
+
+     is:global er IKKE valgfritt. .scenefilm ligger inne i SceneFilm.astro og
+     får dén komponentens scope-id, mens .scenefilm-ramme får sidens. En vanlig
+     <style> kompilerer til en selektor som krever sidens id på begge, og
+     matcher da ingenting. Verifisert: med vanlig <style> ga maske 46 % og
+     maske 92 % nøyaktig samme måling, fordi ingen av dem ble brukt. */
+  .scenefilm-ramme .scenefilm { opacity: 0.35; }
 </style>

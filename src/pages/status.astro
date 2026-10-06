@@ -8,6 +8,7 @@ import StatusBadge from "../components/StatusBadge.astro";
 import Terminal from "../components/Terminal.astro";
 import Button from "../components/Button.astro";
 import Stillbilde from "../components/Stillbilde.astro";
+import Horisont from "../components/Horisont.astro";
 import { firma } from "../data/firma";
 
 import "../styles/scener.css";
@@ -34,6 +35,16 @@ const budsjettTall = [
   { value: "2,5 s", label: "LCP, øvre grense" },
   { value: "0", label: "Tredjepartsskript før samtykke" },
   { value: "6", label: "Sikkerhetsheadere av 6" },
+];
+
+// Stegene er ikke nye løfter: de står allerede i håndboken og salgsvilkårene.
+// Her ligger de som en tidslinje fordi det er den rekkefølgen som betyr noe
+// for den som lurer på hva som skjer når noe faktisk ryker.
+const avviksloep = [
+  { nr: "00:00", tittel: "Overvåkningen slår ut", tekst: "Oppetid, sertifikat og ytelse sjekkes løpende. Varselet går til oss, ikke til deg." },
+  { nr: "Steg 2", tittel: "Vi ser på det først", tekst: "Er det vår feil, retter vi det uten å fakturere. Er det uklart hvem sin feil det er, retter vi først og tar diskusjonen etterpå." },
+  { nr: "5 dager", tittel: "Sårbarheter lappes", tekst: "Kjent sårbarhet i en avhengighet lappes innen fem arbeidsdager på driftsavtaler. Det er en frist, ikke en ambisjon." },
+  { nr: "Hver måned", tittel: "Du får rapporten", tekst: "Ytelse, oppetid og endringer siden sist. Og en gjenopprettingstest – en sikkerhetskopi du ikke har lest tilbake, er ikke en sikkerhetskopi." },
 ];
 
 const budsjett = [
@@ -67,9 +78,9 @@ const budsjett = [
         ))}
       </dl>
       <p class="small faint">
-        TODO: koble denne siden mot ekte oppetidsovervåkning (Uptime Kuma eller BetterStack)
-        før den brukes som salgsargument. Inntil da sier den bare at serveren svarer –
-        og det er det eneste den påstår.
+        Merkene over sier at serveren svarer akkurat nå. De er ikke en oppetidsprosent,
+        og vi oppgir ingen før vi måler den over tid – et tall uten historikk er bare
+        en påstand.
       </p>
 
       {/* Linjen er ubrutt bare fordi hvert lag ligger der det skal. Bildet påstår
@@ -105,8 +116,18 @@ const budsjett = [
     </div>
   </Scene>
 
-  <Scene n={3} eyebrow="Avvik" tittel="Hvis noe er nede" ingress={avvikIngress}>
+  <Horisont
+    poster={avviksloep}
+    navn="Hva som skjer fra et avvik oppstår til du har rapporten"
+    merke="Avvik"
+    n={3}
+    tittel="Hvis noe er nede"
+    hoyde={3}
+  />
+
+  <Scene n={4} eyebrow="Varsel" tittel="Du trenger ikke melde fra" ingress={avvikIngress}>
     <Button variant="ghost" href="/handbok">Hvordan vi jobber</Button>
+    <Button variant="ghost" href="/vilkar">Hva du kan holde oss til</Button>
   </Scene>
 </Base>
 <style is:global>
@@ -116,7 +137,13 @@ const budsjett = [
      Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
   .scene:first-of-type .mega .ord,
   .scene:first-of-type .mega-blokk,
-  .scene:first-of-type .avslor {
+  /* Bare FØRSTE avdekking i første scene, ikke hele scenen.
+     Regelen fantes for at innhold over folden ikke skal ligge usynlig og vente på
+     en scroll som aldri kommer. Men `.scene:first-of-type .avslor` traff ALLE
+     avdekkinger i scenen – og /caser og /handbok er én eneste scene, så den slo av
+     all bevegelse på hele siden. Målt: 0 bevegelsesøyeblikk, 5,5 skjermhøyder uten
+     at ett element endrer seg. */
+  .scene:first-of-type > .avslor:first-of-type {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;

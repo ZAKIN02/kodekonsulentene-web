@@ -170,3 +170,25 @@ describe("typekontrollen er grønn", () => {
     assert.equal(m![1], "0", `astro check melder ${m![1]} feil:\n${ut.slice(-900)}`);
   });
 });
+
+describe("plassholdere kommer aldri ut til kunder", () => {
+  /**
+   * To lå live: /om viste en grå boks med «TODO: bilde fra arbeidet», og /status
+   * sa «TODO: koble denne siden mot ekte oppetidsovervåkning … før den brukes som
+   * salgsargument» – et internt notat som kundetekst.
+   *
+   * synligeCaser filtrerte caser med TODO, men ingenting fanget TODO skrevet rett
+   * inn i en side.
+   */
+  test("ingen TODO, FIXME eller plassholdertekst i bygget HTML", () => {
+    for (const f of filer) {
+      const html = readFileSync(f, "utf8");
+      for (const ord of ["TODO", "FIXME", "Lorem ipsum", "placeholder-tekst"]) {
+        assert.ok(
+          !html.includes(ord),
+          `${f} inneholder «${ord}». Interne notater skal ikke rendres som kundetekst.`,
+        );
+      }
+    }
+  });
+});

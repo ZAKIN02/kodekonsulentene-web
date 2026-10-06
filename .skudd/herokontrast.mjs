@@ -3,7 +3,11 @@ import { PNG } from "pngjs";
 const b = await chromium.launch();
 for (const [merke, w, h] of [["desktop",1440,860], ["mobil",390,844]]) {
   const p = await b.newPage({ viewport: { width: w, height: h }, colorScheme: "dark" });
-  await p.goto("http://127.0.0.1:4777/", { waitUntil: "networkidle" });
+  // URL-en kom fra en hardkodet port, så verktøyet målte ALLTID forsiden på 4777
+  // uansett hvilken adresse det ble gitt. Parallelle agenter kunne ikke bruke det,
+  // og en måling kunne se riktig ut mens den gjaldt en helt annen side.
+  const url = process.argv[2] ?? "http://127.0.0.1:4777/";
+  await p.goto(url, { waitUntil: "networkidle" });
   await p.waitForTimeout(1500);
   const rel = await p.evaluate(() => {
     const hero = document.querySelector(".hero"), t = document.querySelector(".hero__lead");

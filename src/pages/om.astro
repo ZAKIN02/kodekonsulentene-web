@@ -4,11 +4,20 @@ import Scene from "../components/Scene.astro";
 import Mega from "../components/Mega.astro";
 import Avslor from "../components/Avslor.astro";
 import ProofStrip from "../components/ProofStrip.astro";
+import Lagstabel from "../components/Lagstabel.astro";
+import Pekerkort from "../components/Pekerkort.astro";
 import Stillbilde from "../components/Stillbilde.astro";
 import Button from "../components/Button.astro";
 import ContactBlock from "../components/ContactBlock.astro";
 import { bevis } from "../data/bevis";
 import { firma } from "../data/firma";
+
+const avslag = [
+  { tittel: "Design uten utvikling", tekst: "Vi tegner ikke sider andre skal bygge. Da forsvinner ansvaret for at det faktisk virker." },
+  { tittel: "Annonsekampanjer", tekst: "Vi bygger det folk lander på, ikke trafikken dit. Andre er bedre på det enn oss." },
+  { tittel: "Nettbutikk på fremmed plattform", tekst: "Selger vi noe vi ikke kan vedlikeholde, sitter du igjen med en leverandør vi ikke styrer." },
+  { tittel: "Prosjekt uten skriftlig omfang", tekst: "Uten avtalt omfang blir sluttregningen en diskusjon. Du får fast pris før vi begynner." },
+];
 
 import "../styles/scener.css";
 ---
@@ -28,7 +37,9 @@ import "../styles/scener.css";
       <Stillbilde id="nart" sizes="(min-width: 60rem) 60rem, 100vw" />
     </Avslor>
 
-    <Avslor>
+  </Scene>
+
+  <Scene n={2} eyebrow="Oppsett" tittel="Hvorfor det er bygget slik" id="oppsett">
     <div class="grid-2">
       <div class="stack prose">
         <p class="body-lg muted">
@@ -36,48 +47,53 @@ import "../styles/scener.css";
           med sikkerhet som spesialfelt, og bygger nettsider, interne systemer og apper
           for norske småbedrifter.
         </p>
-        <h2>Hvorfor ingen mellomledd</h2>
+        <h3>Hvorfor ingen mellomledd</h3>
         <p class="muted">
           I et byrå selger en senior, en junior bygger, og en prosjektleder forklarer
           hvorfor det tok lengre tid. Hos oss snakker du med utvikleren som skriver koden,
           hele veien. Du får svar innen {firma.svartid}.
         </p>
-        <h2>Hvorfor sikkerhet</h2>
+        <h3>Hvorfor sikkerhet</h3>
         <p class="muted">
           Fordi det er den delen ingen spør om før det er for sent. En nettside som setter
           Google Analytics før samtykke, eller som kan legges i en ramme på et annet domene,
           er et problem du ikke oppdager selv – du får det i fanget når noen klager.
           Derfor står sikkerhetsarbeidet i prisen, ikke i tilleggsmenyen.
         </p>
-        <h2>Hva vi ikke gjør</h2>
-        <p class="muted">
-          Vi tar ikke design uten utvikling, driver ikke annonsekampanjer, og selger ikke
-          nettbutikker på plattformer vi ikke kan vedlikeholde. Trenger du det, sier vi
-          det og sender deg videre til noen som er bedre på det.
-        </p>
         <Button variant="ghost" href="/handbok">Les håndboken</Button>
       </div>
 
       <div class="stack">
-        <div class="shot" aria-hidden="true" style="aspect-ratio: 4/5; display: grid; place-items: center">
-          <p class="mono faint" style="text-align: center; padding: var(--space-5)">
-            TODO: bilde fra arbeidet<br />4:5, ekte skjermbilde eller sted
-          </p>
-        </div>
+        {/* Her sto det en grå plassholderboks med teksten «TODO: bilde fra arbeidet»,
+            live på en salgsside. Lagstabelen er ikke pynt i stedet: den er en
+            demonstrasjon du kan dra i, og den viser det avsnittene ved siden av
+            påstår – at en nettside er lag, og at vi jobber i alle sammen. Vis,
+            ikke påstå. */}
+        <Lagstabel id="om-lag" />
         <p class="small faint">
-          Ekte bilder av ting som er bygget. Ingen stockbilder, ingen AI-genererte
-          illustrasjoner – hverken her eller på kundesider.
+          Dra i stabelen. De fire lagene er de samme vi leverer i hvert prosjekt –
+          du betaler ikke for et byråledd mellom dem.
         </p>
       </div>
     </div>
-    </Avslor>
+  </Scene>
+
+  <Scene n={3} eyebrow="Grenser" tittel="Hva vi ikke gjør" ingress="Et nei tidlig er billigere for deg enn et ja som ikke holder. Dette er de fire vi sier nei til oftest.">
+    <div class="grid-2">
+      {avslag.map((a, i) => (
+        <Pekerkort nr={i + 1} tittel={a.tittel} tekst={a.tekst} />
+      ))}
+    </div>
+    <p class="small faint">
+      Trenger du noe av dette, sier vi det og sender deg videre til noen som er bedre på det.
+    </p>
   </Scene>
 
   <div class="wrap">
     <ProofStrip items={bevis} label="Målbare påstander" />
   </div>
 
-  <ContactBlock n={2} />
+  <ContactBlock n={4} />
 </Base>
 <style is:global>
   /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
@@ -86,7 +102,13 @@ import "../styles/scener.css";
      Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
   .scene:first-of-type .mega .ord,
   .scene:first-of-type .mega-blokk,
-  .scene:first-of-type .avslor {
+  /* Bare FØRSTE avdekking i første scene, ikke hele scenen.
+     Regelen fantes for at innhold over folden ikke skal ligge usynlig og vente på
+     en scroll som aldri kommer. Men `.scene:first-of-type .avslor` traff ALLE
+     avdekkinger i scenen – og /caser og /handbok er én eneste scene, så den slo av
+     all bevegelse på hele siden. Målt: 0 bevegelsesøyeblikk, 5,5 skjermhøyder uten
+     at ett element endrer seg. */
+  .scene:first-of-type > .avslor:first-of-type {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;

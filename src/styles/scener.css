@@ -19,6 +19,34 @@
   inset-inline: max(var(--space-5), calc(50% - 560px));
   height: var(--hairline);
   background: var(--line);
+  /* Utgangspunktet er en ferdig strek. Uten scroll-tidslinje, uten JavaScript og
+     ved redusert bevegelse er det nettopp det brukeren får. */
+  transform-origin: left center;
+}
+
+/* Streken tegner seg når scenen kommer inn. Målt dramaturgi: undersidene har
+   i snitt 2,4 skjermhøyder mellom hvert øyeblikk der noe faktisk endrer seg, og
+   /handbok har 5,5. Scenegrensene er de eneste holdepunktene som finnes på ALLE
+   sider, så en strek som tegner seg der gir en puls uten å røre en eneste sidefil.
+   Koster 0 kB: ingen markup, ingen JavaScript, et pseudoelement som allerede fantes.
+
+   MERK: langformer, aldri stenografi. `animation: x linear both` + `animation-timeline`
+   slås sammen av lightningcss til `animation: linear both x view()`, som er ugyldig –
+   og både Chromium og Firefox forkaster tidslinjen uten å si fra. */
+@supports (animation-timeline: view()) {
+  .scene::before {
+    animation-name: scene-strek;
+    animation-duration: 1ms;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 85%;
+  }
+}
+
+@keyframes scene-strek {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
 .scene:first-of-type::before { display: none; }
 
@@ -158,6 +186,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .scene::before {
+    animation: none !important;
+    transform: none !important;
+  }
   .avslor,
   .stortekst .ord,
   html.js-avslor .avslor,

@@ -26,9 +26,15 @@ interface Props {
   /** Nummerert etikett over teksten, i brandbokens eyebrow-form. */
   merke?: string;
   n?: number;
+  /**
+   * Skala. Målt dramaturgi: STØRSTE skriftstørrelse var 158 px på hver eneste
+   * side, så alle sidene åpnet med nøyaktig samme gest og rytmen ble flat på
+   * tvers. «full» er uendret og standard – ingenting flytter seg av seg selv.
+   */
+  storrelse?: "full" | "stor" | "mellom";
   class?: string;
 }
-const { tekst, aksent, som = "h2", merke, n, class: cls } = Astro.props;
+const { tekst, aksent, som = "h2", merke, n, storrelse = "full", class: cls } = Astro.props;
 const Tag = som;
 const ord = tekst.split(" ");
 const nr = typeof n === "number" ? String(n).padStart(2, "0") : null;
@@ -40,7 +46,7 @@ const nr = typeof n === "number" ? String(n).padStart(2, "0") : null;
       <span>{merke}</span>
     </p>
   )}
-  <Tag class="mega">
+  <Tag class:list={["mega", storrelse !== "full" && `mega--${storrelse}`]}>
     {ord.map((o, i) => (
       <Fragment>
         <span class:list={["ord", aksent && o.replace(/[.,:;!?]/g, "") === aksent && "aksent"]} style={`--i:${i}`}>{o}</span>

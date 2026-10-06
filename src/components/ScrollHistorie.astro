@@ -81,23 +81,10 @@ import { bookUrl } from "../data/firma";
   .hist__slutt { display: grid; gap: var(--space-4); padding-top: var(--space-8); max-width: 60ch; }
 
   /* Aktiv modus: mediet festes, scenene glir over.
-     Porten er en media-spørring og IKKE skriptet, fordi nettleseren kan avgjøre
-     den før første maling. Ber brukeren om mindre bevegelse, faller seksjonen
-     tilbake til vanlig stabling. */
-  @media (prefers-reduced-motion: reduce) {
-    .hist[data-aktiv] .hist__media,
-    .hist[data-aktiv] .hist__scener,
-    .hist[data-aktiv] .hist__scene,
-    .hist[data-aktiv] .hist__kort,
-    .hist[data-aktiv] .hist__slutt {
-      position: static;
-      width: auto;
-      height: auto;
-      min-height: 0;
-      margin-inline: 0;
-      margin-top: 0;
-    }
-  }
+     Porten er en media-spørring og IKKE skriptet, fordi nettleseren kan avgjøre den
+     før første maling. Settes den av skriptet, bygges seksjonen om ETTER maling:
+     hist__scener gikk fra 626x218 til 433x411 og ga CLS 0,26.
+     Tilbakefallet for redusert bevegelse står NEDERST i fila – se der. */
   .hist[data-aktiv] .hist__media {
     /* Mediet bryter ut av enhver maksbredde. En exploded view som ligger i en
        1120 px boks med grå marger rundt, ser ut som et skjermbilde – ikke som en scene. */
@@ -188,6 +175,25 @@ import { bookUrl } from "../data/firma";
 
   @media (prefers-reduced-motion: reduce) {
     .hist[data-aktiv] .hist__kort { animation: none !important; opacity: 1 !important; transform: none !important; }
+
+    /* Tilbakefallet MÅ stå etter reglene det overstyrer, og med !important.
+       Første forsøk la blokken over dem: en media-spørring gir ingen ekstra
+       spesifisitet, så `position: sticky` lenger ned vant, og en bruker som hadde
+       bedt om mindre bevegelse fikk fortsatt helskjerms scroll-spolt video.
+       Målt: position var `sticky` og margin-top -900px i BEGGE tilstander. */
+    .hist[data-aktiv] .hist__media,
+    .hist[data-aktiv] .hist__scener,
+    .hist[data-aktiv] .hist__scene,
+    .hist[data-aktiv] .hist__slutt {
+      position: static !important;
+      width: auto !important;
+      height: auto !important;
+      min-height: 0 !important;
+      margin-inline: 0 !important;
+      margin-top: 0 !important;
+      z-index: auto !important;
+    }
+    .hist[data-aktiv] .hist__media video { height: auto !important; }
   }
 </style>
 

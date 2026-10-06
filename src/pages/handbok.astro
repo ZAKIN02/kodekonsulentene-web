@@ -6,8 +6,21 @@ import Avslor from "../components/Avslor.astro";
 import Button from "../components/Button.astro";
 import ContactBlock from "../components/ContactBlock.astro";
 import Stillbilde from "../components/Stillbilde.astro";
+import Horisont from "../components/Horisont.astro";
 import { firma } from "../data/firma";
 import { prisvilkaar } from "../data/priser";
+
+// Rutinene sto som seks kulepunkter midt i en vegg av fjorten overskrifter.
+// De er det mest konkrete på siden, og det eneste en kunde kan etterprøve –
+// derfor står de nå som et eget spor i stedet for å drukne.
+const rutiner = [
+  { nr: "01", tittel: "Ingen hemmeligheter i koden", tekst: "Nøkler ligger i plattformens hemmelighetslager, aldri i Git. Et repo som lekker er et repo som lekker for alltid." },
+  { nr: "02", tittel: "Egne nøkler per kunde", tekst: "Ingen delte innlogginger. Mister én tjeneste en nøkkel, står resten urørt." },
+  { nr: "03", tittel: "Avhengigheter skannes", tekst: "Automatisk, og kjent sårbarhet lappes innen fem arbeidsdager på driftsavtaler." },
+  { nr: "04", tittel: "Radnivå-sikkerhet", tekst: "Databaser med persondata låses på rad, ikke på applikasjonslaget alene." },
+  { nr: "05", tittel: "Lest tilbake hver måned", tekst: "Daglig sikkerhetskopi, og test av gjenoppretting hver måned. En backup du ikke har lest tilbake, er ikke en backup." },
+  { nr: "06", tittel: "Lovsjekk hver leveranse", tekst: "Sikkerhetsheadere og lovsjekk kjøres på hver leveranse, ikke bare på den første." },
+];
 
 import "../styles/scener.css";
 ---
@@ -73,17 +86,7 @@ import "../styles/scener.css";
         Du får aldri en faktura du ikke har sagt ja til på forhånd.
       </p>
 
-      <h2>Sikkerhetsrutiner</h2>
-      <ul class="muted">
-        <li>Ingen hemmeligheter i koden eller i Git. Nøkler ligger i plattformens hemmelighetslager.</li>
-        <li>Egne nøkler per tjeneste og per kunde. Ingen delte innlogginger.</li>
-        <li>Avhengigheter skannes automatisk; kjent sårbarhet lappes innen fem arbeidsdager på driftsavtaler.</li>
-        <li>Databaser med radnivå-sikkerhet der det er persondata.</li>
-        <li>Daglig sikkerhetskopi, og test av gjenoppretting hver måned. En backup du ikke har lest tilbake, er ikke en backup.</li>
-        <li>Sikkerhetsheadere og lovsjekk på hver leveranse – det står i <a class="kk-link" href="/sikkerhet">sikkerhetssiden</a>.</li>
-      </ul>
-
-      <h2>Hvem har tilgang til hva</h2>
+      <h2 id="tilgang">Hvem har tilgang til hva</h2>
       <p class="muted">
         Alle kontoer – domene, hosting, analyse, database – står i ditt foretaks navn
         med deg som eier. Vi er lagt til som bruker. Sier du opp, fjerner du oss;
@@ -121,14 +124,27 @@ import "../styles/scener.css";
       </p>
     </div>
 
-    <div class="row" style="margin-top: var(--space-6)">
-      <Button variant="primary" href="/kontakt">Book 20 minutter</Button>
-      <Button variant="ghost" href="/vilkar">Les salgsvilkårene</Button>
-    </div>
     </Avslor>
   </Scene>
 
-  <ContactBlock n={2} />
+  <Horisont
+    poster={rutiner}
+    navn="Seks sikkerhetsrutiner som gjelder hver leveranse"
+    merke="Sikkerhet"
+    n={2}
+    tittel="Seks rutiner, hver leveranse"
+    hoyde={3}
+  />
+
+  <Scene n={3} eyebrow="Videre" tittel="Det som står skrevet, kan du holde oss til" ingress="Håndboken er arbeidsmåten. Salgsvilkårene er det juridiske, og sikkerhetssiden viser hva som faktisk måles på en leveranse.">
+    <div class="row">
+      <Button variant="primary" href="/kontakt">Book 20 minutter</Button>
+      <Button variant="ghost" href="/vilkar">Les salgsvilkårene</Button>
+      <Button variant="ghost" href="/sikkerhet">Se sikkerhetsarbeidet</Button>
+    </div>
+  </Scene>
+
+  <ContactBlock n={4} />
 </Base>
 <style is:global>
   /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
@@ -137,7 +153,13 @@ import "../styles/scener.css";
      Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
   .scene:first-of-type .mega .ord,
   .scene:first-of-type .mega-blokk,
-  .scene:first-of-type .avslor {
+  /* Bare FØRSTE avdekking i første scene, ikke hele scenen.
+     Regelen fantes for at innhold over folden ikke skal ligge usynlig og vente på
+     en scroll som aldri kommer. Men `.scene:first-of-type .avslor` traff ALLE
+     avdekkinger i scenen – og /caser og /handbok er én eneste scene, så den slo av
+     all bevegelse på hele siden. Målt: 0 bevegelsesøyeblikk, 5,5 skjermhøyder uten
+     at ett element endrer seg. */
+  .scene:first-of-type > .avslor:first-of-type {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;

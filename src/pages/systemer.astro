@@ -106,7 +106,13 @@ const integrasjoner = [
      Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
   .scene:first-of-type .mega .ord,
   .scene:first-of-type .mega-blokk,
-  .scene:first-of-type .avslor {
+  /* Bare FØRSTE avdekking i første scene, ikke hele scenen.
+     Regelen fantes for at innhold over folden ikke skal ligge usynlig og vente på
+     en scroll som aldri kommer. Men `.scene:first-of-type .avslor` traff ALLE
+     avdekkinger i scenen – og /caser og /handbok er én eneste scene, så den slo av
+     all bevegelse på hele siden. Målt: 0 bevegelsesøyeblikk, 5,5 skjermhøyder uten
+     at ett element endrer seg. */
+  .scene:first-of-type > .avslor:first-of-type {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;

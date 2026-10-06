@@ -8,7 +8,6 @@ import Scene from "../components/Scene.astro";
 import Mega from "../components/Mega.astro";
 import Avslor from "../components/Avslor.astro";
 import KodeBygg from "../components/KodeBygg.astro";
-import SceneFilm from "../components/SceneFilm.astro";
 import Button from "../components/Button.astro";
 import Terminal from "../components/Terminal.astro";
 import ProcessSteps from "../components/ProcessSteps.astro";
@@ -162,16 +161,6 @@ const schema = {
       rangerer generert materiale lavest, saa den bakker naa prosess-seksjonen
       lenger ned i stedet, der den er bakgrunn og ingen venter paa den. */}
   <div class="scenefilm-ramme">
-    <SceneFilm
-      {/* 960-trinnet manglet for denne scenen – alle de andre fikk et da
-          mobiltrinnene ble enkodet. Mobil hentet derfor 1280-trinnet paa 1605 kB.
-          Enkodet fra masteren paa CRF 26, samme som resten: 442 kB. */}
-      smal="/scener/nettsider-960.mp4"
-      bred="/scener/nettsider-1280.mp4"
-      stor="/scener/nettsider-2560.mp4"
-      plakat="/scener/nettsider-poster.avif"
-      tekst="venstre"
-    />
   <Scene n={5} eyebrow="Prosess" tittel="Fra samtale til lansering">
     <ProcessSteps steps={prosess} />
   </Scene>

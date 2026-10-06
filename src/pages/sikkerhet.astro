@@ -6,7 +6,6 @@ import Scene from "../components/Scene.astro";
 import Mega from "../components/Mega.astro";
 import Avslor from "../components/Avslor.astro";
 import SamtykkeSekvens from "../components/SamtykkeSekvens.astro";
-import SceneFilm from "../components/SceneFilm.astro";
 import Button from "../components/Button.astro";
 import Terminal from "../components/Terminal.astro";
 import UrlCheck from "../components/UrlCheck.astro";
@@ -129,13 +128,6 @@ const tiltak = [
   </Scene>
 
   <div class="scenefilm-ramme">
-    <SceneFilm
-      smal="/scener/sikkerhet-1280.mp4"
-      bred="/scener/sikkerhet-1920.mp4"
-      stor="/scener/sikkerhet-2560.mp4"
-      plakat="/scener/sikkerhet-poster.avif"
-      tekst="venstre"
-    />
   <Scene n={3} eyebrow="Hva som gjøres" tittel="Seks ting på hver leveranse" ingress="Dette er ikke et tillegg du kjøper. Det er en del av prisen, fordi en side som kan misbrukes til å lure dine kunder ikke er ferdig.">
     <Avslor>
     <div class="grid-2">

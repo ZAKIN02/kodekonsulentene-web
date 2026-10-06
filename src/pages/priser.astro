@@ -3,7 +3,6 @@ import Base from "../layouts/Base.astro";
 import Scene from "../components/Scene.astro";
 import Mega from "../components/Mega.astro";
 import Avslor from "../components/Avslor.astro";
-import SceneFilm from "../components/SceneFilm.astro";
 import PriceCard from "../components/PriceCard.astro";
 import Button from "../components/Button.astro";
 import Faq from "../components/Faq.astro";
@@ -116,13 +115,6 @@ const prisFaq = faq.filter((f) => /binding|endre|koster|eier/i.test(f.q));
   </Scene>
 
   <div class="scenefilm-ramme">
-    <SceneFilm
-      smal="/scener/priser-1280.mp4"
-      bred="/scener/priser-1920.mp4"
-      stor="/scener/priser-2560.mp4"
-      plakat="/scener/priser-poster.avif"
-      tekst="venstre"
-    />
   <Scene n={5} eyebrow="Usikker" tittel="Vet du ikke hva du trenger?" ingress="Kjør den gratis sjekken på siden du har i dag. Da ser vi begge hva som er problemet før vi snakker om pris.">
     <Avslor>
     <div class="row">

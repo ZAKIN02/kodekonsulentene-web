@@ -3,6 +3,9 @@ import Base from "../layouts/Base.astro";
 import Demo from "../components/Demo.astro";
 import opptak from "../data/opptak.json";
 import Section from "../components/Section.astro";
+import Scene from "../components/Scene.astro";
+import Mega from "../components/Mega.astro";
+import Avslor from "../components/Avslor.astro";
 import UrlCheck from "../components/UrlCheck.astro";
 import Button from "../components/Button.astro";
 import Terminal from "../components/Terminal.astro";
@@ -21,31 +24,69 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
   tittel="Sjekk nettsiden din"
   beskrivelse="Gratis sjekk av ytelse, sikkerhetsheadere, cookies før samtykke, universell utforming og lovpålagt informasjon. Rapport på 30 sekunder."
 >
-  <Section nivaa={1}
-    n={1}
-    eyebrow="Verktøy"
-    tittel="Sjekk nettsiden din"
-    ingress="Fem ting som er konkrete, testbare og som svært mange norske småbedriftssider bryter minst ett av. Du får svaret i klartekst, ikke i utviklersjargong."
-  >
-    <div class="stack">
-      <UrlCheck
-        id="url-sjekk"
-        buttonLabel="Kjør sjekken"
-        value={forhandsutfylt}
-        hint="Vi laster forsiden din én gang, slik en besøkende får den. Ingenting lagres."
-      />
+  {/*
+    HOVEDSEKSJONEN. Lå tidligere som en vanlig <Section> uten film, og var derfor
+    flatere enn hver eneste søsterside: /systemer og /nettsider åpner i Mega-skala
+    med scene bak, denne åpnet i display-lg uten. Leadmagneten vår så ut som en
+    underside av en underside.
 
-      <div id="resultat" aria-live="polite" aria-busy="false"></div>
+    Scenen er BOKSTAVELIG, ikke en metafor. Brandboken ble strammet inn i dag:
+    hvert bilde må bestå prøven «dekk til teksten – skjønner en rørlegger hva det
+    handler om?», og 14 av 16 genererte motiver strøk. Her sveiper en lyslinje
+    nedover en blank, umerket plate, og bak linjen står platen åpen med det
+    maskinerte indre synlig. Det ER operasjonen siden utfører: vi henter forsiden
+    din, og viser hva som ligger inne i den. Platen forblir anonym hele veien,
+    slik sjekken aldri navngir sider som kommer dårlig ut.
 
-      <noscript>
-        <p class="card">
-          Sjekken krever JavaScript. Send adressen til
-          <a class="kk-link" href={`mailto:${firma.epost}?subject=Nettsidesjekk`}>{firma.epost}</a>,
-          så kjører vi den manuelt og sender rapporten samme dag.
+    Masken står på 58 %, ikke standardens 46. Tekstspalten her er
+    `.kk-urlcheck` på maks 560 px, og hintet under den er `--ink-faint` – sidens
+    aller svakeste tekstfarge, nøyaktig den som ga 1,31:1 da film ble lagt bak
+    seksjon 2 i et tidligere forsøk. Målt etter innkobling, ikke antatt.
+  */}
+  <div class="scenefilm-ramme">
+    <SceneFilm
+      smal="/scener/sjekk-scan-960.mp4"
+      bred="/scener/sjekk-scan-1280.mp4"
+      stor="/scener/sjekk-scan-1920.mp4"
+      plakat="/scener/sjekk-scan-poster.avif"
+      tekst="venstre"
+      maske={58}
+    />
+    <Scene lav>
+      <Mega som="h1" merke="Verktøy" n={1} tekst="Sjekk nettsiden din" aksent="Sjekk" />
+      <Avslor trinn={1}>
+        <p class="scene__ingress body-lg">
+          Fem ting som er konkrete, testbare og som svært mange norske småbedriftssider
+          bryter minst ett av. Du får svaret i klartekst, ikke i utviklersjargong.
         </p>
-      </noscript>
-    </div>
-  </Section>
+      </Avslor>
+
+      <div class="stack">
+        <Avslor trinn={2}>
+          <UrlCheck
+            id="url-sjekk"
+            buttonLabel="Kjør sjekken"
+            value={forhandsutfylt}
+            hint="Vi laster forsiden din én gang, slik en besøkende får den. Ingenting lagres."
+          />
+        </Avslor>
+
+        {/* Rapporten har sin egen ugjennomsiktige flate (.kk-report, --bg-raised),
+            så den skjermer teksten sin mot filmen bak. Den ligger med vilje IKKE
+            i en Avslor: den settes inn av skriptet etter at sjekken har kjørt, og
+            innhold som kommer fra en handling skal ikke vente på en scroll. */}
+        <div id="resultat" aria-live="polite" aria-busy="false"></div>
+
+        <noscript>
+          <p class="card">
+            Sjekken krever JavaScript. Send adressen til
+            <a class="kk-link" href={`mailto:${firma.epost}?subject=Nettsidesjekk`}>{firma.epost}</a>,
+            så kjører vi den manuelt og sender rapporten samme dag.
+          </p>
+        </noscript>
+      </div>
+    </Scene>
+  </div>
 
   <Section n={2} eyebrow="Hva som sjekkes" tittel="Fem punkter, i denne rekkefølgen">
     <div class="grid-2">
@@ -104,30 +145,20 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
     />
   </Section>
 
-  {/* Scenen bak HANDLINGEN, ikke bak forklaringen.
+  {/* Her lå en scenefilm bak CTA-seksjonen («verktoy-sjekk»). Den er fjernet, og
+      budsjettet flyttet til hovedseksjonen øverst, der kunden faktisk ser etter
+      bevegelse. Begrunnelsen er vekt: filmen her kostet 716 kB på mobil, og to
+      scenefilmer på samme side ville tatt /sjekk fra 913 kB til godt over 1,6 MB.
 
-      Første forsøk la den bak seksjon 2. Målt der: 1,31:1 på skrivebord – et klart
-      AA-brudd. Synderen var <p class="small faint"> under terminalen, sidens
-      aller svakeste tekstfarge, som ligger i høyre kolonne der masken slipper
-      filmen inn og uten et kort til å skjerme seg. Nøyaktig samme felle som
-      /sikkerhet gikk i.
-
-      Her er teksten en ingress i body-lg og to knapper med egen flate. Mindre
-      tekst, større tekst, og ingenting i faint. Målt etter flyttingen. */}
-  <div class="scenefilm-ramme">
-    <SceneFilm
-      smal="/scener/verktoy-sjekk-960.mp4"
-      bred="/scener/verktoy-sjekk-1920.mp4"
-      plakat="/scener/verktoy-sjekk-poster.avif"
-      tekst="venstre"
-    />
+      Seksjonen taper ingenting på det. Den er fire linjer tekst og to knapper –
+      en avslutning, ikke et øyeblikk. Film bak en CTA er dekorasjon, og
+      brandboken rangerer «ingenting» over et bilde som ikke forklarer noe. */}
   <Section n={3} eyebrow="Etterpå" tittel="Vil du at vi fikser det?" ingress="Lovsjekk-pakken er 7 900 kr eks. mva og dekker cookies, universell utforming, lovpålagt informasjon og personvernerklæring på den siden du har i dag. Du trenger ikke ny nettside for det.">
     <div class="row">
       <Button variant="primary" href="/priser">Se hva det koster</Button>
       <Button variant="ghost" href="/sikkerhet">Les om sikkerhetsarbeidet</Button>
     </div>
   </Section>
-  </div>
 
   <ContactBlock n={4} tittel="Eller bare ring" ingress="Har du rapporten foran deg og vil vite hva som er viktigst å starte med, tar det fem minutter på telefon." />
 </Base>

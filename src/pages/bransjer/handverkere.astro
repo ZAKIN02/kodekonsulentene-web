@@ -11,7 +11,6 @@ import UrlCheck from "../../components/UrlCheck.astro";
 import ProcessSteps from "../../components/ProcessSteps.astro";
 import Stillbilde from "../../components/Stillbilde.astro";
 import Horisont from "../../components/Horisont.astro";
-import SceneFilm from "../../components/SceneFilm.astro";
 import ContactBlock from "../../components/ContactBlock.astro";
 import { bookUrl } from "../../data/firma";
 
@@ -112,13 +111,15 @@ const schema = {
     </Avslor>
   </Scene>
 
-  <div class="scenefilm-ramme">
-    <SceneFilm
-      smal="/scener/bransje-sortering-960.mp4"
-      bred="/scener/bransje-sortering-1920.mp4"
-      plakat="/scener/bransje-sortering-poster.avif"
-      tekst="venstre"
-    />
+  {/* Filmen er fjernet. Klippet skulle vise en blokk LØFTES ut av en haug, men
+      modellen lot den VOKSE seg høyere i stedet: bunnen står i gulvet, ingen glippe,
+      ingen frittliggende skygge. Det bryter kravet om identiske proporsjoner, altså
+      samme feilklasse som de to klippene vi kalte ødelagte – ikke «svak bevegelse».
+      Andre generering ga samme feil.
+
+      Brandboken rangerer «ingenting» over et bilde som ikke sier noe, og dette sa
+      ingenting for 3,9 MB. Masteren og den rettede prompten ligger igjen, så en ny
+      generering er mulig. */}
   <Scene
     n={4}
     eyebrow="Demo"
@@ -136,7 +137,6 @@ const schema = {
       <Button variant="secondary" href="/kontakt">Be om en gjennomgang</Button>
     </div>
   </Scene>
-  </div>
 
   <Horisont
     n={5}

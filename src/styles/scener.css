@@ -84,9 +84,29 @@
 }
 
 @media (min-width: 861px) {
-  /* Scenefølelsen: hver seksjon eier skjermen. Ikke en jevn strøm av kort. */
+  /* Scenefølelsen: hver seksjon eier skjermen. Ikke en jevn strøm av kort.
+
+     MINSTEHØYDEN VAR 80svh, OG DET LAGET HULLENE kunden sendte skjermbilder av.
+     Målt på /nettsider ved scroll 3150: scenen over er 720 px med 391 px innhold,
+     scenen under 720 px med 290 px innhold. Med border-box spiser polstringen
+     96 + 96 av de 720, så innholdsboksen er 528 px. `align-items: center` deler
+     slakken likt over og under, og to nabo-scener legger sine halvdeler sammen:
+     165 px under den ene pluss 215 px over den neste = 412 px sammenhengende tomt,
+     altså nesten halve skjermhøyden, brutt bare av én hårlinje.
+
+     Minstehøyden binder BARE korte scener – rike scener er allerede høyere enn
+     taket og merker ingenting. Derfor er den riktig knapp å skru på: luften på de
+     innholdsrike seksjonene står urørt, og polstringen på 96 px likeså. Målt at
+     den bare kjøpte rundt 20 px ekstra, og den luften er med vilje.
+
+     Målt tomrom, største bånd per side, 1512 px:
+       /nettsider 412 -> 224   /status 404 -> 300   /handbok 344 -> 248
+       /bransjer/handverkere 332 -> 244   /systemer 304 -> 204
+
+     /status blir stående høyest fordi hullet der ligger mellom Horisont-sporet og
+     neste scene, altså en annen årsak enn denne. */
   .scene {
-    min-height: 80svh;
+    min-height: 55svh;
     display: flex;
     align-items: center;
     padding-block: var(--space-9);
@@ -161,9 +181,20 @@
        Uten tak ville en liste på ti elementer gitt entry 68 %, og det siste
        elementet stått halvgjennomsiktig langt inn i synsranden. Nettopp den
        feilen – innhold som blir stående halvsynlig – har truffet oss før. */
+    /* SLUTTPUNKTET VAR `cover 32%`, og det holdt nedre fjerdedel av vinduet
+       permanent nedtonet. Cover-fasen er lang: 32 % av den nås først når elementet
+       er godt oppe på skjermen. Målt på forsiden ved scroll 3900, etter 2,5 sekunder
+       i ro, sto «// 07 PRISER» på 0,60 og ingressen under på 0,38 – mens brukeren
+       sto helt stille. Det forsterket de tomme båndene: flaten under var tom, og
+       det lille som sto der var halvgjennomsiktig.
+
+       `entry 80%` er et selvforklarende sluttpunkt: elementet er fullt opptonet
+       omtrent når det er ferdig inne i vinduet. Målt etter: 0,38 -> 1,00.
+       Trappen beholdes på både start og slutt, men med 5 % på slutten, så trinn 4
+       lander på entry 100 % og ingenting kan bli stående halvsynlig. */
     animation-range:
       entry calc(8% + min(var(--trinn, 0), 4) * 6%)
-      cover calc(32% + min(var(--trinn, 0), 4) * 6%);
+      entry calc(80% + min(var(--trinn, 0), 4) * 5%);
   }
   .avslor--venstre { animation-name: avslor-venstre; }
 

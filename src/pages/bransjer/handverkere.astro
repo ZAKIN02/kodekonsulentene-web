@@ -9,6 +9,7 @@ import UrlCheck from "../../components/UrlCheck.astro";
 import ProcessSteps from "../../components/ProcessSteps.astro";
 import Stillbilde from "../../components/Stillbilde.astro";
 import Horisont from "../../components/Horisont.astro";
+import SceneFilm from "../../components/SceneFilm.astro";
 import ContactBlock from "../../components/ContactBlock.astro";
 import { bookUrl } from "../../data/firma";
 
@@ -102,6 +103,13 @@ const schema = {
     </Avslor>
   </Scene>
 
+  <div class="scenefilm-ramme">
+    <SceneFilm
+      smal="/scener/bransje-sortering-960.mp4"
+      bred="/scener/bransje-sortering-1920.mp4"
+      plakat="/scener/bransje-sortering-poster.avif"
+      tekst="venstre"
+    />
   <Scene
     n={4}
     eyebrow="Demo"
@@ -119,6 +127,7 @@ const schema = {
       <Button variant="secondary" href="/kontakt">Be om en gjennomgang</Button>
     </div>
   </Scene>
+  </div>
 
   <Horisont
     n={5}
@@ -157,5 +166,30 @@ const schema = {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  /* Målt på DENNE siden, ikke arvet: 0,35 ga 4,45:1 på skrivebord og strøk så
+     vidt. 0,28 gir 4,84:1 skrivebord og 5,48:1 mobil, og holder filmen mer
+     synlig enn 0,22 (5,09:1). Verdien fra /nettsider holdt ikke her fordi
+     demo-seksjonen har tettere tekst over motivet.
+     is:global er påkrevd – .scenefilm får SceneFilm.astro sin scope-id, mens
+     .scenefilm-ramme får sidens, så vanlig <style> matcher ingenting og to
+     ulike verdier måler identisk. */
+  /* Bare brede skjermer. SceneFilm setter selv 0,42 under 861 px med en loddrett
+     maske, og den verdien er riktig der – en global overstyring tok den også, og
+     presset mobil ned til 4,65:1. */
+  @media (min-width: 861px) {
+    .scenefilm-ramme .scenefilm { opacity: 0.50; }
+  }
+
+  /* Masken skyves ut på brede skjermer, samme grep som /systemer. Standardmasken
+     slipper motivet inn fra 46 %, altså midt under brødteksten, og da må
+     opasiteten ned til 0,28 for å holde AA – der er motivet nesten usynlig.
+     Med masken på 62 % lever filmen der teksten ikke er, og tåler 0,50. */
+  @media (min-width: 1200px) {
+    .scenefilm-ramme .scenefilm--venstre {
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 62%, rgb(0 0 0 / 0.25) 72%, #000 86%);
+      mask-image: linear-gradient(90deg, transparent 0%, transparent 62%, rgb(0 0 0 / 0.25) 72%, #000 86%);
+    }
   }
 </style>

@@ -44,7 +44,11 @@ for (const [merke, w, h] of [["skrivebord", 1440, 900], ["mobil", 390, 844]]) {
   if (!treff?.length) { console.log(`  ${merke}: fant ingen tekst i filmseksjonen`); await p.close(); continue; }
   let verst = { r: Infinity };
   for (const t of treff) {
-    await p.screenshot({ path: "/tmp/kontrast.png", clip: { x: t.x, y: t.y, width: t.w, height: t.h } });
+    // fullPage er PÅKREVD sammen med clip. Uten den tolkes clip i
+    // visningsvindu-koordinater, mens t.x/t.y er sidekoordinater – da havner
+    // utsnittet utenfor bildet og Playwright kaster «Clipped area is empty».
+    await p.screenshot({ path: "/tmp/kontrast.png", fullPage: true,
+                         clip: { x: t.x, y: t.y, width: t.w, height: t.h } });
     const png = PNG.sync.read(readFileSync("/tmp/kontrast.png"));
     let lysest = [0, 0, 0];
     for (let i = 0; i < png.data.length; i += 4) {

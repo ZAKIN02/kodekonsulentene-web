@@ -26,9 +26,18 @@ const prisFaq = faq.filter((f) => /binding|endre|koster|eier/i.test(f.q));
       <p class="scene__ingress body-lg">Fordi du skal kunne regne på det før du ringer, og fordi den som skjuler prisen sjelden gjør det til din fordel. Alle priser er eks. mva.</p>
     </Avslor>
 
-    <Avslor>
+    {/* Karakteren paa denne sida er TALLENE. Kortene kommer inn i ulik dybde slik
+        at det anbefalte ligger naermest leseren – en forskjell du kjenner foer du
+        har lest etiketten. Parallaksen er kontinuerlig, ikke en inngang, saa de tre
+        drar fra hverandre mens du scroller og leses som rom i stedet for en rad. */}
     <div class="grid-3">
-      {pakker.map((p) => (
+      {pakker.map((p, k) => (
+        <Avslor
+          trinn={k}
+          fra="dybde"
+          dybde={p.anbefalt ? 26 : -12}
+          as="div"
+        >
         <PriceCard nivaa={2}
           name={p.navn}
           price={p.pris}
@@ -42,12 +51,12 @@ const prisFaq = faq.filter((f) => /binding|endre|koster|eier/i.test(f.q));
             ...(p.ikke ?? []).map((t) => ({ text: t, included: false })),
           ]}
         />
+        </Avslor>
       ))}
     </div>
-    </Avslor>
   </Scene>
 
-  <Scene n={2} eyebrow="Løpende" tittel="Drift, abonnement og timer">
+  <Scene n={2} class="flate--varm" eyebrow="Løpende" tittel="Drift, abonnement og timer">
     <Avslor>
     <div class="stack">
       <dl class="kv">
@@ -98,7 +107,10 @@ const prisFaq = faq.filter((f) => /binding|endre|koster|eier/i.test(f.q));
   <Scene n={4} eyebrow="Spørsmål" tittel="Om pris og binding">
     <Faq items={prisFaq} />
     <p class="small muted" style="margin-top: var(--space-5)">
-      <a class="kk-link" href="/vilkar">Salgsvilkårene</a> står i klartekst, og
+      {/* Mellomrommet maa staa eksplisitt. Astro fjerner linjeskiftet foran et inline-
+          element, saa «og» og lenken ble limt sammen til «oghåndboken» i bygget –
+          synlig i nettleseren, usynlig i kilden. */}
+      <a class="kk-link" href="/vilkar">Salgsvilkårene</a> står i klartekst, og{" "}
       <a class="kk-link" href="/handbok">håndboken</a> forklarer hvordan vi jobber.
     </p>
   </Scene>

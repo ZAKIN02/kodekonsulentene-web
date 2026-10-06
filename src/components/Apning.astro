@@ -1,0 +1,243 @@
+---
+/**
+ * Åpningen: siden måler seg selv mens du venter.
+ *
+ * Hvorfor den finnes, og hvorfor den ser slik ut
+ * ----------------------------------------------
+ * Vi selger at utsiden av en nettside er blank, og at jobben er å vise hva som
+ * ligger inne. Et innlastingsbilde som bare teller til hundre sier ingenting om
+ * det. Her kjøres sidens EGEN måling i stedet: de tre tallene fra bevis.ts, talt
+ * opp mens hårlinjen fylles. Ventetiden blir et bevis i stedet for en forsinkelse,
+ * og tallene er de samme som står lenger nede på siden – ikke pynt.
+ *
+ * Flaten er `--terminal`, som er mørk i BEGGE temaer. Det er ikke en snarvei: en
+ * åpning i `--bg` ville blinket hvitt for den som har lyst tema, fordi temavalget
+ * settes av et skript og flaten males før. Terminalen er dessuten vårt eget
+ * register – det er den samme flaten verktøyene kjører i.
+ *
+ * Tre ting som er bevisste
+ * ------------------------
+ * 1. TALLENE STÅR SOM FERDIG TEKST i HTML-en. Opptellingen i /apning.js er bare
+ *    pynt på toppen. Kommer skriptet aldri fram, står riktig verdi der allerede.
+ *
+ * 2. HELE BORTGANGEN ER CSS. Overlegget fader ut og blir `visibility: hidden` av
+ *    en keyframe, ikke av JavaScript. Feiler skriptet, forsvinner åpningen
+ *    likevel – den kan ikke bli stående og låse siden.
+ *
+ * 3. `aria-hidden` og `inert`. Skjermlesere og tastatur når den aldri; de får
+ *    innholdet med en gang. Åpningen er ren dekorasjon, og da skal den oppføre
+ *    seg som det.
+ *
+ * Skriptet som bestemmer om den vises i det hele tatt står `is:inline` rett over
+ * markupen, så det kjører under parsing og rekker å skjule overlegget før første
+ * maling. CSP-hashen leses ut av det ferdige bygget i sikkerhet.mjs, så den følger
+ * med av seg selv.
+ */
+import { bevis } from "../data/bevis";
+
+/**
+ * De tre første i bevis.ts er målinger av DENNE siden, og kan etterprøves ved å
+ * kjøre /sjekk på oss. Den fjerde, «24 t svar på henvendelser», er et løfte om
+ * oppførsel – ikke noe en skanning kan bekrefte – og hører derfor ikke hjemme i
+ * en sekvens som later som den måler.
+ */
+const maalinger = bevis.slice(0, 3);
+
+/**
+ * Vises bare når ALT stemmer: brukeren har ikke bedt om mindre bevegelse, og
+ * økten har ikke sett den før. Står i én streng fordi den må kjøre inline.
+ *
+ * Flagget settes på <html>, ikke på selve overlegget. Første forsøk brukte
+ * `document.currentScript.nextElementSibling` – og den er NULL, fordi skriptet
+ * kjører i det nettleseren møter det, før diven under er parset. Åpningen viste
+ * seg aldri, og CSP-kontrollen var grønn hele veien: ingenting feiler synlig når
+ * et element bare blir stående skjult.
+ *
+ * sessionStorage kan kaste i privat vindu og med blokkerte nettstedsdata, derfor
+ * try/catch rundt hele. Kaster den, blir flagget usatt – altså ingen åpning. Det
+ * er riktig vei å feile.
+ */
+const VELG_SCRIPT = `(function(){try{
+if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+if(sessionStorage.getItem("kk-apning"))return;
+sessionStorage.setItem("kk-apning","1");
+document.documentElement.dataset.apning="1";
+}catch(e){}})();`;
+---
+
+<script is:inline set:html={VELG_SCRIPT} />
+
+{/*
+  `aria-hidden` og ingen fokuserbare barn: skjermlesere og tastatur når den aldri,
+  og det finnes ingenting å låse fokus i.
+
+  `inert` sto her først, og det var feil. Chrome hopper over inerte elementer i
+  treffsøk, så klikk gikk RETT GJENNOM overlegget – målt med `elementFromPoint`,
+  som ga `H1` mens flaten var helt ugjennomsiktig. En utålmodig bruker kunne da
+  treffe en lenke han ikke så. Uten `inert` fanger flaten klikket i stedet, og et
+  svelget klikk kan man ta om igjen; en uventet navigering kan man ikke.
+*/}
+<div class="apning" data-apning-flate aria-hidden="true">
+  <p class="apning__merke">
+    <span class="apning__slash" aria-hidden="true">//</span> Sjekker kodekonsulentene.no
+  </p>
+
+  <ul class="apning__liste">
+    {maalinger.map((m, i) => (
+      <li class="apning__rad" style={`--rad:${i}`}>
+        <span class="apning__verdi" data-apning-tell>{m.value}</span>
+        <span class="apning__merkelapp">{m.label}</span>
+      </li>
+    ))}
+  </ul>
+
+  <span class="apning__strek" aria-hidden="true"></span>
+</div>
+
+<style>
+  /**
+   * Tidsplanen, i millisekunder fra start:
+   *   0     flaten står der, merket toner inn
+   *   150   rad 1 kommer, så 2 og 3 med 200 ms mellomrom
+   *   0-1150 hårlinjen fylles
+   *   1150-1500 hele overlegget fader ut og blir visibility: hidden
+   *
+   * 1,5 sekund er kort med vilje. En åpning som varer lenger er i veien for den
+   * som bare skulle lese noe.
+   */
+  /**
+   * Skjult er standardtilstanden. Uten JavaScript settes aldri flagget på <html>,
+   * og da finnes åpningen ikke – innholdet er der med en gang.
+   */
+  .apning { display: none; }
+
+  :global(html[data-apning]) .apning {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    display: grid;
+    align-content: center;
+    gap: var(--space-6);
+    padding: var(--space-6) clamp(var(--space-5), 6vw, 96px);
+    background: var(--terminal);
+    color: var(--on-terminal);
+    font-family: var(--font-mono);
+    animation-name: apning-bort;
+    animation-duration: 1500ms;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+  }
+
+  .apning__merke {
+    margin: 0;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--on-terminal-muted);
+    animation-name: apning-inn;
+    animation-duration: 200ms;
+    animation-timing-function: ease-out;
+    animation-fill-mode: both;
+  }
+  /* Aksenten én gang, på skråstrekene – samme signatur som eyebrow ellers. */
+  .apning__slash { color: #c8f24a; }
+
+  /**
+   * To kolonner, delt av alle radene: tallet så bredt som det bredeste tallet,
+   * merkelappen i én felles kant.
+   *
+   * Uten dette maler hvert tall bare sin egen bredde, og merkelappene starter tre
+   * ulike steder – «0» er mye smalere enn «0,1 s». Det er nøyaktig feilen
+   * Nokkeltall hadde, og den er like synlig her: paret leses ikke som et par når
+   * avstanden varierer fra rad til rad.
+   *
+   * `subgrid` der den finnes; ellers står radene som før, med et minstemål på
+   * tallet. Da er kolonnen omtrentlig i stedet for eksakt – godt nok for 1,5 sekund.
+   */
+  .apning__liste {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: var(--space-4) var(--space-5);
+  }
+
+  .apning__rad {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-5);
+    animation-name: apning-inn;
+    animation-duration: 300ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    animation-fill-mode: both;
+    /* 150 ms før første rad, så 200 ms mellom hver. */
+    animation-delay: calc(150ms + var(--rad) * 200ms);
+  }
+
+  @supports (grid-template-columns: subgrid) {
+    .apning__rad {
+      display: grid;
+      grid-column: 1 / -1;
+      grid-template-columns: subgrid;
+      align-items: baseline;
+    }
+  }
+
+  .apning__verdi {
+    font-size: clamp(40px, 9vw, 88px);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    color: var(--on-terminal);
+    /* Bredden varierer mellom «0» og «0,1 s». Et minstemål hindrer at
+       merkelappen rykker sidelengs mens tallet telles opp. */
+    min-inline-size: 3.2ch;
+  }
+
+  .apning__merkelapp {
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--on-terminal-muted);
+  }
+
+  /* Hårlinjen er fremdriften. Den fylles over hele sekvensen og er det eneste
+     elementet som sier «vent litt». */
+  .apning__strek {
+    display: block;
+    block-size: 1px;
+    background: #c8f24a;
+    transform-origin: left center;
+    animation-name: apning-strek;
+    animation-duration: 1150ms;
+    animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+    animation-fill-mode: both;
+  }
+
+  @keyframes apning-inn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes apning-strek {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+  /**
+   * Bortgangen ligger i SAMME animasjon som holder overlegget, slik at den ikke
+   * kan hoppes over. 76,7 % av 1500 ms er 1150 – altså idet hårlinjen er full.
+   * `visibility: hidden` til slutt tar elementet ut av treffflaten helt.
+   */
+  @keyframes apning-bort {
+    0%, 76.7% { opacity: 1; visibility: visible; }
+    100% { opacity: 0; visibility: hidden; }
+  }
+
+  /* Belte og bukseseler: skriptet viser den ikke ved redusert bevegelse, men
+     skulle den likevel stå der, forsvinner den umiddelbart i stedet for å
+     animere. */
+  @media (prefers-reduced-motion: reduce) {
+    .apning { display: none; }
+  }
+</style>

@@ -37,4 +37,39 @@ const sti = Astro.url.pathname.replace(/\/$/, "") || "/";
   :global(html[data-theme="light"]) .topbar__logo img[data-logo="dark"] { display: none; }
   :global(html[data-theme="light"]) .topbar__logo img[data-logo="light"] { display: block; }
   @media (max-width: 560px) { .topbar__cta { display: none; } }
+
+  /* Flytende pille.
+     Både jeton.com og osmo.supply lar menyen bli stående som en avrundet flate
+     som svever over innholdet. Grepet koster ingenting og holder navigasjonen
+     innen rekkevidde gjennom en forside på 9000 px.
+
+     position: sticky tar ikke elementet ut av flyten, så CLS er uberørt. Det
+     virker også med den globale `overflow-x: clip` på html og body – `clip`
+     lager ingen scroll-beholder, og det var nettopp derfor den ble valgt
+     framfor `hidden` da sperren mot sidelengs drag kom inn.
+
+     z-index 40 ligger over scenefilmene (0–20) og under terminalmodalen (999). */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: transparent;
+    border-bottom: 0;
+    padding-block: var(--space-3);
+    padding-inline: var(--space-3);
+  }
+  /* .topbar__inner ER .wrap, som allerede har padding-inline. Den blir pillens
+     innvendige luft; den ytre luften ligger på .topbar over. */
+  .topbar__inner {
+    background: var(--bg-raised);
+    border: var(--hairline) solid var(--line);
+    border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-menu);
+    min-height: 56px;
+  }
+  /* Under 860 px bryter menyen til en vannrett scroller på egen linje. Da er
+     pilleformen feil – den blir en høy kapsel – så flaten får kortets radius. */
+  @media (max-width: 860px) {
+    .topbar__inner { border-radius: var(--radius-md); }
+  }
 </style>

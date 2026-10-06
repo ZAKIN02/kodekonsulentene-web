@@ -51,8 +51,59 @@ const schema = {
       <Snitt snitt={snitt.nettside} nivaa={2} />
     </Avslor>
 
+    <Avslor>
+    <div class="row">
+      <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
+      <Button variant="ghost" href="/sjekk">Sjekk siden du har i dag</Button>
+    </div>
+    </Avslor>
+  </Scene>
+
+  <Scene n={2} eyebrow="Hva du får" tittel="Fire krav vi setter selv">
+    {/* Karakteren paa denne sida er LAG – det er det snittegningen over viser, og
+        det er det vi selger. De fire kravene ligger derfor i ulik dybde og drar fra
+        hverandre mens du scroller, i stedet for aa staa som fire like ruter.
+        Vekslende fortegn gir to plan, ikke en skraaning. */}
+    <div class="grid-2">
+      <Avslor trinn={0} fra="dybde" dybde={18} as="div" class="card">
+        <h3 class="heading">Rask på mobil</h3>
+        <p class="muted">
+          Lighthouse 95 eller bedre på alle fire kategorier, målt på mobil. Største innhold
+          malt under 2,5 sekunder. Vi viser tallet for vår egen side i footeren, så du kan
+          sjekke at vi holder det vi selger.
+        </p>
+      </Avslor>
+      <Avslor trinn={1} fra="dybde" dybde={-14} as="div" class="card">
+        <h3 class="heading">Funnet lokalt</h3>
+        <p class="muted">
+          Google Bedriftsprofil satt opp riktig, samme navn, adresse og telefon overalt, og
+          egne landingssider per tjeneste og bydel. Strukturert data slik at både Google og
+          ChatGPT kan sitere deg.
+        </p>
+      </Avslor>
+      <Avslor trinn={2} fra="dybde" dybde={12} as="div" class="card">
+        <h3 class="heading">Lovlig fra dag én</h3>
+        <p class="muted">
+          Org.nr. og foretaksnavn på siden, adresse og kontaktinfo etter ehandelsloven § 8,
+          personvernerklæring, og WCAG 2.2 AA – strengere enn de 35 kravene private
+          virksomheter må oppfylle.
+        </p>
+      </Avslor>
+      <Avslor trinn={3} fra="dybde" dybde={-20} as="div" class="card">
+        <h3 class="heading">Uten cookie-banner</h3>
+        <p class="muted">
+          Vi bruker cookieløs analyse. Da er det ingenting å samtykke til, og du slipper
+          banneret som halvparten av besøkende lukker uten å lese. Det er også den
+          enkleste måten å overholde ekomloven § 3-15.
+        </p>
+      </Avslor>
+    </div>
+
+    {/* Flyttet ned fra aapningsscenen. Over folden kostet det 294 kB av sidens 420 –
+        Demo henter 60 % av skjermhoeyden i forkant, saa 1074 px ned var innenfor
+        rekkevidde. Her ligger det utenfor, OG det staar riktigere: beviset kommer
+        etter de fire kravene det beviser, ikke foer. */}
     <Avslor trinn={2}>
-      {/* Ekte opptak av vår egen lagstabel. Fire navngitte lag svarer paa det kunden spoer foerst: hva er det jeg kjoeper? Brandboken rangerer opptak av verktoeyet i drift oeverst. */}
       <Demo
         smal={opptak.lagstabel.smal}
         bred={opptak.lagstabel.bred}
@@ -62,64 +113,9 @@ const schema = {
         kilde={opptak.lagstabel.kilde}
       />
     </Avslor>
-
-    <Avslor>
-    <div class="row">
-      <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
-      <Button variant="ghost" href="/sjekk">Sjekk siden du har i dag</Button>
-    </div>
-    </Avslor>
   </Scene>
 
-  <div class="scenefilm-ramme">
-    <SceneFilm
-      smal="/scener/nettsider-1280.mp4"
-      bred="/scener/nettsider-1920.mp4"
-      stor="/scener/nettsider-2560.mp4"
-      plakat="/scener/nettsider-poster.avif"
-      tekst="venstre"
-    />
-  <Scene n={2} eyebrow="Hva du får" tittel="Fire krav vi setter selv">
-    <Avslor>
-    <div class="grid-2">
-      <div class="card">
-        <h3 class="heading">Rask på mobil</h3>
-        <p class="muted">
-          Lighthouse 95 eller bedre på alle fire kategorier, målt på mobil. Største innhold
-          malt under 2,5 sekunder. Vi viser tallet for vår egen side i footeren, så du kan
-          sjekke at vi holder det vi selger.
-        </p>
-      </div>
-      <div class="card">
-        <h3 class="heading">Funnet lokalt</h3>
-        <p class="muted">
-          Google Bedriftsprofil satt opp riktig, samme navn, adresse og telefon overalt, og
-          egne landingssider per tjeneste og bydel. Strukturert data slik at både Google og
-          ChatGPT kan sitere deg.
-        </p>
-      </div>
-      <div class="card">
-        <h3 class="heading">Lovlig fra dag én</h3>
-        <p class="muted">
-          Org.nr. og foretaksnavn på siden, adresse og kontaktinfo etter ehandelsloven § 8,
-          personvernerklæring, og WCAG 2.2 AA – strengere enn de 35 kravene private
-          virksomheter må oppfylle.
-        </p>
-      </div>
-      <div class="card">
-        <h3 class="heading">Uten cookie-banner</h3>
-        <p class="muted">
-          Vi bruker cookieløs analyse. Da er det ingenting å samtykke til, og du slipper
-          banneret som halvparten av besøkende lukker uten å lese. Det er også den
-          enkleste måten å overholde ekomloven § 3-15.
-        </p>
-      </div>
-    </div>
-    </Avslor>
-  </Scene>
-  </div>
-
-  <Scene n={3} eyebrow="Teknisk" tittel="Hva det er bygget av" ingress="Du trenger ikke å bry deg om dette. Det står her fordi noen spør, og fordi du skal kunne ta det med deg til en annen utvikler.">
+  <Scene n={3} class="flate--varm" eyebrow="Teknisk" tittel="Hva det er bygget av" ingress="Du trenger ikke å bry deg om dette. Det står her fordi noen spør, og fordi du skal kunne ta det med deg til en annen utvikler.">
     <Avslor>
     <div class="grid-2">
       <Terminal
@@ -148,9 +144,26 @@ const schema = {
     </Avslor>
   </Scene>
 
+  {/* Scenefilmen laa bak «Fire krav» og ble hentet foer brukeren scrollet:
+      442 kB av sidens 568. Den er dessuten det MINST forklarende mediet her –
+      snittegningen navngir lagene for 0 kB, og opptaket beviser dem. Brandboken
+      rangerer generert materiale lavest, saa den bakker naa prosess-seksjonen
+      lenger ned i stedet, der den er bakgrunn og ingen venter paa den. */}
+  <div class="scenefilm-ramme">
+    <SceneFilm
+      {/* 960-trinnet manglet for denne scenen – alle de andre fikk et da
+          mobiltrinnene ble enkodet. Mobil hentet derfor 1280-trinnet paa 1605 kB.
+          Enkodet fra masteren paa CRF 26, samme som resten: 442 kB. */}
+      smal="/scener/nettsider-960.mp4"
+      bred="/scener/nettsider-1280.mp4"
+      stor="/scener/nettsider-2560.mp4"
+      plakat="/scener/nettsider-poster.avif"
+      tekst="venstre"
+    />
   <Scene n={4} eyebrow="Prosess" tittel="Fra samtale til lansering">
     <ProcessSteps steps={prosess} />
   </Scene>
+  </div>
 
   <Scene n={5} eyebrow="Pris" tittel="14 900 kr eller 29 900 kr" ingress="Start-pakken er for deg som trenger å finnes og bli ringt. Bedrift er for deg som skal rangere lokalt og endre teksten selv. Begge eks. mva.">
     <Button variant="primary" href="/priser">Se hele prislisten</Button>

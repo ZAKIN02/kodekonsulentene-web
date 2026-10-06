@@ -23,11 +23,23 @@ interface Props {
   lenketekst?: string;
   /** Slår av den svake vippen. Markøren står uansett. */
   vipp?: boolean;
+  /**
+   * Plass i rekken, 0-basert. Kort med ulik `i` kommer inn etter hverandre og
+   * med litt ulik vinkel, slik at en rad leses som spredte kort og ikke som en
+   * tabellrad. Uten denne kommer alle kortene i samme øyeblikk.
+   */
+  i?: number;
 }
-const { nr, tittel, tekst, href, lenketekst = "Les mer", vipp = true } = Astro.props;
+const { nr, tittel, tekst, href, lenketekst = "Les mer", vipp = true, i = 0 } = Astro.props;
 const Tag = href ? "a" : "article";
 ---
-<Tag class="pekerkort" data-pekerkort data-vipp={vipp ? "" : undefined} href={href}>
+<Tag
+  class="pekerkort"
+  data-pekerkort
+  data-vipp={vipp ? "" : undefined}
+  style={`--i:${i}`}
+  href={href}
+>
   <span class="pekerkort__markor" aria-hidden="true"></span>
   <div class="pekerkort__topp">
     <h3 class="pekerkort__tittel">{tittel}</h3>
@@ -90,8 +102,44 @@ const Tag = href ? "a" : "article";
   .pekerkort__lenke { font-size: 14px; line-height: 20px; font-weight: 600; color: var(--ink); }
   .pekerkort:hover .pekerkort__lenke { color: var(--accent-text); }
 
+  /* Inngangsgest. Kortet kommer inn med en liten vinkel og retter seg opp, i
+     stedet for å tone inn rett. Vinkelen alternerer med `--i`, så en rad leses
+     som spredte kort og ikke som en tabellrad.
+
+     Langformene brukes med vilje: lightningcss slår `animation` og
+     `animation-timeline` sammen til en ugyldig stenografi som begge nettlesere
+     forkaster uten å si fra. Da forsvinner bevegelsen stille, og det har
+     skjedd her før.
+
+     Standardtilstanden er FERDIG – ingenting skjules før @supports aktivt
+     skjuler det. Firefox, uten JavaScript og med redusert bevegelse ser derfor
+     kortet som det skal se ut. */
+  @supports (animation-timeline: view()) {
+    .pekerkort {
+      animation-name: pekerkort-inn;
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: entry calc(10% + var(--i, 0) * 7%) entry calc(85% + var(--i, 0) * 5%);
+    }
+  }
+  @keyframes pekerkort-inn {
+    from {
+      opacity: 0;
+      /* Annenhver vei: -1 opphøyd i --i gir +1, -1, +1 … uten JavaScript. */
+      transform: translateY(26px) rotate(calc(var(--i, 0) * 0.9deg - 0.9deg));
+    }
+    to { opacity: 1; transform: none; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .pekerkort { transition: border-color 120ms ease; transform: none !important; }
+    .pekerkort {
+      transition: border-color 120ms ease;
+      animation: none !important;
+      transform: none !important;
+      opacity: 1 !important;
+    }
     .pekerkort__markor { transition: opacity 120ms ease; }
   }
 </style>

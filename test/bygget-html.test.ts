@@ -219,3 +219,20 @@ describe("terminalen har fast mørk flate i begge temaer", () => {
     }
   });
 });
+
+describe("løkkeflater spiller faktisk av seg selv", () => {
+  /**
+   * `loope` ble overskrevet av en parallell agent én gang, og feilen var usynlig:
+   * CSS-flaten så helt riktig ut, mens videoen sto med paused=true og loop=false.
+   *
+   * Hele poenget med propen er bevegelse i ro. Målt mot referansene beveger siden
+   * vår seg bare når brukeren scroller, mens jeton.com har tre ganger vårt
+   * pikselavvik når siden står helt stille.
+   */
+  test("SceneFilm har logikk for data-loope, ikke bare stilen", () => {
+    const kilde = readFileSync("src/components/SceneFilm.astro", "utf8");
+    assert.ok(kilde.includes('hasAttribute("data-loope")'), "skriptet leser ikke data-loope");
+    assert.ok(/film\.loop\s*=\s*true/.test(kilde), "løkkeflaten setter ikke loop");
+    assert.ok(/film\.play\(\)/.test(kilde), "løkkeflaten starter aldri avspilling");
+  });
+});

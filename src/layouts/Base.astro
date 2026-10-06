@@ -6,6 +6,7 @@ import "../styles/components.css";
 import "../styles/site.css";
 import Topbar from "../components/Topbar.astro";
 import LegalFooter from "../components/LegalFooter.astro";
+import Apning from "../components/Apning.astro";
 import { firma, erUferdig } from "../data/firma";
 import { footerLenker } from "../data/navigasjon";
 import { foretak, nettsted, brodsmuler } from "../data/schema";
@@ -38,6 +39,14 @@ const kanonisk = new URL(Astro.url.pathname, Astro.site ?? firma.url).href;
  * Sider som er merket noindex får ingen av dem. Strukturerte data på en side vi
  * ber Google la være, er bare støy.
  */
+/**
+ * Åpningen går bare på forsiden. Den er et førsteinntrykk, ikke en overgang –
+ * og en som kommer rett inn på /priser fra et søk skal ha prisen, ikke en
+ * sekvens. Komponenten passer selv på at den vises én gang per økt og aldri ved
+ * redusert bevegelse.
+ */
+const visApning = Astro.url.pathname === "/";
+
 const basisSchema = noindex
   ? []
   : [foretak(), nettsted(), brodsmuler(Astro.url.pathname, tittel)].filter(
@@ -93,6 +102,7 @@ const basisSchema = noindex
   </head>
 
   <body>
+    {visApning && <Apning />}
     <a class="skip" href="#innhold">Hopp til innhold</a>
     <Topbar />
     <main id="innhold">
@@ -125,6 +135,9 @@ const basisSchema = noindex
       });
     </script>
 
+    {/* Opptellingen i åpningen. Lastes bare der åpningen finnes, og er ren pynt:
+        tallene står ferdig i HTML-en og overlegget forsvinner av CSS uansett. */}
+    {visApning && <script src="/apning.js" defer />}
     <script src="/terminal.js" defer></script>
     <script src="/hero-live.js" defer></script>
   </body>

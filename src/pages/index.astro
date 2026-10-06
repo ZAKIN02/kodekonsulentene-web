@@ -14,6 +14,7 @@ import ServiceCard from "../components/ServiceCard.astro";
 import Terminal from "../components/Terminal.astro";
 import PriceCard from "../components/PriceCard.astro";
 import ProcessSteps from "../components/ProcessSteps.astro";
+import Flyt from "../components/Flyt.astro";
 import Faq from "../components/Faq.astro";
 import ContactBlock from "../components/ContactBlock.astro";
 
@@ -26,6 +27,7 @@ import { prosess } from "../data/prosess";
 import { pakker, loepende, prisvilkaar } from "../data/priser";
 import { synligeCaser } from "../data/caser";
 import { faq } from "../data/faq";
+import { flyter } from "../data/flyter";
 
 const faqSchema = {
   "@context": "https://schema.org",
@@ -82,7 +84,7 @@ const heroTerminal = [
   </section>
 
   <!-- 02 Bevis -->
-  <section class="scene scene--lav bevisrad">
+  <section class="scene scene--lav bevisrad flate flate--motsatt">
     <div class="scene__inner">
       <Avslor>
         <Nokkeltall poster={bevis} navn="Målbare påstander om denne siden og dette foretaket" />
@@ -128,7 +130,7 @@ const heroTerminal = [
     tittel="Tre ting vi gjør"
     ingress="Og én ting vi ikke gjør: selge deg noe du ikke trenger. Trenger du bare en lovsjekk, er det det du får."
   >
-    <div class="grid-3">
+    <div class="grid-3 tjenester-rad">
       {tjenester.map((t, i) => (
         <Avslor trinn={i}>
           <ServiceCard
@@ -150,6 +152,7 @@ const heroTerminal = [
     n={4}
     eyebrow="Caser"
     tittel="Hva vi bygger"
+    lav
     ingress="Problem, løsning, resultat. Står det et tall her, er det målt – ikke anslått."
   >
     <div class="grid-3">
@@ -174,6 +177,20 @@ const heroTerminal = [
         </Avslor>
       ))}
     </div>
+    {/*
+      Maalt mot spinxdigital.com – det naermeste sammenlignbare byraaet – har de
+      36 store bilder og vi ett. Vi skal ikke finne paa kundearbeid vi ikke har;
+      synligeCaser filtrerer bort alt udokumentert med vilje, og det staar.
+
+      Men vi har noe de ikke har: fem verktoey mot ekte data, ni klipp, fire
+      diagrammer og opptak av vaar egen side i drift. Alt det laa paa undersidene
+      mens forsiden viste nesten ingenting av det. Flytdiagrammet er substans vi
+      eier, med EKTE systemnavn – Kunde, Booking, Vipps, Fiken, SMS – og koster
+      0 kB fordi det er SVG og CSS.
+    */}
+    <Avslor trinn={1}>
+      <Flyt flyt={flyter.systemer} />
+    </Avslor>
     <Avslor trinn={2}>
       <p class="small faint" style="margin-top: var(--space-6)">
         Konseptarbeid er alltid merket «Konsept, ikke oppdrag». <a class="kk-link" href="/caser">Alle caser</a>.
@@ -189,6 +206,7 @@ const heroTerminal = [
     ingress="Skriv inn adressen. På 30 sekunder får du ytelse, sikkerhetsheadere, cookies satt før samtykke, WCAG-feil og om org.nr. står på siden."
     id="sjekk"
     bred
+    class="flate flate--motsatt"
     {/* `lav` fjerner minstehøyden. Seksjonen er innholdsrik nok i seg selv, og uten
         den la den 109 px slakk til tomrommet mot neste seksjon – som visuelt leste
         som rundt 290 px, fordi det neste elementet er en filmflate der motivet er
@@ -214,20 +232,6 @@ const heroTerminal = [
     «Fire steg, kjente tider» gjort fysisk. Seksjonen gir bare mening fordi du
     har sett akt 1 lenger oppe: der ble blokken aapnet, her fylles den.
   */}
-  <div class="scenefilm-ramme scenefilm-ramme--akt2">
-    <SceneFilm
-      smal="/scener/hist2-steg-960.mp4"
-      bred="/scener/hist2-steg-1280.mp4"
-      stor="/scener/hist2-steg-1920.mp4"
-      plakat="/scener/hist2-steg-poster.avif"
-      tekst="venstre"
-      {/* Speilvendt. Bevegelsen – platene som glir inn i hulrommet – ligger paa
-          20-40 % av bildebredden (maalt endring 16,2 mot 0,9 og 0,4 i hoeyre halvdel).
-          Masken skjuler venstre side der teksten staar, saa kunden saa nettopp den
-          doede delen og meldte at animasjonen var borte. Vending flytter bevegelsen
-          til 60-80 %, der masken slipper den fram. */}
-      vend
-    />
   <!-- 06 Prosess -->
   <Scene
     n={6}
@@ -239,8 +243,36 @@ const heroTerminal = [
     <Avslor>
       <ProcessSteps steps={prosess} />
     </Avslor>
+    {/*
+      AKT 2 – naa som EGEN FLATE, ikke som bakgrunn.
+
+      Maalt: siden vaar beveger seg bare naar brukeren scroller. Pikselavvik i ro,
+      uten at noen roerer noe: jeton 485, osmo 222, oss 153. Det er sannsynligvis
+      presis det kunden mener med «statisk» – siden lever ikke foer han gjoer noe.
+
+      Som bakgrunn laa dette klippet paa 42 % opasitet bak fire tekstkolonner, med
+      maske. Vi betalte megabyte uten aa faa effekten, og det tvang fram en egen
+      global regel fordi «Lansering og drift» maalte 3,70:1 mot blokken. Som flate
+      spiller klippet i full opasitet uten maske og uten tekst oppaa – og uten
+      kontrastproblemet, fordi ingen tekst ligger over det lenger.
+
+      `vend` er fjernet: speilvendingen fantes bare for aa flytte bevegelsen inn i
+      baandet masken slapp fram. Uten maske vises hele rammen.
+
+      Ligger under folden med vilje. Et klipp som spiller av seg selv koster
+      baandbredde og batteri, saa dette er sidens ENE.
+    */}
+    <Avslor trinn={1}>
+      <SceneFilm
+        smal="/scener/hist2-steg-960.mp4"
+        bred="/scener/hist2-steg-1280.mp4"
+        stor="/scener/hist2-steg-1920.mp4"
+        plakat="/scener/hist2-steg-poster.avif"
+        loope
+        class="loope-fullbredde"
+      />
+    </Avslor>
   </Scene>
-  </div>
 
   <!-- 07 Priser -->
   <Scene
@@ -249,10 +281,11 @@ const heroTerminal = [
     ingress="Fordi du skal kunne regne på det før du ringer. Alle priser er eks. mva."
     id="priser"
     bred
+    class="flate flate--aksent"
   >
     <Mega tekst="Prisene står her" aksent="her" class="priser__mega" />
     <div class="stack">
-      <div class="grid-3">
+      <div class="grid-3 priser-rad">
         {pakker.map((p, i) => (
           <Avslor trinn={i}>
             <PriceCard
@@ -312,7 +345,7 @@ const heroTerminal = [
   </Scene>
 
   <!-- 09 FAQ -->
-  <Scene n={9} eyebrow="Spørsmål" tittel="Det folk spør om først" bred>
+  <Scene n={9} eyebrow="Spørsmål" tittel="Det folk spør om først" bred lav>
     <Avslor>
       <Faq items={faq} />
     </Avslor>
@@ -353,27 +386,212 @@ const heroTerminal = [
   .priser__mega { margin-bottom: var(--space-6); }
 </style>
 
+{/* Den globale akt2-regelen laa her: ugjennomsiktig flate bak prosesskortene
+    fordi filmen bak dem maalte 3,70:1. Den er fjernet sammen med bakgrunnen –
+    ingen tekst ligger over klippet lenger, saa regelen var doed kode. */}
+
 <style is:global>
   /*
-    Akt 2 ligger bak en firekolonners tekstrad, ikke bak en tekstspalte med ledig
-    plass ved siden av. Masken hjelper ikke der: kolonne 04 staar lengst til hoyre,
-    altsaa midt i den delen masken SKAL slippe filmen inn i. Maalt «Lansering og
-    drift» mot blokken: 3,70:1, under AA-kravet paa 4,5.
+    FLATER MED EGEN KARAKTER.
 
-    Loesningen er den samme som ScrollHistorie allerede bruker: gi teksten en
-    ugjennomsiktig flate. Filmen skal leses RUNDT teksten, ikke bak den. Aa dempe
-    filmen i stedet ville loest maalingen ved aa fjerne grunnen til at filmen er
-    der - samme feil som ble gjort paa /nettsider og rettet der.
+    Maalt mot kundens referanse (jeton.com) hadde vi FLERE skriftstoerrelser enn den
+    (16 mot 10) og NI GANGER saa mange animasjoner (9 mot 1). Det som manglet var
+    ikke bevegelse eller typografi: referansen bader flaten i mettet farge og har
+    tolv store bilder, mens vi hadde nesten svart overalt og aksenten brukt sju
+    ganger paa hele forsiden. Ti like moerke seksjoner leses som en liste.
 
-    Regelen er global fordi .kk-steps ligger i en komponent med egen scope-id, og
-    en scoped regel herfra ville ikke matchet - den fellen gjorde maske-
-    overstyringen paa /systemer til doed CSS. Klassen paa rammen holder den likevel
-    til denne ene seksjonen.
+    Grepet er aa bytte HELE tokensettet paa en seksjon, ikke bare bakgrunnen. Da
+    foelger hvert eneste barn med av seg selv – kort, hairlines, dempet tekst,
+    knapper – fordi alt leser var(--ink), var(--line) og var(--bg-raised). En
+    bakgrunn alene ville gitt moerk tekst paa moerke kort.
+
+    Verdiene under er de SAMME som det verifiserte lyse temaet. Kontrasten er
+    derfor riktig ved konstruksjon, ikke ved flaks, og den holder i begge temaer –
+    flaten er lys uansett hva brukeren har valgt.
+
+    is:global, ikke scoped: Scene.astro rendrer seksjonselementet, saa en scoped
+    regel herfra faar index-sidens scope-id mens elementet bare baerer Scenes.
+    Den fellen gjorde maskeoverstyringen paa /systemer til doed CSS, og en
+    forrige verifikasjon av scenestreken var feil av samme grunn.
   */
-  .scenefilm-ramme--akt2 .kk-steps > * {
+  .flate--motsatt {
+    --bg: #f5f6f7;
+    --bg-raised: #ffffff;
+    /* Lysere enn det lyse temaets #e9ecef med vilje: Slepesammenligningens
+       «0 feil» i --ok maalte 4,42:1 mot den, altsaa under AA. Mot hvitt er den
+       5,07:1. Et eksisterende brudd forsvinner som bieffekt. */
+    --bg-sunken: #ffffff;
+    --line: #dde1e6;
+    --line-strong: #767f89;
+    --ink: #14171b;
+    /* Moerkere enn det lyse temaets #4f5861. Nokkeltall-etiketten ligger i en
+       Avslor som toner inn, og MIDT i den fasen maalte Lighthouse 3,53:1 mot den
+       lyse flaten – i ro er den 7:1. Kravet gjelder sluttilstanden, men en feil
+       kunden ser i rapporten er en feil. Moerkere farge taaler hele fasen. */
+    --ink-muted: #30373e;
+    --ink-faint: #4a535c;
+    --accent: #b6e62a;
+    --on-accent: #14171b;
+    --accent-text: #3d6600;
+    --accent-soft: #eef9cf;
+    --ok: #0b7a6b;
+    --warn: #8a5b00;
+    --fail: #b42318;
+    /* --link maa settes eksplisitt. tokens.css har `--link: var(--ink)` paa :root,
+       og en custom property loeses der den DEKLARERES – saa verdien laases til
+       rotens --ink og arves som en fast farge. En seksjon som bytter --ink faar
+       ikke med seg lenkefargen. Maalt paa kontaktseksjonen: --ink=#14171b mens
+       --link=#e9ecef, altsaa 1,18:1. */
+    --link: var(--ink);
+    --focus: #14171b;
     background: var(--bg);
-    padding: var(--space-4);
-    border-radius: var(--radius-md);
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--line) 55%, transparent);
+    color: var(--ink);
   }
+
+  /*
+    MAALT FEIL FOERST: flaten var hardkodet lys. I LYST tema er sidebakgrunnen
+    allerede #f5f6f7, altsaa noeyaktig samme verdi – bruddet forsvant, og halve
+    poenget med aa veksle var borte for alle som kjoerer lyst tema. Verifisert med
+    computed style i begge temaer foer og etter.
+
+    Flaten er derfor MOTSATT av temaet, ikke lys. Navnet sier hva den gjoer.
+  */
+  [data-theme="light"] .flate--motsatt {
+    --bg: #0b0d10;
+    --bg-raised: #13161b;
+    --bg-sunken: #060708;
+    --line: #23282f;
+    --line-strong: #5c6670;
+    --ink: #e9ecef;
+    --ink-muted: #9aa4ae;
+    --ink-faint: #7b8591;
+    --accent: #c8f24a;
+    --on-accent: #0b0d10;
+    --accent-text: #c8f24a;
+    --accent-soft: #1d2a08;
+    --ok: #5fe3c0;
+    --warn: #f3b63f;
+    --fail: #ff7b72;
+    /* --link maa settes eksplisitt. tokens.css har `--link: var(--ink)` paa :root,
+       og en custom property loeses der den DEKLARERES – saa verdien laases til
+       rotens --ink og arves som en fast farge. En seksjon som bytter --ink faar
+       ikke med seg lenkefargen. Maalt paa kontaktseksjonen: --ink=#14171b mens
+       --link=#e9ecef, altsaa 1,18:1. */
+    --link: var(--ink);
+    --focus: #c8f24a;
+  }
+
+  /*
+    Den mettede flaten. Sidens ENE roep, og det staar paa prisene – der det faktisk
+    selger. Brandboken sier «en aksentdetalj per skjerm»; her er aksenten hele
+    flaten i stedet for en strek, og det er forskjellen paa en detalj og et grep.
+
+    Aksenten inverteres inne i flaten: --accent blir naer-svart og --on-accent blir
+    lime, saa primaerknappen blir en moerk flekk paa limegroenn i stedet for aa
+    forsvinne i den. Kortene blir hvite, slik referansen gjoer det – mettet felt,
+    rene paneler.
+  */
+  .flate--aksent {
+    --bg: #c8f24a;
+    --bg-raised: #ffffff;
+    --bg-sunken: #bce63a;
+    --line: #8fb52c;
+    --line-strong: #4e6a12;
+    --ink: #14171b;
+    --ink-muted: #2b3139;
+    --ink-faint: #39404a;
+    /* Invertert: moerk knapp med lime tekst paa en lime flate. */
+    --accent: #14171b;
+    --on-accent: #c8f24a;
+    /* Kan ikke vaere lime paa lime. Merkepillen blir hvit med moerkegroenn tekst. */
+    --accent-text: #2d4a00;
+    --accent-soft: #ffffff;
+    /* Samme felle som over: --link laases til rotens --ink og foelger ikke med. */
+    --link: var(--ink);
+    --ok: #0b7a6b;
+    --warn: #7a4f00;
+    --fail: #9e1f15;
+    --focus: #14171b;
+    background: var(--bg);
+    color: var(--ink);
+  }
+
+
+  /* ------------------------------------------------- bryt rutenettet ---- */
+  /*
+    Forsiden sto helt oppreist paa rutenett innenfor margene. Kortene fikk derfor
+    samme vekt og leste som en liste. Her gjoeres to ting, og de er bevisst
+    forskjellige:
+
+    1) FORSKYVNINGEN er permanent og krever ingen JavaScript, ingen scroll og
+       ingen animasjon. Den bryter rutenettet i det sekundet siden males – ogsaa
+       i Firefox, ogsaa ved redusert bevegelse, ogsaa med JS slaatt av.
+    2) VRIDNINGEN er bevegelse: kortene kommer inn skjeve og retter seg opp mens
+       du scroller. Faller den bort, staar kortene rett – degraderingen gaar mot
+       «synlig og rett», aldri mot «skjult eller skjevt».
+
+    Transformen ligger paa KORTET inni, ikke paa .avslor-wrapperen. Avslor eier
+    allerede sin egen animasjon paa opacity; en animation-name her ville erstattet
+    den og slaatt av inntoningen.
+  */
+  @media (min-width: 861px) {
+    .tjenester-rad > :nth-child(1) { margin-block-start: 0; }
+    .tjenester-rad > :nth-child(2) { margin-block-start: var(--space-7); }
+    .tjenester-rad > :nth-child(3) { margin-block-start: calc(var(--space-5) * -1); }
+    .priser-rad > :nth-child(2) { margin-block-start: calc(var(--space-6) * -1); }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      /* Langformer, aldri stenografi: lightningcss slaar `animation` +
+         `animation-timeline` sammen til en ugyldig form som BEGGE nettlesere
+         forkaster uten aa si fra. Den fellen har kostet oss to animasjoner. */
+      .tjenester-rad .kk-svc,
+      .priser-rad .kk-price {
+        animation-name: rett-seg-opp;
+        animation-duration: 1ms;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: view();
+        animation-range: entry 25% cover 30%;
+      }
+      .tjenester-rad > :nth-child(1) .kk-svc { --vri: -2.2deg; --dybde: 54px; }
+      .tjenester-rad > :nth-child(2) .kk-svc { --vri: 1.6deg;  --dybde: 30px; }
+      .tjenester-rad > :nth-child(3) .kk-svc { --vri: -1.1deg; --dybde: 70px; }
+      .priser-rad > :nth-child(1) .kk-price { --vri: -1.4deg; --dybde: 44px; }
+      .priser-rad > :nth-child(2) .kk-price { --vri: 0.9deg;  --dybde: 22px; }
+      .priser-rad > :nth-child(3) .kk-price { --vri: -0.7deg; --dybde: 60px; }
+
+      /* Ulik --dybde gir ulik fart gjennom samme omraade. Det er dybde: det som
+         skal ligge «lenger bak» flytter seg lengre og lander senere. */
+      @keyframes rett-seg-opp {
+        from { transform: translateY(var(--dybde, 40px)) rotate(var(--vri, -1.5deg)); }
+        to   { transform: none; }
+      }
+    }
+  }
+
+
+  /* ------------------------------------------------ blo ut over kanten ---- */
+  /*
+    Maalt blodning forbi skjermkanten: vi 8, jeton 388, osmo 1966. Alt vaart sto
+    oppreist paa rutenett innenfor margene. Loekkepanelet er det riktige stedet
+    aa bryte ut: det er det eneste store elementet uten tekst i seg, saa
+    fullbredde kan ikke klippe noe som skal leses.
+
+    Teknikken er den samme som ScrollHistorie allerede bruker i produksjon
+    (`width: 100vw` + negativ marg), ikke en ny oppfinnelse. Verifisert at den
+    ikke gir sidelengs drag paa seks bredder – den globale `overflow-x: clip`
+    SKJULER slikt i stedet for aa avsloere det, saa det maa maales.
+  */
+  .loope-fullbredde {
+    width: 100vw;
+    margin-inline: calc(50% - 50vw);
+    border-radius: 0;
+    border-inline: 0;
+  }
+
+  /* Haarlinjen mellom scener er skillet mellom to flater her, ikke en strek paa
+     en flate. Den ville tegnet en lysere strek midt i overgangen. */
+  .flate .scene__strek { opacity: 0; }
 </style>

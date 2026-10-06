@@ -1,0 +1,139 @@
+---
+import Base from "../../layouts/Base.astro";
+import Button from "../../components/Button.astro";
+
+/**
+ * Målelab for formspråket: avrunding, dybde og flytende flater.
+ *
+ * Bakgrunn: kunden pekte på osmo.supply, jeton.com, phamilypharma.com og
+ * davidlangarica.dev som oppsiktsvekkende. Opptak av dem viste at de har
+ * kraftig avrunding, ekte høydeforskjell og en meny som blir stående som en
+ * pille. Vårt formspråk var rette hjørner og hårlinjer i ett eneste plan –
+ * presist, men flatt, og flatt leses som statisk.
+ *
+ * Hårlinjen er fortsatt tegneredskapet. Det er PLANET som fikk en tredje
+ * dimensjon, ikke streken som ble tykkere. Siden er intern og ikke indeksert.
+ */
+---
+<Base
+  tittel="Form og dybde"
+  beskrivelse="Intern målelab for avrunding, høydeforskjell og flytende flater."
+  noindex
+>
+  <section class="section">
+    <div class="wrap stack">
+      <p class="kk-eyebrow"><span class="kk-eyebrow-n">//</span> <span>Målelab</span></p>
+      <h1 class="display-lg">Form og dybde</h1>
+      <p class="body-lg muted">
+        Fire grep som utvider formspråket uten å røre hårlinja: pilleknapper,
+        avrundede kort, hvileskygge og løft på peker. Null nytt JavaScript.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap stack">
+      <h2 class="heading">Knapper er piller</h2>
+      <p class="muted">
+        Det enkleste grepet som skiller en side bygget i 2026 fra en bygget i
+        2016. Hårlinja, vekten og trykkmålet er uendret – bare radien er ny.
+      </p>
+      <div class="formrad">
+        <Button variant="primary">Book 20 minutter</Button>
+        <Button>Se hva som kan kobles</Button>
+        <Button variant="ghost">Les håndboken</Button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap stack">
+      <h2 class="heading">Kort hviler over flaten</h2>
+      <p class="muted">
+        To skyggelag: en tett kant som tegner formen, og en vid, svak skygge som
+        gir avstand til flaten under. Ingen gradient – bare svart med lav alfa.
+        Hold pekeren over et kort for å se løftet.
+      </p>
+      <ul class="formrutenett">
+        <li class="kk-svc">
+          <div class="kk-svc-head">
+            <h3>Hvileskygge</h3>
+            <span class="kk-svc-n">01</span>
+          </div>
+          <p>Kortet ligger et hakk over bakgrunnen, også uten peker.</p>
+          <span class="kk-svc-link">Dybde i ro<span class="kk-arrow" aria-hidden="true">→</span></span>
+        </li>
+        <li class="kk-svc">
+          <div class="kk-svc-head">
+            <h3>Løft på peker</h3>
+            <span class="kk-svc-n">02</span>
+          </div>
+          <p>
+            To piksler opp og en dypere skygge. Bare der det finnes en ekte
+            peker – på berøring henger tilstanden igjen og ser ut som en feil.
+          </p>
+          <span class="kk-svc-link">Dybde i bevegelse<span class="kk-arrow" aria-hidden="true">→</span></span>
+        </li>
+        <li class="kk-svc">
+          <div class="kk-svc-head">
+            <h3>Uten layoutskift</h3>
+            <span class="kk-svc-n">03</span>
+          </div>
+          <p> <code class="mono">transform</code> og <code class="mono">box-shadow</code> endrer ikke layout, så CLS er uberørt.
+          </p>
+          <span class="kk-svc-link">Målt 0<span class="kk-arrow" aria-hidden="true">→</span></span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap stack">
+      <h2 class="heading">Menyen blir stående</h2>
+      <p class="muted">
+        Scroll på denne siden: menyen løsner fra kanten og blir en pille som
+        svever over innholdet. <code class="mono">position: sticky</code> tar den
+        ikke ut av flyten, så CLS er uberørt – og den virker med den globale <code class="mono">overflow-x: clip</code>, fordi <code class="mono">clip</code> ikke lager en scroll-beholder. Det var nettopp derfor den ble valgt
+        framfor <code class="mono">hidden</code>.
+      </p>
+      <p class="small faint">
+        Under 860 px bryter menyen til en vannrett scroller på egen linje. Da er
+        pilleformen feil – den blir en høy kapsel – så flaten får kortets radius
+        i stedet.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap stack">
+      <h2 class="heading">Det som ikke ble endret</h2>
+      <ul class="liste">
+        <li>
+          <strong>Hårlinja.</strong> 1,5 px strek og presisjon bærer merkevaren.
+          Vi fant i dag at 19 av 21 ikoner lå på 2 og 2,5 px og var visuelt
+          tyngre enn rammene rundt – det skal ikke gjeninnføres.
+        </li>
+        <li><strong>Ingen gradienter eller glassmorphism.</strong> Skyggene er flat svart med lav alfa.</li>
+        <li><strong>Trykkmål.</strong> Frittstående kontroller holder 24 px etter WCAG 2.5.8.</li>
+        <li>
+          <strong><code class="mono">.card</code>.</strong> Den ligger i <code class="mono">site.css</code>, som lastes etter denne fila og
+          derfor vinner. Den er brukt på åtte sider og mangler fortsatt
+          avrunding og dybde.
+        </li>
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .formrad { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+  .formrutenett {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--space-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .liste { display: grid; gap: var(--space-3); margin: 0; padding-left: var(--space-5); color: var(--ink-muted); }
+</style>

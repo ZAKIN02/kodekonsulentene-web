@@ -5,6 +5,7 @@ import Mega from "../components/Mega.astro";
 import Avslor from "../components/Avslor.astro";
 import Eyebrow from "../components/Eyebrow.astro";
 import Demo from "../components/Demo.astro";
+import SceneFilm from "../components/SceneFilm.astro";
 import Horisont from "../components/Horisont.astro";
 import Button from "../components/Button.astro";
 import ContactBlock from "../components/ContactBlock.astro";
@@ -33,17 +34,26 @@ import "../styles/scener.css";
       <p class="scene__ingress body-lg">Hver case sier hva som var problemet, hva vi bygde, og hva det ga i tall. Konseptarbeid er alltid merket, slik at du vet hva som er oppdrag og hva som er øvelse.</p>
     </Avslor>
 
-    <Avslor trinn={2}>
+    <Avslor trinn={2} fra="skjev" skjev={2.2}>
       {/* Ekte bevegelse, ikke et stillbilde. Bare LYSET endrer seg mellom første og
           siste ramme – geometrien står bom stille, så Kling har ingenting å morfe.
           Det er den tekniske grunnen til at klippet ikke ser ut som billig AI-video. */}
-      <Demo
+      {/* LØKKE i full styrke, ikke scroll-spolt og ikke maskert.
+          Målt mot referansene: siden vår beveget seg BARE når brukeren scroller.
+          jeton.com har tre ganger vårt pikselavvik når siden står helt stille,
+          fordi video går i løkke uavhengig av leseren. Og vi viste ni klipp på
+          42 % opasitet bak tekst – vi betalte megabyte uten å få effekten. */}
+      <SceneFilm
+        loope
         smal="/scener/lev-caser-960.mp4"
         bred="/scener/lev-caser-1280.mp4"
         stor="/scener/lev-caser-1920.mp4"
         plakat="/scener/lev-caser-poster.avif"
-        tekst="Fire stabler, én tent. Linjen tegner seg bare på den nærmeste – de tre bak finnes, men er ikke noe vi kan vise fram ennå."
       />
+      <p class="small muted" style="margin-top: var(--space-3)">
+        Fire stabler, én tent. Linjen tegner seg bare på den nærmeste – de tre bak
+        finnes, men er ikke noe vi kan vise fram ennå.
+      </p>
     </Avslor>
 
     <Avslor>

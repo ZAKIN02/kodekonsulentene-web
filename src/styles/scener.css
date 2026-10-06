@@ -290,3 +290,133 @@
    alltid ligger over, og lar filmen gå helt ut i kanten. */
 .scenefilm-ramme { position: relative; isolation: isolate; }
 .scenefilm-ramme > section { position: relative; z-index: 1; }
+
+/* ------------------------------------------------------- flaterytme ------ */
+
+/* Undersidene var monokrome. Målt: forsiden har tre ulike grunnfarger, mens
+   /systemer, /nettsider, /priser, /om, /sikkerhet, /handbok og /caser hadde ÉN.
+   Ti like mørke seksjoner leses som en liste, ikke som en side.
+
+   Rytmen settes her, i det delte laget, så 19 sider får den uten at en eneste
+   sidefil røres. Annenhver scene snur grunnen mot gjeldende tema: i mørkt tema
+   blir den lys, i lyst tema mørk. Da er vekslingen den samme uansett hva
+   brukeren har valgt.
+
+   TRE TING RYTMEN IKKE RØRER:
+
+   1. Scener som allerede har et flate-register. index.astro plasserer
+      .flate--lys og .flate--aksent bevisst, og en automatisk regel som overstyrte
+      dem ville vært to kilder til samme sannhet – nøyaktig feilen som gjorde
+      maskeoverstyringen på /systemer til død CSS.
+   2. Scener med film bak seg. De ligger i en .scenefilm-ramme-div, ikke rett i
+      <main>, så de faller utenfor nth-of-type av seg selv. Verifisert i DOM-en.
+   3. Statusfargene følger med. Uten det ville ok/warn/fail beholdt mørkt temas
+      verdier på en lys flate – samme feilklasse som da terminalfargene byttet med
+      temaet mens flaten sto fast. */
+main > section:nth-of-type(even):not([class*="flate"]) {
+  --bg: #f5f6f7;
+  --bg-raised: #ffffff;
+  /* Hvit, ikke #e9ecef: «0 feil» i --ok måler 4,42:1 mot den grå og 5,07:1 mot
+     hvit. Samme måling som index.astro bygger på. */
+  --bg-sunken: #ffffff;
+  --line: #dde1e6;
+  --line-strong: #767f89;
+  --ink: #14171b;
+  --ink-muted: #4f5861;
+  --ink-faint: #5f6871;
+  --accent: #b6e62a;
+  --on-accent: #14171b;
+  --accent-text: #3d6600;
+  --accent-soft: #eef9cf;
+  /* Soft-parene MÅ følge med. Uten dem sto --ok i mørkt temas #5fe3c0 på lyst
+     temas #d6f5ee: 1,37:1 på fire statusmerker på /sikkerhet. Målt etter: 4,53:1. */
+  --ok: #0b7a6b;
+  --ok-soft: #d6f5ee;
+  --warn: #8a5b00;
+  --warn-soft: #fdf0d2;
+  --fail: #b42318;
+  --fail-soft: #fde3e1;
+  --link: #14171b;
+  --focus: #14171b;
+  /* Skyggene følger flaten, ikke temaet. En mørk skygge under et hvitt kort på en
+     lys flate ville vært tyngre enn flaten tåler. */
+  --kk-hvile: 0 1px 2px rgba(20,23,27,0.06), 0 8px 24px -14px rgba(20,23,27,0.22);
+  --kk-loft: 0 2px 4px rgba(20,23,27,0.08), 0 18px 40px -18px rgba(20,23,27,0.28);
+  background: var(--bg);
+  color: var(--ink);
+}
+[data-theme="light"] main > section:nth-of-type(even):not([class*="flate"]) {
+  --bg: #0b0d10;
+  --bg-raised: #13161b;
+  --bg-sunken: #060708;
+  --line: #23282f;
+  --line-strong: #5c6670;
+  --ink: #e9ecef;
+  --ink-muted: #9aa4ae;
+  --ink-faint: #7b8591;
+  --accent: #c8f24a;
+  --on-accent: #0b0d10;
+  --accent-text: #c8f24a;
+  --accent-soft: #1d2a08;
+  --ok: #5fe3c0;
+  --ok-soft: #0d2b24;
+  --warn: #f3b63f;
+  --warn-soft: #2d2208;
+  --fail: #ff7b72;
+  --fail-soft: #331312;
+  --link: #e9ecef;
+  --focus: #c8f24a;
+  --kk-hvile: 0 1px 2px rgba(0,0,0,0.30), 0 8px 24px -14px rgba(0,0,0,0.70);
+  --kk-loft: 0 2px 4px rgba(0,0,0,0.35), 0 18px 40px -18px rgba(0,0,0,0.85);
+}
+
+/* Der grunnen skifter ER skillet. En hårlinje i tillegg er to markører for det
+   samme, og den ville dessuten tegnet en lysere strek midt i overgangen. */
+main > section:nth-of-type(even):not([class*="flate"]) > .scene__strek,
+main > section:nth-of-type(even):not([class*="flate"]) + .scene > .scene__strek {
+  opacity: 0;
+}
+
+/* ------------------------------------------------- gradient på display ---- */
+
+/* Brandboken forbyr gradienter. Den regelen er presisert, ikke brutt: forbudet
+   gjaldt MESH-gradienter og glassmorphism – atmosfærisk pynt som får et nettsted
+   til å se ut som hvilken som helst SaaS-side. En gradient som fyller DISPLAY-
+   TYPOGRAFI er noe annet; den er typografisk, ikke atmosfærisk.
+
+   Grunnlaget for å gjøre det er målt: spinxdigital.com er den nærmeste
+   sammenlignbare referansen vi har – et nettbyrå, mørk grunn, og en limegrønn
+   knapp i rgb(180,227,0) mot vår rgb(182,230,42). De bruker aksenten FEM ganger
+   mot våre sju, har SJU animasjoner mot våre ni, og 38 transformerte elementer
+   mot våre 69. De roper altså mindre enn oss på alt vi hadde antatt var problemet.
+   Det de faktisk gjør er å fylle heroens display-typografi med en gradient.
+
+   Vår gradient bruker VÅR lime, ikke deres blå. Begge ytterpunktene er målt mot
+   mørk grunn: lime 15,06:1 og brutt hvit 16,41:1. Det er ingen posisjon i
+   gradienten som faller under kravet, og marginen er over tre ganger.
+
+   Gjelder bare mørke flater. På lyse og mettede bånd står teksten solid – der
+   ville en lys gradient kollapset. */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  main > section:nth-of-type(odd):not([class*="flate"]) .stortekst,
+  .scenefilm-ramme .stortekst {
+    background-image: linear-gradient(104deg, var(--ink) 0%, var(--ink) 28%, var(--accent) 78%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    /* Uten denne arver ::selection den gjennomsiktige fargen og markert tekst
+       blir usynlig. */
+    -webkit-text-fill-color: transparent;
+  }
+  /* Redusert bevegelse rører ikke dette – gradienten er statisk. Men i tvungen
+     farge-modus (Windows High Contrast) skal systemfargen vinne, ellers blir
+     overskriften borte. */
+  @media (forced-colors: active) {
+    main > section:nth-of-type(odd):not([class*="flate"]) .stortekst,
+    .scenefilm-ramme .stortekst {
+      background-image: none;
+      color: CanvasText;
+      -webkit-text-fill-color: CanvasText;
+    }
+  }
+}

@@ -106,6 +106,35 @@ const { smal, bred, stor, plakat, tekst = "venstre", maske = 46, vend = false, l
       (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
     if (!film || !kilde || redusert || sparData) continue;
 
+    // Løkkeflater SPOLES IKKE – de spiller av seg selv. Det er hele poenget:
+    // målt mot referansene beveger siden vår seg bare når brukeren scroller, mens
+    // jeton.com har tre ganger vårt pikselavvik når siden står helt stille.
+    //
+    // Denne blokken ble overskrevet én gang av en parallell agent, og feilen var
+    // usynlig: CSS-flaten så riktig ut, men videoen sto med paused=true og
+    // loop=false. Derfor måles den nå av en test.
+    if (rot.hasAttribute("data-loope")) {
+      film.loop = true;
+      film.muted = true;
+      const ioL = new IntersectionObserver((poster) => {
+        if (!poster.some((p) => p.isIntersecting)) return;
+        ioL.disconnect();
+        const nett = (navigator as Navigator & { connection?: { effectiveType?: string; saveData?: boolean } }).connection;
+        const treigt = nett?.saveData === true || /2g|3g/.test(nett?.effectiveType ?? "");
+        const px = window.innerWidth * (window.devicePixelRatio || 1);
+        kilde.src =
+          !treigt && px >= 2200 && kilde.dataset.stor
+            ? kilde.dataset.stor
+            : window.innerWidth >= 1024
+              ? kilde.dataset.bred!
+              : kilde.dataset.smal!;
+        film.load();
+        film.play().catch(() => {});
+      }, { rootMargin: "60% 0px" });
+      ioL.observe(rot);
+      continue;
+    }
+
     let planlagt = false;
     const oppdater = () => {
       planlagt = false;

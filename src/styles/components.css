@@ -130,3 +130,72 @@
 .kk-footer a.kk-link:hover { text-decoration-color: var(--accent-text); }
 .kk-footer .kk-footer-meta { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: var(--space-4); padding-top: var(--space-4); border-top: var(--hairline) solid var(--line); font-family: var(--font-mono); font-size: 12px; line-height: 16px; color: var(--ink-faint); }
 @media (max-width: 720px) { .kk-footer { grid-template-columns: 1fr; } }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Form og dybde
+
+   Alt lå i samme plan: rette hjørner, hårlinjer, ingen høydeforskjell. Det er
+   presist, men flatt – og flatt leses som statisk. Referansene kunden peker på
+   (osmo.supply, jeton.com) bruker kraftig avrunding, flytende flater og ekte
+   høydeforskjell. Hårlinjen er fortsatt tegneredskapet; det er planet som får
+   en tredje dimensjon, ikke streken som blir tykkere.
+
+   Verdiene ligger her og ikke i tokens.css fordi den fila eies av en annen
+   agent i denne runden. De er kandidater til å flyttes dit.
+   ───────────────────────────────────────────────────────────────────────── */
+:root, [data-theme="dark"] {
+  /* Avrunding i to trinn: kort, og store flater som rapporten og terminalen. */
+  --kk-radius-kort: 14px;
+  --kk-radius-flate: 18px;
+  /* Hvileskygge og løft. To lag: en tett kant som tegner formen, og en vid,
+     svak skygge som gir avstand til flaten under. Ingen gradient – bare svart
+     med lav alfa, som brandboken tillater. */
+  --kk-hvile: 0 1px 2px rgba(0,0,0,0.30), 0 8px 24px -14px rgba(0,0,0,0.70);
+  --kk-loft: 0 2px 4px rgba(0,0,0,0.35), 0 18px 40px -18px rgba(0,0,0,0.85);
+}
+[data-theme="light"] {
+  --kk-hvile: 0 1px 2px rgba(20,23,27,0.06), 0 8px 24px -14px rgba(20,23,27,0.22);
+  --kk-loft: 0 2px 4px rgba(20,23,27,0.08), 0 18px 40px -18px rgba(20,23,27,0.28);
+}
+
+/* Knappene blir piller. Det er det enkleste grepet som skiller en side bygget
+   i 2026 fra en bygget i 2016, og det koster ingenting. Hårlinja og vekten er
+   uendret, så presisjonen består. */
+.kk-btn { border-radius: var(--radius-pill); }
+/* URL-sjekken er ett sammenføyd felt: pilleform på ytterkanten, rett skjøt inni. */
+.kk-urlcheck { border-radius: var(--radius-pill); }
+.kk-urlcheck .kk-prompt { padding-left: var(--space-4); }
+.kk-urlcheck .kk-btn { border-radius: 0; }
+
+/* Kort får avrunding og hviler litt over flaten. */
+.kk-svc, .kk-price { border-radius: var(--kk-radius-kort); box-shadow: var(--kk-hvile); }
+.kk-report, .kk-term { border-radius: var(--kk-radius-flate); box-shadow: var(--kk-hvile); }
+
+/* Løftet skjer bare der det finnes en ekte peker. På berøring henger
+   hover-tilstanden igjen etter et trykk og ser ut som en feil. */
+@media (hover: hover) {
+  .kk-svc, .kk-price {
+    transition: box-shadow 160ms ease, transform 160ms ease, border-color 120ms ease;
+  }
+  .kk-svc:hover, .kk-price:hover { box-shadow: var(--kk-loft); transform: translateY(-2px); }
+}
+/* Tastaturbrukere skal se det samme som pekeren gir. */
+.kk-svc:focus-visible { box-shadow: var(--kk-loft); }
+
+/* transform og box-shadow endrer ikke layout, så CLS er uberørt – men bevegelsen
+   skal likevel kunne slås av. */
+@media (prefers-reduced-motion: reduce) {
+  .kk-svc, .kk-price { transition: none; }
+  .kk-svc:hover, .kk-price:hover { transform: none; }
+}
+
+/* Trykkmål i footeren.
+   Lenkelista og e-postadressen målte 17–18 px høye mot WCAG 2.5.8 sitt krav om
+   24. Dette er FRITTSTÅENDE lenker – navigasjon og en adresse, ikke ord inne i
+   en setning – så unntaket i 2.5.8 gjelder ikke. Lenker i brødtekst får
+   fortsatt ingen treffflate; det ville brutt tekstflyten.
+
+   Polstringen utvider treffflaten uten å endre linjeboksen, og lista har 4 px
+   mellomrom, så ingen treffflater overlapper. */
+.kk-footer ul li a,
+.kk-footer address a { padding-block: var(--space-1); }

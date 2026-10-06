@@ -1,0 +1,113 @@
+---
+/**
+ * Laboratorium for bevegelsesvokabularet.
+ *
+ * Siden finnes for å se gestene isolert og måle dem: hver seksjon er høy nok
+ * til at scroll-tidslinjen rekker å kjøre ferdig, og parallaksen trenger at
+ * elementet faktisk passerer gjennom hele vinduet for å vise utslag.
+ *
+ * `noindex`, lenkes ikke fra navigasjonen.
+ */
+import Base from "../../layouts/Base.astro";
+import Section from "../../components/Section.astro";
+import Avslor from "../../components/Avslor.astro";
+import Pekerkort from "../../components/Pekerkort.astro";
+/* scener.css bærer grunngesten `avslor--opp`, som står her som kontroll.
+   Uten den har Avslor ingen basisanimasjon, og kontrollen ville løyet. */
+import "../../styles/scener.css";
+import "../../styles/interaksjon.css";
+---
+
+<Base
+  tittel="Lab: bevegelse"
+  beskrivelse="Verifisering av bevegelsesvokabularet: skjev, naer, dybde og utbrudd."
+  noindex
+>
+  <Section
+    nivaa={1}
+    n={1}
+    eyebrow="Lab"
+    tittel="Bevegelse"
+    ingress="Fem gester. Alle er scroll-drevne i ren CSS, uten en linje JavaScript. Scroll sakte – parallaksen krever at elementet passerer gjennom hele vinduet."
+  />
+
+  <Section n={2} eyebrow="Gest 01" tittel="Opp" ingress="Grunngesten. Innton med 20 px forskyvning. Denne var lenge den eneste vi hadde.">
+    <div class="demo-rad">
+      <Avslor fra="opp"><div class="prove">opp</div></Avslor>
+    </div>
+  </Section>
+
+  <Section n={3} eyebrow="Gest 02" tittel="Skjev" ingress="Kommer inn på skrå og retter seg opp. Bryter rutenettfølelsen uten å flytte layout.">
+    <div class="demo-rad">
+      <Avslor fra="skjev"><div class="prove">skjev 2,2°</div></Avslor>
+      <Avslor fra="skjev" skjev={-3} trinn={1}><div class="prove">skjev −3°</div></Avslor>
+    </div>
+  </Section>
+
+  <Section n={4} eyebrow="Gest 03" tittel="Nær" ingress="Skalerer opp mot leseren fra 0,92. Lavere start gjør tekst merkbart uskarp mens den skalerer.">
+    <div class="demo-rad">
+      <Avslor fra="naer"><div class="prove">nær</div></Avslor>
+    </div>
+  </Section>
+
+  <Section n={5} eyebrow="Gest 04" tittel="Dybde" ingress="Kontinuerlig parallakse så lenge elementet overlapper vinduet. To lag med ulikt utslag drar fra hverandre – det er dét som leses som rom.">
+    <div class="demo-dybde">
+      <Avslor fra="dybde" dybde={70}><div class="prove prove--naer">dybde 70 – nært</div></Avslor>
+      <Avslor fra="dybde" dybde={-30}><div class="prove prove--fjern">dybde −30 – bak</div></Avslor>
+    </div>
+  </Section>
+
+  <Avslor fra="naer" utbrudd>
+    <div class="utbrudd-flate">
+      <p class="mono-label">Gest 05 — utbrudd</p>
+      <p class="body-lg">Flaten blør ut til skjermkanten, mens teksten beholder sin egen lesebredde. Dette er layout, ikke bevegelse, så den står også med redusert bevegelse.</p>
+    </div>
+  </Avslor>
+
+  <Section n={6} eyebrow="Gest 06" tittel="Kort i rekke" ingress="Pekerkortene kommer inn etter hverandre og med vekslende vinkel, så raden leses som spredte kort og ikke som en tabellrad.">
+    <div class="grid-3">
+      <Pekerkort i={0} nr={1} tittel="Første" tekst="Kommer først, med vinkel mot venstre." />
+      <Pekerkort i={1} nr={2} tittel="Andre" tekst="Kommer etter, rett opp og ned." />
+      <Pekerkort i={2} nr={3} tittel="Tredje" tekst="Kommer sist, med vinkel mot høyre." />
+    </div>
+  </Section>
+
+  <Section n={7} eyebrow="Kontroll" tittel="Hva som skal skje uten støtte" ingress="Firefox mangler scroll-drevne animasjoner. Uten JavaScript finnes ingen reserve. Med redusert bevegelse skal alt stå ferdig. I alle tre tilfellene er standardtilstanden synlig – ingenting skjules før noe aktivt skjuler det." />
+</Base>
+
+<style>
+  .demo-rad {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-5);
+  }
+  /* Høy nok til at parallaksen faktisk rekker å vise utslag: elementet må
+     passere gjennom hele vinduet for at `cover 0%` til `cover 100%` skal kjøre. */
+  .demo-dybde {
+    display: grid;
+    gap: var(--space-7);
+    min-height: 120svh;
+    align-content: center;
+  }
+  .prove {
+    display: grid;
+    place-items: center;
+    min-height: 140px;
+    padding: var(--space-5);
+    border: var(--hairline) solid var(--line-strong);
+    border-radius: var(--radius-md);
+    background: var(--bg-raised);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .prove--naer { border-color: var(--accent); }
+  .prove--fjern { color: var(--ink-muted); }
+
+  .utbrudd-flate {
+    display: grid;
+    gap: var(--space-3);
+    padding-block: var(--space-7);
+    border-block: var(--hairline) solid var(--line);
+  }
+</style>

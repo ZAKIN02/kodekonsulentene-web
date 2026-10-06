@@ -87,9 +87,25 @@ const integrasjoner = [
       tekst="venstre"
     />
   <Scene n={3} eyebrow="Integrasjoner" tittel="Det vi kobler oftest" id="integrasjoner">
-    <div class="grid-2">
+    {/* Rutenettet brytes her. Seks like kort i to rette kolonner leses som en
+        tabell; litt helning og ulik dybde leses som ting som ligger oppa hverandre.
+        Vinkelen kommer fra indeksen, saa den er stabil mellom bygg.
+
+        trinn var k % 3 – stilt for et tre-kolonners rutenett, mens .grid-2 har to.
+        Med trappen levende kom rad to inn hoeyre-foer-venstre.
+
+        Vinkelen og dybden kommer fra Avslors eget vokabular, ikke fra egen CSS her.
+        En egen regel ville dessuten vaert doed: kortene baerer Avslors scope-id. */}
+    <div class="grid-2 kobling-rutenett">
       {integrasjoner.map((i, k) => (
-        <Avslor trinn={k % 3} as="div" class="card">
+        <Avslor
+          trinn={k % 2}
+          fra="skjev"
+          skjev={[-1.4, 1.1, -0.8, 1.5, -1.2, 0.7][k] ?? 0}
+          dybde={k % 2 === 0 ? 14 : -10}
+          as="div"
+          class="card"
+        >
           <h3 class="subheading">{i.navn}</h3>
           <p class="muted">{i.verdi}</p>
           <p class="mono faint">{i.teknisk}</p>
@@ -99,7 +115,7 @@ const integrasjoner = [
   </Scene>
   </div>
 
-  <Scene n={4} eyebrow="Pris" tittel="System fra 60 000 kr" ingress="Prisen følger antall integrasjoner og hvor mye som må holdes i orden etterpå. Du får fast pris før vi begynner, og 40 % faktureres ved oppstart. Eks. mva.">
+  <Scene n={4} class="flate--varm" eyebrow="Pris" tittel="System fra 60 000 kr" ingress="Prisen følger antall integrasjoner og hvor mye som må holdes i orden etterpå. Du får fast pris før vi begynner, og 40 % faktureres ved oppstart. Eks. mva.">
     <div class="row">
       <Button variant="primary" href="/kontakt">Beskriv behovet</Button>
       <Button variant="ghost" href="/priser">Se hele prislisten</Button>
@@ -132,6 +148,7 @@ const integrasjoner = [
     opacity: 1 !important;
     transform: none !important;
   }
+
 </style>
 
 {/*

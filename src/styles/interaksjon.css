@@ -49,3 +49,117 @@ input[type="range"]:focus-visible {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ===================================================== bevegelsesvokabular ====
+ *
+ * Nettstedet hadde ÉN gest: innton med 20 px forskyvning oppover, brukt på alt.
+ * Et opptak av osmo.supply, scrollet gjennom i headless Chrome, viser hva som
+ * mangler: kort som står på skrå, elementer som blør ut av skjermkanten, og
+ * ting i ulik skala som flytter seg i ulik hastighet. Det leses som rom. Vårt
+ * leses som en liste.
+ *
+ * Alt her er `animation-timeline: view()` – null nytt JavaScript. Tidligere
+ * research målte at hele interaksjonslaget vårt veier 5,39 kB mens det letteste
+ * konkurrerende biblioteket duplikerer noe vi gjør i 0,83.
+ *
+ * SPESIFISITET: `.avslor` sine grunnregler ligger i scener.css. Modifikatorene
+ * her dobles (`.avslor.avslor--skjev`, 0-2-0) så de vinner over grunnregelen
+ * (0-1-0) uavhengig av hvilken fil som lastes først.
+ *
+ * SELVSTENDIGE MED VILJE: hver modifikator setter HELE settet av langformer, ikke
+ * bare `animation-name`. Først arvet de varighet, tidslinje og fill-mode fra
+ * scener.css – og da gjorde de ingenting på en side som bruker Avslor uten å
+ * importere den fila. Målt: `animation-name: avslor-skjev` sto riktig, mens
+ * `animation-timeline` var `auto` og `fill-mode` `none`. Navnet var der,
+ * bevegelsen var det ikke.
+ *
+ * LANGFORMER, ALDRI STENOGRAFI: lightningcss slår `animation` + `animation-timeline`
+ * sammen til `animation: ... view()`, som er ugyldig fordi animation-timeline
+ * ikke er del av stenografien. Begge nettlesere forkaster da tidslinjen uten å
+ * si fra, og bevegelsen forsvinner stille. Det har skjedd her før.
+ */
+
+@supports (animation-timeline: view()) {
+  /* --- skjev: kommer inn på skrå og retter seg opp -------------------------
+     Bryter rutenettfølelsen uten å flytte layout. Vinkelen er liten med vilje –
+     over ~4 grader leses det som en feil, ikke som en gest. */
+  .avslor.avslor--skjev {
+    animation-name: avslor-skjev;
+    animation-duration: 1ms;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: view();
+    animation-range:
+      entry calc(8% + min(var(--trinn, 0), 4) * 6%)
+      entry calc(80% + min(var(--trinn, 0), 4) * 5%);
+  }
+
+  /* --- naer: skalerer opp mot leseren -------------------------------------
+     Start på 0,92 og ikke lavere: under ~0,88 blir tekst merkbart uskarp mens
+     den skalerer, fordi nettleseren rasteriserer én gang og strekker. */
+  .avslor.avslor--naer {
+    animation-name: avslor-naer;
+    animation-duration: 1ms;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: view();
+    animation-range:
+      entry calc(8% + min(var(--trinn, 0), 4) * 6%)
+      entry calc(80% + min(var(--trinn, 0), 4) * 5%);
+  }
+
+  /* --- dybde: parallakse over HELE tiden elementet er i vinduet ------------
+     De andre gestene er inngangsbevegelser og slutter når elementet er inne.
+     Denne går fra `cover 0%` til `cover 100%`, altså så lenge elementet i det
+     hele tatt overlapper vinduet, og driver `translateY` kontinuerlig.
+     `--dybde` er utslaget i piksler: lave tall = langt bak og beveger seg lite,
+     høye tall = nært. Negativ verdi gir motsatt retning, som er det som faktisk
+     skaper rom – to lag som drar fra hverandre. */
+  .avslor.avslor--dybde {
+    animation-name: avslor-dybde;
+    animation-duration: 1ms;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: view();
+    animation-range: cover 0% cover 100%;
+    /* Parallakse skal ikke tone noe inn; den flytter bare. Opasitet styres av
+       keyframen, som holder 1 hele veien. */
+  }
+}
+
+/* --- utbrudd: bryter ut av innholdsbredden -------------------------------
+   Dette er LAYOUT, ikke bevegelse, og står derfor utenfor @supports og utenfor
+   redusert bevegelse. Flaten blør ut til skjermkanten mens innholdet beholder
+   sin egen lesebredde – ellers blir linjene for lange til å lese.
+
+   `margin-inline` med negativ verdi, ikke `width: 100vw`: 100vw regner med
+   rullefeltets bredde og gir sidelengs drag på Windows. Og en global
+   `overflow-x: clip` finnes, men den SKJULER slike feil i stedet for å avsløre
+   dem – klipte Mega-overskrifter lå 130 px utenfor skjermen i ukevis uten at en
+   eneste test merket det. Derfor beregnes bredden her, den klippes ikke bort. */
+.avslor--utbrudd {
+  margin-inline: calc(50% - 50vw);
+  padding-inline: max(var(--space-5), calc((100vw - 1120px) / 2));
+}
+.avslor--utbrudd > * {
+  max-width: 1120px;
+  margin-inline: auto;
+}
+
+@keyframes avslor-skjev {
+  from {
+    opacity: 0;
+    transform: translateY(24px) rotate(var(--skjev, 2.2deg)) scale(0.99);
+  }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes avslor-naer {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes avslor-dybde {
+  from { opacity: 1; transform: translateY(calc(var(--dybde, 40px) * 1)); }
+  to { opacity: 1; transform: translateY(calc(var(--dybde, 40px) * -1)); }
+}

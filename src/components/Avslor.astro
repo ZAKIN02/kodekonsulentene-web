@@ -11,18 +11,56 @@
  * Uten JavaScript, og med prefers-reduced-motion, står innholdet ferdig. Det er
  * default-tilstanden i CSS – ingenting skjules før noe aktivt skjuler det.
  */
+import "../styles/interaksjon.css";
+
 interface Props {
   /** Forsinkelse i trinn, 0–5. Brukes til å la elementer komme etter hverandre. */
   trinn?: number;
-  /** Retning innholdet kommer fra. «opp» er standard og mest diskré. */
-  fra?: "opp" | "venstre";
+  /**
+   * Gesten innholdet kommer inn med.
+   *
+   * «opp» og «venstre» er inngangsbevegelser og mest diskré. De tre siste kom
+   * til fordi nettstedet hadde ÉN gest brukt på alt, og leste som en liste i
+   * stedet for et rom:
+   *
+   *  - «skjev»   kommer inn på skrå og retter seg opp. Bryter rutenettet.
+   *  - «naer»    skalerer opp mot leseren.
+   *  - «dybde»   er ikke en inngang i det hele tatt, men kontinuerlig parallakse
+   *              så lenge elementet overlapper vinduet. To elementer med ulik
+   *              `dybde` drar fra hverandre, og DET er det som leses som rom.
+   */
+  fra?: "opp" | "venstre" | "skjev" | "naer" | "dybde";
+  /** Utslag i piksler for `fra="dybde"`. Negativt gir motsatt retning. */
+  dybde?: number;
+  /** Vinkel for `fra="skjev"`. Over ~4 grader leses det som en feil. */
+  skjev?: number;
+  /** Lar flaten blø ut til skjermkanten. Innholdet beholder lesebredden. */
+  utbrudd?: boolean;
   as?: "div" | "li" | "article" | "section";
   class?: string;
 }
-const { trinn = 0, fra = "opp", as = "div", class: cls } = Astro.props;
+const {
+  trinn = 0,
+  fra = "opp",
+  dybde,
+  skjev,
+  utbrudd = false,
+  as = "div",
+  class: cls,
+} = Astro.props;
 const Tag = as;
+
+const stil = [
+  `--trinn:${trinn}`,
+  typeof dybde === "number" ? `--dybde:${dybde}px` : null,
+  typeof skjev === "number" ? `--skjev:${skjev}deg` : null,
+].filter(Boolean).join(";");
 ---
-<Tag class:list={["avslor", `avslor--${fra}`, cls]} style={`--trinn:${trinn}`} data-avslor>
+<Tag
+  class:list={["avslor", `avslor--${fra}`, utbrudd && "avslor--utbrudd", cls]}
+  style={stil}
+  data-avslor
+>
   <slot />
 </Tag>
 

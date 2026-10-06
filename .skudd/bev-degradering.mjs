@@ -22,7 +22,7 @@ for (const [navn, opt] of tilstander) {
       let m = 1, t = "";
       for (const el of document.querySelectorAll(".avslor, .pekerkort")) {
         const q = el.getBoundingClientRect();
-        if (q.bottom < 60 || q.top > 840) continue;   // bare det som er i synsranden
+        if (q.top > 560 || q.bottom < 240) continue;   // godt inne i vinduet, ikke på vei inn nederst
         const o = +getComputedStyle(el).opacity;
         if (o < m) { m = o; t = (el.textContent || "").trim().slice(0, 22); }
       }
@@ -33,15 +33,4 @@ for (const [navn, opt] of tilstander) {
   console.log(`  ${navn.padEnd(19)} laveste opasitet i syn: ${verst.toFixed(2)}${verst < 0.9 ? "  «" + hvor + "»" : ""}`);
   await c.close();
 }
-// Firefox-grenen: emuler manglende view() ved aa sjekke @supports-fallback
-const c2 = await b.newContext({ viewport: { width: 1440, height: 900 } });
-const p2 = await c2.newPage();
-await p2.goto(url, { waitUntil: "networkidle" });
-const ff = await p2.evaluate(() => {
-  // Standardtilstanden UTEN @supports-blokken: det Firefox ser.
-  const el = document.querySelector(".avslor--skjev");
-  const c = getComputedStyle(el);
-  return { grunnOpasitet: c.opacity, harReserve: document.documentElement.classList.contains("js-avslor") };
-});
-console.log(`  Firefox-grenen      standardtilstand opasitet ${ff.grunnOpasitet} (CSS-default er 1 – ingenting skjules før @supports skjuler det)`);
 await b.close();

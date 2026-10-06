@@ -30,7 +30,7 @@ const {
         <p class="muted">Velg et ledig kvarter i kalenderen. Du får en bekreftelse med lenke – ingen e-post fram og tilbake.</p>
         <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
         <dl class="kv">
-          <div><dt>E-post</dt><dd><a class="kk-link" href={`mailto:${firma.epost}`}>{firma.epost}</a></dd></div>
+          <div><dt>E-post</dt><dd><a class="kk-link kk-link--maal" href={`mailto:${firma.epost}`}>{firma.epost}</a></dd></div>
           {telefon && (
             <div><dt>Telefon</dt><dd><a class="kk-link" href={`tel:${telefon.replace(/\s/g, "")}`}>{telefon}</a></dd></div>
           )}

@@ -50,7 +50,13 @@ p { margin: 0; }
 img, svg { display: block; max-width: 100%; }
 
 /* ---- Lenker i løpende tekst: 1px understrek i line-strong, accent-text på hover ---- */
-a { color: var(--link); }
+/* var(--ink), ikke var(--link). Brandboken definerer link som «alias av ink», men
+   aliaset `--link: var(--ink)` på :root substitueres ÉN gang der det deklareres –
+   det følger aldri med når en seksjon remapper --ink lokalt. Da ble lenker stående
+   i mørkt temas ink på en lys flate: målt 1,18:1 på /systemer, /om, /sjekk og seks
+   sider til. Å lese ink direkte gjør aliaset sant, og retter alle flateregistre på
+   én gang – også de som er definert i sidefiler. */
+a { color: var(--ink); }
 .prose a, a.kk-link {
   text-decoration: underline;
   text-decoration-thickness: 1px;
@@ -197,7 +203,10 @@ html[data-theme="light"] .iconbtn [data-icon="moon"] { display: none; }
 }
 
 /* ---- Kort uten egen komponent (caser, demoer, kontakt) ---- */
-.card { border: var(--hairline) solid var(--line); border-radius: var(--radius-md); background: var(--bg-raised); padding: var(--space-5); display: grid; gap: var(--space-4); align-content: start; }
+/* Avrunding og hvileskygge kommer fra form-tokenene. .card er definert HER, og
+   site.css lastes etter components.css, så en regel der ble overstyrt uten å si
+   fra – kortet sto flatt på åtte sider mens alt annet hadde fått dybde. */
+.card { border: var(--hairline) solid var(--line); border-radius: var(--kk-radius-kort); box-shadow: var(--kk-hvile); background: var(--bg-raised); padding: var(--space-5); display: grid; gap: var(--space-4); align-content: start; }
 .card--sunken { background: var(--bg-sunken); }
 .shot { border: var(--hairline) solid var(--line); border-radius: var(--radius-md); overflow: hidden; background: var(--bg-sunken); }
 

@@ -19,7 +19,7 @@
     width="1920"
     height="1080"
   >
-    <source data-smal="/historie/hero-1280.mp4" data-bred="/historie/hero-1920.mp4" type="video/mp4" />
+    <source data-smal="/historie/hero-1280.mp4" data-bred="/historie/hero-1920.mp4" data-stor="/historie/hero-2560.mp4" type="video/mp4" />
   </video>
 </div>
 
@@ -67,7 +67,18 @@
     (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
 
   if (rot && film && kilde && !redusert && !sparData) {
-    kilde.src = window.innerWidth >= 1024 ? kilde.dataset.bred! : kilde.dataset.smal!;
+    // Tre trinn, ikke to. 2560-fila ble generert men aldri referert – 9,6 MB som
+    // lå ubrukt i repoet. Den hentes bare når skjermen faktisk kan vise den, og
+    // bare over en rask forbindelse: 2560-trinnet er 9,6 MB mot 3,1 for 1280.
+    const nett = (navigator as Navigator & { connection?: { effectiveType?: string; saveData?: boolean } }).connection;
+    const treigt = nett?.saveData === true || /2g|3g/.test(nett?.effectiveType ?? "");
+    const bredde = window.innerWidth * (window.devicePixelRatio || 1);
+    kilde.src =
+      !treigt && bredde >= 2200 && kilde.dataset.stor
+        ? kilde.dataset.stor
+        : window.innerWidth >= 1024
+          ? kilde.dataset.bred!
+          : kilde.dataset.smal!;
     film.preload = "auto";
     film.load();
 

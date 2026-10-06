@@ -14,6 +14,11 @@ import "../styles/scener.css";
 // den meldingen vises med JavaScript – og da virker ikke skjemaet uten JavaScript.
 export const prerender = false;
 
+// firma er `as const`, så firma.telefon har literal-typen "" når feltet står tomt.
+// Uten en bredere type smalner `{firma.telefon && ...}` den sanne grenen til `never`,
+// og .replace finnes ikke der. Samme grep som i ContactBlock.astro.
+const telefon: string = firma.telefon;
+
 const sendt = Astro.url.searchParams.get("sendt") === "1";
 const feil = Astro.url.searchParams.get("feil");
 
@@ -45,8 +50,8 @@ const feilmelding =
             denne hadde den ikke. */}
         <p class="muted">
           Vi svarer innen {firma.svartid}, som regel raskere.
-          {firma.telefon && (
-            <> Haster det, ring <a class="kk-link" href={`tel:${firma.telefon.replace(/\s/g, "")}`}>{firma.telefon}</a>.</>
+          {telefon && (
+            <> Haster det, ring <a class="kk-link" href={`tel:${telefon.replace(/\s/g, "")}`}>{telefon}</a>.</>
           )}
         </p>
       </div>
@@ -74,8 +79,8 @@ const feilmelding =
             {/* Samme vakt som i ContactBlock. Uten den ble raden «Telefon» stående
                 med en tom <a href="tel:"> uten tekst – lenken gjorde ingenting, og
                 skjermlesere annonserte «lenke» uten å kunne si hvor. */}
-            {firma.telefon && (
-              <div><dt>Telefon</dt><dd><a class="kk-link" href={`tel:${firma.telefon.replace(/\s/g, "")}`}>{firma.telefon}</a></dd></div>
+            {telefon && (
+              <div><dt>Telefon</dt><dd><a class="kk-link" href={`tel:${telefon.replace(/\s/g, "")}`}>{telefon}</a></dd></div>
             )}
             <div><dt>Svartid</dt><dd>{firma.svartid}</dd></div>
             <div><dt>Sted</dt><dd>{firma.adresse}</dd></div>

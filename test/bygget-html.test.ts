@@ -1,3 +1,4 @@
+import { execSync } from "node:child_process";
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import { readdirSync, readFileSync, existsSync } from "node:fs";
@@ -153,5 +154,19 @@ describe("tomme lenker kan ikke snike seg inn igjen", () => {
         );
       }
     }
+  });
+});
+
+describe("typekontrollen er grønn", () => {
+  /**
+   * `npx astro check | tail -3` viser «0 warnings / 0 hints» også når det er feil –
+   * antallet står på linjen over. Jeg rapporterte «0 typefeil» på et bygg med to,
+   * to ganger. Testen leser tallet i stedet for å stole på et øyekast.
+   */
+  test("astro check melder null feil", () => {
+    const ut = execSync("npx astro check 2>&1 || true", { encoding: "utf8" });
+    const m = ut.match(/- (\d+) errors?/);
+    assert.ok(m, `Fant ikke feiltellingen i utdata fra astro check:\n${ut.slice(-400)}`);
+    assert.equal(m![1], "0", `astro check melder ${m![1]} feil:\n${ut.slice(-900)}`);
   });
 });

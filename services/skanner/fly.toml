@@ -4,7 +4,13 @@
 # hundre megabyte. Lå den i samme maskin som nettsiden, kunne én tung skanning
 # tatt ned forsiden. Her kan den bare ta ned seg selv.
 #
-# Deploy:  fly deploy -c fly.skanner.toml
+# Deploy:  fly deploy services/skanner
+#
+# Arbeidsmappa MÅ oppgis. Fly setter byggekonteksten til den mappa, og
+# Dockerfilen gjør `COPY . .`. Kjøres deployen fra repo-roten, kopieres hele
+# nettsideprosjektet inn i skannerbildet – inkludert rotas server.mjs, som da
+# overskriver skannerens egen. Resultatet er en maskin som starter hovedsidens
+# server og krasjer på en manglende dist/server/entry.mjs.
 # Logger:  fly logs -a kodekonsulentene-skanner
 # Se docs/skanner.md for hele oppsettet.
 
@@ -12,7 +18,8 @@ app = "kodekonsulentene-skanner"
 primary_region = "ams"
 
 [build]
-  dockerfile = "services/skanner/Dockerfile"
+  # Relativ til arbeidsmappa (services/skanner), ikke til repo-roten.
+  dockerfile = "Dockerfile"
 
 [env]
   HOST = "0.0.0.0"

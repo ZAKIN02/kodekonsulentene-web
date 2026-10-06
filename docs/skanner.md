@@ -68,7 +68,7 @@ fly secrets set SKANNER_NOKKEL="$NOKKEL" -a kodekonsulentene-skanner
 fly secrets set SKANNER_NOKKEL="$NOKKEL" SKANNER_URL="https://kodekonsulentene-skanner.fly.dev" -a kodekonsulentene
 
 # 3. Deploy skanneren
-fly deploy -c fly.skanner.toml
+fly deploy services/skanner
 
 # 4. Sjekk at den lever
 curl -s https://kodekonsulentene-skanner.fly.dev/helse
@@ -77,7 +77,7 @@ curl -s https://kodekonsulentene-skanner.fly.dev/helse
 fly deploy
 ```
 
-Hemmeligheten skal **aldri** i `fly.skanner.toml` eller i repoet.
+Hemmeligheten skal **aldri** i `services/skanner/fly.toml` eller i repoet.
 
 ## Lokal kjøring
 

@@ -15,5 +15,5 @@ scripts
 README.md
 CLAUDE.md
 
-# Skanneren har sitt eget bilde (fly.skanner.toml).
+# Skanneren har sitt eget bilde og sin egen kontekst (services/skanner/fly.toml).
 services/

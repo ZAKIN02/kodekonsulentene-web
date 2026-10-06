@@ -19,11 +19,20 @@ interface Props {
   plakat: string;
   /** Bildetekst. Skal si hva motivet BETYR, ikke hva det forestiller. */
   tekst: string;
+  /**
+   * Kort linje som staar OPPAA klippet, i venstre tredel.
+   *
+   * Klippene er komponert med venstre tredel fri for motiv og aksentfarge –
+   * maalt 20,5:1 kontrast og 0,00 % lime i hver ramme – nettopp for at
+   * typografi skal kunne staa der. Uten tekst leser den tomme tredelen som en
+   * feil i utsnittet. Det var det eieren saa.
+   */
+  tittel?: string;
   /** Hoeyde som andel av vinduet. Under ~50 forsvinner virkningen. */
   hoyde?: number;
   class?: string;
 }
-const { smal, bred, stor, plakat, tekst, hoyde = 72, class: cls } = Astro.props;
+const { smal, bred, stor, plakat, tekst, tittel, hoyde = 72, class: cls } = Astro.props;
 ---
 <figure class:list={["storflate", cls]} style={`--h: ${hoyde}svh`} data-storflate>
   <div class="storflate__ramme">
@@ -37,6 +46,7 @@ const { smal, bred, stor, plakat, tekst, hoyde = 72, class: cls } = Astro.props;
       aria-hidden="true"
       data-storflate-film
     ><source data-smal={smal} data-bred={bred} data-stor={stor} type="video/mp4" /></video>
+    {tittel && <p class="storflate__tittel">{tittel}</p>}
   </div>
   <figcaption class="small muted">{tekst}</figcaption>
 </figure>
@@ -62,6 +72,30 @@ const { smal, bred, stor, plakat, tekst, hoyde = 72, class: cls } = Astro.props;
     display: block;
   }
   .storflate figcaption { max-inline-size: 62ch; }
+  /* Staar i venstre tredel, der klippet er malt moerkt med vilje. Fast farge, ikke
+     temavariabel: flaten er moerk i begge temaer. */
+  .storflate__tittel {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: clamp(16px, 6vw, 96px);
+    transform: translateY(-50%);
+    margin: 0;
+    max-inline-size: min(28ch, 26vw);
+    color: #f2f4f6;
+    font-family: var(--font-display);
+    font-size: clamp(22px, 3.2vw, 46px);
+    line-height: 1.12;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  @media (max-width: 720px) {
+    /* Paa smal skjerm er det ingen fri tredel igjen – da staar teksten under. */
+    .storflate__tittel { position: static; transform: none; max-inline-size: none;
+      padding: var(--space-4) var(--space-5) 0; }
+    .storflate__ramme { block-size: auto; }
+    .storflate__film { block-size: auto; aspect-ratio: 16/9; }
+  }
 
   /* Degraderingen gaar mot synlig: plakaten staar, motivet er der, bare uten bevegelse. */
   @media (prefers-reduced-motion: reduce) {

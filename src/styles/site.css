@@ -599,3 +599,13 @@ html, body { overflow-x: clip; }
   }
   .kk-steps .kk-step-n { animation: none !important; clip-path: none !important; }
 }
+
+/* Caset og flytdiagrammet staar sammen fordi de handler om samme sak: klinikkens
+   booking gaar Kunde -> Booking -> Vipps -> Fiken -> SMS. Ett case i et tre-spalters
+   rutenett ga en smal strimmel alene med en stor tom flate ved siden av.
+   Under 1024 px stables de; diagrammet bytter uansett til loddrett liste der. */
+.case-og-flyt { display: grid; gap: var(--space-6); align-items: start; }
+@media (min-width: 1024px) {
+  .case-og-flyt { grid-template-columns: minmax(320px, 26rem) 1fr; gap: var(--space-7); }
+}
+.case-og-flyt > .case-kort { display: grid; gap: var(--space-5); }

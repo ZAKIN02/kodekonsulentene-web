@@ -148,7 +148,12 @@ const heroTerminal = [
     lav
     ingress="Problem, løsning, resultat. Står det et tall her, er det målt – ikke anslått."
   >
-    <div class="grid-3">
+    {/* Ett case gir ETT kort i et tre-spalters rutenett: en smal strimmel alene med
+        en stor tom flate ved siden av. Vi finner ikke paa flere caser. Men diagrammet
+        handler om NOEYAKTIG samme sak – klinikkens booking gaar Kunde, Booking, Vipps,
+        Fiken, SMS. Caset forteller hva, diagrammet viser hvordan. */}
+    <div class="case-og-flyt">
+    <div class="case-kort">
       {synligeCaser.map((c, i) => (
         <Avslor trinn={i} as="article" class="card">
           <div class="row" style="justify-content: space-between">
@@ -181,9 +186,10 @@ const heroTerminal = [
       eier, med EKTE systemnavn – Kunde, Booking, Vipps, Fiken, SMS – og koster
       0 kB fordi det er SVG og CSS.
     */}
-    <Avslor trinn={1}>
+    <Avslor trinn={1} class="case-flyt">
       <Flyt flyt={flyter.systemer} />
     </Avslor>
+    </div>
     <Avslor trinn={2}>
       <p class="small faint" style="margin-top: var(--space-6)">
         Konseptarbeid er alltid merket «Konsept, ikke oppdrag». <a class="kk-link" href="/caser">Alle caser</a>.
@@ -270,6 +276,7 @@ const heroTerminal = [
     bred="/scener/floke-1920.mp4"
     stor="/scener/floke-2560.mp4"
     plakat="/scener/floke-poster.avif"
+    tittel="Fem systemer. Én kjede."
     tekst="Fem systemer som ikke snakket sammen, og fem som gjør det. Det er hele jobben."
     hoyde={66}
   />

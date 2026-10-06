@@ -118,6 +118,44 @@ async function serverFil(req, res, funn) {
     return;
   }
 
+  // Range-forespørsler. Uten dette melder nettleseren at videoen ikke kan spoles
+  // (seekable.end(0) === 0), og scroll-styrt video står bom stille på første ramme.
+  // Det var nettopp det som skjedde: /historie lastet videoen, men kunne ikke hoppe i den.
+  // Media komprimeres ikke uansett – mp4 er allerede komprimert – så Range og
+  // innholdskoding kommer aldri i konflikt.
+  const kanRange = !KOMPRIMERBAR.test(type);
+  if (kanRange) res.setHeader("accept-ranges", "bytes");
+
+  const rangeHode = kanRange ? req.headers.range : undefined;
+  if (rangeHode) {
+    const m = /^bytes=(\d*)-(\d*)$/.exec(String(rangeHode).trim());
+    if (m) {
+      const siste = funn.storrelse - 1;
+      let start = m[1] === "" ? NaN : Number(m[1]);
+      let slutt = m[2] === "" ? NaN : Number(m[2]);
+      if (Number.isNaN(start)) {
+        // «bytes=-500» betyr de siste 500 bytene.
+        const halen = Number.isNaN(slutt) ? 0 : slutt;
+        start = Math.max(0, funn.storrelse - halen);
+        slutt = siste;
+      } else if (Number.isNaN(slutt)) {
+        slutt = siste;
+      }
+      slutt = Math.min(slutt, siste);
+
+      if (start > siste || start > slutt) {
+        res.setHeader("content-range", `bytes */${funn.storrelse}`);
+        return void res.writeHead(416).end();
+      }
+
+      res.setHeader("content-range", `bytes ${start}-${slutt}/${funn.storrelse}`);
+      res.setHeader("content-length", slutt - start + 1);
+      res.writeHead(206);
+      if (req.method === "HEAD") return void res.end();
+      return void createReadStream(funn.sti, { start, end: slutt }).pipe(res);
+    }
+  }
+
   const kod = KOMPRIMERBAR.test(type) && funn.storrelse > 512 ? kodinger(req) : null;
   if (!kod) {
     res.setHeader("content-length", funn.storrelse);

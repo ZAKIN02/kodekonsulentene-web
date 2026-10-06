@@ -1,4 +1,6 @@
 ---
+// Fontene er selvhostet. Se src/styles/fonter.css for hvorfor.
+import "../styles/fonter.css";
 import "../styles/tokens.css";
 import "../styles/components.css";
 import "../styles/site.css";
@@ -60,13 +62,6 @@ const localBusiness = {
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
 
-    <!-- Maks to webfonter, latin, swap. Brødteksten er systemfont – null nedlasting. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@700..800&family=JetBrains+Mono:wght@400..600&display=swap"
-    />
 
     <!-- Temavalget settes før første maling. Teksten kommer fra lib/tema-script.ts,
          som middleware.ts regner CSP-hashen av. Ikke skriv den av her. -->

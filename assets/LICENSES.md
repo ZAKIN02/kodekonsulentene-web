@@ -10,8 +10,17 @@ nettet gir ingen bruksrett.
 | Fil | Kilde / verktøy | Prompt eller URL | Lisens | Dato | Ansvarlig |
 |---|---|---|---|---|---|
 | `public/historie/historie-720.mp4`<br>`public/historie/historie-1080.mp4`<br>`public/historie/poster.avif` | Higgsfield – SOUL V2 (plate) → Kling 2.5 Turbo Pro (bilde-til-video), betalt API-plan | Plate: «Exploded view of a layered rectangular interface panel suspended in dark empty space … no text, no letters, no logos, no people», 16:9, 1080p, seed 202.<br>Video: «The stacked plates separate and drift apart vertically in sequence from bottom to top … Smooth weightless mechanical motion, cold neutral light.», 10 s | Generert av oss på betalt plan. Kommersiell bruk tillatt etter leverandørens vilkår. Rene KI-bilder får trolig ikke opphavsrettsvern i Norge, se merknad under. | 2026-10-06 | KodeKonsulentene |
+| `public/fonts/schibsted-grotesk-*.woff2` | Schibsted Grotesk, via Google Fonts | github.com/schibsted/Schibsted-Grotesk | SIL Open Font License 1.1 – tillater selvhosting og kommersiell bruk | 2026-10-06 | KodeKonsulentene |
+| `public/fonts/jetbrains-mono-*.woff2` | JetBrains Mono, via Google Fonts | github.com/JetBrains/JetBrainsMono | SIL Open Font License 1.1 | 2026-10-06 | KodeKonsulentene |
 
 ## Merknader
+
+**Hvorfor fontene er selvhostet.** De lå på Google Fonts, og vår egen cookie-skanning
+fant kallene til `fonts.googleapis.com` og `fonts.gstatic.com` på vår egen forside.
+Ingen cookies ble satt, men hver besøkende sendte IP-adressen sin til Google før de
+hadde gjort noe – på en side som selger «ingen tredjeparter før samtykke». Fontene
+ligger nå i `public/fonts` (116 kB totalt, latin og latin-ext), og CSP-en tillater
+ikke lenger noen ekstern fontkilde.
 
 **Opphavsrett til KI-innhold.** Åndsverkloven § 2 krever «individuell skapende
 åndsinnsats», og i norsk juridisk teori legges det til grunn at bare mennesker kan

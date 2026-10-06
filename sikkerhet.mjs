@@ -42,8 +42,8 @@ const CSP = [
   // Scroll-historien spiller video fra eget domene. default-src dekker det, men
   // eksplisitt media-src gjør det tydelig for den som leser headeren i en revisjon.
   "media-src 'self'",
-  "font-src 'self' https://fonts.gstatic.com",
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src 'self'",
+  "style-src 'self' 'unsafe-inline'",
   `script-src 'self' ${temaHash}`,
   "connect-src 'self'",
   // Cal.com-innbyggingen på /kontakt. Står her og ingen andre steder.

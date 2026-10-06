@@ -8,6 +8,7 @@
  */
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
+import { readdirSync } from "node:fs";
 
 import { firma, PLASSHOLDER_ORGNR } from "../src/data/firma.ts";
 import { erGyldigOrgnr } from "../src/lib/sjekk.ts";
@@ -85,10 +86,21 @@ describe("sikkerhetsheadere", () => {
     assert.match(csp, /object-src 'none'/);
   });
 
-  test("fontene siden faktisk laster er tillatt i CSP", () => {
+  // Snudd 6. oktober 2026. Fontene lå på Google, og vår egen cookie-skanning fant
+  // kallene til fonts.googleapis.com og fonts.gstatic.com på vår egen forside –
+  // altså en tredjepart som fikk besøkendes IP før de hadde gjort noe, på en side
+  // som selger «ingen tredjeparter før samtykke». Fontene er nå selvhostet, og
+  // testen vokter at de ikke sniker seg tilbake.
+  test("ingen tredjepartskilder for fonter eller stiler i CSP", () => {
     const csp = SIKKERHETSHEADERE["content-security-policy"];
-    assert.match(csp, /font-src [^;]*fonts\.gstatic\.com/);
-    assert.match(csp, /style-src [^;]*fonts\.googleapis\.com/);
+    assert.match(csp, /font-src 'self'/);
+    assert.doesNotMatch(csp, /fonts\.gstatic\.com/);
+    assert.doesNotMatch(csp, /fonts\.googleapis\.com/);
+  });
+
+  test("fontfilene ligger i repoet", () => {
+    const fonter = readdirSync("public/fonts").filter((f) => f.endsWith(".woff2"));
+    assert.ok(fonter.length >= 2, `forventet selvhostede fonter i public/fonts, fant ${fonter.length}`);
   });
 });
 

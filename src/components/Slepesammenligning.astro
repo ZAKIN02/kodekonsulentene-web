@@ -46,6 +46,10 @@ const sider = [
     ],
   },
 ] as const;
+// Stilarket ble aldri importert utenfor /lab, så spakene hadde nettleserens
+// blå knott og 16 px høyde mot WCAG 2.5.8 sitt krav om 24. Rettingen var meldt
+// fra om to ganger og trodd levert – den manglet bare importen.
+import "../styles/interaksjon.css";
 ---
 <figure class:list={["slep", cls]} data-slep>
   <div class="slep__flate" data-slep-flate>

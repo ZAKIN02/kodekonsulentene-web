@@ -26,6 +26,10 @@ const lag = [
   { navn: "Sikkerhet", detalj: "Det ingen spør om før det er for sent" },
   { navn: "Integrasjoner", detalj: "Booking, Vipps, regnskap" },
 ];
+// Stilarket ble aldri importert utenfor /lab, så spakene hadde nettleserens
+// blå knott og 16 px høyde mot WCAG 2.5.8 sitt krav om 24. Rettingen var meldt
+// fra om to ganger og trodd levert – den manglet bare importen.
+import "../styles/interaksjon.css";
 ---
 <figure class:list={["stabel", cls]} data-stabel>
   <div class="stabel__scene" data-stabel-scene>

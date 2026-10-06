@@ -95,7 +95,10 @@ const { smal, bred, stor, plakat, tekst = "venstre", maske = 46, class: cls } = 
             : kilde.dataset.smal!;
       film.preload = "auto";
       film.load();
-    }, { rootMargin: "150% 0px" });
+      // 150 % lastet opptil 5685 kB på /nettsider FØR brukeren scrollet, fordi alt
+      // innenfor 2,5 skjermhøyder regnes som nært. 60 % gir fortsatt god margin til
+      // å rekke plakaten, uten å dra ned film ingen har sett ennå.
+    }, { rootMargin: "60% 0px" });
     io.observe(rot);
     film.addEventListener("loadedmetadata", () => { rot.dataset.klar = "true"; oppdater(); });
     addEventListener("scroll", () => {

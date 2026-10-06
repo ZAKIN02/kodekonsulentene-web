@@ -97,7 +97,13 @@ import "../styles/scener.css";
      avdekkinger i scenen – og /caser og /handbok er én eneste scene, så den slo av
      all bevegelse på hele siden. Målt: 0 bevegelsesøyeblikk, 5,5 skjermhøyder uten
      at ett element endrer seg. */
-  .scene:first-of-type > .avslor:first-of-type {
+  /* Treffer på HVA elementet er, ikke hvor det tilfeldigvis står.
+     `> .avslor` traff ingenting fordi .avslor ligger i .scene__inner, og
+     `:first-of-type` gjelder tagg og ikke klasse. Begge varianter var stille døde:
+     skjemaet på /verktoy/cookie-sjekk sto på 0,56 opasitet ved innlasting –
+     sidens primære handling, halvgjennomsiktig til du scrollet. */
+  .scene:first-of-type .avslor:has(.scene__ingress),
+  .scene:first-of-type .avslor:has(form) {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;

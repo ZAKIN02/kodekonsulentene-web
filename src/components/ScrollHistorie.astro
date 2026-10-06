@@ -27,7 +27,7 @@ import { bookUrl } from "../data/firma";
       height="1080"
     >
       <source
-        data-mobil="/historie/historie-1280.mp4"
+        data-mobil="/historie/historie-960.mp4"
         data-desktop="/historie/historie-1920.mp4"
         type="video/mp4"
       />
@@ -228,11 +228,19 @@ import { bookUrl } from "../data/firma";
       (poster) => {
         if (!poster.some((p) => p.isIntersecting)) return;
         io.disconnect();
+        // Mobil faar 960-trinnet, ikke 1280. Filmen ligger OVER folden paa denne
+        // siden – den ER siden – saa den lastes med rette, og da teller hver kB:
+        // 1,7 MB mot 909 kB for et bilde som uansett vises i telefonbredde.
         kilde.src = window.innerWidth >= 1024 ? kilde.dataset.desktop! : kilde.dataset.mobil!;
         video.preload = "auto";
         video.load();
       },
-      { rootMargin: "200% 0px" },
+      {
+        // 200 % hentet klippet to skjermhoeyder foer det var i naerheten av synsranden:
+        // /historie dro ned 1868 kB foer brukeren hadde scrollet. SceneFilm og Demo ble
+        // satt til 60 % tidligere i dag; denne ble glemt.
+        rootMargin: "60% 0px",
+      },
     );
     io.observe(rot);
 

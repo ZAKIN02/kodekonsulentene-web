@@ -123,7 +123,18 @@ async function serverFil(req, res, funn) {
       ? "public, max-age=31536000, immutable"
       : ext === ".html"
         ? "public, max-age=0, must-revalidate"
-        : "public, max-age=3600",
+        // Medier ligger paa UHASHEDE filnavn: hist2-steg-1920.mp4 beholder navnet
+        // sitt naar klippet regenereres, og det skjedde flere ganger i dag. Derfor
+        // kan de ikke vaere immutable – da ville et rettet klipp ligge gammelt i et
+        // aar hos alle som hadde sett det. En time var paa den andre siden satt mens
+        // materialet var under arbeid, og tvinger en revalidering i timen.
+        //
+        // Ett doegn, pluss en uke der nettleseren viser den bufrede fila med en gang
+        // og henter ny i bakgrunnen. ETag fanger endringen, saa et rettet klipp slaar
+        // gjennom ved neste besoek i stedet for ved neste time eller neste aar.
+        // Den egentlige loesningen er innholds-hashede filnavn; da kan de bli
+        // immutable. Det ligger i rorledningen, ikke her.
+        : "public, max-age=86400, stale-while-revalidate=604800",
   );
 
   const etag = `W/"${funn.storrelse}-${funn.endret.getTime().toString(36)}"`;

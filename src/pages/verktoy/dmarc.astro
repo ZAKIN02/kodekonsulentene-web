@@ -30,7 +30,7 @@ const forhandsutfylt = Astro.url.searchParams.get("domene") ?? "";
     <Avslor trinn={2}>
       {/* Tegning med ekte navn, hentet ordrett fra siden. Brandboken rangerer
           diagram over generert materiale – det forklarer, og koster 0 kB. */}
-      <Snitt snitt={snitt.epost} />
+      <Snitt snitt={snitt.epost} nivaa={2} />
     </Avslor>
 
     <Avslor>

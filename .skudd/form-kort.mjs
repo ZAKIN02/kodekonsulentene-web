@@ -1,0 +1,13 @@
+import { chromium } from "playwright";
+const [url, ut, tema, velger] = process.argv.slice(2);
+const b = await chromium.launch();
+const c = await b.newContext({ viewport: { width: 1440, height: 900 }, colorScheme: tema === "light" ? "light" : "dark" });
+const p = await c.newPage();
+await p.goto(url, { waitUntil: "networkidle" });
+if (tema === "light") await p.evaluate(() => (document.documentElement.dataset.theme = "light"));
+const el = p.locator(velger).first();
+await el.scrollIntoViewIfNeeded();
+await p.waitForTimeout(900);
+const r = await el.boundingBox();
+await p.screenshot({ path: ut, clip: { x: Math.max(0, r.x - 40), y: Math.max(0, r.y - 40), width: Math.min(1440, r.width + 80), height: Math.min(900, r.height + 80) } });
+await b.close();

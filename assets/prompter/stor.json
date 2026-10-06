@@ -1,0 +1,79 @@
+{
+  "_om": "Store, fargesterke motiver. Bygges med `node scripts/scene.mjs <id> --fil assets/prompter/stor.json`. Alle lages fra TEKST (basisPrompt), ikke som redigering av det gamle basisbildet - et nytt motiv kan ikke arve monotonien det skal bryte (docs/registre.md).",
+  "_hvorfor": "Kunden sammenlignet med jeton.com, som bader flaten i sin egen merkevarefarge: rgb(247,59,32) talt 254 ganger. Vaar side bruker aksenten sju ganger. Svaret er ikke en NY farge - det er aa la VAAR farge vaere feltet i stedet for en harlinje. Grunnen er fortsatt naer-svart, saa hvit tekst er lesbar; det er aksenten som gaar fra 3 prosent til aa vaere motivet.",
+  "_bevar": "Keep exactly identical: camera position, focal length, perspective, framing, the near-black #0b0d10 seamless background, and the material, surface finish, geometry, size and thickness of every object. The same number of objects is visible in both images. Do not restyle, do not change the lens, do not add a horizon, vignette or gradient. The LEFT THIRD of the frame stays near-black, empty, unlit and free of any object or glow, so page typography can sit there. Only the one change described below happens. All surfaces stay plain and unmarked: no text, letters, numbers, logos, icons, symbols or watermarks.",
+  "_bevegelse": "Locked-off static camera; the camera does not move, zoom, pan or reframe. Silent product shot. Start exactly on the first frame and end exactly on the last frame. Hold still for the first and last half second; in between, one single continuous movement at constant speed that completes around the middle of the clip. The objects are rigid and keep their exact shape, size, thickness and material in every frame and never bend, melt, morph or rotate. The same number of objects is visible in every frame. The left third of the frame stays near-black and empty throughout. Avoid: camera movement, camera shake, zoom, pan, cut, scene change, lens switch, morphing, melting, warping, extra objects, missing objects, text, letters, logos, watermark, flicker, particles, lens flare, motion blur.",
+  "scener": [
+    {
+      "id": "stor-gjennom",
+      "mappe": "scener",
+      "_hvorfor": "Vi selger aa vise hva som ligger INNE i en nettside. Lys som gaar gjennom lagene er den bokstavelige versjonen, og den fyller flaten med farge i stedet for aa hviske den.",
+      "basisPrompt": "Subject: a tall wall of exactly seven large flat translucent frosted panels, stacked one above the other with even horizontal gaps, standing upright in the right two thirds of the frame, seen almost straight on from the front and slightly below. Behind the panels, out of shot, sits a powerful wide light source in saturated lime green #c8f24a, so intense saturated lime light pours forward through the frosted panels and through the gaps between them, filling the right two thirds of the frame with large broad bands of glowing green. The panel faces glow evenly from within; their machined chamfered edges catch a pale steel highlight. The lime light is the dominant subject and covers a large area, not a thin line. The left third of the frame is pure empty near-black #0b0d10 with no object, no glow and no light spill at all. Exactly seven panels, no more.",
+      "start": "Change only the spacing: the seven panels are pressed tightly together so only a single hair-thin horizontal seam of lime light escapes between each one. The glow is narrow and contained, and most of the right two thirds reads as dark panel faces with thin bright seams. There are exactly seven panels. The left third stays pure empty near-black.",
+      "slutt": "Change only the spacing: the same seven panels have separated along the vertical axis into wide even gaps, so broad bands of saturated lime light flood forward through the openings and the panel faces themselves glow brightly from behind. The right two thirds of the frame is dominated by large areas of glowing green. There are exactly seven panels and none have been added or removed. The left third stays pure empty near-black.",
+      "bevegelse": "The seven tightly pressed panels separate straight along the vertical axis at constant speed into wide even gaps, and as they open the thin seams of lime light widen into broad bands that flood forward and fill the right two thirds of the frame with saturated green. Every panel stays perfectly level and parallel and never rotates or tilts. There are exactly seven panels in every single frame. The left third stays empty near-black throughout.",
+      "pingpong": false,
+      "forskyv": 0,
+      "bredder": [
+        2560,
+        1920,
+        1280
+      ],
+      "crf": {
+        "2560": "20",
+        "1920": "19",
+        "1280": "19"
+      }
+    },
+    {
+      "id": "stor-kjerne",
+      "mappe": "scener",
+      "_hvorfor": "Blokken som aapner seg er sidens sterkeste bilde fra foer (akt 1 paa forsiden), men den var moerk inni. Her er innsiden et SOLID volum av lime lys - samme fortelling, men til aa faa oeye paa.",
+      "basisPrompt": "Subject: one single large solid matte dark gunmetal block, a clean rectangular volume with crisp 45-degree chamfered edges, sitting in the right two thirds of the frame, seen in three-quarter view from slightly above. A deep rectangular channel is cut into its right end face. Inside that channel sits a thick solid slab of material that glows with intense saturated lime green #c8f24a light, so strong that the lime light spills generously out of the opening and washes across the inner walls of the channel and the surrounding block face in a broad warm-free green pool. The glowing core is a large bright area, not a thin line. The block surface itself stays matte dark gunmetal. The left third of the frame is pure empty near-black #0b0d10 with no object, no glow and no light spill at all. Exactly one block and one glowing core.",
+      "start": "Change only one thing: the glowing core slab is pushed fully into the channel so that the opening is almost completely closed by the block's own end face, and only a narrow bright rim of lime light escapes around its edge. The surrounding block face stays dark. There is exactly one block and one core. The left third stays pure empty near-black.",
+      "slutt": "Change only one thing: the same glowing core slab has slid straight out of the channel to the right by about half its own length, so a large area of intense saturated lime light is exposed and floods broadly across the inner channel walls and the block face around the opening. The block itself has not moved and has exactly the same shape, size and position. There is exactly one block and one core. The left third stays pure empty near-black.",
+      "bevegelse": "The glowing core slab slides straight out of the channel to the right along its own axis at constant speed, staying perfectly level and parallel, and as it emerges the narrow rim of lime light grows into a large flood of saturated green light across the channel walls and the surrounding block face. The block itself stays completely still and never changes shape or size. There is exactly one block and one core in every single frame. The left third stays empty near-black throughout.",
+      "pingpong": false,
+      "forskyv": 0,
+      "bredder": [
+        2560,
+        1920,
+        1280
+      ],
+      "crf": {
+        "2560": "20",
+        "1920": "19",
+        "1280": "19"
+      }
+    },
+    {
+      "id": "stor-sveip",
+      "mappe": "scener",
+      "_hvorfor": "Dette er bokstavelig talt det verktoeyet gjoer: en flate som ser grei ut, og et lys som gaar over den og avdekker strukturen under. Lysplanet er stort og mettet, ikke en strek.",
+      "basisPrompt": "Subject: one single large flat matte dark gunmetal panel filling the right two thirds of the frame, seen almost straight on from the front, its surface plain and unmarked. A tall broad plane of intense saturated lime green #c8f24a light stands vertically across the panel like a wide wall of light, perhaps one fifth of the frame wide, glowing strongly and casting a large soft green pool across the panel surface on both sides of it. Where the light plane has already passed, to the right of it, the panel surface is revealed to be finely machined with a precise grid of shallow recessed channels that catch the green light. To the left of the light plane the panel surface is still plain and dark. The lime light is a large bright area, not a thin line. The left third of the frame is pure empty near-black #0b0d10 with no object, no glow and no light spill at all.",
+      "start": "Change only one thing: the vertical plane of lime light stands at the far right edge of the panel, so almost the whole panel surface is still plain, dark and unrevealed, and the green pool it casts is confined to the far right. There is exactly one panel and one light plane. The left third stays pure empty near-black.",
+      "slutt": "Change only one thing: the same vertical plane of lime light has moved leftwards to stand about one third in from the right edge of the panel, so a large area of the panel to the right of it is now revealed as a precise machined grid flooded with saturated green light. The panel itself has not moved and has exactly the same shape, size and position. There is exactly one panel and one light plane. The left third stays pure empty near-black.",
+      "bevegelse": "The tall vertical plane of lime light travels steadily leftwards across the dark panel at constant speed, and the precise machined grid is progressively revealed behind it, flooded with saturated green light, while the surface ahead of it stays plain and dark. The panel itself stays completely still and never changes shape or size. There is exactly one panel and one light plane in every single frame. The light plane never reaches the left third, which stays empty near-black throughout.",
+      "pingpong": false,
+      "forskyv": 0,
+      "bredder": [
+        2560,
+        1920,
+        1280
+      ],
+      "crf": {
+        "2560": "20",
+        "1920": "19",
+        "1280": "19"
+      }
+    }
+  ],
+  "_felle": "Venstre tredel MAA staa tom og naer-svart. Det foerste gjennomlyste registeret strok paa kontrast - 2,0:1 i midtre tredel og 3,5:1 i hoeyre, altsaa to tredeler som ikke taalte hvit tekst (docs/registre.md). Her er lyset derfor bevisst holdt i hoeyre to tredeler, der masken uansett slipper motivet fram, mens teksten faar en maalt tom tredel aa staa i.",
+  "_felle2": "Si alltid eksakt antall objekter i BEGGE bilder. Modellen lager ellers tykkelse eller lysmengde ved aa finne opp nye objekter, og videomodellen maa da multiplisere dem underveis - det er morfing.",
+  "_felle3": "Objektet som skal BEVEGE seg maa vaere synlig som et EGET objekt i grunnbildet. Scenen «stor-kjerne» ba om at en lysende kjerneplate skulle gli ut av en kanal, men grunnbildet viste bare et lysende HULROM - det fantes ingen plate aa flytte. Begge rammene ble derfor identiske med grunnbildet: maalt 0,2 % lime i startbildet og 0,3 % i sluttbildet, altsaa ingen bevegelse i det hele tatt. Et klipp mellom dem ville staatt stille. Beskriv objektet som skal flytte seg eksplisitt i basisPrompt, som en adskilt gjenstand med egne kanter.",
+  "_status": {
+    "stor-sveip": "LEVERT. Rammepar verifisert: identisk panelgeometri, lime 7,1 % -> 11,6 % av bildet. Venstre tredel 19,7:1 og 0 % lime i begge.",
+    "stor-kjerne": "FORKASTET. Start- og sluttbilde praktisk talt identiske (lime 0,2 % mot 0,3 %) - se _felle3. Grunnbildet er godt og kan gjenbrukes hvis motivet gis en adskilt, flyttbar del.",
+    "stor-gjennom": "IKKE GENERERT. Leverandoeren feilet paa grunnbildet: «Generation took too long to complete». Prompten er urort og kan kjoeres paa nytt."
+  }
+}

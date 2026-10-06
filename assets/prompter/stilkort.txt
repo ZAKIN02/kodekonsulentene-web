@@ -1,6 +1,6 @@
 Photorealistic studio photograph of an abstract engineered subject, high-end industrial design catalogue look.
 Background: seamless near-black studio void in color #0b0d10, perfectly even tone, no gradient, no vignette, no horizon line.
-Palette: near-black #0b0d10, graphite #16191e, dark gunmetal #23272e, anodized aluminium #8a9099, pale steel highlight #c9ced6, and one accent only: lime green #c8f24a, used exclusively as hair-thin emissive lines covering less than 3% of the image.
+Palette: near-black #0b0d10, graphite #16191e, dark gunmetal #23272e, anodized aluminium #8a9099, pale steel highlight #c9ced6, and one accent only: lime green #c8f24a. Unless the scene below explicitly says otherwise, the accent is used only as hair-thin emissive lines covering less than 3% of the image; a scene may instead call for the accent to act as a large, saturated light source.
 Finish: every material is matte and non-reflective unless the scene says otherwise; edges carry fine 45-degree chamfers; surfaces are precisely machined.
 Tone: cool neutral 5600K white balance; deep controlled shadows; crisp specular lines along chamfers; no warm cast.
 Composition: at least one third of the frame is calm, near-empty negative space that web typography can sit in.

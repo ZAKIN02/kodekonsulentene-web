@@ -11,7 +11,7 @@ for (const [navn, opt] of [["normalt", {}], ["redusert", { reducedMotion: "reduc
   await p.waitForTimeout(400);
   const v = await p.evaluate(() => window.__b || []);
   const synlig = await p.evaluate(() => {
-    const e = document.querySelector("[data-apning]");
+    const e = document.querySelector("[data-apning-flate]");
     if (!e) return "finnes ikke";
     if (e.hasAttribute("hidden")) return "hidden";
     const cs = getComputedStyle(e);

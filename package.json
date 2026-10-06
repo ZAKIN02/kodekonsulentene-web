@@ -25,7 +25,8 @@
     "scene": "node scripts/scene.mjs",
     "ytelse": "node .skudd/lh.mjs",
     "ytelse:prod": "node .skudd/lh.mjs https://kodekonsulentene.no",
-    "lhci": "lhci autorun"
+    "lhci": "lhci autorun",
+    "og": "node scripts/og.mjs"
   },
   "dependencies": {
     "@astrojs/node": "^11.1.6",
@@ -37,8 +38,11 @@
     "@axe-core/playwright": "^4.13.0",
     "@higgsfield/client": "^0.2.6",
     "@playwright/test": "^1.63.0",
+    "@resvg/resvg-js": "^2.6.2",
     "@types/pngjs": "^6.0.5",
     "pngjs": "^7.0.0",
-    "typescript": "^5.9.3"
+    "satori": "^0.35.0",
+    "typescript": "^5.9.3",
+    "wawoff2": "^2.0.1"
   }
 }

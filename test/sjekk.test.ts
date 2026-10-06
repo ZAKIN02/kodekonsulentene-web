@@ -487,3 +487,23 @@ describe("org.nr. verifisert mot Enhetsregisteret", () => {
     assert.ok(r.forbehold.some((f) => /ikke at det er riktig foretak/.test(f)));
   });
 });
+
+describe("delte lister holder seg i synk over byggekontekstene", () => {
+  /**
+   * Skanneren bygges i en EGEN Docker-kontekst uten src/, og hovedappens kontekst
+   * utelater services/ (se .dockerignore). WCAG-listen finnes derfor to steder.
+   *
+   * Rontgen.astro importerte først rett over den grensen. Det bygde fint lokalt og
+   * feilet i Docker med «Could not resolve» – deployen var rød to ganger før
+   * årsaken var klar, fordi feilen bare oppstår i byggekonteksten.
+   */
+  test("WCAG_NAVN er identisk i src/data og i skanneren", async () => {
+    const fra = (await import("../src/data/wcag.ts")).WCAG_NAVN;
+    const skanner = (await import("../services/skanner/wcag-navn.mjs")).WCAG_NAVN;
+    assert.deepEqual(
+      fra,
+      skanner,
+      "Listene er ute av synk. Begge må oppdateres – de kan ikke importere hverandre.",
+    );
+  });
+});

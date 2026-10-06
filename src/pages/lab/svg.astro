@@ -1,0 +1,246 @@
+---
+/**
+ * Målelab: SVG-linjer som tegner seg selv mens man scroller.
+ *
+ * KONKLUSJON, målt: ren CSS holder. Ingen av SVG-bibliotekene bør tas inn.
+ *
+ * Hele grunnen til at vivus (4,53 kB), lazy-line-painter (5,60 kB) og
+ * walkway.js (1,80 kB) finnes, er å måle banelengden med JavaScript
+ * (`getTotalLength()`) for å sette `stroke-dasharray` riktig. Det problemet
+ * forsvinner med SVG-attributtet `pathLength="1"`: banen normaliseres til
+ * lengde 1, og da er `stroke-dasharray: 1` og `stroke-dashoffset: 1 → 0`
+ * alt som skal til. Null JavaScript, null måling, og det virker uansett hvor
+ * lang eller kompleks banen er.
+ *
+ * Se docs/research-svg.md for kandidattabellen og målingene.
+ */
+import Base from "../../layouts/Base.astro";
+
+/**
+ * Flyten vi faktisk selger på /systemer: kunden booker, betaler med Vipps,
+ * og tallet havner i regnskapet uten at noen taster det inn.
+ *
+ * Koordinatene er i et 1000x200-rom. Nodene står på y=100, jevnt fordelt.
+ */
+const noder = [
+  { x: 90, merke: "01", navn: "Kunde", under: "booker selv" },
+  { x: 370, merke: "02", navn: "Booking", under: "time i kalenderen" },
+  { x: 650, merke: "03", navn: "Vipps", under: "betalt ved bestilling" },
+  { x: 930, merke: "04", navn: "Regnskap", under: "ordre i Fiken" },
+];
+
+// Én strek mellom hvert nabopar. Rett linje langs én akse – brandboken
+// liker presisjon, ikke svevende kurver.
+const streker = noder.slice(0, -1).map((n, i) => ({
+  fra: n.x + 46,
+  til: noder[i + 1].x - 46,
+  i,
+}));
+---
+
+<Base
+  tittel="Målelab – SVG"
+  beskrivelse="Intern målelab for SVG-linjer som tegner seg med scroll."
+  noindex
+>
+  <div class="wrap" style="padding-block: var(--space-8); display: grid; gap: var(--space-8)">
+    <div class="stack">
+      <p class="kk-eyebrow"><span class="kk-eyebrow-n" aria-hidden="true">//</span> <span>Målelab</span></p>
+      <h1 class="display-lg">Linjer som tegner seg selv</h1>
+      <p class="body-lg muted" style="max-width: 60ch">
+        Ren CSS, null JavaScript. Trikset er <code>pathLength="1"</code> på banen:
+        da normaliseres lengden til 1, og <code>stroke-dashoffset</code> kan animeres
+        uten at noe må måles med JavaScript først. Scroll ned.
+      </p>
+    </div>
+
+    <!-- Luft, så flyten kommer inn i viewporten nedenfra og faktisk har noe å scrolle gjennom. -->
+    <div style="height: 50svh" aria-hidden="true"></div>
+
+    <section class="flyt" aria-labelledby="flyt-tittel">
+      <h2 id="flyt-tittel" class="heading">Fra booking til regnskap</h2>
+
+      <!--
+        Figuren er dekorasjon: hele meningen står i listen under, som leses av
+        skjermlesere og vises når JavaScript eller animasjon ikke er tilgjengelig.
+      -->
+      <div class="flyt__ramme" data-flyt>
+        <svg
+          class="flyt__svg"
+          viewBox="0 0 1020 200"
+          preserveAspectRatio="xMidYMid meet"
+          role="img"
+          aria-label="Flyt i fire steg: kunden booker selv, timen havner i kalenderen, betalingen skjer med Vipps ved bestilling, og ordren havner i regnskapet."
+        >
+          {streker.map((s) => (
+            <path
+              class="flyt__strek"
+              style={`--i:${s.i}`}
+              d={`M${s.fra},100 H${s.til}`}
+              pathLength="1"
+              fill="none"
+            />
+          ))}
+
+          {noder.map((n, i) => (
+            <g class="flyt__node" style={`--i:${i}`}>
+              <circle class="flyt__ring" cx={n.x} cy={100} r="44" pathLength="1" fill="none" />
+              <text class="flyt__merke" x={n.x} y={94} text-anchor="middle">{n.merke}</text>
+              <text class="flyt__navn" x={n.x} y={116} text-anchor="middle">{n.navn}</text>
+            </g>
+          ))}
+        </svg>
+
+        <ol class="flyt__tekst">
+          {noder.map((n) => (
+            <li>
+              <span class="mono-label flyt__tekst-merke">{n.merke}</span>
+              <strong class="body-strong">{n.navn}</strong>
+              <span class="small muted">{n.under}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <p class="small faint" style="margin-top: var(--space-4)">
+        Null JavaScript på denne figuren. Uten scroll-driven animations står hele
+        flyten ferdig tegnet.
+      </p>
+    </section>
+
+    <div style="height: 60svh" aria-hidden="true"></div>
+  </div>
+</Base>
+
+<style>
+  .flyt { display: grid; gap: var(--space-5); }
+
+  .flyt__ramme {
+    border: var(--hairline) solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--bg-raised);
+    padding: var(--space-6) var(--space-5);
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .flyt__svg { width: 100%; height: auto; display: block; overflow: visible; }
+
+  /* Hårlinje, som alt annet i systemet. */
+  .flyt__strek {
+    stroke: var(--line-strong);
+    stroke-width: 1;
+    stroke-dasharray: 1;
+    /* Standardtilstand: ferdig tegnet. Ingenting skjules før noe aktivt skjuler det,
+       så figuren er komplett uten animasjon og uten JavaScript. */
+    stroke-dashoffset: 0;
+  }
+
+  .flyt__ring {
+    stroke: var(--line);
+    stroke-width: 1;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+  }
+
+  /* Siste node er betalingen som lander – den ene aksentdetaljen i dette
+     visningsområdet, slik brandboken krever. */
+  .flyt__node:last-child .flyt__ring { stroke: var(--accent); }
+
+  .flyt__merke {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    fill: var(--ink-faint);
+  }
+  .flyt__navn {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    fill: var(--ink);
+  }
+  .flyt__node:last-child .flyt__navn { fill: var(--accent-text); }
+
+  .flyt__tekst {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-4);
+    border-top: var(--hairline) solid var(--line);
+    padding-top: var(--space-4);
+  }
+  .flyt__tekst li { display: grid; gap: 2px; align-content: start; }
+  .flyt__tekst-merke { color: var(--accent-text); }
+
+  /* På smal skjerm blir SVG-en uleselig – da er listen hele innholdet. */
+  @media (max-width: 720px) {
+    .flyt__svg { display: none; }
+    .flyt__tekst { grid-template-columns: 1fr; }
+  }
+
+  /*
+    MERK: langformene brukes med vilje. Skriver man `animation: navn linear both`
+    og `animation-timeline: view()` som to erklæringer, slår lightningcss dem
+    sammen til `animation: linear both navn view()`. Den formen er ugyldig –
+    animation-timeline er ikke del av animation-stenografien – og BÅDE Chromium
+    og Firefox forkaster erklæringen uten å si fra. Testen i
+    test/bygget-html.test.ts feiler hvis mønsteret oppstår i bygget.
+  */
+  @supports (animation-timeline: view()) {
+    .flyt__strek {
+      animation-name: strek-tegnes;
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      /* Hver strek starter der den forrige slutter, så flyten leses venstre mot høyre. */
+      animation-range: entry calc(14% + var(--i) * 16%) cover calc(34% + var(--i) * 16%);
+    }
+
+    .flyt__ring {
+      animation-name: ring-tegnes;
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: entry calc(10% + var(--i) * 16%) cover calc(26% + var(--i) * 16%);
+    }
+
+    .flyt__merke,
+    .flyt__navn {
+      animation-name: node-tones-inn;
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: entry calc(16% + var(--i) * 16%) cover calc(30% + var(--i) * 16%);
+    }
+  }
+
+  @keyframes strek-tegnes {
+    from { stroke-dashoffset: 1; }
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes ring-tegnes {
+    from { stroke-dashoffset: 1; opacity: 0; }
+    15% { opacity: 1; }
+    to { stroke-dashoffset: 0; opacity: 1; }
+  }
+  @keyframes node-tones-inn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Redusert bevegelse: alt står ferdig tegnet, ingen animasjon i det hele tatt. */
+  @media (prefers-reduced-motion: reduce) {
+    .flyt__strek,
+    .flyt__ring,
+    .flyt__merke,
+    .flyt__navn {
+      animation: none !important;
+      stroke-dashoffset: 0 !important;
+      opacity: 1 !important;
+    }
+  }
+</style>

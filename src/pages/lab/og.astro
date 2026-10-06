@@ -1,0 +1,57 @@
+---
+import Base from "../../layouts/Base.astro";
+import Section from "../../components/Section.astro";
+import { readdirSync, statSync } from "node:fs";
+
+/**
+ * Målelab for delingsbilder. Viser alle genererte OG-bilder med vekt, slik at
+ * de kan vurderes side om side før de tas i bruk. Ikke en kundeside – noindex.
+ */
+let bilder: { fil: string; kB: number }[] = [];
+try {
+  bilder = readdirSync("public/og")
+    .filter((f) => f.endsWith(".png"))
+    .map((f) => ({ fil: f, kB: Math.round(statSync(`public/og/${f}`).size / 1024) }))
+    .sort((a, b) => a.fil.localeCompare(b.fil, "nb"));
+} catch {
+  // Ikke generert ennå.
+}
+const sum = bilder.reduce((s, b) => s + b.kB, 0);
+---
+<Base tittel="Delingsbilder" beskrivelse="Målelab for OG-bilder generert med satori fra designsystemet." noindex>
+  <Section
+    nivaa={1}
+    n={1}
+    eyebrow="Målelab"
+    tittel="Delingsbilder"
+    ingress="Generert med satori fra de samme tokenene og de samme fontene som siden serverer. Kjør npm run og for å bygge dem på nytt."
+  >
+    {bilder.length === 0 ? (
+      <p class="body-lg muted">
+        Ingen bilder generert ennå. Kjør <code>npm run og</code>.
+      </p>
+    ) : (
+      <div class="stack">
+        <p class="small faint">{bilder.length} bilder, {sum} kB til sammen. 1200×630.</p>
+        <div class="grid-2">
+          {bilder.map((b) => (
+            <figure class="card" style="gap: var(--space-3)">
+              <img
+                src={`/og/${b.fil}`}
+                alt={`Delingsbilde for ${b.fil.replace(".png", "")}`}
+                width="1200"
+                height="630"
+                loading="lazy"
+                style="width: 100%; height: auto; border: var(--hairline) solid var(--line); border-radius: var(--radius-sm)"
+              />
+              <figcaption class="small">
+                <span class="mono">{b.fil}</span>
+                <span class="faint"> · {b.kB} kB</span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    )}
+  </Section>
+</Base>

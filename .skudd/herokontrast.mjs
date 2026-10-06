@@ -3,7 +3,7 @@ import { PNG } from "pngjs";
 const b = await chromium.launch();
 for (const [merke, w, h] of [["desktop",1440,860], ["mobil",390,844]]) {
   const p = await b.newPage({ viewport: { width: w, height: h }, colorScheme: "dark" });
-  await p.goto("http://127.0.0.1:4399/", { waitUntil: "networkidle" });
+  await p.goto("http://127.0.0.1:4777/", { waitUntil: "networkidle" });
   await p.waitForTimeout(1500);
   const rel = await p.evaluate(() => {
     const hero = document.querySelector(".hero"), t = document.querySelector(".hero__lead");

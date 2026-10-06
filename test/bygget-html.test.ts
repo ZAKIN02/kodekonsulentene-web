@@ -66,12 +66,17 @@ describe("statiske filer har riktig MIME-type", () => {
 
   test("hver mediefil i public/ har en kjent filtype", () => {
     if (!existsSync("public")) return;
-    const kjente = new Set([".mp4", ".webm", ".avif", ".png", ".jpg", ".svg", ".webp", ".ico", ".woff2", ".txt", ".json", ".xml", ".js", ".md"]);
+    // Listen leses ut av serveren, ikke hardkodet her. En hardkodet kopi kommer
+    // uunngåelig ut av synk – den gjorde det da manifest.webmanifest ble lagt til.
+    const kode = readFileSync("server.mjs", "utf8");
+    const kjente = new Set([...kode.matchAll(/"(\.[a-z0-9]+)"\s*:/g)].map((m) => m[1]));
     const gaa = (d: string): string[] =>
       readdirSync(d, { withFileTypes: true }).flatMap((e) =>
         e.isDirectory() ? gaa(join(d, e.name)) : [join(d, e.name)],
       );
-    for (const f of gaa("public")) {
+    // .md i public/ er dokumentasjon som ligger ved siden av ressursene
+    // (public/logo/README.md forklarer logosettet). Den serveres aldri.
+    for (const f of gaa("public").filter((f) => !f.endsWith(".md"))) {
       const ext = f.slice(f.lastIndexOf("."));
       assert.ok(kjente.has(ext), `${f} har en filtype serveren ikke kjenner: ${ext}`);
     }

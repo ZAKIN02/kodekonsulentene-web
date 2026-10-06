@@ -1,0 +1,576 @@
+---
+/**
+ * Oppslagsverk: CSS-teknikker som koster null kilobyte.
+ *
+ * Ligger under /lab/ og er merket noindex – et arbeidsbord, ikke en side for
+ * besøkende. Den finnes fordi `docs/research-animasjon.md` konkluderte med at
+ * ingen animasjonsbibliotek var verdt vekten. Da må alternativet være synlig:
+ * hver teknikk står her i bruk, ikke beskrevet.
+ *
+ * ALLE teknikkene på denne siden koster 0 kB JavaScript. Det er hele poenget.
+ *
+ * FELLE som har kostet oss en feil i produksjon: lightningcss slår `animation`
+ * og `animation-timeline` sammen til ugyldig stenografi, og både Chromium og
+ * Firefox forkaster erklæringen stille. Derfor står langformene overalt her.
+ * `test/bygget-html.test.ts` feiler hvis noen bommer.
+ */
+import Base from "../../layouts/Base.astro";
+
+interface Teknikk {
+  n: number;
+  navn: string;
+  status: "widely" | "newly" | "limited";
+  dato: string;
+  mangler?: string;
+  hva: string;
+  hvor: string;
+  degraderer: string;
+}
+
+/** Støttetallene er hentet fra api.webstatus.dev og caniuse 6. oktober 2026. */
+const teknikker: Teknikk[] = [
+  {
+    n: 1,
+    navn: ":has()",
+    status: "widely",
+    dato: "19.12.2023",
+    hva: "Styling basert på hva et element inneholder. Gir tilstandslogikk uten JavaScript.",
+    hvor: "FAQ-en, skjemaer med feiltilstand, kort som endrer seg når de har bilde.",
+    degraderer: "Regelen hoppes over. Grunnstilen står.",
+  },
+  {
+    n: 2,
+    navn: "text-wrap: balance",
+    status: "newly",
+    dato: "13.05.2024",
+    hva: "Jevner ut linjelengdene i korte overskrifter, så ingen linje blir et enslig ord.",
+    hvor: "Alle display-overskrifter. Særlig Mega, der ett løst ord er synlig på lang avstand.",
+    degraderer: "Vanlig linjebryting. Ingen layoutskade.",
+  },
+  {
+    n: 3,
+    navn: "@starting-style",
+    status: "newly",
+    dato: "06.08.2024",
+    hva: "Lar et element tone inn første gang det vises, uten JavaScript og uten klasse som settes etterpå.",
+    hvor: "Kvitteringen på /kontakt, feilmeldinger, terminalens svarlinjer.",
+    degraderer: "Elementet vises uten overgang. Innholdet er likt.",
+  },
+  {
+    n: 4,
+    navn: "content-visibility",
+    status: "newly",
+    dato: "15.09.2025",
+    hva: "Lar nettleseren hoppe over layout og maling av seksjoner utenfor skjermen.",
+    hvor: "Lange sider: /handbok, /vilkar, /personvern, og forsiden under folden.",
+    degraderer: "Alt males som før. Bare litt tregere.",
+  },
+  {
+    n: 5,
+    navn: "View Transitions",
+    status: "newly",
+    dato: "14.10.2025",
+    hva: "Myk overgang mellom to tilstander eller to sider, uten rammeverk.",
+    hvor: "Navigasjon mellom undersider. Krever vurdering mot vår CSP.",
+    degraderer: "Vanlig sidebytte.",
+  },
+  {
+    n: 6,
+    navn: "@scope",
+    status: "newly",
+    dato: "24.03.2026",
+    hva: "Avgrenser stiler til et undertre uten klassenavn-prefikser.",
+    hvor: "Komponenter der Astros egen scoping ikke rekker, for eksempel innhold fra Markdown.",
+    degraderer: "Reglene gjelder ikke. Krever at grunnstilen holder alene.",
+  },
+  {
+    n: 7,
+    navn: "field-sizing: content",
+    status: "newly",
+    dato: "16.06.2026",
+    hva: "Feltet vokser med innholdet. Ingen scroll-høyde som må gjettes i JavaScript.",
+    hvor: "Meldingsfeltet i kontaktskjemaet.",
+    degraderer: "Fast høyde som i dag.",
+  },
+  {
+    n: 8,
+    navn: "animation-timeline: view()",
+    status: "limited",
+    dato: "18.07.2023",
+    mangler: "Firefox",
+    hva: "Avdekking styrt av hvor elementet står i skjermbildet, uten IntersectionObserver.",
+    hvor: "Avslor og Mega bruker den allerede.",
+    degraderer: "Vi viser innholdet ferdig. Standardtilstanden må være synlig.",
+  },
+  {
+    n: 9,
+    navn: "animation-timeline: scroll()",
+    status: "limited",
+    dato: "18.07.2023",
+    mangler: "Firefox",
+    hva: "Fremdrift bundet til hvor langt dokumentet er scrollet.",
+    hvor: "Lesefremdrift på lange sider og i scroll-historien.",
+    degraderer: "Linjen står på null. Den er dekorasjon, ikke navigasjon.",
+  },
+  {
+    n: 10,
+    navn: "interpolate-size",
+    status: "limited",
+    dato: "17.09.2024",
+    mangler: "Firefox og Safari",
+    hva: "Lar height gå til og fra auto, så utvidbare elementer kan animeres uten målt pikselhøyde.",
+    hvor: "FAQ-en. I dag spretter den åpen.",
+    degraderer: "Åpner momentant, som i dag.",
+  },
+  {
+    n: 11,
+    navn: "Anchor positioning",
+    status: "limited",
+    dato: "14.09.2026",
+    hva: "Plasserer et element i forhold til et annet uten måling i JavaScript.",
+    hvor: "Hjelpebobler ved rapportrader. Ikke før støtten er avklart.",
+    degraderer:
+      "Krever reserveplassering. Kildene spriker: webstatus.dev oppgir bare Safari som ferdig, caniuse melder 85,9 % delvis støtte. Vent til det er avklart.",
+  },
+];
+
+const merker: Record<Teknikk["status"], { ord: string; klasse: string }> = {
+  widely: { ord: "Bredt støttet", klasse: "er-ok" },
+  newly: { ord: "Nylig baseline", klasse: "er-ny" },
+  limited: { ord: "Begrenset", klasse: "er-begrenset" },
+};
+---
+
+<Base
+  tittel="Lab: teknikker"
+  beskrivelse="Oppslagsverk over CSS-teknikker som koster null kilobyte. Arbeidsbord, ikke en side for besøkende."
+  noindex
+>
+  <section class="lab-seksjon">
+    <div class="lab-ramme">
+      <p class="lab-merke mono-label">// 01 Oppslagsverk</p>
+      <h1 class="display-lg lab-tittel">Elleve teknikker som koster null kilobyte</h1>
+      <p class="lab-ingress body-lg">
+        Vi konkluderte med at ingen animasjonsbibliotek var verdt vekten. Da må
+        alternativet være synlig. Hver teknikk under står i bruk på denne siden,
+        ikke bare beskrevet. Alle støttetall er hentet fra webstatus.dev og
+        caniuse 6. oktober 2026.
+      </p>
+    </div>
+  </section>
+
+  <!-- 02 Oversikt -->
+  <section class="lab-seksjon">
+    <div class="lab-ramme">
+      <p class="lab-merke mono-label">// 02 Oversikt</p>
+      <ol class="tabell">
+        {
+          teknikker.map((t) => (
+            <li class="rad">
+              <span class="rad__n mono">{String(t.n).padStart(2, "0")}</span>
+              <span class="rad__navn mono">{t.navn}</span>
+              <span class={`rad__merke mono-label ${merker[t.status].klasse}`}>
+                {merker[t.status].ord}
+                <span class="rad__dato"> {t.dato}</span>
+              </span>
+              <span class="rad__hva small">{t.hva}</span>
+              <span class="rad__hvor small">
+                <strong>Hos oss:</strong> {t.hvor}
+              </span>
+              <span class="rad__fall small">
+                <strong>Uten støtte:</strong> {t.degraderer}
+                {t.mangler && <span class="rad__mangler"> Mangler i {t.mangler}.</span>}
+              </span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- 03 text-wrap: balance -->
+  <section class="lab-seksjon">
+    <div class="lab-ramme">
+      <p class="lab-merke mono-label">// 03 text-wrap: balance</p>
+      <div class="to-spalter">
+        <div>
+          <p class="etikett mono-label">Uten</p>
+          <h2 class="prove display-lg">Nettsider som virker og systemer som henger sammen</h2>
+        </div>
+        <div>
+          <p class="etikett mono-label">Med balance</p>
+          <h2 class="prove prove--balansert display-lg">
+            Nettsider som virker og systemer som henger sammen
+          </h2>
+        </div>
+      </div>
+      <p class="forklaring small">
+        Forskjellen er tydeligst der siste linje ellers blir ett enslig ord. Det
+        koster ingenting og krever ingen omskriving av teksten.
+      </p>
+    </div>
+  </section>
+
+  <!-- 04 :has() -->
+  <section class="lab-seksjon">
+    <div class="lab-ramme">
+      <p class="lab-merke mono-label">// 04 :has()</p>
+      <div class="felt-demo">
+        <div class="felt">
+          <label class="felt__etikett" for="t-epost">E-post</label>
+          <input class="felt__inn" id="t-epost" type="email" placeholder="din@bedrift.no" required />
+          <p class="felt__hjelp small">Rammen og hjelpeteksten endrer seg av seg selv.</p>
+        </div>
+        <div class="felt">
+          <label class="felt__etikett" for="t-org">Organisasjonsnummer</label>
+          <input
+            class="felt__inn"
+            id="t-org"
+            type="text"
+            inputmode="numeric"
+            pattern="[0-9 ]{9,11}"
+            placeholder="936 374 336"
+          />
+          <p class="felt__hjelp small">Ni siffer. Prøv å skrive noe annet.</p>
+        </div>
+      </div>
+      <p class="forklaring small">
+        Hele tilstandslogikken er <span class="mono">.felt:has(:user-invalid)</span> og
+        <span class="mono">:has(:valid)</span>. Null JavaScript, og den virker før
+        skjemaet er sendt.
+      </p>
+    </div>
+  </section>
+
+  <!-- 05 field-sizing -->
+  <section class="lab-seksjon">
+    <div class="lab-ramme">
+      <p class="lab-merke mono-label">// 05 field-sizing: content</p>
+      <div class="felt">
+        <label class="felt__etikett" for="t-melding">Hva tar tid i dag?</label>
+        <textarea class="felt__inn vokser" id="t-melding" rows="2"
+          >Skriv flere linjer her, så vokser feltet med teksten.</textarea
+        >
+        <p class="felt__hjelp small">
+          Uten støtte står feltet på to rader og scroller, som i dag.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 interpolate-size -->
+  <section class="lab-seksjon">
+    <div class="lab-ramme">
+      <p class="lab-merke mono-label">// 06 interpolate-size</p>
+      <div class="faq">
+        <details class="faq__post">
+          <summary class="faq__sp heading">Eier jeg koden og domenet?</summary>
+          <div class="faq__svar">
+            <p class="body">
+              Ja. Domenet står registrert på ditt foretak fra dag én, og du får
+              koden i ditt eget Git-repo ved lansering.
+            </p>
+          </div>
+        </details>
+        <details class="faq__post">
+          <summary class="faq__sp heading">Hva er bindingstiden?</summary>
+          <div class="faq__svar">
+            <p class="body">
+              Abonnement har 12 måneder binding. Drift og vedlikehold på en side
+              du har kjøpt har ingen binding.
+            </p>
+          </div>
+        </details>
+      </div>
+      <p class="forklaring small">
+        Høyden går mykt fra null til <span class="mono">auto</span> uten at noen
+        måler piksler i JavaScript. I Firefox og Safari spretter den åpen – samme
+        innhold, ingen overgang.
+      </p>
+    </div>
+  </section>
+
+  <!-- 07 @starting-style -->
+  <section class="lab-seksjon">
+    <div class="lab-ramme">
+      <p class="lab-merke mono-label">// 07 @starting-style</p>
+      <details class="popp">
+        <summary class="popp__knapp body-strong">Vis kvittering</summary>
+        <p class="popp__boks small">
+          Meldingen kom fram. Vi svarer innen 24 timer.
+        </p>
+      </details>
+      <p class="forklaring small">
+        Boksen toner inn første gang den vises. Tidligere krevde det en klasse
+        satt fra JavaScript ett bilde etter innsetting.
+      </p>
+    </div>
+  </section>
+
+  <!-- 08 scroll() -->
+  <section class="lab-seksjon lab-seksjon--hoy">
+    <div class="lab-ramme">
+      <p class="lab-merke mono-label">// 08 animation-timeline: scroll()</p>
+      <p class="forklaring small">
+        Linjen øverst på siden følger hvor langt du har scrollet. Den er
+        dekorasjon – i Firefox står den på null, og ingenting går tapt.
+      </p>
+      <div class="plass"></div>
+    </div>
+  </section>
+
+  <!-- 09 view() -->
+  <section class="lab-seksjon">
+    <div class="lab-ramme">
+      <p class="lab-merke mono-label">// 09 animation-timeline: view()</p>
+      <div class="kort-rad">
+        {
+          [1, 2, 3].map((i) => (
+            <article class="avdekk-kort">
+              <p class="mono-label">Kort {i}</p>
+              <p class="body">
+                Toner inn der det står i skjermbildet, ikke etter en tidtaker.
+              </p>
+            </article>
+          ))
+        }
+      </div>
+      <p class="forklaring small">
+        Standardtilstanden er synlig. Mangler støtten, står kortene ferdig –
+        derfor er dette trygt å bruke selv med Firefox utenfor.
+      </p>
+    </div>
+  </section>
+
+  <!-- 10 content-visibility -->
+  <section class="lab-seksjon tung">
+    <div class="lab-ramme">
+      <p class="lab-merke mono-label">// 10 content-visibility: auto</p>
+      <p class="forklaring small">
+        Denne seksjonen har <span class="mono">content-visibility: auto</span> og
+        <span class="mono">contain-intrinsic-size</span>. Nettleseren hopper over
+        layout og maling til den nærmer seg skjermen. På lange sider som
+        /handbok er det målbart.
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ---------- Rammeverk for arbeidsbordet ---------- */
+  .lab-seksjon { padding-block: var(--space-8); }
+  .lab-seksjon--hoy { min-height: 140svh; }
+  .lab-ramme {
+    width: 100%;
+    max-width: 1120px;
+    margin-inline: auto;
+    padding-inline: var(--space-5);
+  }
+  .lab-merke { color: var(--ink-muted); margin: 0 0 var(--space-4); }
+  .lab-tittel { text-wrap: balance; margin: 0 0 var(--space-4); }
+  .lab-ingress { color: var(--ink-muted); max-width: 60ch; margin: 0; }
+  .forklaring { color: var(--ink-faint); max-width: 68ch; margin: var(--space-5) 0 0; }
+  .etikett { color: var(--ink-faint); margin: 0 0 var(--space-3); }
+  @media (min-width: 721px) { .lab-ramme { padding-inline: var(--space-6); } }
+
+  /* ---------- 08: lesefremdrift, scroll() ---------- */
+  /* Langformene står med vilje. Stenografien blir ugyldig etter minifisering. */
+  @keyframes fremdrift {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+  .lab-seksjon--hoy::before {
+    content: "";
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline: 0;
+    z-index: 5;
+    height: 2px;
+    background: var(--accent);
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+    animation-name: fremdrift;
+    animation-duration: 1ms;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: scroll(root block);
+  }
+
+  /* ---------- 09: avdekking, view() ---------- */
+  .kort-rad { display: grid; gap: var(--space-5); }
+  @media (min-width: 861px) { .kort-rad { grid-template-columns: repeat(3, 1fr); } }
+  .avdekk-kort {
+    border: var(--hairline) solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--bg-raised);
+    padding: var(--space-5);
+    display: grid;
+    gap: var(--space-2);
+  }
+  .avdekk-kort .mono-label { color: var(--accent-text); }
+  .avdekk-kort p:last-child { color: var(--ink-muted); margin: 0; }
+  @keyframes kort-inn {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: none; }
+  }
+  @supports (animation-timeline: view()) {
+    .avdekk-kort {
+      animation-name: kort-inn;
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 32%;
+    }
+  }
+
+  /* ---------- 03: text-wrap ---------- */
+  .to-spalter { display: grid; gap: var(--space-6); }
+  @media (min-width: 861px) { .to-spalter { grid-template-columns: 1fr 1fr; } }
+  .prove { margin: 0; max-width: 18ch; }
+  .prove--balansert { text-wrap: balance; }
+
+  /* ---------- 04 og 05: felt ---------- */
+  .felt-demo { display: grid; gap: var(--space-6); }
+  @media (min-width: 861px) { .felt-demo { grid-template-columns: 1fr 1fr; } }
+  .felt { display: grid; gap: var(--space-2); }
+  .felt__etikett { font-size: 14px; line-height: 20px; font-weight: 600; }
+  .felt__inn {
+    min-height: 44px;
+    padding: var(--space-3);
+    background: var(--bg-sunken);
+    color: var(--ink);
+    border: var(--hairline) solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    font: inherit;
+  }
+  .felt__inn:focus-visible {
+    outline: var(--focus-width) solid var(--focus);
+    outline-offset: 2px;
+  }
+  .felt__hjelp { color: var(--ink-faint); margin: 0; }
+
+  /* Hele tilstandslogikken, uten JavaScript. :user-invalid slår bare til etter
+     at brukeren faktisk har skrevet noe – ikke ved sidelasting. */
+  .felt:has(:user-invalid) .felt__inn { border-color: var(--fail); }
+  .felt:has(:user-invalid) .felt__hjelp { color: var(--fail); }
+  .felt:has(:user-invalid) .felt__hjelp::after { content: " Sjekk formatet."; }
+  .felt:has(input:valid:not(:placeholder-shown)) .felt__inn { border-color: var(--ok); }
+  .felt:has(input:valid:not(:placeholder-shown)) .felt__hjelp { color: var(--ok); }
+
+  .vokser {
+    field-sizing: content;
+    max-height: 40svh;
+    line-height: 24px;
+  }
+
+  /* ---------- 06: FAQ med interpolate-size ---------- */
+  .faq { border-top: var(--hairline) solid var(--line); }
+  .faq__post { border-bottom: var(--hairline) solid var(--line); }
+  .faq__sp {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-4) 0;
+    cursor: pointer;
+    list-style: none;
+  }
+  .faq__sp::-webkit-details-marker { display: none; }
+  .faq__sp::after { content: "+"; font-family: var(--font-mono); color: var(--accent-text); }
+  .faq__post[open] .faq__sp::after { content: "–"; }
+  .faq__svar { color: var(--ink-muted); max-width: 68ch; padding-bottom: var(--space-4); }
+
+  /* interpolate-size lar høyden gå til og fra auto. Uten støtte spretter den
+     åpen – samme innhold, ingen overgang, ingen skade. */
+  @supports (interpolate-size: allow-keywords) {
+    :root { interpolate-size: allow-keywords; }
+    .faq__post::details-content {
+      block-size: 0;
+      overflow: clip;
+      transition: block-size 260ms ease, content-visibility 260ms allow-discrete;
+      transition-behavior: allow-discrete;
+    }
+    .faq__post[open]::details-content { block-size: auto; }
+  }
+
+  /* ---------- 07: @starting-style ---------- */
+  .popp__knapp {
+    display: inline-block;
+    border-bottom: var(--hairline) solid var(--line-strong);
+    cursor: pointer;
+    list-style: none;
+  }
+  .popp__knapp::-webkit-details-marker { display: none; }
+  .popp__knapp:hover { color: var(--accent-text); border-color: var(--accent-text); }
+  .popp__boks {
+    margin: var(--space-4) 0 0;
+    padding: var(--space-4);
+    border: var(--hairline) solid var(--ok);
+    border-radius: var(--radius-md);
+    background: var(--ok-soft);
+    color: var(--ok);
+    max-width: 44ch;
+    opacity: 1;
+    translate: 0 0;
+    transition: opacity 240ms ease, translate 240ms ease;
+  }
+  /* Står ETTER hovedregelen med vilje: lik spesifisitet, så rekkefølgen avgjør. */
+  @starting-style {
+    .popp[open] .popp__boks { opacity: 0; translate: 0 -6px; }
+  }
+
+  /* ---------- 02: oversiktstabellen ---------- */
+  .tabell { list-style: none; margin: 0; padding: 0; border-top: var(--hairline) solid var(--line); }
+  .rad {
+    display: grid;
+    gap: var(--space-1) var(--space-4);
+    padding: var(--space-4) 0;
+    border-bottom: var(--hairline) solid var(--line);
+  }
+  @media (min-width: 861px) {
+    .rad {
+      grid-template-columns: 3ch 22ch 1fr;
+      grid-template-areas:
+        "n navn merke"
+        ". hva hva"
+        ". hvor hvor"
+        ". fall fall";
+      align-items: baseline;
+    }
+    .rad__n { grid-area: n; }
+    .rad__navn { grid-area: navn; }
+    .rad__merke { grid-area: merke; justify-self: start; }
+    .rad__hva { grid-area: hva; }
+    .rad__hvor { grid-area: hvor; }
+    .rad__fall { grid-area: fall; }
+  }
+  .rad__n { color: var(--ink-faint); }
+  .rad__navn { color: var(--ink); font-size: 14px; }
+  .rad__hva { color: var(--ink-muted); max-width: 70ch; }
+  .rad__hvor, .rad__fall { color: var(--ink-faint); max-width: 70ch; }
+  .rad__hvor strong, .rad__fall strong { color: var(--ink-muted); font-weight: 600; }
+  .rad__mangler { color: var(--warn); }
+  .rad__merke { display: inline-flex; gap: var(--space-2); align-items: baseline; }
+  .rad__dato { color: var(--ink-faint); }
+  .er-ok { color: var(--ok); }
+  .er-ny { color: var(--accent-text); }
+  .er-begrenset { color: var(--warn); }
+
+  /* ---------- 10: content-visibility ---------- */
+  .tung {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 320px;
+  }
+
+  .plass { min-height: 60svh; }
+
+  /* ---------- Redusert bevegelse ---------- */
+  /* Brandboken: alt over 0 ms blir 0 ms. Scroll-drevne tidslinjer er ikke
+     tidsbaserte, men de skal likevel stå stille for den som ber om ro. */
+  @media (prefers-reduced-motion: reduce) {
+    .lab-seksjon--hoy::before { animation-name: none; transform: scaleX(1); }
+    .avdekk-kort { animation-name: none; opacity: 1; transform: none; }
+    .popp__boks { transition: none; }
+    .faq__post::details-content { transition: none; }
+  }
+</style>

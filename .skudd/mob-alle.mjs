@@ -7,7 +7,7 @@ const SIDER = ["/", "/historie", "/nettsider", "/systemer", "/apper-og-ai", "/si
 // Helsesjekk først. Andre prosesser i prosjektet rydder med
 // `pkill -f "server.mjs"` og dreper testserveren midt i kjøringen. Uten denne
 // sjekken ser en drept server ut som 23 ødelagte sider.
-const svar = await fetch("http://127.0.0.1:8080/").catch(() => null);
+const svar = await fetch("http://127.0.0.1:4777/").catch(() => null);
 if (!svar || !svar.ok) { console.error("Serveren svarer ikke på 8080. Start den og prøv igjen."); process.exit(1); }
 
 const b = await chromium.launch();
@@ -16,7 +16,7 @@ for (const sti of SIDER) {
     colorScheme: "dark", isMobile: true, hasTouch: true });
   const feil = [];
   p.on("console", (m) => m.type() === "error" && feil.push(m.text().slice(0, 80)));
-  await p.goto("http://127.0.0.1:8080" + sti, { waitUntil: "networkidle", timeout: 40000 }).catch(()=>{});
+  await p.goto("http://127.0.0.1:4777" + sti, { waitUntil: "networkidle", timeout: 40000 }).catch(()=>{});
   await p.waitForTimeout(900);
   const d = await p.evaluate(() => {
     const doc = document.documentElement, vw = doc.clientWidth;

@@ -1,0 +1,125 @@
+---
+import Base from "../../layouts/Base.astro";
+import Ikon, { IKONER, type IkonNavn } from "../../components/Ikon.astro";
+
+const navn = Object.keys(IKONER) as IkonNavn[];
+
+/**
+ * Målelab for visuelle ressurser: ikonsettet, CSS-mønstre og et flytdiagram
+ * skrevet for hånd. Siden er intern og skal ikke indekseres.
+ */
+---
+<Base tittel="Ikoner og mønstre" beskrivelse="Intern målelab for ikonsett, CSS-mønstre og diagrammer." noindex>
+  <section class="section">
+    <div class="wrap stack">
+      <p class="kk-eyebrow"><span class="kk-eyebrow-n">//</span> <span>Målelab</span></p>
+      <h1 class="display-lg">Ikoner og mønstre</h1>
+      <p class="body-lg muted">
+        Lucide-baner kopiert inn, 1,5 px strek etter brandboken. Mønstrene er ren CSS –
+        null forespørsler. Diagrammet er håndskrevet SVG.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap stack">
+      <p class="kk-eyebrow"><span class="kk-eyebrow-n">//</span> <span>Ikonsettet</span></p>
+      <h2 class="heading">{navn.length} ikoner, 1,5 px strek</h2>
+      <ul class="ikonrist">
+        {navn.map((n) => (
+          <li>
+            <Ikon navn={n} storrelse={20} />
+            <span class="mono">{n}</span>
+          </li>
+        ))}
+      </ul>
+      <h3 class="subheading">Strektykkelse: brandbok mot Lucide-standard</h3>
+      <div class="row" style="gap: var(--space-6); align-items: flex-end">
+        <span class="prove"><Ikon navn="shield-check" storrelse={40} /><span class="small faint">1,5 – vår</span></span>
+        <span class="prove tykk"><Ikon navn="shield-check" storrelse={40} /><span class="small faint">2,0 – Lucide</span></span>
+        <span class="prove tykkest"><Ikon navn="shield-check" storrelse={40} /><span class="small faint">2,5 – i bruk i dag</span></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap stack">
+      <p class="kk-eyebrow"><span class="kk-eyebrow-n">//</span> <span>Mønstre</span></p>
+      <h2 class="heading">Fire mønstre, null kilobyte</h2>
+      <div class="grid-2">
+        <figure class="monster m-rutenett"><figcaption class="mono small">hårlinjerutenett</figcaption></figure>
+        <figure class="monster m-prikker"><figcaption class="mono small">prikkrutenett</figcaption></figure>
+        <figure class="monster m-linjer"><figcaption class="mono small">diagonale hårlinjer</figcaption></figure>
+        <figure class="monster m-skala"><figcaption class="mono small">målestokk</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap stack">
+      <p class="kk-eyebrow"><span class="kk-eyebrow-n">//</span> <span>Diagram</span></p>
+      <h2 class="heading">Flyten, håndskrevet</h2>
+      <p class="muted">Tre noder og to piler. mermaid veier 122 MB upakket for dette.</p>
+      <svg class="flyt" viewBox="0 0 640 120" role="img"
+        aria-label="Flyt: kunden booker, betaler med Vipps, og ordren havner i regnskapet.">
+        <defs>
+          <marker id="pil" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="var(--line-strong)" />
+          </marker>
+        </defs>
+        <g stroke="var(--line-strong)" stroke-width="1" fill="none">
+          <rect x="8" y="34" width="160" height="52" rx="4" />
+          <rect x="240" y="34" width="160" height="52" rx="4" />
+          <rect x="472" y="34" width="160" height="52" rx="4" />
+          <line x1="176" y1="60" x2="232" y2="60" marker-end="url(#pil)" />
+          <line x1="408" y1="60" x2="464" y2="60" marker-end="url(#pil)" />
+        </g>
+        <g fill="var(--ink)" font-family="var(--font-mono)" font-size="13" text-anchor="middle">
+          <text x="88" y="65">Booking</text>
+          <text x="320" y="65">Vipps</text>
+          <text x="552" y="65">Regnskap</text>
+        </g>
+        <line x1="476" y1="78" x2="628" y2="78" stroke="var(--accent)" stroke-width="2" />
+      </svg>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .ikonrist { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--space-3); }
+  .ikonrist li { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3); border: var(--hairline) solid var(--line); border-radius: var(--radius-sm); color: var(--ink); }
+  .ikonrist .mono { font-size: 12px; color: var(--ink-muted); }
+  .prove { display: grid; justify-items: center; gap: var(--space-2); color: var(--ink); }
+  .prove.tykk :global(svg) { stroke-width: 2; }
+  .prove.tykkest :global(svg) { stroke-width: 2.5; }
+
+  .monster { margin: 0; height: 180px; border: var(--hairline) solid var(--line); border-radius: var(--radius-md); display: flex; align-items: flex-end; padding: var(--space-3); }
+  .monster figcaption { color: var(--ink-faint); background: var(--bg); padding: 2px 6px; }
+
+  /* Fire mønstre, alle ren CSS. Ingen forespørsler, ingen filer. */
+  .m-rutenett {
+    background-image:
+      linear-gradient(to right, var(--line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .m-prikker {
+    background-image: radial-gradient(var(--line-strong) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  .m-linjer {
+    background-image: repeating-linear-gradient(
+      45deg, transparent 0 11px, var(--line) 11px 12px
+    );
+  }
+  .m-skala {
+    background-image:
+      repeating-linear-gradient(to right, var(--line-strong) 0 1px, transparent 1px 8px),
+      repeating-linear-gradient(to right, var(--line-strong) 0 1px, transparent 1px 40px);
+    background-size: 100% 8px, 100% 16px;
+    background-position: bottom left;
+    background-repeat: repeat-x;
+  }
+
+  .flyt { width: 100%; max-width: 640px; height: auto; }
+</style>

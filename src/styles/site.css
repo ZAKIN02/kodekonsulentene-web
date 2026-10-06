@@ -256,6 +256,9 @@ textarea.control { min-height: 120px; resize: vertical; line-height: 24px; }
     display: inline-flex;
     align-items: center;
     padding-inline: var(--space-1);
+    /* Uten denne brakk «Apper og AI» til to linjer og gjorde hele menyraden
+       dobbelt så høy. Menyen scroller allerede vannrett, så den har plassen. */
+    white-space: nowrap;
   }
 
   /* Footer-lenkene sto som 17 px høye mål i en liste. En lenkeliste er
@@ -317,3 +320,15 @@ textarea.control { min-height: 120px; resize: vertical; line-height: 24px; }
  * Dette er en sperre, ikke en løsning. Finner målingen i .skudd/mob-alle.mjs et
  * element som stikker ut, skal det rettes der det oppstår. */
 html, body { overflow-x: clip; }
+
+@media (max-width: 860px) {
+  /* 404-sidens lenkeliste sto som 18 px høye mål. En liste av lenker er ikke
+     «inline i en setning», så WCAG 2.5.8 sitt unntak gjelder ikke her – i
+     motsetning til lenkene inne i brødteksten, som er latt i fred med vilje. */
+  .fire-null__ut ul { gap: var(--space-3); }
+  .fire-null__ut ul a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+  }
+}

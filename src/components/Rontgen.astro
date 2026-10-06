@@ -18,7 +18,9 @@
  */
 import "../styles/rontgen.css";
 import { SIKKERHETSHEADERE } from "../../sikkerhet.mjs";
-import { WCAG_NAVN } from "../../services/skanner/wcag-navn.mjs";
+// services/ er utelatt fra hovedappens Docker-kontekst, så listen kan ikke
+// importeres derfra. Kanonisk kopi ligger i src/data/wcag.ts.
+import { WCAG_NAVN } from "../data/wcag";
 
 interface Props {
   /** Overskrift over innsiden, i mono-label. */

@@ -54,26 +54,6 @@ const tiltak = [
       <p class="scene__ingress body-lg">Det er lett å selge sikkerhet. Det er vanskeligere å bevise det. Derfor kjører vi den samme sjekken på vår egen side og viser resultatet her – også raden vi ikke består.</p>
     </Avslor>
 
-    <Avslor trinn={2}>
-      {/* Terminalen kjoerer de samme sjekkene som verktoeyene, her mot vaart EGET domene. Regelen om aa ikke navngi sider som kommer daarlig ut gjelder ikke oss selv. */}
-      <Demo
-        smal={opptak.terminal.smal}
-        bred={opptak.terminal.bred}
-        stor={opptak.terminal.stor}
-        plakat={opptak.terminal.plakat}
-        tekst={opptak.terminal.tekst}
-        kilde={opptak.terminal.kilde}
-      />
-    </Avslor>
-
-    <CheckReport
-      url="kodekonsulentene.no"
-      date="oppdatert ved hver lansering"
-      rows={egenSjekk}
-      footer="Samlet: 90 av 100, målt 6. oktober 2026. Ytelsesraden står som «ikke sjekket» fordi Lighthouse ikke er kjørt."
-    >
-      <Button slot="action" variant="ghost" href="/sjekk">Kjør den på din side</Button>
-    </CheckReport>
   </Scene>
 
   <Scene n={2} eyebrow="Et funn" tittel="Verktøyet tok oss selv" ingress="6. oktober 2026 kjørte vi cookie-skanningen mot vår egen forside. Den fant to tredjepartskall vi ikke visste om.">
@@ -108,6 +88,31 @@ const tiltak = [
       />
     </div>
     </Avslor>
+      {/* Flyttet ned fra aapningsscenen. Over folden lastet opptaket 1093 kB av sidens
+        2077 ved foerstelast – maalt 467 px over folden, saa den late lastingen gjorde
+        jobben sin. Det var plasseringen som kostet. Og her hoerer det bedre hjemme:
+        seksjonen handler om at verktoeyet tok oss selv, og opptaket VISER verktoeyet. */}
+    <Avslor trinn={2}>
+      {/* Terminalen kjoerer de samme sjekkene som verktoeyene, her mot vaart EGET domene. Regelen om aa ikke navngi sider som kommer daarlig ut gjelder ikke oss selv. */}
+      <Demo
+        smal={opptak.terminal.smal}
+        bred={opptak.terminal.bred}
+        stor={opptak.terminal.stor}
+        plakat={opptak.terminal.plakat}
+        tekst={opptak.terminal.tekst}
+        kilde={opptak.terminal.kilde}
+      />
+    </Avslor>
+
+    <CheckReport
+      url="kodekonsulentene.no"
+      date="oppdatert ved hver lansering"
+      rows={egenSjekk}
+      footer="Samlet: 90 av 100, målt 6. oktober 2026. Ytelsesraden står som «ikke sjekket» fordi Lighthouse ikke er kjørt."
+    >
+      <Button slot="action" variant="ghost" href="/sjekk">Kjør den på din side</Button>
+    </CheckReport>
+
   </Scene>
 
   <div class="scenefilm-ramme">

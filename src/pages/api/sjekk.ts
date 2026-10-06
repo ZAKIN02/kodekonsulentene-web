@@ -6,6 +6,7 @@
  * en passende statuskode, aldri som en stack trace.
  */
 import type { APIRoute } from "astro";
+import { erEgetOpphav } from "../../lib/opphav";
 import {
   normaliserUrl, analyserHeadere, analyserCookies, analyserUu, analyserLovpaalagt,
   analyserYtelseLokalt, byggRapport, formaterDato,
@@ -84,6 +85,11 @@ async function kjor(raaUrl: string, epost: string | undefined) {
 }
 
 export const POST: APIRoute = async ({ request }) => {
+  // CSRF: se src/lib/opphav.ts. Astros egen kontroll kan ikke virke bak proxyen.
+  if (!erEgetOpphav(request)) {
+    return new Response("Forespørselen kom fra et annet nettsted.", { status: 403 });
+  }
+
   let kropp: { url?: unknown; epost?: unknown } = {};
   try {
     kropp = (await request.json()) as typeof kropp;

@@ -6,12 +6,18 @@
  * e-post i stedet – aldri en falsk «takk, vi har mottatt».
  */
 import type { APIRoute } from "astro";
+import { erEgetOpphav } from "../../lib/opphav";
 import { hentEnv } from "../../lib/env";
 import { sendHenvendelse } from "../../lib/epost";
 
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request, redirect }) => {
+  // CSRF: se src/lib/opphav.ts. Astros egen kontroll kan ikke virke bak proxyen.
+  if (!erEgetOpphav(request)) {
+    return new Response("Forespørselen kom fra et annet nettsted.", { status: 403 });
+  }
+
   const type = request.headers.get("content-type") ?? "";
   const vilJson = /application\/json/i.test(request.headers.get("accept") ?? "");
 

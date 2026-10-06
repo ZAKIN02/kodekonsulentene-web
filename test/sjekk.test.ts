@@ -507,3 +507,37 @@ describe("delte lister holder seg i synk over byggekontekstene", () => {
     );
   });
 });
+
+describe("opphavskontrollen som erstatter Astros", () => {
+  /**
+   * Astros checkOrigin sammenligner Origin mot forespørselens EGEN URL. Bak Fly
+   * snakker Node over http internt, så den regnet origin som http:// mens
+   * nettleseren sendte https:// – og HVER eneste skjemainnsending ble 403
+   * «Cross-site POST form submissions are forbidden». Kontaktskjemaet var dødt
+   * i produksjon, og ingen test fanget det fordi kontrollen ligger i rammeverket.
+   */
+  const be = (h: Record<string, string>) => new Request("https://x/api/kontakt", { method: "POST", headers: h });
+
+  test("vårt eget domene slipper gjennom", async () => {
+    const { erEgetOpphav } = await import("../src/lib/opphav.ts");
+    assert.equal(erEgetOpphav(be({ origin: "https://kodekonsulentene.no" })), true);
+    assert.equal(erEgetOpphav(be({ origin: "https://www.kodekonsulentene.no" })), true);
+  });
+
+  test("et fremmed nettsted blokkeres", async () => {
+    const { erEgetOpphav } = await import("../src/lib/opphav.ts");
+    assert.equal(erEgetOpphav(be({ origin: "https://ondsinnet.example" })), false);
+    assert.equal(erEgetOpphav(be({ referer: "https://ondsinnet.example/angrep" })), false);
+  });
+
+  test("uten Origin slipper gjennom, ellers stenger vi ute folk uten JavaScript", async () => {
+    const { erEgetOpphav } = await import("../src/lib/opphav.ts");
+    assert.equal(erEgetOpphav(be({})), true);
+  });
+
+  test("lokal utvikling slipper gjennom", async () => {
+    const { erEgetOpphav } = await import("../src/lib/opphav.ts");
+    assert.equal(erEgetOpphav(be({ origin: "http://localhost:4321" })), true);
+    assert.equal(erEgetOpphav(be({ origin: "http://127.0.0.1:4321" })), true);
+  });
+});

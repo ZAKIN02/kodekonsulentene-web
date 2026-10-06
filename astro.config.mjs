@@ -37,6 +37,12 @@ const frekvens = (sti) => {
 // vår egen sjekk. server.mjs serverer de statiske filene selv og setter headerne på alt.
 export default defineConfig({
   site: "https://kodekonsulentene.no",
+  // Astros egen checkOrigin sammenligner Origin mot forespørselens EGEN URL. Bak Fly
+  // snakker Node over http internt, så den regnet origin som http:// mens nettleseren
+  // sendte https:// – og hver eneste skjemainnsending ble 403. x-forwarded-proto
+  // hjelper ikke; adapteren leser den ikke. Kontrollen ligger nå i src/lib/opphav.ts,
+  // der vi kjenner vårt eget domene, og dekkes av en test.
+  security: { checkOrigin: false },
   adapter: node({ mode: "middleware" }),
   integrations: [
     sitemap({

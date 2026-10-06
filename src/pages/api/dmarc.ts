@@ -6,6 +6,7 @@
  * Svarer alltid JSON; feil kommer som { feil: "<setning til brukeren>" }.
  */
 import type { APIRoute } from "astro";
+import { erEgetOpphav } from "../../lib/opphav";
 import { normaliserDomene, hentEpostoppsett, byggEpostRapport } from "../../lib/dns";
 import { formaterDato } from "../../lib/sjekk";
 
@@ -45,6 +46,11 @@ async function kjor(raaDomene: string, dkim: string | undefined) {
 }
 
 export const POST: APIRoute = async ({ request }) => {
+  // CSRF: se src/lib/opphav.ts. Astros egen kontroll kan ikke virke bak proxyen.
+  if (!erEgetOpphav(request)) {
+    return new Response("Forespørselen kom fra et annet nettsted.", { status: 403 });
+  }
+
   let kropp: { domene?: unknown; dkim?: unknown } = {};
   try {
     kropp = (await request.json()) as typeof kropp;

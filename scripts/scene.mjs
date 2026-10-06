@@ -140,16 +140,37 @@ async function rediger(merke, endring, kildeUrl = basisUrl) {
   return url;
 }
 
+/**
+ * Rekkefølgen i prompten er ikke vilkårlig, og `cfg_scale` er ikke en detalj.
+ *
+ * Kling-veiledningen gir formelen [handling] + [kamera] + [miljø] + [tempo] +
+ * [det som skal stå stille], og sier rett ut at «prompt only describes the
+ * image» gir «clip looks static». Våre prompter sto i motsatt rekkefølge: først
+ * ~800 tegn generelle forbud fra `_bevegelse`, så selve handlingen. Derfor
+ * sendes scenens handling nå FØRST, og fellesteksten etterpå som haleledd.
+ *
+ * `cfg_scale` er flekslbilitet: HØYERE verdi = mindre frihet, sterkere troskap
+ * mot prompten (Kling-dokumentasjonen). Standard 0,5 mot en prompt som stort
+ * sett sa «ikke beveg deg» ga nøyaktig det vi fikk. Scenen kan derfor sette
+ * `cfg` selv, og skal gjøre det når prompten er en handlingsplan og ikke en
+ * forbudsliste.
+ *
+ * Endepunktet har INGEN negative_prompt. Lista vi før la i selve prompten
+ * («Avoid: zoom, pan, dolly, morphing, motion blur …») navnga dermed artefaktene
+ * i den positive prompten. Den er fjernet, ikke flyttet.
+ */
 async function film(start, slutt) {
-  process.stdout.write("  klipp (4K) … ");
+  const cfg = scene.cfg ?? 0.5;
+  const varighet = scene.varighet ?? 8;
+  process.stdout.write(`  klipp (4K, ${varighet}s, cfg ${cfg}) … `);
   const r = await higgsfield.subscribe("kling-video/v3.0/4k/image-to-video", {
     input: {
-      prompt: `${DEF._bevegelse}\n\n${scene.bevegelse}`,
+      prompt: `${scene.bevegelse}\n\n${DEF._bevegelse}`,
       image_url: start,
       last_image_url: slutt,
-      duration: 8,
+      duration: varighet,
       sound: "off",
-      cfg_scale: 0.5,
+      cfg_scale: cfg,
     },
     withPolling: true,
   });
@@ -175,7 +196,25 @@ const startUrl = await rediger("startbilde", scene.start);
  * Kjeden gjor at sluttbildet arver platetall, tykkelse og kamera fra startbildet,
  * og at `_bevar` bare trenger a holde pa det som allerede er der.
  */
-const sluttUrl = await rediger("sluttbilde", scene.slutt, startUrl);
+/**
+ * `slutt` kan være EN instruksjon eller en LENKE av dem.
+ *
+ * Qwen klarer én endring per redigering. Ba vi om to i samme instruksjon
+ * («platen har senket seg NED i åpningen, OG rutenettet lyser»), utførte den
+ * den enkle - lyset - og lot platen bli stående, samtidig som den tegnet
+ * rutenettet på nytt med helt andre linjer. Altså både manglende bevegelse og
+ * morf, fra én eneste for ambisiøs instruksjon.
+ *
+ * En historie i tre akter trenger to endringer i sluttbildet. De kjøres derfor
+ * som to redigeringer etter hverandre, hver med én endring, der hver arver
+ * geometrien fra den forrige. En streng oppfører seg som før.
+ */
+const sluttLedd = Array.isArray(scene.slutt) ? scene.slutt : [scene.slutt];
+let sluttUrl = startUrl;
+for (const [i, ledd] of sluttLedd.entries()) {
+  const merke = i === sluttLedd.length - 1 ? "sluttbilde" : `mellombilde${i + 1}`;
+  sluttUrl = await rediger(merke, ledd, sluttUrl);
+}
 
 if (args.includes("--kun-bilder")) {
   console.log(`\nstart: ${startUrl}\nslutt: ${sluttUrl}`);
@@ -295,7 +334,10 @@ console.log(`  ${plakat}`);
 
 // Lisensloggen er beviset vårt. En fil som ikke står der, skal ikke ligge i repoet.
 const dato = new Date().toISOString().slice(0, 10);
-const rad = `| \`public/${scene.mappe}/${utnavn}-*.mp4\`, \`${utnavn}-poster.avif\` | Higgsfield: Qwen Image 3 (redigering) → Kling 3.0 4K (bilde-til-video), betalt API | assets/prompter/scener.json, scene «${id}» | Generert av oss, kommersiell bruk tillatt etter leverandørens vilkår pkt. 4.4 | ${dato} | KodeKonsulentene |\n`;
+// Oppskriften må peke på promptfila som FAKTISK ble brukt. Den sto hardkodet
+// til scener.json, så alle scener bygget med --fil loggførte feil kilde – og
+// lisensloggen er beviset vårt, så en feil kilde gjør den verdiløs.
+const rad = `| \`public/${scene.mappe}/${utnavn}-*.mp4\`, \`${utnavn}-poster.avif\` | Higgsfield: Qwen Image 3 (redigering) → Kling 3.0 4K (bilde-til-video), betalt API | ${PROMPTFIL}, scene «${id}» | Generert av oss, kommersiell bruk tillatt etter leverandørens vilkår pkt. 4.4 | ${dato} | KodeKonsulentene |\n`;
 // Én fil per scene i stedet for én delt logg: flere scener kan bygges samtidig
 // uten at to prosesser skriver over hverandre i assets/LICENSES.md.
 const lis = join("assets/lisenser", `${id}.md`);

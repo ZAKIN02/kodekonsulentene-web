@@ -18,6 +18,24 @@ export interface FlytNode {
   /** Én linje under figuren som sier hva leddet gjør. Ingen påstander om tall. */
   detalj: string;
   /**
+   * Kvitteringen leddet gir når pakken har vært innom – den ene hendelsen som
+   * faktisk skjer i systemet: «godkjent», «ordre ført», «sendt».
+   *
+   * REGLER, og de er strenge:
+   *
+   *  - ALDRI et tall som kan leses som ekte kundedata. Ikke «faktura 1042», ikke
+   *    «1 240 kr», ikke et klokkeslett. Et oppdiktet fakturanummer i en figur er
+   *    samme feil som en oppdiktet case: det ser ut som bevis og er det ikke.
+   *  - Bare hendelser systemet over faktisk utfører. Står det «godkjent» under
+   *    Vipps, er det fordi betalingen godkjennes der.
+   *  - Maks ~16 tegn. Teksten males i monospace inne i boksen, og boksbredden er
+   *    (1000 − (n−1)·56) / n viewBox-enheter. Med fem ledd er det 155, og 16 tegn
+   *    på 13 px er 125. Lengre tekst renner ut i pilen ved siden av.
+   *
+   * Står den tom, males ingen kvittering og statusfeltet i boksen står åpent.
+   */
+  kvittering?: string;
+  /**
    * Valgfri tidsangivelse over boksen, i stedet for løpenummeret.
    *
    * Brukes av prosessflyten, der tiden ER poenget – seksjonen heter «Fire steg,
@@ -45,11 +63,11 @@ export const flyter = {
     beskrivelse:
       "Kunden booker selv, betaler med Vipps ved bestilling, ordren havner i Fiken, og påminnelsen går på SMS 24 timer før timen. Ingen taster noe underveis.",
     noder: [
-      { navn: "Kunde", detalj: "booker selv, døgnet rundt" },
-      { navn: "Booking", detalj: "timen inn i kalenderen" },
-      { navn: "Vipps", detalj: "betalt ved bestilling" },
-      { navn: "Fiken", detalj: "ordren føres automatisk" },
-      { navn: "SMS", detalj: "påminnelse 24 t før" },
+      { navn: "Kunde", detalj: "booker selv, døgnet rundt", kvittering: "time valgt" },
+      { navn: "Booking", detalj: "timen inn i kalenderen", kvittering: "i kalenderen" },
+      { navn: "Vipps", detalj: "betalt ved bestilling", kvittering: "godkjent" },
+      { navn: "Fiken", detalj: "ordren føres automatisk", kvittering: "ordre ført" },
+      { navn: "SMS", detalj: "påminnelse 24 t før", kvittering: "sendt" },
     ],
   },
 
@@ -59,10 +77,10 @@ export const flyter = {
     beskrivelse:
       "Pasienten finner en ledig time utenom åpningstid, timen legges rett i behandlerens timebok, betalingen skjer med Vipps ved bestilling, og SMS-påminnelsen går ut automatisk.",
     noder: [
-      { navn: "Pasient", detalj: "finner ledig time selv" },
-      { navn: "Timebestilling", detalj: "rett i behandlerens timebok" },
-      { navn: "Vipps", detalj: "betalt ved bestilling" },
-      { navn: "SMS", detalj: "påminnelse 24 t før" },
+      { navn: "Pasient", detalj: "finner ledig time selv", kvittering: "time valgt" },
+      { navn: "Timebestilling", detalj: "rett i behandlerens timebok", kvittering: "i timeboken" },
+      { navn: "Vipps", detalj: "betalt ved bestilling", kvittering: "godkjent" },
+      { navn: "SMS", detalj: "påminnelse 24 t før", kvittering: "sendt" },
     ],
   },
 
@@ -72,10 +90,10 @@ export const flyter = {
     beskrivelse:
       "Forespørselen kommer inn i ett skjema, blir til et tilbud, blir til en ordre når kunden sier ja, og blir til faktura i Tripletex eller Fiken uten at noen skriver tallene inn på nytt.",
     noder: [
-      { navn: "Forespørsel", detalj: "ett skjema, ingen innboks" },
-      { navn: "Tilbud", detalj: "sendt samme dag" },
-      { navn: "Ordre", detalj: "opprettes når kunden sier ja" },
-      { navn: "Faktura", detalj: "i Tripletex eller Fiken" },
+      { navn: "Forespørsel", detalj: "ett skjema, ingen innboks", kvittering: "mottatt" },
+      { navn: "Tilbud", detalj: "sendt samme dag", kvittering: "sendt" },
+      { navn: "Ordre", detalj: "opprettes når kunden sier ja", kvittering: "opprettet" },
+      { navn: "Faktura", detalj: "i Tripletex eller Fiken", kvittering: "klar til sending" },
     ],
   },
 
@@ -92,9 +110,9 @@ export const flyter = {
     beskrivelse:
       "Registrerer kunden noe i appen, er det det samme tallet som vises på nettsiden – fordi begge leser fra den samme databasen, ikke fra hver sin kopi som må holdes i synk.",
     noder: [
-      { navn: "App", detalj: "det kunden har i lomma" },
-      { navn: "Database", detalj: "ett sted tallene kommer fra" },
-      { navn: "Nettside", detalj: "samme data, samme status" },
+      { navn: "App", detalj: "det kunden har i lomma", kvittering: "lagret" },
+      { navn: "Database", detalj: "ett sted tallene kommer fra", kvittering: "én rad endret" },
+      { navn: "Nettside", detalj: "samme data, samme status", kvittering: "samme tall" },
     ],
   },
 
@@ -110,10 +128,10 @@ export const flyter = {
     beskrivelse:
       "Samtale på 20 minutter, klikkbar prototype innen 72 timer, bygging på to til tre uker til fast pris, og deretter løpende drift med overvåkning og månedsrapport.",
     noder: [
-      { navn: "Samtale", tid: "20 min", detalj: "prisspenn på telefonen" },
-      { navn: "Prototype", tid: "72 timer", detalj: "før du har betalt noe" },
-      { navn: "Bygging", tid: "2–3 uker", detalj: "fast pris, to runder" },
-      { navn: "Drift", tid: "Løpende", detalj: "overvåkning og rapport" },
+      { navn: "Samtale", tid: "20 min", detalj: "prisspenn på telefonen", kvittering: "prisspenn gitt" },
+      { navn: "Prototype", tid: "72 timer", detalj: "før du har betalt noe", kvittering: "lenke sendt" },
+      { navn: "Bygging", tid: "2–3 uker", detalj: "fast pris, to runder", kvittering: "overlevert" },
+      { navn: "Drift", tid: "Løpende", detalj: "overvåkning og rapport", kvittering: "månedsrapport" },
     ],
   },
 } as const satisfies Record<string, Flyt>;

@@ -1,25 +1,59 @@
 ---
 /**
- * Flytdiagram: bokser med EKTE systemnavn, forbundet av linjer som tegner seg
- * selv mens man scroller.
+ * Flytdiagram: bokser med EKTE systemnavn, og en pakke som FAKTISK reiser
+ * gjennom kjeden – hele tiden, uten at noen scroller eller klikker.
  *
  * Hvorfor den finnes: nettstedet hadde 81 genererte bilder av aluminiumsplater og
  * ingen figur som forklarer hva en kunde får kjøpt. Et bilde av plater i snorer
  * sier ingenting om at tilbudet blir til en faktura uten dobbeltføring. «Vipps»
  * og «Fiken» i to bokser med en pil mellom gjør det på to sekunder.
  *
- * KOSTER 0 kB JAVASCRIPT. Trikset er SVG-attributtet `pathLength="1"`: banen
- * normaliseres til lengde 1 uansett hvor lang den er, så `stroke-dasharray: 1`
- * med `stroke-dashoffset` fra 1 til 0 tegner den – uten at noe må måles med
- * `getTotalLength()` i JavaScript. Det er hele grunnen til at vivus (4,53 kB),
- * lazy-line-painter (5,60 kB) og walkway.js (1,80 kB) finnes, og hele grunnen
- * til at vi ikke trenger dem. Se docs/research-svg.md.
+ * HVORFOR DEN BEVEGER SEG NÅ. Eieren har sagt tre ganger at materialet mangler
+ * MENING, og sist: «animasjonene ser ikke like bra ut i det hele tatt, de gir
+ * ingen mening for oss. Gjør den mer animert, la den fortelle en historie.»
+ * Figuren sto helt stille. Den tegnet seg én gang når man scrollet forbi, og
+ * deretter var den et bilde. Målt mot jeton.com, osmo.supply og
+ * spinxdigital.com var det den ene forskjellen: siden vår beveget seg bare når
+ * noen gjorde noe.
  *
- * DEGRADERING: standardtilstanden i CSS er FERDIG TEGNET. Animasjonen skjuler og
- * tegner på nytt bare der `animation-timeline: view()` finnes. I Firefox, som
- * ikke har den, står hele figuren komplett av seg selv – ingen reserve trengs,
- * og ingenting kan bli stående usynlig. Det er en ekte fordel over innton-
- * effekter, som må ha en IntersectionObserver for ikke å etterlate tom skjerm.
+ * Så nå går det en HISTORIE i løkke, med begynnelse, midte og slutt:
+ *
+ *   1. Kunden bestiller      -> noden tennes, kvitteringen «time valgt» kommer
+ *   2. Pakken reiser         -> en prikk og et lysglimt følger pilen til Booking
+ *   3. ... gjennom hele kjeden, ett ledd om gangen
+ *   4. SMS-en går ut         -> siste ledd tennes, og løkken begynner på nytt
+ *
+ * Kvitteringene er hendelser systemene faktisk utfører – «godkjent» under Vipps,
+ * «ordre ført» under Fiken. ALDRI et tall som kan leses som ekte kundedata: et
+ * oppdiktet fakturanummer i en figur er samme feil som en oppdiktet case. Se
+ * regelen på `kvittering` i src/data/flyter.ts.
+ *
+ * KOSTER 0 kB JAVASCRIPT. To triks, ingen biblioteker:
+ *
+ *  - `pathLength="1"` normaliserer banen til lengde 1, uansett hvor lang den er,
+ *    så `stroke-dasharray: 1` med `stroke-dashoffset` fra 1 til 0 TEGNER den.
+ *    Det er hele grunnen til at vivus (4,53 kB), lazy-line-painter (5,60 kB) og
+ *    walkway.js (1,80 kB) finnes – de måler banen med `getTotalLength()` – og
+ *    hele grunnen til at vi ikke trenger dem. Se docs/research-svg.md.
+ *  - Rekkefølgen kommer fra `animation-delay: calc(var(--i) * var(--takt))`. Alle
+ *    ledd har samme `animation-duration` (løkken) og hvert sitt forsprang, og
+ *    fordi `animation-delay` forskyver HELE tidslinjen – ikke bare første runde –
+ *    holder forskyvningen seg i all evighet. Ingen JavaScript skal til for å
+ *    orkestrere fem ledd etter hverandre.
+ *
+ * ÉN LØKKELENGDE FOR ALLE NODEANTALL, med vilje. Nøkkelbildene er prosenter av
+ * `--loop`, og prosenter kan ikke regnes ut fra `--n`. Løsningen er at løkken er
+ * like lang (7,2 s) enten flyten har tre eller fem ledd: da er `--takt` en fast
+ * tid, vinduene faste prosenter, og en flyt med tre ledd får bare en lengre
+ * pause på slutten. Alternativet var å generere @keyframes per nodeantall i en
+ * inline <style>, altså dynamisk CSS i hver instans. Det er ikke verdt det.
+ *
+ * DEGRADERING GÅR MOT SYNLIG. Standardtilstanden i CSS er FERDIG TEGNET og ALLE
+ * kvitteringene synlige. Det som skjuler noe, står enten i @supports (skjelettet
+ * som tegner seg på scroll) eller er bevegelseslaget selv (prikken, glimtet,
+ * gløden), som starter usynlig og lyser opp. Med `prefers-reduced-motion` og
+ * uten JavaScript står hele figuren komplett og lesbar – ingenting kan bli
+ * stående usynlig, og ingen reserve i JavaScript trengs.
  *
  * TILGJENGELIGHET: SVG-en er `aria-hidden`, og lista under bærer meningen. Det er
  * med vilje – uten det ville en skjermleser lest hvert systemnavn to ganger, én
@@ -55,13 +89,30 @@ const n = noder.length;
  * detaljlinjen på 10,1 px. Kontrasten besto, men teksten var for liten å lese.
  */
 const VB_B = 1000;
-const VB_H = 122;
 const GAP = 56;
 const BOKS_B = (VB_B - (n - 1) * GAP) / n;
-const BOKS_Y = 22;
-const BOKS_H = 64;
+
+/**
+ * Boksen er delt i to etasjer av en hårstrek: navnet øverst, STATUSFELTET nederst.
+ *
+ * Feltet står åpent helt til pakken kommer. Uten streken ville den tomme
+ * nederste halvdelen sett ut som en feil – med den leser boksen som en kvittering
+ * med en linje som skal fylles ut, og da er det riktig at den er tom inntil noe
+ * skjer der.
+ */
+const BOKS_Y = 24;
+const BOKS_H = 80;
+const BOKS_BUNN = BOKS_Y + BOKS_H;
+const SKILLE_Y = BOKS_Y + 44;
+const NR_Y = 14;
+const NAVN_Y = 52;
+const KVITT_Y = 91;
+const VB_H = 128;
+const DETALJ_Y = VB_H - 5;
 const R = 10;
-const MIDT_Y = BOKS_Y + BOKS_H / 2;
+
+/** Pilene står i navnerekka, ikke i boksmidten: der ville de ligget på skillet. */
+const MIDT_Y = BOKS_Y + 22;
 
 const x0 = (i: number) => i * (BOKS_B + GAP);
 const cx = (i: number) => x0(i) + BOKS_B / 2;
@@ -93,10 +144,17 @@ const piler = noder.slice(0, -1).map((_, i) => {
   return { i, fra, til, spiss: `M${til - 7},${MIDT_Y - 6} L${til},${MIDT_Y} L${til - 7},${MIDT_Y + 6}` };
 });
 
+/**
+ * Strekningen pakken reiser, i viewBox-enheter. Den er LIK for alle pilene fordi
+ * GAP er fast, så prikken trenger ingen variabel per ledd – én `--vei` på rota
+ * holder, og @keyframes kan være helt statisk.
+ */
+const VEI = GAP - 16;
+
 const nr = (i: number) => String(i + 1).padStart(2, "0");
 ---
 
-<figure class:list={["flyt", cls]}>
+<figure class:list={["flyt", cls]} style={`--vei:${VEI}px`}>
   <Tittel class="heading flyt__tittel">{flyt.tittel}</Tittel>
 
   <div class="flyt__ramme">
@@ -111,21 +169,45 @@ const nr = (i: number) => String(i + 1).padStart(2, "0");
         <g class="flyt__pil" style={`--i:${p.i}`}>
           <path class="flyt__linje" d={`M${p.fra},${MIDT_Y} H${p.til}`} pathLength="1" fill="none" />
           <path class="flyt__spiss" d={p.spiss} fill="none" />
+          {/*
+            Glimtet: SAMME bane som linjen, men med et kort strek-mønster som
+            skyves gjennom. `stroke-dasharray: 0.3 2` gir ett strek på 0,3 av
+            banen og 2 i opphold, altså mønsterlengde 2,3 mot en bane på 1 – da
+            kan offset gå fra 2,6 (streket ligger FØR banen) til 1,3 (streket
+            ligger ETTER den) uten at mønsteret rekker å gjenta seg. Det er
+            forskjellen på en komet som krysser én gang og en stiplet linje som
+            ruller rundt.
+          */}
+          <path class="flyt__glimt" d={`M${p.fra},${MIDT_Y} H${p.til}`} pathLength="1" fill="none" />
+          {/* Pakken. Flyttes med translateX, ikke med cx, fordi transform går på
+              compositor-tråden og cx utløser ny layout av SVG-en hver ramme. */}
+          <circle class="flyt__pakke" cx={p.fra} cy={MIDT_Y} r="4" />
         </g>
       ))}
 
       {noder.map((node, i) => (
         <g class:list={["flyt__node", i === n - 1 && "flyt__node--siste"]} style={`--i:${i}`}>
           <path class="flyt__boks" d={boksBane(i)} pathLength="1" fill="none" />
+          {/*
+            Gløden er en KOPI av boksbanen i aksentfarge som tegner seg rundt
+            boksen når pakken kommer, står litt, og toner ut. Derfor har ikke
+            siste ledd lenger aksent på boksstreken: da ville det ene leddet som
+            ER poenget vært det eneste som ikke syntes å tennes.
+          */}
+          <path class="flyt__glod" d={boksBane(i)} pathLength="1" fill="none" />
           {/* Tiden erstatter løpenummeret der den finnes – på prosessflyten er
               tiden poenget, og to tall over hverandre ville konkurrert. */}
           <text
             class:list={["flyt__nr", node.tid && "flyt__nr--tid"]}
             x={cx(i)}
-            y={13}
+            y={NR_Y}
             text-anchor="middle">{node.tid ?? nr(i)}</text>
-          <text class="flyt__navn" x={cx(i)} y={MIDT_Y + 6} text-anchor="middle">{node.navn}</text>
-          <text class="flyt__detalj" x={cx(i)} y={VB_H - 6} text-anchor="middle">{node.detalj}</text>
+          <text class="flyt__navn" x={cx(i)} y={NAVN_Y} text-anchor="middle">{node.navn}</text>
+          <path class="flyt__skille" d={`M${x0(i) + 1},${SKILLE_Y} H${x0(i) + BOKS_B - 1}`} fill="none" />
+          {node.kvittering && (
+            <text class="flyt__kvitt" x={cx(i)} y={KVITT_Y} text-anchor="middle">{node.kvittering}</text>
+          )}
+          <text class="flyt__detalj" x={cx(i)} y={DETALJ_Y} text-anchor="middle">{node.detalj}</text>
         </g>
       ))}
     </svg>
@@ -133,16 +215,19 @@ const nr = (i: number) => String(i + 1).padStart(2, "0");
     {/*
       Hele meningen i tekst. Skjult for øyet på bred skjerm, der figuren sier det
       samme – men alltid i DOM-en, så skjermlesere og folk uten SVG får den. Under
-      721 px skjules figuren og denne lista ER innholdet.
+      1024 px skjules figuren og denne lista ER innholdet – og da er den en
+      LODDRETT utgave av samme historie, med en skinne, prikker som tennes nedover
+      i rekkefølge, og de samme kvitteringene.
     */}
     <ol class="flyt__liste visually-hidden">
       {noder.map((node, i) => (
-        <li>
+        <li style={`--i:${i}`}>
           {/* Samme bytte som i figuren. På mobil ER denne lista innholdet, så
               tiden må stå her – rekkefølgen bæres uansett av <ol>. */}
           <span class="mono-label flyt__liste-nr">{node.tid ?? nr(i)}</span>
           <strong class="body-strong">{node.navn}</strong>
           <span class="small muted">{node.detalj}</span>
+          {node.kvittering && <span class="mono flyt__liste-kvitt">{node.kvittering}</span>}
         </li>
       ))}
     </ol>
@@ -152,7 +237,23 @@ const nr = (i: number) => String(i + 1).padStart(2, "0");
 </figure>
 
 <style>
-  .flyt { display: grid; gap: var(--space-4); margin: 0; }
+  /*
+    TAKTEN. --takt er tiden ett ledd bruker, --loop er hele historien pluss pausen
+    før den begynner på nytt. Begge er faste tider, ikke prosenter, fordi
+    @keyframes-vinduene er prosenter av --loop og ikke kan regnes ut fra
+    nodeantallet. Med fem ledd er siste kvittering ute etter 4,4 s + visningstid;
+    med tre ledd blir pausen bare lengre. Se merknaden i frontmatter.
+
+    7,2 s er valgt etter å ha sett på kontaktarket: 5,5 s ble en nervøs stroboskop
+    av fem bokser som blinket, 10 s gjorde at man rakk å tro figuren var død.
+  */
+  .flyt {
+    --takt: 1.1s;
+    --loop: 7.2s;
+    display: grid;
+    gap: var(--space-4);
+    margin: 0;
+  }
   .flyt__tittel { margin: 0; }
 
   .flyt__ramme {
@@ -166,8 +267,9 @@ const nr = (i: number) => String(i + 1).padStart(2, "0");
      blitt klippet på halve bredden. */
   .flyt__svg { width: 100%; height: auto; display: block; overflow: visible; }
 
-  /* Standardtilstand er FERDIG TEGNET. Alt som skjuler noe står i @supports under,
-     så en nettleser uten scroll-tidslinjer viser hele figuren uten å gjøre noe. */
+  /* Standardtilstand er FERDIG TEGNET. Alt som skjuler skjelettet står i @supports
+     under, så en nettleser uten scroll-tidslinjer viser hele figuren uten å gjøre
+     noe. */
   .flyt__linje,
   .flyt__boks {
     stroke-width: 1;
@@ -183,19 +285,22 @@ const nr = (i: number) => String(i + 1).padStart(2, "0");
     stroke-linejoin: round;
     opacity: 1;
   }
+  /* Skillet mellom navnet og statusfeltet. Ren inndeling, ingen mening – derfor
+     `line` og ikke `line-strong`, og derfor er 3:1-kravet ikke i spill. */
+  .flyt__skille { stroke: var(--line); stroke-width: 1; }
 
-  /* Siste ledd er poenget – det ene stedet aksenten brukes i figuren.
+  /* Siste ledd er poenget. Navnet beholder aksenten, boksstreken ikke: gløden som
+     tennes når pakken kommer ER aksentfarget, og en boks som allerede sto i
+     aksent kunne ikke tennes.
      `accent-text`, ikke `accent`: aksentfargen er et FYLL, og brandboken sier den
      aldri skal være tekst på lyse flater. Som strøk har den samme svakhet – målt
-     1,46:1 mot flaten i LYST tema, altså en aksentboks som nesten ikke syntes.
-     I mørkt tema var den 14,03:1, så feilen var usynlig helt til begge temaer ble
-     målt. `accent-text` holder i begge: 14,03:1 mørk, 6,78:1 lys. */
-  .flyt__node--siste .flyt__boks { stroke: var(--accent-text); }
+     1,46:1 mot flaten i LYST tema. `accent-text` holder i begge: 14,03:1 mørk,
+     6,78:1 lys. */
   .flyt__node--siste .flyt__navn { fill: var(--accent-text); }
 
   /* Størrelsene er oppgitt i viewBox-enheter. Med VB_B = 1000 mot en spalte på
-     rundt 1005 px males de omtrent 1:1 på full bredde, og aldri under ~11 px før
-     figuren byttes ut med lista på 900 px. */
+     rundt 1005 px males de omtrent 1:1 på full bredde, og aldri under 16,3 px for
+     navnet før figuren byttes ut med lista på 1024 px. */
   .flyt__nr {
     font-family: var(--font-mono);
     font-size: 13px;
@@ -207,7 +312,7 @@ const nr = (i: number) => String(i + 1).padStart(2, "0");
   .flyt__nr--tid { letter-spacing: 0; fill: var(--ink-muted); }
   .flyt__navn {
     font-family: var(--font-mono);
-    font-size: 17px;
+    font-size: 18px;
     fill: var(--ink);
   }
   .flyt__detalj {
@@ -215,39 +320,149 @@ const nr = (i: number) => String(i + 1).padStart(2, "0");
     font-size: 13px;
     fill: var(--ink-muted);
   }
+  /* Kvitteringen er en hendelse, ikke en påstand om noe målt – derfor monospace
+     som alt annet teknisk, og aksentfarget fordi den ER det som skjer. 13 px:
+     med fem ledd er boksen 155 enheter bred, og 16 tegn monospace på 13 px er
+     125. På 14 px ble «klar til sending» 134 og begynte å presse kanten. */
+  .flyt__kvitt {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    fill: var(--accent-text);
+  }
 
   .flyt__bunn { margin: 0; max-width: 72ch; }
 
   .flyt__liste { margin: 0; padding: 0; list-style: none; }
 
-  /* Under 900 px blir teksten i figuren malt under ~11 px fordi SVG-en skaleres
-     med spalten. Da er lista hele innholdet, og den slutter å være visuelt skjult.
-     Grensen lå først på 720 px, men målingen viste at merket da ble malt på 9,2 px
-     – tall som består kontrastkravet og likevel er for små å lese. */
-  @media (max-width: 900px) {
-    .flyt__svg { display: none; }
-    .flyt__liste {
-      position: static;
-      width: auto;
-      height: auto;
-      margin: 0;
-      overflow: visible;
-      clip: auto;
-      white-space: normal;
-      display: grid;
-      gap: var(--space-4);
-    }
-    .flyt__liste li { display: grid; gap: 2px; }
-    .flyt__liste-nr { color: var(--accent-text); }
+  /* ---------------------------------------------------------------- historien ---
+
+    FIRE LAG BEVEGELSE, alle på dokumentets egen tidslinje – ikke på scroll.
+    Det var hele poenget: figuren skal fortelle historien av seg selv.
+
+      .flyt__glod    aksentstreken tegner seg RUNDT boksen: leddet jobber
+      .flyt__kvitt   kvitteringen kommer: leddet er ferdig
+      .flyt__pakke   prikken reiser langs pilen til neste ledd
+      .flyt__glimt   lyset som følger prikken, så streken selv ser levende ut
+
+    Rekkefølgen er `animation-delay`, ikke JavaScript. Ledd i starter på
+    i * --takt; pakken fra ledd i starter en halv takt senere og bruker en halv
+    takt på turen, så den lander NØYAKTIG når ledd i+1 tennes.
+
+    LANGFORMENE ER MED VILJE, HELE SETTET. En animasjon kan ha riktig
+    `animation-name` og likevel stå bom stille fordi `animation-fill-mode` er
+    `none` eller `animation-iteration-count` er 1. Og skriver man stenografien
+    `animation: ...` sammen med `animation-timeline`, slår lightningcss dem
+    sammen til en ugyldig erklæring som BÅDE Chromium og Firefox forkaster uten å
+    si fra – se testen i test/bygget-html.test.ts. Her er det ingen
+    `animation-timeline` i det hele tatt: `auto` er standard, og det er
+    dokumentets tidslinje vi vil ha.
+  */
+  .flyt__glod {
+    stroke: var(--accent-text);
+    stroke-width: 1.5;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    opacity: 0;
+    animation-name: flyt-tennes;
+    animation-duration: var(--loop);
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-fill-mode: both;
+    animation-delay: calc(var(--i) * var(--takt));
   }
 
+  /* Kvitteringen er SYNLIG i standardtilstanden. Animasjonen overstyrer den med
+     fill-mode: both, men i det øyeblikket animasjoner er av – redusert bevegelse,
+     eller en nettleser som ikke kjører dem – står alle kvitteringene der. */
+  .flyt__kvitt {
+    opacity: 1;
+    animation-name: flyt-kvittering;
+    animation-duration: var(--loop);
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-fill-mode: both;
+    animation-delay: calc(var(--i) * var(--takt));
+  }
+
+  /* `accent-text`, ikke `accent`. Prikken er historiens hovedperson, og i LYST
+     tema måler den rene aksenten 1,9:1 mot den hvite flaten – en pakke man
+     nesten ikke ser. `accent-text` er identisk med aksenten i mørkt tema og en
+     dempet oliven i lyst, og holder 3:1 i begge. */
+  .flyt__pakke {
+    fill: var(--accent-text);
+    opacity: 0;
+    animation-name: flyt-reiser;
+    animation-duration: var(--loop);
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-fill-mode: both;
+    /* En halv takt etter at leddet foran tente. */
+    animation-delay: calc((var(--i) + 0.5) * var(--takt));
+  }
+
+  /* 1,5 og ikke 2: brandbokens hairline-regel gjelder KANTER, og dette er et lys,
+     ikke en kant – men et 2px-strøk ved siden av 1px-skjelettet leser som en
+     annen strektykkelse i systemet, og det er nettopp det regelen beskytter. */
+  .flyt__glimt {
+    stroke: var(--accent-text);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-dasharray: 0.3 2;
+    stroke-dashoffset: 2.6;
+    opacity: 0;
+    animation-name: flyt-glimt;
+    animation-duration: var(--loop);
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-fill-mode: both;
+    animation-delay: calc((var(--i) + 0.5) * var(--takt));
+  }
+
+  /* Vinduene er prosenter av --loop = 7,2 s: 1 % = 72 ms, og én takt = 15,3 %. */
   /*
-    LANGFORMER MED VILJE. Skriver man `animation: navn linear both` og
-    `animation-timeline: view()` som to erklæringer, slår lightningcss dem sammen
-    til `animation: linear both navn view()`. Den formen er ugyldig –
-    animation-timeline er ikke del av stenografien – og BÅDE Chromium og Firefox
-    forkaster hele erklæringen uten å si fra. Testen i test/bygget-html.test.ts
-    feiler hvis mønsteret dukker opp i bygget.
+    Gløden står i 1,65 s = halvannen takt. Første forsøk holdt den i 3,2 s, og da
+    sto tre av fem bokser i aksent samtidig: det leste som «alt lyser», ikke som
+    «noe flytter seg». Halvannen takt gir høyst to tente bokser, der den ene er
+    på vei ut – altså en BØLGE som går fra venstre mot høyre.
+  */
+  @keyframes flyt-tennes {
+    0% { stroke-dashoffset: 1; opacity: 0; }
+    1% { stroke-dashoffset: 1; opacity: 1; }
+    9% { stroke-dashoffset: 0; opacity: 1; }
+    17% { stroke-dashoffset: 0; opacity: 1; }
+    23% { stroke-dashoffset: 0; opacity: 0; }
+    100% { stroke-dashoffset: 0; opacity: 0; }
+  }
+  /* Kvitteringen kommer rett etter at gløden har gått rundt, og står i vel tre
+     sekunder. Det er lenge nok til å LESES – kortere, og den ble et blink. */
+  @keyframes flyt-kvittering {
+    0% { opacity: 0; }
+    4% { opacity: 0; }
+    10% { opacity: 1; }
+    40% { opacity: 1; }
+    48% { opacity: 0; }
+    100% { opacity: 0; }
+  }
+  @keyframes flyt-reiser {
+    0% { transform: translateX(0); opacity: 0; }
+    1% { transform: translateX(0); opacity: 1; }
+    7.6% { transform: translateX(var(--vei)); opacity: 1; }
+    10% { transform: translateX(var(--vei)); opacity: 0; }
+    100% { transform: translateX(var(--vei)); opacity: 0; }
+  }
+  @keyframes flyt-glimt {
+    0% { stroke-dashoffset: 2.6; opacity: 0; }
+    1% { opacity: 1; }
+    7.6% { stroke-dashoffset: 1.3; opacity: 1; }
+    10% { stroke-dashoffset: 1.3; opacity: 0; }
+    100% { stroke-dashoffset: 1.3; opacity: 0; }
+  }
+
+  /* --------------------------------------------------------------- skjelettet ---
+
+    Skjelettet tegner seg fortsatt når figuren kommer inn i skjermbildet. Det er
+    en inngang, ikke historien – historien over går uansett. To ulike tidslinjer
+    i samme figur er greit så lenge ingen ENKELT egenskap drives av begge.
   */
   @supports (animation-timeline: view()) {
     .flyt__boks {
@@ -268,6 +483,7 @@ const nr = (i: number) => String(i + 1).padStart(2, "0");
       animation-range: entry calc(26% + var(--i) * 13%) cover calc(40% + var(--i) * 13%);
     }
     .flyt__spiss,
+    .flyt__skille,
     .flyt__nr,
     .flyt__navn,
     .flyt__detalj {
@@ -289,17 +505,128 @@ const nr = (i: number) => String(i + 1).padStart(2, "0");
     to { opacity: 1; }
   }
 
-  /* Redusert bevegelse: figuren står ferdig, ingenting beveger seg. */
+  /* ------------------------------------------------------------------- mobil ---
+
+    Under 1024 px males navnet i figuren under 16 px fordi SVG-en skaleres med
+    spalten. Da er lista hele innholdet – og da skal den fortelle den SAMME
+    historien, loddrett: en skinne, en prikk per ledd som tennes nedover i
+    rekkefølge, og kvitteringen ved siden av.
+
+    Grensen lå først på 720 px, så 900. Målingen flyttet den igjen: på 901 px ble
+    navnet malt på 13,4 px og på 1000 px på 15,9 px. Tall som består
+    kontrastkravet kan fortsatt være for små å lese. På 1024 px males navnet på
+    16,3 px, og det er der grensen hører hjemme.
+  */
+  @media (max-width: 1023.98px) {
+    .flyt__svg { display: none; }
+    .flyt__liste {
+      position: relative;
+      width: auto;
+      height: auto;
+      margin: 0;
+      overflow: visible;
+      clip: auto;
+      white-space: normal;
+      display: grid;
+      gap: var(--space-5);
+      padding-left: 30px;
+    }
+    /* Skinnen. Stopper i midten av første og siste prikk, ikke i kanten av
+       lista: en strek som stikker ut over det første leddet ser ut som om
+       historien begynner et sted utenfor figuren. */
+    .flyt__liste::before {
+      content: "";
+      position: absolute;
+      left: 5px;
+      top: 7px;
+      bottom: 7px;
+      width: var(--hairline);
+      background: var(--line-strong);
+    }
+    .flyt__liste li { position: relative; display: grid; gap: 2px; }
+    /* Prikken i hvile: hul ring i samme strek som skinnen. */
+    .flyt__liste li::before {
+      content: "";
+      position: absolute;
+      left: -30px;
+      top: 2px;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      border: var(--hairline) solid var(--line-strong);
+      background: var(--bg-raised);
+    }
+    /* Prikken som tennes. Egen pseudoelement oppå ringen, så ringen blir stående
+       når animasjoner er av. */
+    .flyt__liste li::after {
+      content: "";
+      position: absolute;
+      left: -28px;
+      top: 4px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-text);
+      opacity: 0;
+      animation-name: flyt-punkt;
+      animation-duration: var(--loop);
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      animation-fill-mode: both;
+      animation-delay: calc(var(--i) * var(--takt));
+    }
+    .flyt__liste-nr { color: var(--accent-text); }
+    /* Kvitteringen står STILLE på mobil. På en liten skjerm er lista selve
+       innholdet, og tekst som toner ut mens man leser den er et tap, ikke et
+       grep. Prikkene bærer bevegelsen. */
+    .flyt__liste-kvitt { color: var(--accent-text); font-size: 0.8125rem; }
+  }
+
+  @keyframes flyt-punkt {
+    0% { opacity: 0; transform: scale(0.4); }
+    2% { opacity: 1; transform: scale(1); }
+    40% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1); }
+  }
+
+  /*
+    REDUSERT BEVEGELSE: figuren står ferdig tegnet med ALLE kvitteringene synlige,
+    og ingenting rører seg. Historien er fortsatt der – den er bare fortalt
+    ferdig i stedet for å spilles. Prikken, glimtet og gløden hører til
+    spillingen og forsvinner; det er riktig, for de tre sier ingenting i stillbilde.
+  */
   @media (prefers-reduced-motion: reduce) {
     .flyt__boks,
     .flyt__linje,
     .flyt__spiss,
+    .flyt__skille,
     .flyt__nr,
     .flyt__navn,
-    .flyt__detalj {
+    .flyt__detalj,
+    .flyt__kvitt,
+    .flyt__glod,
+    .flyt__pakke,
+    .flyt__glimt,
+    .flyt__liste li::after {
       animation: none !important;
       stroke-dashoffset: 0 !important;
+    }
+    .flyt__boks,
+    .flyt__linje,
+    .flyt__spiss,
+    .flyt__skille,
+    .flyt__nr,
+    .flyt__navn,
+    .flyt__detalj,
+    .flyt__kvitt {
       opacity: 1 !important;
+    }
+    .flyt__glod,
+    .flyt__pakke,
+    .flyt__glimt,
+    .flyt__liste li::after {
+      opacity: 0 !important;
     }
   }
 </style>

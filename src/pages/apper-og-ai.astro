@@ -3,21 +3,40 @@ import Base from "../layouts/Base.astro";
 import Scene from "../components/Scene.astro";
 import Mega from "../components/Mega.astro";
 import Avslor from "../components/Avslor.astro";
+import SceneFilm from "../components/SceneFilm.astro";
+import Stillbilde from "../components/Stillbilde.astro";
+import Pekerkort from "../components/Pekerkort.astro";
+import Horisont from "../components/Horisont.astro";
 import Button from "../components/Button.astro";
 import Terminal from "../components/Terminal.astro";
 import ContactBlock from "../components/ContactBlock.astro";
-import { caser } from "../data/caser";
+import { synligeCaser } from "../data/caser";
 import { bookUrl } from "../data/firma";
 
 import "../styles/scener.css";
-const apper = caser.filter((c) => c.type === "App");
+
+/**
+ * `synligeCaser`, ikke `caser`. Den ufiltrerte listen inneholder app-caser som
+ * fortsatt er merket TODO, og de ble rendret som kundetekst: «TODO: navn på app
+ * nummer én» sto i bygget HTML. Prinsippet er ikke å finne på innhold, men at et
+ * internt notat aldri skal vises – har vi ikke navn å vise til, skal raden ikke
+ * finnes. Samme grep som `firma.telefon` og den tomme tel:-lenken.
+ */
+const apper = synligeCaser.filter((c) => c.type === "App");
+
+const steg = [
+  { nr: "01", tittel: "Vi finner den ene jobben", tekst: "Nesten alle app-ideer er tre ideer i en trenchcoat. Vi skiller ut den ene oppgaven som faktisk gjentar seg hver uke, og lar resten vente." },
+  { nr: "02", tittel: "Du får se den på egen telefon", tekst: "Lenge før den er ferdig. En app som bare er sett på en skjerm i et møterom, oppdager man feilene i først etter lansering." },
+  { nr: "03", tittel: "Den kobles til det du har", tekst: "Appen henter fra samme sted som nettsiden og regnskapet. Et eget datasett ved siden av er en ny kilde til uenighet om hvilke tall som gjelder." },
+  { nr: "04", tittel: "Den legges ut i ditt navn", tekst: "App Store og Google Play krever en utviklerkonto. Den står på din bedrift, ikke på oss, så appen blir værende din også om du bytter leverandør." },
+];
 ---
 <Base
   tittel="Apper og AI"
   beskrivelse="iOS-app, intern app og AI-assistent fra samme utvikler som bygger nettsiden. Oslo, fast pris, databehandleravtale på plass."
 >
   <Scene lav>
-    <Mega som="h1" merke="Apper og AI" n={1} tekst="Få leverandører tar både nettside og app" />
+    <Mega som="h1" merke="Apper og AI" n={1} tekst="Få leverandører tar både nettside og app" aksent="app" />
     <Avslor trinn={1}>
       <p class="scene__ingress body-lg">De fleste som bygger nettsider setter ut apputvikling. Vi gjør begge deler selv, slik at nettsiden, systemet bak og appen oppå henger sammen fra start.</p>
     </Avslor>
@@ -25,28 +44,52 @@ const apper = caser.filter((c) => c.type === "App");
     <Avslor>
     <div class="row">
       <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
-      <Button variant="ghost" href="/caser">Se appene</Button>
+      <Button variant="ghost" href="#apper">Hva en app løser</Button>
     </div>
     </Avslor>
   </Scene>
 
-  <Scene n={2} eyebrow="Apper" tittel="Tre ting en app løser som en nettside ikke gjør">
+  {/* Filmen ligger BAK seksjonen, med masken som slipper motivet fram på høyre
+      side mens teksten står trygt til venstre. Kontrast målt etterpå, ikke antatt. */}
+  <div class="scenefilm-ramme">
+    <SceneFilm
+      smal="/scener/apper-960.mp4"
+      bred="/scener/apper-1920.mp4"
+      plakat="/scener/apper-poster.avif"
+      maske={52}
+      tekst="venstre"
+    />
+    <Scene n={2} eyebrow="Sammenhengen" tittel="To flater, én kobling">
+      <Avslor>
+      <div class="stack" style="max-width: 34rem">
+        <p class="body-lg">
+          En app som ikke snakker med nettsiden og systemet bak, er bare en ny
+          innboks noen må huske å sjekke.
+        </p>
+        <p class="muted">
+          Derfor bygges appen mot de samme dataene som alt annet: én kundeliste,
+          én ordre, ett sted tallene kommer fra. Det er den koblingen som gjør at
+          en app sparer tid i stedet for å lage mer arbeid.
+        </p>
+        <Button variant="ghost" href="/systemer">Se hvordan vi kobler systemer</Button>
+      </div>
+      </Avslor>
+    </Scene>
+  </div>
+
+  <Scene n={3} eyebrow="Apper" tittel="Tre ting en app løser som en nettside ikke gjør" id="apper">
     <Avslor>
     <div class="grid-3">
-      <div class="card">
-        <h3 class="subheading">Varsler</h3>
-        <p class="muted">Push når en ny jobb kommer inn, eller når en time avbestilles. Ingen venter på at noen skal sjekke e-posten.</p>
-      </div>
-      <div class="card">
-        <h3 class="subheading">Offline</h3>
-        <p class="muted">Montøren registrerer timer og bilder i kjelleren uten dekning, og det synkes når telefonen får nett igjen.</p>
-      </div>
-      <div class="card">
-        <h3 class="subheading">Kamera og posisjon</h3>
-        <p class="muted">Befaringsbilder, strekkoder og GPS rett inn i ordren. Det er her feltarbeid faktisk sparer tid.</p>
-      </div>
+      <Pekerkort nr={1} tittel="Varsler" tekst="Push når en ny jobb kommer inn, eller når en time avbestilles. Ingen venter på at noen skal sjekke e-posten." />
+      <Pekerkort nr={2} tittel="Offline" tekst="Montøren registrerer timer og bilder i kjelleren uten dekning, og det synkes når telefonen får nett igjen." />
+      <Pekerkort nr={3} tittel="Kamera og posisjon" tekst="Befaringsbilder, strekkoder og GPS rett inn i ordren. Det er her feltarbeid faktisk sparer tid." />
     </div>
     </Avslor>
+
+    <Avslor trinn={2}>
+      <Stillbilde id="apper-par" sizes="(min-width: 70rem) 68rem, 100vw" class="scene__flate" />
+    </Avslor>
+
     {apper.length > 0 && (
       <dl class="kv" style="margin-top: var(--space-6)">
         {apper.map((a) => (
@@ -56,12 +99,22 @@ const apper = caser.filter((c) => c.type === "App");
     )}
   </Scene>
 
-  <Scene
-    n={3}
-    eyebrow="AI"
-    tittel="AI som gjør en jobb, ikke AI som pynt"
-    ingress="SSB melder at 48 % av foretakene med minst ti ansatte brukte KI i 2026, mot tre av ti året før. Det betyr at konkurrentene dine prøver. De fleste prøver på feil sted."
-  >
+  <Horisont
+    n={4}
+    merke="Slik blir den til"
+    tittel="Fire steg, ingen overraskelser"
+    navn="Stegene i et apputviklingsløp"
+    poster={steg}
+  />
+
+  <Scene n={5} eyebrow="AI" lav>
+    <Mega som="h2" tekst="AI som gjør en jobb, ikke AI som pynt" aksent="jobb" />
+    <Avslor trinn={1}>
+      <p class="scene__ingress body-lg">SSB melder at 48 % av foretakene med minst ti ansatte brukte KI i 2026, mot tre av ti året før. Det betyr at konkurrentene dine prøver. De fleste prøver på feil sted.</p>
+    </Avslor>
+  </Scene>
+
+  <Scene n={6} eyebrow="I praksis" tittel="Ett lag som gjør én ting">
     <Avslor>
     <div class="grid-2">
       <div class="stack">
@@ -92,9 +145,13 @@ const apper = caser.filter((c) => c.type === "App");
       />
     </div>
     </Avslor>
+
+    <Avslor trinn={2}>
+      <Stillbilde id="apper-lag" sizes="(min-width: 70rem) 68rem, 100vw" class="scene__flate" />
+    </Avslor>
   </Scene>
 
-  <ContactBlock n={4} />
+  <ContactBlock n={7} />
 </Base>
 <style is:global>
   /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
@@ -107,5 +164,13 @@ const apper = caser.filter((c) => c.type === "App");
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+  /* Bildene er flater, ikke illustrasjoner i en spalte: de får hele scenens
+     bredde og en hårlinje, slik brandboken krever for bildeflater. */
+  .scene__flate {
+    margin-top: var(--space-7);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    overflow: hidden;
   }
 </style>

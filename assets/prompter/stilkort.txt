@@ -1,10 +1,9 @@
-Photorealistic studio product photograph of an abstract engineered object, high-end industrial design catalogue look.
-Background: seamless near-black studio void in color #0b0d10, perfectly even tone, no gradient, no vignette, no horizon line; the object rests on an invisible matte surface of the same color with a soft short contact shadow.
-Palette: near-black #0b0d10, graphite #16191e, dark gunmetal #23272e, anodized aluminium #8a9099, pale steel highlight #c9ced6, and one accent only: lime green #c8f24a used exclusively as hair-thin emissive edge lines covering less than 3% of the image.
-Materials: matte bead-blasted anodized aluminium; brushed steel edges with fine 45-degree chamfers; frosted borosilicate glass with soft internal diffusion; dark green-black circuit board with fine copper traces; matte off-black technical ceramic.
-Lighting: cool neutral 5600K; large soft overhead key from upper left; thin hard rim light from behind right outlining every edge; very low fill; deep controlled shadows; crisp specular lines along chamfers.
-Camera: 85mm lens, three-quarter view from 25 degrees above, f/8, tack sharp across the object.
-Composition: the object sits in the right 60 percent of the frame; the left third is calm empty near-black negative space for web typography.
+Photorealistic studio photograph of an abstract engineered subject, high-end industrial design catalogue look.
+Background: seamless near-black studio void in color #0b0d10, perfectly even tone, no gradient, no vignette, no horizon line.
+Palette: near-black #0b0d10, graphite #16191e, dark gunmetal #23272e, anodized aluminium #8a9099, pale steel highlight #c9ced6, and one accent only: lime green #c8f24a, used exclusively as hair-thin emissive lines covering less than 3% of the image.
+Finish: every material is matte and non-reflective unless the scene says otherwise; edges carry fine 45-degree chamfers; surfaces are precisely machined.
+Tone: cool neutral 5600K white balance; deep controlled shadows; crisp specular lines along chamfers; no warm cast.
+Composition: at least one third of the frame is calm, near-empty negative space that web typography can sit in.
 Mood: calm, precise, engineered, Scandinavian restraint.
 All surfaces are plain and unmarked: no text, letters, numbers, logos, icons, symbols or watermarks anywhere.
 Avoid: purple or blue gradients, glassmorphism, neon glow, glossy plastic, chrome bling, bokeh orbs, lens flares, sparkles, holograms, floating screens, people, hands, faces.

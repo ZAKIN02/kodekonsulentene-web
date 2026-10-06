@@ -22,7 +22,10 @@ if (!NOKKEL) {
   console.error("Mangler nøkkel. Sett HF_CREDENTIALS, eller HIGGSFIELD_API_KEY og _SECRET.");
   process.exit(1);
 }
-config({ credentials: NOKKEL });
+// SDK-en har maxPollTime 300 000 ms (5 min) som standard. Det er for kort for tunge
+// jobber: klienten gir opp mens leverandøren fortsatt arbeider, og det leser som at
+// genereringen «feilet». Samme verdier som scripts/scene.mjs bruker.
+config({ credentials: NOKKEL, maxPollTime: 30 * 60 * 1000, pollInterval: 5000 });
 
 const DEF = JSON.parse(readFileSync("assets/prompter/registre.json", "utf8"));
 const id = process.argv[2];

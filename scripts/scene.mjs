@@ -53,7 +53,16 @@ Nøkkelen lages på https://console.higgsfield.ai og skal aldri committes.`);
 }
 const NEGATIV = "text, letters, numbers, logos, watermark, people, hands, faces, glossy plastic, neon glow, purple, blue gradient, blur, bokeh, lens flare, sparkles, hologram, floating screens";
 
-config({ credentials: NOKKEL });
+// maxPollTime er 300 000 ms (5 min) som standard i SDK-en, og Kling 3.0 i 4K bruker
+// lengre tid enn det. Klienten kastet TimeoutError mens jobben fullførte hos
+// leverandøren – vi betalte for klipp vi aldri fikk, og to agenter konkluderte med at
+// «renderingen feilet» når den i virkeligheten var ferdig. 30 minutter med 5 sekunders
+// mellomrom er romslig nok for 4K uten å henge i det uendelige.
+config({
+  credentials: NOKKEL,
+  maxPollTime: 30 * 60 * 1000,
+  pollInterval: 5000,
+});
 
 /**
  * Basisbildet er ankeret: begge redigeringene gjøres ut fra DET, slik at kamera,

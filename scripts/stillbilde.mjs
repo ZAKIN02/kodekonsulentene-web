@@ -59,7 +59,9 @@ HIGGSFIELD_API_KEY og HIGGSFIELD_API_SECRET.
 Nøkkelen lages på https://console.higgsfield.ai og skal aldri committes.`);
   process.exit(1);
 }
-config({ credentials: NOKKEL });
+// Samme grense som i scene.mjs. Bilder er raskere enn 4K-film, men standarden på
+// fem minutter er for knapp når leverandøren er under last.
+config({ credentials: NOKKEL, maxPollTime: 15 * 60 * 1000, pollInterval: 4000 });
 
 const CDN = "https://d3u0tzju9qaucj.cloudfront.net/cc1083fc-6d60-417e-b73b-c64ca48db4c7";
 const basisUrl = `${CDN}/${DEF.basis}.png`;

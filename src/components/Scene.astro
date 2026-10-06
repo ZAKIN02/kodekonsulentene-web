@@ -1,0 +1,50 @@
+---
+/**
+ * Seksjonsramme for forsiden. Hver seksjon skal føles som sin egen scene, ikke
+ * som nok et kort i en strøm: full skjermhøyde-følelse på desktop, kraftig luft,
+ * og en hårlinje som markerer skillet.
+ *
+ * Section.astro er uendret og brukes fortsatt på undersidene. Denne gjelder bare
+ * forsiden, der rekkefølgen og nummereringen følger docs/sidemonstre.md.
+ */
+import Eyebrow from "./Eyebrow.astro";
+import StorTekst from "./StorTekst.astro";
+import Avslor from "./Avslor.astro";
+
+interface Props {
+  n?: number;
+  eyebrow?: string;
+  tittel?: string;
+  ingress?: string;
+  id?: string;
+  /** Innholdet bryter ut av 1120 px og får hele bredden. */
+  bred?: boolean;
+  /** Dropper min-høyden der innholdet er kort nok til å puste selv. */
+  lav?: boolean;
+  class?: string;
+}
+const { n, eyebrow, tittel, ingress, id, bred = false, lav = false, class: cls } = Astro.props;
+---
+<section
+  id={id}
+  class:list={["scene", bred && "scene--bred", lav && "scene--lav", cls]}
+>
+  <div class="scene__inner">
+    {(eyebrow || tittel) && (
+      <header class="scene__head">
+        {eyebrow && (
+          <Avslor>
+            <Eyebrow n={n}>{eyebrow}</Eyebrow>
+          </Avslor>
+        )}
+        {tittel && <StorTekst tekst={tittel} />}
+        {ingress && (
+          <Avslor trinn={1}>
+            <p class="scene__ingress body-lg">{ingress}</p>
+          </Avslor>
+        )}
+      </header>
+    )}
+    <slot />
+  </div>
+</section>

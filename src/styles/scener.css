@@ -1,0 +1,193 @@
+/* KodeKonsulentene – scener på forsiden.
+   Lastes bare av src/pages/index.astro. Alt annet ligger i site.css.
+
+   Regelen fra brandboken gjelder: bare mikrointeraksjoner, og alt over 0 ms blir
+   0 ms ved prefers-reduced-motion. Her er bevegelsen bundet til scroll, så den
+   kjører aldri av seg selv og bruker ingen CPU når siden står stille. */
+
+/* ---------------------------------------------------------------- scene ---- */
+
+.scene {
+  position: relative;
+  padding-block: var(--space-8);
+}
+.scene::before {
+  /* Hårlinjen som skiller scenene. Ligger i innholdsbredden, ikke helt ut i kanten. */
+  content: "";
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: max(var(--space-5), calc(50% - 560px));
+  height: var(--hairline);
+  background: var(--line);
+}
+.scene:first-of-type::before { display: none; }
+
+.scene__inner {
+  width: 100%;
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-inline: var(--space-5);
+}
+
+.scene__head {
+  display: grid;
+  gap: var(--space-4);
+  margin-bottom: var(--space-7);
+}
+.scene__ingress {
+  max-width: 52ch;
+  color: var(--ink-muted);
+}
+
+@media (min-width: 721px) {
+  .scene__inner { padding-inline: var(--space-6); }
+}
+
+@media (min-width: 861px) {
+  /* Scenefølelsen: hver seksjon eier skjermen. Ikke en jevn strøm av kort. */
+  .scene {
+    min-height: 80svh;
+    display: flex;
+    align-items: center;
+    padding-block: var(--space-9);
+  }
+  .scene--lav { min-height: 0; }
+  .scene__head { margin-bottom: var(--space-8); }
+}
+
+/* Scener som skal bruke hele bredden – priser, prosess, FAQ tåler mer plass. */
+@media (min-width: 1200px) {
+  .scene--bred .scene__inner { max-width: 1320px; }
+}
+
+/* ------------------------------------------------------------ stortekst ---- */
+
+.stortekst {
+  margin: 0;
+  max-width: 18ch;
+  text-wrap: balance;
+}
+.stortekst .ord {
+  display: inline-block;
+  /* Ordene må kunne tones uten at linjen hopper. */
+  will-change: auto;
+}
+
+@media (min-width: 1200px) {
+  /* Bryter ut av innholdsbredden, men aldri ut av skjermen. */
+  .scene__head .stortekst {
+    width: min(1320px, calc(100vw - 2 * var(--space-6)));
+    max-width: none;
+  }
+  .stortekst.display-lg { font-size: 56px; line-height: 58px; letter-spacing: -0.03em; }
+}
+@media (min-width: 1500px) {
+  .stortekst.display-lg { font-size: 64px; line-height: 66px; }
+}
+
+/* ------------------------------------------------------------- avdekking ---- */
+
+/* Standardtilstand: alt er synlig. Ingenting skjules før noe aktivt skjuler det,
+   så siden er komplett uten JavaScript og uten scroll-driven animations. */
+.avslor { opacity: 1; transform: none; }
+
+/* MERK: langformene brukes med vilje. Skriver man `animation: avslor-inn linear both`
+   og `animation-timeline: view()` som to erklæringer, slår minifieren (lightningcss)
+   dem sammen til `animation: linear both avslor-inn view()`. Den formen er ugyldig –
+   animation-timeline er ikke en del av animation-stenografien – og nettleseren
+   forkaster tidslinjen uten å si fra. Resultatet var at ingen avdekking kjørte,
+   mens CSS.supports fortsatt meldte at view() var støttet. */
+@supports (animation-timeline: view()) {
+  .avslor {
+    animation-name: avslor-inn;
+    animation-duration: 1ms;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: view();
+    animation-range: entry 8% cover 32%;
+  }
+  .avslor--venstre { animation-name: avslor-venstre; }
+
+  .stortekst .ord {
+    animation-name: avslor-ord;
+    animation-duration: 1ms;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: view();
+    /* Hvert ord starter litt etter det forrige. Stigen er flat med vilje –
+       tre prosent per ord, så en lang tittel ikke blir en bølge. */
+    animation-range: entry calc(6% + var(--i) * 3%) cover calc(26% + var(--i) * 3%);
+  }
+}
+
+/* Firefox mangler scroll-driven animations i stabil versjon. Der tar en
+   IntersectionObserver over, og skjuler bare det den faktisk kan vise igjen. */
+@supports not (animation-timeline: view()) {
+  html.js-avslor .avslor[data-vent] {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  html.js-avslor .avslor--venstre[data-vent] { transform: translateX(-18px); }
+  html.js-avslor .avslor {
+    transition:
+      opacity 420ms ease-out calc(var(--trinn, 0) * 70ms),
+      transform 420ms ease-out calc(var(--trinn, 0) * 70ms);
+  }
+  html.js-avslor .stortekst[data-vent] .ord {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  html.js-avslor .stortekst .ord {
+    transition:
+      opacity 380ms ease-out calc(var(--i) * 45ms),
+      transform 380ms ease-out calc(var(--i) * 45ms);
+  }
+}
+
+@keyframes avslor-inn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes avslor-venstre {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes avslor-ord {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .avslor,
+  .stortekst .ord,
+  html.js-avslor .avslor,
+  html.js-avslor .avslor[data-vent],
+  html.js-avslor .stortekst[data-vent] .ord {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ------------------------------------------------------- mikrointeraksjon ---- */
+
+/* Brandboken: hover flytter kantfargen line → line-strong på 120 ms. Kortene
+   på forsiden manglet dette. */
+.scene .card,
+.scene .kk-report,
+.scene .kk-price {
+  transition: border-color 120ms ease;
+}
+.scene .card:hover,
+.scene .kk-report:hover,
+.scene .kk-price:hover {
+  border-color: var(--line-strong);
+}
+
+
+/* ------------------------------------------------------------ bevis-rad ---- */
+
+/* Bevis-stripen ligger rett under hero og skal ikke ha scene-luft over seg. */
+.bevisrad { padding-block: var(--space-6) var(--space-7); }
+.bevisrad .scene__inner { display: grid; gap: var(--space-5); }

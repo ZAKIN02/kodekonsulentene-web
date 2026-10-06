@@ -47,9 +47,12 @@
   }
   @media (max-width: 860px) {
     .herofilm {
-      opacity: 0.5;
-      -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgb(0 0 0 / 0.3) 30%, #000 70%);
-      mask-image: linear-gradient(180deg, transparent 0%, rgb(0 0 0 / 0.3) 30%, #000 70%);
+      /* På mobil står teksten øverst og filmen må holde seg under den. Med den
+         gamle kurven (gjennomsiktig til 30 %) lå platene bak ingressen og målte
+         3,85:1 – under AA-kravet på 4,5. Nå er filmen helt borte i øvre halvdel. */
+      opacity: 0.42;
+      -webkit-mask-image: linear-gradient(180deg, transparent 0%, transparent 52%, rgb(0 0 0 / 0.35) 68%, #000 88%);
+      mask-image: linear-gradient(180deg, transparent 0%, transparent 52%, rgb(0 0 0 / 0.35) 68%, #000 88%);
     }
     .herofilm video { object-position: center 60%; }
   }

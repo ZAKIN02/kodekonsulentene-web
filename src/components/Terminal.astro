@@ -9,9 +9,11 @@ interface Props {
   cursor?: boolean;
   /** Skriver linjene inn én etter én når blokken kommer i syne. Krever JS; uten JS står alt ferdig. */
   skriv?: boolean;
+  /** Gjør blokken til en levende logg: hero-skjemaet kjører en ekte sjekk inn i den. */
+  live?: boolean;
   class?: string;
 }
-const { title = "~/kodekonsulentene", label, lines, cursor = false, skriv = false, class: cls } = Astro.props;
+const { title = "~/kodekonsulentene", label, lines, cursor = false, skriv = false, live = false, class: cls } = Astro.props;
 const cl = { cmd: "kk-cmd", out: "kk-out", ok: "kk-ok", warn: "kk-warn", fail: "kk-fail" } as const;
 ---
 <div
@@ -19,6 +21,7 @@ const cl = { cmd: "kk-cmd", out: "kk-out", ok: "kk-ok", warn: "kk-warn", fail: "
   role="img"
   aria-label={label ?? `Terminalutsnitt: ${lines.map((l) => l.text).join(". ")}`}
   data-skriv={skriv ? "" : undefined}
+  data-live={live ? "" : undefined}
 >
   <div class="kk-term-bar">
     <span class="kk-dot" aria-hidden="true"></span>

@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
-import Section from "../components/Section.astro";
+import Scene from "../components/Scene.astro";
+import Avslor from "../components/Avslor.astro";
 import Eyebrow from "../components/Eyebrow.astro";
 import Button from "../components/Button.astro";
 import UrlCheck from "../components/UrlCheck.astro";
@@ -13,6 +14,8 @@ import PriceCard from "../components/PriceCard.astro";
 import ProcessSteps from "../components/ProcessSteps.astro";
 import Faq from "../components/Faq.astro";
 import ContactBlock from "../components/ContactBlock.astro";
+
+import "../styles/scener.css";
 
 import { firma, bookUrl } from "../data/firma";
 import { bevis } from "../data/bevis";
@@ -74,41 +77,57 @@ const eksempelRapport = [
         lines={heroTerminal}
         cursor
         skriv
+        live
         label="Terminalutsnitt som viser en nettsidesjekk: ytelse 54 av 100, tre cookies før samtykke, to av seks sikkerhetsheadere, organisasjonsnummer ikke funnet."
       />
     </div>
   </section>
 
   <!-- 02 Bevis -->
-  <div class="wrap">
-    <ProofStrip items={bevis} label="Målbare påstander om denne siden og dette foretaket" />
-  </div>
-
-  <div class="wrap" style="padding-top: var(--space-5)">
-    <Button variant="ghost" href="/historie">Se hva som ligger inne i en nettside</Button>
-  </div>
+  <section class="scene scene--lav bevisrad">
+    <div class="scene__inner">
+      <Avslor>
+        <ProofStrip items={bevis} label="Målbare påstander om denne siden og dette foretaket" />
+      </Avslor>
+      <Avslor trinn={1}>
+        <Button variant="ghost" href="/historie">Se hva som ligger inne i en nettside</Button>
+      </Avslor>
+    </div>
+  </section>
 
   <!-- 03 Tjenester -->
-  <Section n={3} eyebrow="Tjenester" tittel="Tre ting vi gjør" ingress="Og én ting vi ikke gjør: selge deg noe du ikke trenger. Trenger du bare en lovsjekk, er det det du får.">
+  <Scene
+    n={3}
+    eyebrow="Tjenester"
+    tittel="Tre ting vi gjør"
+    ingress="Og én ting vi ikke gjør: selge deg noe du ikke trenger. Trenger du bare en lovsjekk, er det det du får."
+  >
     <div class="grid-3">
-      {tjenester.map((t) => (
-        <ServiceCard
-          n={t.n}
-          title={t.tittel}
-          href={t.href}
-          description={t.beskrivelse}
-          items={t.punkter}
-          linkLabel={t.lenketekst}
-        />
+      {tjenester.map((t, i) => (
+        <Avslor trinn={i}>
+          <ServiceCard
+            n={t.n}
+            title={t.tittel}
+            href={t.href}
+            description={t.beskrivelse}
+            items={t.punkter}
+            linkLabel={t.lenketekst}
+          />
+        </Avslor>
       ))}
     </div>
-  </Section>
+  </Scene>
 
   <!-- 04 Caser -->
-  <Section n={4} eyebrow="Caser" tittel="Hva vi bygger" ingress="Problem, løsning, resultat. Står det et tall her, er det målt – ikke anslått.">
+  <Scene
+    n={4}
+    eyebrow="Caser"
+    tittel="Hva vi bygger"
+    ingress="Problem, løsning, resultat. Står det et tall her, er det målt – ikke anslått."
+  >
     <div class="grid-3">
-      {synligeCaser.map((c) => (
-        <article class="card">
+      {synligeCaser.map((c, i) => (
+        <Avslor trinn={i} as="article" class="card">
           <div class="row" style="justify-content: space-between">
             <Eyebrow>{c.type}</Eyebrow>
             <span class="mono faint">{c.kunde}</span>
@@ -125,81 +144,109 @@ const eksempelRapport = [
           )}
           <p class="mono faint">{c.stack.join(" · ")}</p>
           {c.href && <Button variant="ghost" href={c.href}>Se caset</Button>}
-        </article>
+        </Avslor>
       ))}
     </div>
-    <div class="row" style="margin-top: var(--space-5)">
-      <span class="small faint">
+    <Avslor trinn={2}>
+      <p class="small faint" style="margin-top: var(--space-6)">
         Konseptarbeid er alltid merket «Konsept, ikke oppdrag». <a class="kk-link" href="/caser">Alle caser</a>.
-      </span>
-    </div>
-  </Section>
+      </p>
+    </Avslor>
+  </Scene>
 
   <!-- 05 Verktøy -->
-  <Section
+  <Scene
     n={5}
     eyebrow="Verktøy"
     tittel="Sjekk nettsiden din gratis"
     ingress="Skriv inn adressen. På 30 sekunder får du ytelse, sikkerhetsheadere, cookies satt før samtykke, WCAG-feil og om org.nr. står på siden."
     id="sjekk"
+    bred
   >
     <div class="stack">
-      <UrlCheck id="url-seksjon" buttonLabel="Kjør sjekken" hint="Ingen innlogging. Du velger selv om rapporten skal sendes på e-post." />
-      <p class="small faint">Slik ser en rapport ut. Dette er et eksempel, ikke en ekte side:</p>
-      <CheckReport
-        url="dinbedrift.no"
-        date="eksempel"
-        rows={eksempelRapport}
-        footer="Samlet: 32 av 100. Fire av fem punkter bør fikses."
-      >
-        <Button slot="action" variant="ghost" href="/sjekk">Kjør på din side</Button>
-      </CheckReport>
+      <Avslor>
+        <UrlCheck id="url-seksjon" buttonLabel="Kjør sjekken" hint="Ingen innlogging. Du velger selv om rapporten skal sendes på e-post." />
+      </Avslor>
+      <Avslor trinn={1}>
+        <p class="small faint">Slik ser en rapport ut. Dette er et eksempel, ikke en ekte side:</p>
+      </Avslor>
+      <Avslor trinn={2}>
+        <CheckReport
+          url="dinbedrift.no"
+          date="eksempel"
+          rows={eksempelRapport}
+          footer="Samlet: 32 av 100. Fire av fem punkter bør fikses."
+        >
+          <Button slot="action" variant="ghost" href="/sjekk">Kjør på din side</Button>
+        </CheckReport>
+      </Avslor>
     </div>
-  </Section>
+  </Scene>
 
   <!-- 06 Prosess -->
-  <Section n={6} eyebrow="Prosess" tittel="Fire steg, kjente tider" ingress="Du ser en klikkbar prototype før du har betalt noe. Sier du nei der, koster det ingenting.">
-    <ProcessSteps steps={prosess} />
-  </Section>
+  <Scene
+    n={6}
+    eyebrow="Prosess"
+    tittel="Fire steg, kjente tider"
+    ingress="Du ser en klikkbar prototype før du har betalt noe. Sier du nei der, koster det ingenting."
+    bred
+  >
+    <Avslor>
+      <ProcessSteps steps={prosess} />
+    </Avslor>
+  </Scene>
 
   <!-- 07 Priser -->
-  <Section n={7} eyebrow="Priser" tittel="Prisene står her" ingress="Fordi du skal kunne regne på det før du ringer. Alle priser er eks. mva." id="priser">
+  <Scene
+    n={7}
+    eyebrow="Priser"
+    tittel="Prisene står her"
+    ingress="Fordi du skal kunne regne på det før du ringer. Alle priser er eks. mva."
+    id="priser"
+    bred
+  >
     <div class="stack">
       <div class="grid-3">
-        {pakker.map((p) => (
-          <PriceCard
-            name={p.navn}
-            price={p.pris}
-            prefix={p.prefiks}
-            description={p.beskrivelse}
-            recommended={p.anbefalt}
-            cta={p.cta}
-            href={p.href}
-            features={[
-              ...p.inkludert.map((t) => ({ text: t, included: true })),
-              ...(p.ikke ?? []).map((t) => ({ text: t, included: false })),
-            ]}
-          />
+        {pakker.map((p, i) => (
+          <Avslor trinn={i}>
+            <PriceCard
+              name={p.navn}
+              price={p.pris}
+              prefix={p.prefiks}
+              description={p.beskrivelse}
+              recommended={p.anbefalt}
+              cta={p.cta}
+              href={p.href}
+              features={[
+                ...p.inkludert.map((t) => ({ text: t, included: true })),
+                ...(p.ikke ?? []).map((t) => ({ text: t, included: false })),
+              ]}
+            />
+          </Avslor>
         ))}
       </div>
-      <dl class="kv">
-        {loepende.map((r) => (
-          <div>
-            <dt><strong class="body-strong">{r.navn}</strong><br /><span class="small muted">{r.tekst}</span></dt>
-            <dd class="nowrap">{r.pris}</dd>
-          </div>
-        ))}
-      </dl>
-      <ul class="small faint" style="margin: 0; padding-left: var(--space-5); display: grid; gap: var(--space-1)">
-        {prisvilkaar.map((v) => <li>{v}</li>)}
-      </ul>
+      <Avslor trinn={1}>
+        <dl class="kv">
+          {loepende.map((r) => (
+            <div>
+              <dt><strong class="body-strong">{r.navn}</strong><br /><span class="small muted">{r.tekst}</span></dt>
+              <dd class="nowrap">{r.pris}</dd>
+            </div>
+          ))}
+        </dl>
+      </Avslor>
+      <Avslor trinn={2}>
+        <ul class="small faint" style="margin: 0; padding-left: var(--space-5); display: grid; gap: var(--space-1)">
+          {prisvilkaar.map((v) => <li>{v}</li>)}
+        </ul>
+      </Avslor>
     </div>
-  </Section>
+  </Scene>
 
   <!-- 08 Om -->
-  <Section n={8} eyebrow="Om" tittel="Ingen mellomledd">
+  <Scene n={8} eyebrow="Om" tittel="Ingen mellomledd">
     <div class="grid-2">
-      <div class="stack">
+      <Avslor class="stack">
         <p class="body-lg muted">
           KodeKonsulentene er et utviklermiljø i Oslo med sikkerhet som spesialfelt.
           Vi bygger nettsiden, systemet bak og appen oppå – uten å sette ut noe til noen.
@@ -211,26 +258,31 @@ const eksempelRapport = [
           <a class="kk-link" href="/handbok">håndboken</a>.
         </p>
         <Button variant="ghost" href="/om">Mer om oss</Button>
-      </div>
-      <Terminal
-        title="~/kodekonsulentene/om"
-        lines={[
-          { type: "cmd", text: "whoami" },
-          { type: "out", text: "KodeKonsulentene – utvikling, Oslo" },
-          { type: "cmd", text: "cat kompetanse.txt" },
-          { type: "out", text: "sikkerhet · nettsider · iOS · integrasjoner · AI" },
-          { type: "cmd", text: "cat prinsipp.txt" },
-          { type: "ok", text: "Du eier koden. Du eier domenet. Ingen innlåsing." },
-        ]}
-        label="Terminalutsnitt: KodeKonsulentene, utvikling i Oslo. Kompetanse: sikkerhet, nettsider, iOS, integrasjoner, AI. Prinsipp: du eier koden og domenet, ingen innlåsing."
-      />
+      </Avslor>
+      <Avslor trinn={1}>
+        <Terminal
+          title="~/kodekonsulentene/om"
+          lines={[
+            { type: "cmd", text: "whoami" },
+            { type: "out", text: "KodeKonsulentene – utvikling, Oslo" },
+            { type: "cmd", text: "cat kompetanse.txt" },
+            { type: "out", text: "sikkerhet · nettsider · iOS · integrasjoner · AI" },
+            { type: "cmd", text: "cat prinsipp.txt" },
+            { type: "ok", text: "Du eier koden. Du eier domenet. Ingen innlåsing." },
+          ]}
+          skriv
+          label="Terminalutsnitt: KodeKonsulentene, utvikling i Oslo. Kompetanse: sikkerhet, nettsider, iOS, integrasjoner, AI. Prinsipp: du eier koden og domenet, ingen innlåsing."
+        />
+      </Avslor>
     </div>
-  </Section>
+  </Scene>
 
   <!-- 09 FAQ -->
-  <Section n={9} eyebrow="Spørsmål" tittel="Det folk spør om først">
-    <Faq items={faq} />
-  </Section>
+  <Scene n={9} eyebrow="Spørsmål" tittel="Det folk spør om først" bred>
+    <Avslor>
+      <Faq items={faq} />
+    </Avslor>
+  </Scene>
 
   <!-- 10 Kontakt -->
   <ContactBlock n={10} />

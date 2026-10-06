@@ -1,0 +1,66 @@
+---
+/**
+ * Scroll-avdekking. Innholdet tones og glir inn når det kommer i syne.
+ *
+ * Progressiv forbedring i to lag:
+ *  1. Chrome/Safari: ren CSS med `animation-timeline: view()`. Null JavaScript,
+ *     og bevegelsen kjører på compositor-tråden.
+ *  2. Firefox (mangler scroll-driven animations i stabil versjon): en
+ *     IntersectionObserver i scener.css-skriptet legger på en klasse.
+ *
+ * Uten JavaScript, og med prefers-reduced-motion, står innholdet ferdig. Det er
+ * default-tilstanden i CSS – ingenting skjules før noe aktivt skjuler det.
+ */
+interface Props {
+  /** Forsinkelse i trinn, 0–5. Brukes til å la elementer komme etter hverandre. */
+  trinn?: number;
+  /** Retning innholdet kommer fra. «opp» er standard og mest diskré. */
+  fra?: "opp" | "venstre";
+  as?: "div" | "li" | "article" | "section";
+  class?: string;
+}
+const { trinn = 0, fra = "opp", as = "div", class: cls } = Astro.props;
+const Tag = as;
+---
+<Tag class:list={["avslor", `avslor--${fra}`, cls]} style={`--trinn:${trinn}`} data-avslor>
+  <slot />
+</Tag>
+
+<script>
+  /**
+   * Reserve for Firefox, som ennå ikke har scroll-driven animations i stabil
+   * versjon. Kjører bare der CSS-en IKKE klarer jobben selv – i Chrome og Safari
+   * gjør dette skriptet ingenting, og koster da heller ingenting.
+   *
+   * Rekkefølgen er viktig: vi legger på js-avslor FØR vi merker elementene, slik
+   * at ingenting rekker å blinke synlig og så bli skjult.
+   */
+  const stoetter = CSS.supports("animation-timeline: view()");
+  const rolig = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (!stoetter && !rolig) {
+    const mål = document.querySelectorAll<HTMLElement>("[data-avslor], [data-stortekst]");
+    if (mål.length) {
+      document.documentElement.classList.add("js-avslor");
+      for (const el of mål) el.dataset.vent = "";
+
+      const io = new IntersectionObserver(
+        (poster) => {
+          for (const p of poster) {
+            if (!p.isIntersecting) continue;
+            delete (p.target as HTMLElement).dataset.vent;
+            io.unobserve(p.target);
+          }
+        },
+        { rootMargin: "0px 0px -12% 0px", threshold: 0.1 },
+      );
+      for (const el of mål) io.observe(el);
+
+      // Sikkerhetsnett: rekker ikke observeren å fyre – blokkert, bakgrunnsfane,
+      // eller en feil et annet sted – skal innholdet uansett bli synlig.
+      setTimeout(() => {
+        for (const el of mål) delete el.dataset.vent;
+      }, 4000);
+    }
+  }
+</script>

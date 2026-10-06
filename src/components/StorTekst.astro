@@ -1,0 +1,28 @@
+---
+/**
+ * Redaksjonell display-tittel som bryter ut av innholdsbredden.
+ *
+ * Teksten står som vanlige ord i HTML – hvert ord i sitt eget span med ekte
+ * mellomrom imellom, slik at markering, søk og skjermlesere får sammenhengende
+ * tekst. Uten JavaScript og uten scroll-driven animations står alt ferdig lest.
+ *
+ * Brandboken tillater ikke tekst som «skriver seg selv». Dette er noe annet:
+ * ordene står der hele tiden, de tones bare inn i takt med at du scroller forbi.
+ */
+interface Props {
+  tekst: string;
+  /** h2 er standard. Forsiden har sin h1 i hero. */
+  som?: "h1" | "h2" | "p";
+  /** «lg» er seksjonstitler, «xl» er den ene store på toppen av en scene. */
+  storrelse?: "lg" | "xl";
+  class?: string;
+}
+const { tekst, som = "h2", storrelse = "lg", class: cls } = Astro.props;
+const Tag = som;
+const ord = tekst.split(" ");
+---
+<Tag class:list={["stortekst", `display-${storrelse}`, cls]} data-stortekst>
+  {ord.map((o, i) => (
+    <Fragment><span class="ord" style={`--i:${i}`}>{o}</span>{i < ord.length - 1 ? " " : ""}</Fragment>
+  ))}
+</Tag>

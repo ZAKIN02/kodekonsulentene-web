@@ -223,14 +223,13 @@
       opacity 420ms ease-out calc(var(--trinn, 0) * 70ms),
       transform 420ms ease-out calc(var(--trinn, 0) * 70ms);
   }
+  /* Samme regel her: ordene løftes, men tones ikke. Se begrunnelsen ved
+     @keyframes avslor-ord. */
   html.js-avslor .stortekst[data-vent] .ord {
-    opacity: 0;
     transform: translateY(14px);
   }
   html.js-avslor .stortekst .ord {
-    transition:
-      opacity 380ms ease-out calc(var(--i) * 45ms),
-      transform 380ms ease-out calc(var(--i) * 45ms);
+    transition: transform 380ms ease-out calc(var(--i) * 45ms);
   }
 }
 
@@ -251,12 +250,16 @@
    SCORENDE: Lighthouse-tilgjengelighet falt fra 100 til 97, med 1,38:1 og 1,45:1
    på ord som i ferdig tilstand måler godt over kravet.
 
-   0,22 som startverdi gjør at ingen posisjon i animasjonen er under 3:1, mens
-   løftet fortsatt bærer hele avsløringen. Bevegelsen er beholdt; det er bare
-   gjennomsiktigheten som ikke lenger går helt i null. */
+   Inntoningen er derfor FJERNET, ikke dempet. Regnestykket: for å holde 3:1 hele
+   veien måtte startverdien opp i 0,47 på lys flate og 0,37 på mørk og varm – og en
+   overgang fra 0,47 til 1 er ingen inntoning, bare en flimring. Løftet alene bærer
+   avsløringen, og teksten står i full kontrast i hver eneste frame.
+
+   Sidegevinst: ordene er lesbare også hvis animasjonen aldri kjører – ingen tekst
+   er noen gang skjult bak en opacity som kan bli stående på null. */
 @keyframes avslor-ord {
-  from { opacity: 0.22; transform: translateY(16px); }
-  to { opacity: 1; transform: none; }
+  from { transform: translateY(16px); }
+  to { transform: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

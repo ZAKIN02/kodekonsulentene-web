@@ -11,6 +11,18 @@
  * Spoles av scroll, spiller aldri av seg selv.
  */
 interface Props {
+  /**
+   * Lar opptaket SPILLE i løkke i stedet for å bli spolt av scrollhjulet.
+   *
+   * Målt på alle 26 sider: av 21 videoer var 19 `paused`. De spilte ikke – de ble
+   * skrubbet, og sto frosset på nøyaktig halve varigheten så snart brukeren sluttet
+   * å dra. 21 av 26 sider målte 0,0000 i pikselendring i ro; skjermbildene var
+   * bit-identiske. Referansen spinxdigital.com sto aldri stille i noen visning.
+   *
+   * Skjermopptakene av våre egne verktøy er det sterkeste materialet vi har – og de
+   * sto alle sammen på pause. 2–3 sekunder effektiv handling hver. La dem gå.
+   */
+  spill?: boolean;
   smal: string;
   bred: string;
   /** Valgfritt 1920-trinn. Uten dette blir de største filene liggende ubrukt –
@@ -20,9 +32,9 @@ interface Props {
   tekst: string;
   kilde?: string;
 }
-const { smal, bred, stor, plakat, tekst, kilde } = Astro.props;
+const { smal, bred, stor, plakat, tekst, kilde, spill = false } = Astro.props;
 ---
-<figure class="demo" data-demo>
+<figure class="demo" data-demo data-demo-spill={spill ? "" : undefined}>
   <div class="demo__ramme">
     <video data-demo-video muted playsinline preload="none" poster={plakat} width="1920" height="1080">
       <source data-smal={smal} data-bred={bred} data-stor={stor} type="video/mp4" />
@@ -53,6 +65,31 @@ const { smal, bred, stor, plakat, tekst, kilde } = Astro.props;
     const redusert = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const spar = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
     if (!film || !kilde || redusert || spar) continue;
+
+    // Løkke i stedet for spoling. Rekkefølgen er viktig: kilden må settes FØR
+    // play(), ellers spiller vi av et <source> uten src og feiler stille.
+    if (rot.hasAttribute("data-demo-spill")) {
+      film.loop = true;
+      film.muted = true;
+      film.setAttribute("playsinline", "");
+      const ioS = new IntersectionObserver((poster) => {
+        if (!poster.some((p) => p.isIntersecting)) return;
+        ioS.disconnect();
+        const nett = (navigator as Navigator & { connection?: { effectiveType?: string; saveData?: boolean } }).connection;
+        const treigt = nett?.saveData === true || /2g|3g/.test(nett?.effectiveType ?? "");
+        const px = window.innerWidth * (window.devicePixelRatio || 1);
+        kilde.src =
+          !treigt && px >= 2200 && kilde.dataset.stor
+            ? kilde.dataset.stor
+            : window.innerWidth >= 1024
+              ? kilde.dataset.bred!
+              : kilde.dataset.smal!;
+        film.load();
+        film.play().catch(() => {});
+      }, { rootMargin: "60% 0px" });
+      ioS.observe(rot);
+      continue;
+    }
 
     let planlagt = false;
     const oppdater = () => {

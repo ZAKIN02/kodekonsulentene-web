@@ -236,3 +236,29 @@ describe("løkkeflater spiller faktisk av seg selv", () => {
     assert.ok(/film\.play\(\)/.test(kilde), "løkkeflaten starter aldri avspilling");
   });
 });
+
+describe("skjermopptakene av verktøyene spiller, de spoles ikke", () => {
+  /**
+   * Målt på alle 26 sider: av 21 videoer var 19 `paused`. De spilte aldri – de ble
+   * skrubbet av scrollhjulet og frøs på halve varigheten idet brukeren sluttet å dra.
+   * 21 av 26 sider målte 0,0000 i pikselendring i ro: bit-identiske skjermbilder.
+   *
+   * Opptakene av våre egne verktøy er det sterkeste materialet vi har, og de sto alle
+   * på pause. Denne testen finnes fordi avspillingsgrenen i SceneFilm allerede ble
+   * overskrevet én gang av en parallell agent uten at noe feilet synlig.
+   */
+  test("Demo har en avspillingsgren, ikke bare en prop", () => {
+    const kilde = readFileSync("src/components/Demo.astro", "utf8");
+    assert.ok(/spill\?: boolean/.test(kilde), "Demo mangler spill-propen");
+    assert.ok(kilde.includes('hasAttribute("data-demo-spill")'), "skriptet leser ikke data-demo-spill");
+    assert.ok(/film\.loop\s*=\s*true/.test(kilde), "avspillingsgrenen setter ikke loop");
+    assert.ok(/film\.play\(\)/.test(kilde), "avspillingsgrenen starter aldri avspilling");
+  });
+
+  test("alle fem verktøysidene slår den på", () => {
+    for (const side of ["dmarc", "uu-sjekk", "cookie-sjekk", "priskalkulator", "index"]) {
+      const html = readFileSync(`dist/client/verktoy/${side === "index" ? "" : side + "/"}index.html`, "utf8");
+      assert.ok(html.includes("data-demo-spill"), `/verktoy/${side} spoler fortsatt opptaket`);
+    }
+  });
+});

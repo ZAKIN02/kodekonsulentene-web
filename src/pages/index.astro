@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import Scene from "../components/Scene.astro";
+import Storflate from "../components/Storflate.astro";
 import Avslor from "../components/Avslor.astro";
 import Eyebrow from "../components/Eyebrow.astro";
 import Button from "../components/Button.astro";
@@ -259,6 +260,20 @@ const heroTerminal = [
   </Scene>
 
   <!-- 07 Priser -->
+
+  {/* Full styrke, kant til kant. Vi viste ni klipp på 42 % opasitet bak tekst og
+      betalte megabyte uten å få effekten – her er klippet innholdet.
+      Klippet er trimmet fra 8,0 til 5,4 s: Kling kjører ~1,5 s foran bestilt klokke
+      og brukte ikke halen, så de siste tre sekundene sto stille. */}
+  <Storflate
+    smal="/scener/floke-1280.mp4"
+    bred="/scener/floke-1920.mp4"
+    stor="/scener/floke-2560.mp4"
+    plakat="/scener/floke-poster.avif"
+    tekst="Fem systemer som ikke snakket sammen, og fem som gjør det. Det er hele jobben."
+    hoyde={66}
+  />
+
   <Scene
     n={7}
     eyebrow="Priser"

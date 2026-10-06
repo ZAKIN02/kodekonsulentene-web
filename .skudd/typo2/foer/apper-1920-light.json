@@ -1,0 +1,2768 @@
+{
+ "url": "/apper-og-ai",
+ "funn": [
+  {
+   "velger": ".mega",
+   "tag": "h1",
+   "klasse": "mega",
+   "fs": 176,
+   "lh": 161.92,
+   "forhold": 0.92,
+   "ls": -7.04,
+   "lsEm": -0.04,
+   "padBunn": 31.68,
+   "boksavvik": 0,
+   "antLinjer": 3,
+   "linjer": [
+    {
+     "t": "Fåleverandører",
+     "grunn": 352,
+     "blekkTopp": 209.95,
+     "blekkBunn": 356.81,
+     "v": 160,
+     "h": 1460.66
+    },
+    {
+     "t": "tarbåde",
+     "grunn": 513.91,
+     "blekkTopp": 371.85,
+     "blekkBunn": 516.24,
+     "v": 160,
+     "h": 842.47
+    },
+    {
+     "t": "nettsideogapp",
+     "grunn": 675.81,
+     "blekkTopp": 535.91,
+     "blekkBunn": 711.66,
+     "v": 160,
+     "h": 1395.28
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 161.91,
+     "linjeVerst": 15.04,
+     "kolonneMin": 17.52,
+     "glyffpar": "e|å"
+    },
+    {
+     "mellom": "2->3",
+     "grunnAvstand": 161.91,
+     "linjeVerst": 19.67,
+     "kolonneMin": 19.77,
+     "glyffpar": "å|i"
+    }
+   ],
+   "krav": {
+    "nedMaks": 35.85,
+    "nedMaksEm": 0.2,
+    "oppSmaaMaks": 142.05,
+    "oppSmaaEm": 0.81,
+    "oppStorMaks": 171.36,
+    "oppStorEm": 0.97
+   },
+   "norskSmaa": -15.99,
+   "norskSmaaEm": -0.09,
+   "norskStor": -45.3,
+   "norskStorEm": -0.26,
+   "blekkUnderBoks": -13.73,
+   "blekkOverBoks": -1.95,
+   "hoyreMarg": 459.34,
+   "venstreMarg": 160,
+   "utenforSkjerm": 0,
+   "tilNeste": null,
+   "ordhull": {
+    "ordMin": 26.84,
+    "ordMinEm": 0.15,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": ".mega",
+   "tag": "h2",
+   "klasse": "mega",
+   "fs": 176,
+   "lh": 161.92,
+   "forhold": 0.92,
+   "ls": -7.04,
+   "lsEm": -0.04,
+   "padBunn": 31.68,
+   "boksavvik": 0,
+   "antLinjer": 2,
+   "linjer": [
+    {
+     "t": "AIsomgjørenjobb,",
+     "grunn": 4269.86,
+     "blekkTopp": 4129.95,
+     "blekkBunn": 4305.71,
+     "v": 160,
+     "h": 1753.78
+    },
+    {
+     "t": "ikkeAIsompynt",
+     "grunn": 4431.77,
+     "blekkTopp": 4291.86,
+     "blekkBunn": 4465.28,
+     "v": 160,
+     "h": 1507.14
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 161.91,
+     "linjeVerst": -13.85,
+     "kolonneMin": 22,
+     "glyffpar": "A|i"
+    }
+   ],
+   "krav": {
+    "nedMaks": 35.85,
+    "nedMaksEm": 0.2,
+    "oppSmaaMaks": 142.05,
+    "oppSmaaEm": 0.81,
+    "oppStorMaks": 171.36,
+    "oppStorEm": 0.97
+   },
+   "norskSmaa": -15.99,
+   "norskSmaaEm": -0.09,
+   "norskStor": -45.3,
+   "norskStorEm": -0.26,
+   "blekkUnderBoks": -16.06,
+   "blekkOverBoks": -4.09,
+   "hoyreMarg": 166.22,
+   "venstreMarg": 160,
+   "utenforSkjerm": 0,
+   "tilNeste": null,
+   "ordhull": {
+    "ordMin": 26.84,
+    "ordMinEm": 0.15,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": ".display-lg",
+   "tag": "h2",
+   "klasse": "stortekst display-lg",
+   "fs": 64,
+   "lh": 66,
+   "forhold": 1.03,
+   "ls": -1.92,
+   "lsEm": -0.03,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 1,
+   "linjer": [
+    {
+     "t": "Toflater,énkobling",
+     "grunn": 1145.39,
+     "blekkTopp": 1092.08,
+     "blekkBunn": 1158.43,
+     "v": 432,
+     "h": 1010.41
+    }
+   ],
+   "par": [],
+   "krav": {
+    "nedMaks": 13.04,
+    "nedMaksEm": 0.2,
+    "oppSmaaMaks": 51.66,
+    "oppSmaaEm": 0.81,
+    "oppStorMaks": 62.31,
+    "oppStorEm": 0.97
+   },
+   "norskSmaa": 1.31,
+   "norskSmaaEm": 0.02,
+   "norskStor": -9.35,
+   "norskStorEm": -0.15,
+   "blekkUnderBoks": 3.04,
+   "blekkOverBoks": -2.69,
+   "hoyreMarg": 909.59,
+   "venstreMarg": 432,
+   "utenforSkjerm": 0,
+   "tilNeste": null,
+   "ordhull": {
+    "ordMin": 10.41,
+    "ordMinEm": 0.16,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": ".display-lg",
+   "tag": "h2",
+   "klasse": "stortekst display-lg",
+   "fs": 64,
+   "lh": 66,
+   "forhold": 1.03,
+   "ls": -1.92,
+   "lsEm": -0.03,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 2,
+   "linjer": [
+    {
+     "t": "Tretingenappløser",
+     "grunn": 2038.16,
+     "blekkTopp": 1987.28,
+     "blekkBunn": 2051.19,
+     "v": 432,
+     "h": 1038.09
+    },
+    {
+     "t": "somennettsideikkegjør",
+     "grunn": 2104.16,
+     "blekkTopp": 2053.28,
+     "blekkBunn": 2117.19,
+     "v": 432,
+     "h": 1176.7
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 66,
+     "linjeVerst": 2.09,
+     "kolonneMin": 2.94,
+     "glyffpar": "p|i"
+    }
+   ],
+   "krav": {
+    "nedMaks": 13.04,
+    "nedMaksEm": 0.2,
+    "oppSmaaMaks": 51.66,
+    "oppSmaaEm": 0.81,
+    "oppStorMaks": 62.31,
+    "oppStorEm": 0.97
+   },
+   "norskSmaa": 1.31,
+   "norskSmaaEm": 0.02,
+   "norskStor": -9.35,
+   "norskStorEm": -0.15,
+   "blekkUnderBoks": 3.04,
+   "blekkOverBoks": -5.12,
+   "hoyreMarg": 743.3,
+   "venstreMarg": 432,
+   "utenforSkjerm": 0,
+   "tilNeste": null,
+   "ordhull": {
+    "ordMin": 10.41,
+    "ordMinEm": 0.16,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": ".display-lg",
+   "tag": "h2",
+   "klasse": "stortekst display-lg",
+   "fs": 64,
+   "lh": 66,
+   "forhold": 1.03,
+   "ls": -1.92,
+   "lsEm": -0.03,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 1,
+   "linjer": [
+    {
+     "t": "Ettlagsomgjørénting",
+     "grunn": 4855.34,
+     "blekkTopp": 4802.03,
+     "blekkBunn": 4868.38,
+     "v": 432,
+     "h": 1099.89
+    }
+   ],
+   "par": [],
+   "krav": {
+    "nedMaks": 13.04,
+    "nedMaksEm": 0.2,
+    "oppSmaaMaks": 51.66,
+    "oppSmaaEm": 0.81,
+    "oppStorMaks": 62.31,
+    "oppStorEm": 0.97
+   },
+   "norskSmaa": 1.31,
+   "norskSmaaEm": 0.02,
+   "norskStor": -9.35,
+   "norskStorEm": -0.15,
+   "blekkUnderBoks": 3.04,
+   "blekkOverBoks": -2.69,
+   "hoyreMarg": 820.11,
+   "venstreMarg": 432,
+   "utenforSkjerm": 0,
+   "tilNeste": null,
+   "ordhull": {
+    "ordMin": 10.41,
+    "ordMinEm": 0.16,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": ".display-lg",
+   "tag": "h2",
+   "klasse": "display-lg",
+   "fs": 44,
+   "lh": 48,
+   "forhold": 1.09,
+   "ls": -1.1,
+   "lsEm": -0.02,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 2,
+   "linjer": [
+    {
+     "t": "Snakkmed",
+     "grunn": 5491.34,
+     "blekkTopp": 5459.12,
+     "blekkBunn": 5491.93,
+     "v": 432,
+     "h": 666.14
+    },
+    {
+     "t": "densomkoder",
+     "grunn": 5539.34,
+     "blekkTopp": 5507.12,
+     "blekkBunn": 5539.93,
+     "v": 432,
+     "h": 739.5
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 48,
+     "linjeVerst": 15.19,
+     "kolonneMin": 15.19,
+     "glyffpar": "S|d"
+    }
+   ],
+   "krav": {
+    "nedMaks": 8.96,
+    "nedMaksEm": 0.2,
+    "oppSmaaMaks": 35.51,
+    "oppSmaaEm": 0.81,
+    "oppStorMaks": 42.84,
+    "oppStorEm": 0.97
+   },
+   "norskSmaa": 3.52,
+   "norskSmaaEm": 0.08,
+   "norskStor": -3.8,
+   "norskStorEm": -0.09,
+   "blekkUnderBoks": -7.42,
+   "blekkOverBoks": -7.77,
+   "hoyreMarg": 1180.5,
+   "venstreMarg": 432,
+   "utenforSkjerm": 0,
+   "tilNeste": {
+    "tag": "p.body-lg",
+    "boksGap": 12,
+    "blekkGap": 24.71,
+    "blekkGapEm": 0.56
+   },
+   "ordhull": {
+    "ordMin": 7.34,
+    "ordMinEm": 0.17,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": ".heading",
+   "tag": "h3",
+   "klasse": "heading flyt__tittel",
+   "fs": 28,
+   "lh": 34,
+   "forhold": 1.21,
+   "ls": -0.42,
+   "lsEm": -0.01,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 1,
+   "linjer": [
+    {
+     "t": "Sammetall,heleveien",
+     "grunn": 1474.39,
+     "blekkTopp": 1452.47,
+     "blekkBunn": 1478.82,
+     "v": 432,
+     "h": 729.3
+    }
+   ],
+   "par": [],
+   "krav": {
+    "nedMaks": 5.69,
+    "nedMaksEm": 0.2,
+    "oppSmaaMaks": 22.49,
+    "oppSmaaEm": 0.8,
+    "oppStorMaks": 27.18,
+    "oppStorEm": 0.97
+   },
+   "norskSmaa": 5.82,
+   "norskSmaaEm": 0.21,
+   "norskStor": 1.13,
+   "norskStorEm": 0.04,
+   "blekkUnderBoks": -2.57,
+   "blekkOverBoks": -5.08,
+   "hoyreMarg": 1190.7,
+   "venstreMarg": 432,
+   "utenforSkjerm": 0,
+   "tilNeste": {
+    "tag": "div.flyt__ramme",
+    "boksGap": 16,
+    "blekkGap": 56.03,
+    "blekkGapEm": 2
+   },
+   "ordhull": {
+    "ordMin": 5.44,
+    "ordMinEm": 0.19,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": ".heading",
+   "tag": "h3",
+   "klasse": "heading",
+   "fs": 28,
+   "lh": 34,
+   "forhold": 1.21,
+   "ls": -0.42,
+   "lsEm": -0.01,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 1,
+   "linjer": [
+    {
+     "t": "Bookdirekte",
+     "grunn": 5727.34,
+     "blekkTopp": 5705.43,
+     "blekkBunn": 5727.7,
+     "v": 457,
+     "h": 626.48
+    }
+   ],
+   "par": [],
+   "krav": {
+    "nedMaks": 5.69,
+    "nedMaksEm": 0.2,
+    "oppSmaaMaks": 22.49,
+    "oppSmaaEm": 0.8,
+    "oppStorMaks": 27.18,
+    "oppStorEm": 0.97
+   },
+   "norskSmaa": 5.82,
+   "norskSmaaEm": 0.21,
+   "norskStor": 1.13,
+   "norskStorEm": 0.04,
+   "blekkUnderBoks": -6.64,
+   "blekkOverBoks": -5.08,
+   "hoyreMarg": 1293.52,
+   "venstreMarg": 457,
+   "utenforSkjerm": 0,
+   "tilNeste": {
+    "tag": "p.muted",
+    "boksGap": 16,
+    "blekkGap": 28.52,
+    "blekkGapEm": 1.02
+   },
+   "ordhull": {
+    "ordMin": 5.44,
+    "ordMinEm": 0.19,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": ".heading",
+   "tag": "h3",
+   "klasse": "heading",
+   "fs": 28,
+   "lh": 34,
+   "forhold": 1.21,
+   "ls": -0.42,
+   "lsEm": -0.01,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 1,
+   "linjer": [
+    {
+     "t": "Ellerskrivkort",
+     "grunn": 5727.34,
+     "blekkTopp": 5705.43,
+     "blekkBunn": 5727.7,
+     "v": 1001,
+     "h": 1195.05
+    }
+   ],
+   "par": [],
+   "krav": {
+    "nedMaks": 5.69,
+    "nedMaksEm": 0.2,
+    "oppSmaaMaks": 22.49,
+    "oppSmaaEm": 0.8,
+    "oppStorMaks": 27.18,
+    "oppStorEm": 0.97
+   },
+   "norskSmaa": 5.82,
+   "norskSmaaEm": 0.21,
+   "norskStor": 1.13,
+   "norskStorEm": 0.04,
+   "blekkUnderBoks": -6.64,
+   "blekkOverBoks": -5.08,
+   "hoyreMarg": 724.95,
+   "venstreMarg": 1001,
+   "utenforSkjerm": 0,
+   "tilNeste": {
+    "tag": "div.field",
+    "boksGap": 16,
+    "blekkGap": 27.78,
+    "blekkGapEm": 0.99
+   },
+   "ordhull": {
+    "ordMin": 5.45,
+    "ordMinEm": 0.19,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": ".horisont__overskrift",
+   "tag": "h2",
+   "klasse": "horisont__overskrift",
+   "fs": 72,
+   "lh": 73.44,
+   "forhold": 1.02,
+   "ls": -2.16,
+   "lsEm": -0.03,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 2,
+   "linjer": [
+    {
+     "t": "Firesteg,ingen",
+     "grunn": 2552.16,
+     "blekkTopp": 2494.92,
+     "blekkBunn": 2566.82,
+     "v": 400,
+     "h": 906.88
+    },
+    {
+     "t": "overraskelser",
+     "grunn": 2625.59,
+     "blekkTopp": 2572.86,
+     "blekkBunn": 2626.55,
+     "v": 400,
+     "h": 879.8
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 73.44,
+     "linjeVerst": 6.04,
+     "kolonneMin": 6.04,
+     "glyffpar": "g|k"
+    }
+   ],
+   "krav": {
+    "nedMaks": 14.67,
+    "nedMaksEm": 0.2,
+    "oppSmaaMaks": 58.11,
+    "oppSmaaEm": 0.81,
+    "oppStorMaks": 70.1,
+    "oppStorEm": 0.97
+   },
+   "norskSmaa": 0.66,
+   "norskSmaaEm": 0.01,
+   "norskStor": -11.33,
+   "norskStorEm": -0.16,
+   "blekkUnderBoks": -10.48,
+   "blekkOverBoks": -4.77,
+   "hoyreMarg": 1013.13,
+   "venstreMarg": 400,
+   "utenforSkjerm": 0,
+   "tilNeste": null,
+   "ordhull": {
+    "ordMin": 11.69,
+    "ordMinEm": 0.16,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": ".horisont__tittel",
+   "tag": "h3",
+   "klasse": "horisont__tittel",
+   "fs": 38,
+   "lh": 41.04,
+   "forhold": 1.08,
+   "ls": -0.57,
+   "lsEm": -0.01,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 2,
+   "linjer": [
+    {
+     "t": "Vifinnerden",
+     "grunn": 2796.03,
+     "blekkTopp": 2766.29,
+     "blekkBunn": 2796.52,
+     "v": 433,
+     "h": 660.58
+    },
+    {
+     "t": "enejobben",
+     "grunn": 2837.06,
+     "blekkTopp": 2807.32,
+     "blekkBunn": 2844.3,
+     "v": 433,
+     "h": 632.97
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 41.03,
+     "linjeVerst": 10.8,
+     "kolonneMin": 11.29,
+     "glyffpar": "n|j"
+    }
+   ],
+   "krav": {
+    "nedMaks": 7.72,
+    "nedMaksEm": 0.2,
+    "oppSmaaMaks": 30.52,
+    "oppSmaaEm": 0.8,
+    "oppStorMaks": 36.89,
+    "oppStorEm": 0.97
+   },
+   "norskSmaa": 2.78,
+   "norskSmaaEm": 0.07,
+   "norskStor": -3.58,
+   "norskStorEm": -0.09,
+   "blekkUnderBoks": 0.21,
+   "blekkOverBoks": -4.26,
+   "hoyreMarg": 1259.42,
+   "venstreMarg": 433,
+   "utenforSkjerm": 0,
+   "tilNeste": {
+    "tag": "p.horisont__tekst",
+    "boksGap": 12,
+    "blekkGap": 18.42,
+    "blekkGapEm": 0.48
+   },
+   "ordhull": {
+    "ordMin": 7.39,
+    "ordMinEm": 0.19,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": ".horisont__tittel",
+   "tag": "h3",
+   "klasse": "horisont__tittel",
+   "fs": 38,
+   "lh": 41.04,
+   "forhold": 1.08,
+   "ls": -0.57,
+   "lsEm": -0.01,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 2,
+   "linjer": [
+    {
+     "t": "Dufårseden",
+     "grunn": 3091.77,
+     "blekkTopp": 3061.24,
+     "blekkBunn": 3092.25,
+     "v": 433,
+     "h": 667.78
+    },
+    {
+     "t": "påegentelefon",
+     "grunn": 3132.8,
+     "blekkTopp": 3102.27,
+     "blekkBunn": 3140.52,
+     "v": 433,
+     "h": 707.58
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 41.03,
+     "linjeVerst": 10.02,
+     "kolonneMin": 10.02,
+     "glyffpar": "u|å"
+    }
+   ],
+   "krav": {
+    "nedMaks": 7.72,
+    "nedMaksEm": 0.2,
+    "oppSmaaMaks": 30.52,
+    "oppSmaaEm": 0.8,
+    "oppStorMaks": 36.89,
+    "oppStorEm": 0.97
+   },
+   "norskSmaa": 2.78,
+   "norskSmaaEm": 0.07,
+   "norskStor": -3.58,
+   "norskStorEm": -0.09,
+   "blekkUnderBoks": 0.69,
+   "blekkOverBoks": -3.48,
+   "hoyreMarg": 1212.42,
+   "venstreMarg": 433,
+   "utenforSkjerm": 0,
+   "tilNeste": {
+    "tag": "p.horisont__tekst",
+    "boksGap": 12,
+    "blekkGap": 17.93,
+    "blekkGapEm": 0.47
+   },
+   "ordhull": {
+    "ordMin": 7.39,
+    "ordMinEm": 0.19,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": ".horisont__tittel",
+   "tag": "h3",
+   "klasse": "horisont__tittel",
+   "fs": 38,
+   "lh": 41.04,
+   "forhold": 1.08,
+   "ls": -0.57,
+   "lsEm": -0.01,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 2,
+   "linjer": [
+    {
+     "t": "Denkobles",
+     "grunn": 3387.5,
+     "blekkTopp": 3359.67,
+     "blekkBunn": 3387.99,
+     "v": 433,
+     "h": 633.06
+    },
+    {
+     "t": "tildetduhar",
+     "grunn": 3428.53,
+     "blekkTopp": 3398.79,
+     "blekkBunn": 3429.02,
+     "v": 433,
+     "h": 656.88
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 41.03,
+     "linjeVerst": 10.8,
+     "kolonneMin": 11.29,
+     "glyffpar": "D|i"
+    }
+   ],
+   "krav": {
+    "nedMaks": 7.72,
+    "nedMaksEm": 0.2,
+    "oppSmaaMaks": 30.52,
+    "oppSmaaEm": 0.8,
+    "oppStorMaks": 36.89,
+    "oppStorEm": 0.97
+   },
+   "norskSmaa": 2.78,
+   "norskSmaaEm": 0.07,
+   "norskStor": -3.58,
+   "norskStorEm": -0.09,
+   "blekkUnderBoks": -6.54,
+   "blekkOverBoks": -6.17,
+   "hoyreMarg": 1263.13,
+   "venstreMarg": 433,
+   "utenforSkjerm": 0,
+   "tilNeste": {
+    "tag": "p.horisont__tekst",
+    "boksGap": 12,
+    "blekkGap": 25.17,
+    "blekkGapEm": 0.66
+   },
+   "ordhull": {
+    "ordMin": 7.41,
+    "ordMinEm": 0.19,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": ".horisont__tittel",
+   "tag": "h3",
+   "klasse": "horisont__tittel",
+   "fs": 38,
+   "lh": 41.04,
+   "forhold": 1.08,
+   "ls": -0.57,
+   "lsEm": -0.01,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 2,
+   "linjer": [
+    {
+     "t": "Denlegges",
+     "grunn": 3683.23,
+     "blekkTopp": 3655.4,
+     "blekkBunn": 3690.96,
+     "v": 433,
+     "h": 630.36
+    },
+    {
+     "t": "utidittnavn",
+     "grunn": 3724.27,
+     "blekkTopp": 3694.52,
+     "blekkBunn": 3724.75,
+     "v": 433,
+     "h": 652.14
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 41.03,
+     "linjeVerst": 3.56,
+     "kolonneMin": 8,
+     "glyffpar": "g|t"
+    }
+   ],
+   "krav": {
+    "nedMaks": 7.72,
+    "nedMaksEm": 0.2,
+    "oppSmaaMaks": 30.52,
+    "oppSmaaEm": 0.8,
+    "oppStorMaks": 36.89,
+    "oppStorEm": 0.97
+   },
+   "norskSmaa": 2.78,
+   "norskSmaaEm": 0.07,
+   "norskStor": -3.58,
+   "norskStorEm": -0.09,
+   "blekkUnderBoks": -6.54,
+   "blekkOverBoks": -6.17,
+   "hoyreMarg": 1267.86,
+   "venstreMarg": 433,
+   "utenforSkjerm": 0,
+   "tilNeste": {
+    "tag": "p.horisont__tekst",
+    "boksGap": 12,
+    "blekkGap": 25.33,
+    "blekkGapEm": 0.67
+   },
+   "ordhull": {
+    "ordMin": 7.41,
+    "ordMinEm": 0.19,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": ".mega-blokk__merke",
+   "tag": "p",
+   "klasse": "mega-blokk__merke",
+   "fs": 12,
+   "lh": 16,
+   "forhold": 1.33,
+   "ls": 0.96,
+   "lsEm": 0.08,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 1,
+   "linjer": [
+    {
+     "t": "//01ApperogAI",
+     "grunn": 188,
+     "blekkTopp": 178.04,
+     "blekkBunn": 190.16,
+     "v": 160,
+     "h": 302.58
+    }
+   ],
+   "par": [],
+   "krav": {
+    "nedMaks": 2.16,
+    "nedMaksEm": 0.18,
+    "oppSmaaMaks": 10.09,
+    "oppSmaaEm": 0.84,
+    "oppStorMaks": 11.98,
+    "oppStorEm": 1
+   },
+   "norskSmaa": 3.75,
+   "norskSmaaEm": 0.31,
+   "norskStor": 1.86,
+   "norskStorEm": 0.16,
+   "blekkUnderBoks": -1.84,
+   "blekkOverBoks": -2.04,
+   "hoyreMarg": 1617.42,
+   "venstreMarg": 160,
+   "utenforSkjerm": 0,
+   "tilNeste": {
+    "tag": "h1.mega",
+    "boksGap": 16,
+    "blekkGap": 19.79,
+    "blekkGapEm": 1.65
+   },
+   "ordhull": {
+    "ordMin": 8.14,
+    "ordMinEm": 0.68,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": ".horisont__merke",
+   "tag": "p",
+   "klasse": "horisont__merke",
+   "fs": 12,
+   "lh": 16,
+   "forhold": 1.33,
+   "ls": 0.96,
+   "lsEm": 0.08,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 1,
+   "linjer": [
+    {
+     "t": "//04Slikblirdentil",
+     "grunn": 2474.16,
+     "blekkTopp": 2464.2,
+     "blekkBunn": 2475.48,
+     "v": 400,
+     "h": 591.53
+    }
+   ],
+   "par": [],
+   "krav": {
+    "nedMaks": 2.16,
+    "nedMaksEm": 0.18,
+    "oppSmaaMaks": 10.09,
+    "oppSmaaEm": 0.84,
+    "oppStorMaks": 11.98,
+    "oppStorEm": 1
+   },
+   "norskSmaa": 3.75,
+   "norskSmaaEm": 0.31,
+   "norskStor": 1.86,
+   "norskStorEm": 0.16,
+   "blekkUnderBoks": -2.68,
+   "blekkOverBoks": -2.04,
+   "hoyreMarg": 1328.47,
+   "venstreMarg": 400,
+   "utenforSkjerm": 0,
+   "tilNeste": {
+    "tag": "h2.horisont__overskrift",
+    "boksGap": 12,
+    "blekkGap": 19.45,
+    "blekkGapEm": 1.62
+   },
+   "ordhull": {
+    "ordMin": 8.14,
+    "ordMinEm": 0.68,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": ".body-lg",
+   "tag": "p",
+   "klasse": "scene__ingress body-lg",
+   "fs": 18,
+   "lh": 28,
+   "forhold": 1.56,
+   "ls": 0,
+   "lsEm": 0,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 3,
+   "linjer": [
+    {
+     "t": "Deflestesombyggernettsidersetterutapputvikli",
+     "grunn": 745.39,
+     "blekkTopp": 732.02,
+     "blekkBunn": 748.73,
+     "v": 432,
+     "h": 1014.36
+    },
+    {
+     "t": "selv,slikatnettsiden,systemetbakogappenoppåh",
+     "grunn": 773.39,
+     "blekkTopp": 758.69,
+     "blekkBunn": 776.73,
+     "v": 432,
+     "h": 973.86
+    },
+    {
+     "t": "frastart.",
+     "grunn": 801.39,
+     "blekkTopp": 788.09,
+     "blekkBunn": 801.56,
+     "v": 432,
+     "h": 500.16
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 28,
+     "linjeVerst": 9.96,
+     "kolonneMin": 11.29,
+     "glyffpar": "g|i"
+    },
+    {
+     "mellom": "2->3",
+     "grunnAvstand": 28,
+     "linjeVerst": 11.36,
+     "kolonneMin": 14.53,
+     "glyffpar": "s|f"
+    }
+   ],
+   "krav": {
+    "nedMaks": 3.34,
+    "nedMaksEm": 0.19,
+    "oppSmaaMaks": 14.7,
+    "oppSmaaEm": 0.82,
+    "oppStorMaks": 17.14,
+    "oppStorEm": 0.95
+   },
+   "norskSmaa": 9.96,
+   "norskSmaaEm": 0.55,
+   "norskStor": 7.53,
+   "norskStorEm": 0.42,
+   "blekkUnderBoks": -7.83,
+   "blekkOverBoks": -6.62,
+   "hoyreMarg": 905.64,
+   "venstreMarg": 432,
+   "utenforSkjerm": 0,
+   "tilNeste": null,
+   "ordhull": {
+    "ordMin": 4.53,
+    "ordMinEm": 0.25,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": ".body-lg",
+   "tag": "p",
+   "klasse": "body-lg",
+   "fs": 18,
+   "lh": 28,
+   "forhold": 1.56,
+   "ls": 0,
+   "lsEm": 0,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 2,
+   "linjer": [
+    {
+     "t": "Enappsomikkesnakkermednettsidenogsystemetbak",
+     "grunn": 1239.39,
+     "blekkTopp": 1226.02,
+     "blekkBunn": 1242.73,
+     "v": 432,
+     "h": 952.31
+    },
+    {
+     "t": "ennyinnboksnoenmåhuskeåsjekke.",
+     "grunn": 1267.39,
+     "blekkTopp": 1252.69,
+     "blekkBunn": 1270.7,
+     "v": 432,
+     "h": 742.53
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 28,
+     "linjeVerst": 9.96,
+     "kolonneMin": 11.46,
+     "glyffpar": "p|i"
+    }
+   ],
+   "krav": {
+    "nedMaks": 3.34,
+    "nedMaksEm": 0.19,
+    "oppSmaaMaks": 14.7,
+    "oppSmaaEm": 0.82,
+    "oppStorMaks": 17.14,
+    "oppStorEm": 0.95
+   },
+   "norskSmaa": 9.96,
+   "norskSmaaEm": 0.55,
+   "norskStor": 7.53,
+   "norskStorEm": 0.42,
+   "blekkUnderBoks": -4.69,
+   "blekkOverBoks": -6.62,
+   "hoyreMarg": 967.69,
+   "venstreMarg": 432,
+   "utenforSkjerm": 0,
+   "tilNeste": {
+    "tag": "p.muted",
+    "boksGap": 24,
+    "blekkGap": 35.44,
+    "blekkGapEm": 1.97
+   },
+   "ordhull": {
+    "ordMin": 4.53,
+    "ordMinEm": 0.25,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": ".body-lg",
+   "tag": "p",
+   "klasse": "scene__ingress body-lg",
+   "fs": 18,
+   "lh": 28,
+   "forhold": 1.56,
+   "ls": 0,
+   "lsEm": 0,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 3,
+   "linjer": [
+    {
+     "t": "SSBmelderat48%avforetakenemedminsttiansatteb",
+     "grunn": 4501.34,
+     "blekkTopp": 4487.97,
+     "blekkBunn": 4504.54,
+     "v": 432,
+     "h": 1010.33
+    },
+    {
+     "t": "mottreavtiåretfør.Detbetyratkonkurrentenedin",
+     "grunn": 4529.34,
+     "blekkTopp": 4514.64,
+     "blekkBunn": 4532.65,
+     "v": 432,
+     "h": 988.63
+    },
+    {
+     "t": "prøverpåfeilsted.",
+     "grunn": 4557.34,
+     "blekkTopp": 4542.64,
+     "blekkBunn": 4560.5,
+     "v": 432,
+     "h": 580.45
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 28,
+     "linjeVerst": 10.1,
+     "kolonneMin": 13.13,
+     "glyffpar": "a|å"
+    },
+    {
+     "mellom": "2->3",
+     "grunnAvstand": 28,
+     "linjeVerst": 9.98,
+     "kolonneMin": 13.13,
+     "glyffpar": "a|å"
+    }
+   ],
+   "krav": {
+    "nedMaks": 3.34,
+    "nedMaksEm": 0.19,
+    "oppSmaaMaks": 14.7,
+    "oppSmaaEm": 0.82,
+    "oppStorMaks": 17.14,
+    "oppStorEm": 0.95
+   },
+   "norskSmaa": 9.96,
+   "norskSmaaEm": 0.55,
+   "norskStor": 7.53,
+   "norskStorEm": 0.42,
+   "blekkUnderBoks": -4.84,
+   "blekkOverBoks": -6.62,
+   "hoyreMarg": 909.67,
+   "venstreMarg": 432,
+   "utenforSkjerm": 0,
+   "tilNeste": null,
+   "ordhull": {
+    "ordMin": 4.55,
+    "ordMinEm": 0.25,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": ".body-lg",
+   "tag": "p",
+   "klasse": "body-lg",
+   "fs": 18,
+   "lh": 28,
+   "forhold": 1.56,
+   "ls": 0,
+   "lsEm": 0,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 3,
+   "linjer": [
+    {
+     "t": "20minutterpåtelefon,ingenpresentasjon.Dufåre",
+     "grunn": 5579.34,
+     "blekkTopp": 5564.64,
+     "blekkBunn": 5582.68,
+     "v": 432,
+     "h": 849.88
+    },
+    {
+     "t": "prisspennogenærligvurderingavomdutrengerdet",
+     "grunn": 5607.34,
+     "blekkTopp": 5593.97,
+     "blekkBunn": 5610.68,
+     "v": 432,
+     "h": 858.77
+    },
+    {
+     "t": "dutrordutrenger.",
+     "grunn": 5635.34,
+     "blekkTopp": 5622.13,
+     "blekkBunn": 5638.68,
+     "v": 432,
+     "h": 577.75
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 28,
+     "linjeVerst": 11.29,
+     "kolonneMin": 11.45,
+     "glyffpar": "g|d"
+    },
+    {
+     "mellom": "2->3",
+     "grunnAvstand": 28,
+     "linjeVerst": 11.45,
+     "kolonneMin": 11.63,
+     "glyffpar": "p|d"
+    }
+   ],
+   "krav": {
+    "nedMaks": 3.34,
+    "nedMaksEm": 0.19,
+    "oppSmaaMaks": 14.7,
+    "oppSmaaEm": 0.82,
+    "oppStorMaks": 17.14,
+    "oppStorEm": 0.95
+   },
+   "norskSmaa": 9.96,
+   "norskSmaaEm": 0.55,
+   "norskStor": 7.53,
+   "norskStorEm": 0.42,
+   "blekkUnderBoks": -4.66,
+   "blekkOverBoks": -5.3,
+   "hoyreMarg": 1061.23,
+   "venstreMarg": 432,
+   "utenforSkjerm": 0,
+   "tilNeste": null,
+   "ordhull": {
+    "ordMin": 4.55,
+    "ordMinEm": 0.25,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": "p",
+   "tag": "p",
+   "klasse": "kk-eyebrow",
+   "fs": 12,
+   "lh": 16,
+   "forhold": 1.33,
+   "ls": 0.96,
+   "lsEm": 0.08,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 1,
+   "linjer": [
+    {
+     "t": "//02Sammenhengen",
+     "grunn": 1066.39,
+     "blekkTopp": 1056.43,
+     "blekkBunn": 1068.55,
+     "v": 432,
+     "h": 578.73
+    }
+   ],
+   "par": [],
+   "krav": {
+    "nedMaks": 2.16,
+    "nedMaksEm": 0.18,
+    "oppSmaaMaks": 10.09,
+    "oppSmaaEm": 0.84,
+    "oppStorMaks": 11.98,
+    "oppStorEm": 1
+   },
+   "norskSmaa": 3.75,
+   "norskSmaaEm": 0.31,
+   "norskStor": 1.86,
+   "norskStorEm": 0.16,
+   "blekkUnderBoks": -1.84,
+   "blekkOverBoks": -2.04,
+   "hoyreMarg": 1341.27,
+   "venstreMarg": 432,
+   "utenforSkjerm": 0,
+   "tilNeste": null,
+   "ordhull": {
+    "ordMin": 8,
+    "ordMinEm": 0.67,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": "p",
+   "tag": "p",
+   "klasse": "muted",
+   "fs": 16,
+   "lh": 26,
+   "forhold": 1.63,
+   "ls": 0,
+   "lsEm": 0,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 3,
+   "linjer": [
+    {
+     "t": "Derforbyggesappenmotdesammedataenesomaltanne",
+     "grunn": 1318.39,
+     "blekkTopp": 1306.14,
+     "blekkBunn": 1321.36,
+     "v": 432,
+     "h": 971.27
+    },
+    {
+     "t": "énordre,ettstedtallenekommerfra.Deterdenkobl",
+     "grunn": 1344.39,
+     "blekkTopp": 1332.14,
+     "blekkBunn": 1347.36,
+     "v": 432,
+     "h": 962.98
+    },
+    {
+     "t": "appsparertidistedetforålagemerarbeid.",
+     "grunn": 1370.39,
+     "blekkTopp": 1357.27,
+     "blekkBunn": 1373.36,
+     "v": 432,
+     "h": 749.17
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 26,
+     "linjeVerst": 10.78,
+     "kolonneMin": 11.42,
+     "glyffpar": "p|d"
+    },
+    {
+     "mellom": "2->3",
+     "grunnAvstand": 26,
+     "linjeVerst": 9.91,
+     "kolonneMin": 12.73,
+     "glyffpar": "o|å"
+    }
+   ],
+   "krav": {
+    "nedMaks": 2.97,
+    "nedMaksEm": 0.19,
+    "oppSmaaMaks": 13.13,
+    "oppSmaaEm": 0.82,
+    "oppStorMaks": 15.26,
+    "oppStorEm": 0.95
+   },
+   "norskSmaa": 9.91,
+   "norskSmaaEm": 0.62,
+   "norskStor": 7.77,
+   "norskStorEm": 0.49,
+   "blekkUnderBoks": -4.03,
+   "blekkOverBoks": -6.75,
+   "hoyreMarg": 948.73,
+   "venstreMarg": 432,
+   "utenforSkjerm": 0,
+   "tilNeste": {
+    "tag": "a.kk-btn",
+    "boksGap": 24,
+    "blekkGap": 44.75,
+    "blekkGapEm": 2.8
+   },
+   "ordhull": {
+    "ordMin": 4.17,
+    "ordMinEm": 0.26,
+    "bokMedian": 0,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": "p",
+   "tag": "p",
+   "klasse": "kk-eyebrow",
+   "fs": 12,
+   "lh": 16,
+   "forhold": 1.33,
+   "ls": 0.96,
+   "lsEm": 0.08,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 1,
+   "linjer": [
+    {
+     "t": "//03Apper",
+     "grunn": 1959.16,
+     "blekkTopp": 1949.2,
+     "blekkBunn": 1961.32,
+     "v": 432,
+     "h": 521.63
+    }
+   ],
+   "par": [],
+   "krav": {
+    "nedMaks": 2.16,
+    "nedMaksEm": 0.18,
+    "oppSmaaMaks": 10.09,
+    "oppSmaaEm": 0.84,
+    "oppStorMaks": 11.98,
+    "oppStorEm": 1
+   },
+   "norskSmaa": 3.75,
+   "norskSmaaEm": 0.31,
+   "norskStor": 1.86,
+   "norskStorEm": 0.16,
+   "blekkUnderBoks": -1.84,
+   "blekkOverBoks": -2.04,
+   "hoyreMarg": 1398.38,
+   "venstreMarg": 432,
+   "utenforSkjerm": 0,
+   "tilNeste": null,
+   "ordhull": {
+    "ordMin": 8,
+    "ordMinEm": 0.67,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": "p",
+   "tag": "p",
+   "klasse": "pekerkort__tekst",
+   "fs": 16,
+   "lh": 26,
+   "forhold": 1.63,
+   "ls": 0,
+   "lsEm": 0,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 3,
+   "linjer": [
+    {
+     "t": "Pushnårennyjobbkommerinn,eller",
+     "grunn": 2266.16,
+     "blekkTopp": 2253.03,
+     "blekkBunn": 2269.11,
+     "v": 457,
+     "h": 728.41
+    },
+    {
+     "t": "nårentimeavbestilles.Ingenventer",
+     "grunn": 2292.16,
+     "blekkTopp": 2279.03,
+     "blekkBunn": 2295.13,
+     "v": 457,
+     "h": 717.69
+    },
+    {
+     "t": "påatnoenskalsjekkee-posten.",
+     "grunn": 2318.16,
+     "blekkTopp": 2305.03,
+     "blekkBunn": 2321.05,
+     "v": 457,
+     "h": 690.42
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 26,
+     "linjeVerst": 9.92,
+     "kolonneMin": 11.28,
+     "glyffpar": "y|b"
+    },
+    {
+     "mellom": "2->3",
+     "grunnAvstand": 26,
+     "linjeVerst": 9.91,
+     "kolonneMin": 12.73,
+     "glyffpar": "å|å"
+    }
+   ],
+   "krav": {
+    "nedMaks": 2.97,
+    "nedMaksEm": 0.19,
+    "oppSmaaMaks": 13.13,
+    "oppSmaaEm": 0.82,
+    "oppStorMaks": 15.26,
+    "oppStorEm": 0.95
+   },
+   "norskSmaa": 9.91,
+   "norskSmaaEm": 0.62,
+   "norskStor": 7.77,
+   "norskStorEm": 0.49,
+   "blekkUnderBoks": -4.11,
+   "blekkOverBoks": -5.87,
+   "hoyreMarg": 1191.59,
+   "venstreMarg": 457,
+   "utenforSkjerm": 0,
+   "tilNeste": null,
+   "ordhull": {
+    "ordMin": 4.17,
+    "ordMinEm": 0.26,
+    "bokMedian": 0,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": "p",
+   "tag": "p",
+   "klasse": "pekerkort__tekst",
+   "fs": 16,
+   "lh": 26,
+   "forhold": 1.63,
+   "ls": 0,
+   "lsEm": 0,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 3,
+   "linjer": [
+    {
+     "t": "Montørenregistrerertimerogbilderi",
+     "grunn": 2266.16,
+     "blekkTopp": 2254.23,
+     "blekkBunn": 2269.13,
+     "v": 819.66,
+     "h": 1086.42
+    },
+    {
+     "t": "kjellerenutendekning,ogdetsynkes",
+     "grunn": 2292.16,
+     "blekkTopp": 2280.23,
+     "blekkBunn": 2295.13,
+     "v": 819.66,
+     "h": 1088.19
+    },
+    {
+     "t": "nårtelefonenfårnettigjen.",
+     "grunn": 2318.16,
+     "blekkTopp": 2305.03,
+     "blekkBunn": 2321.13,
+     "v": 819.66,
+     "h": 1015.03
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 26,
+     "linjeVerst": 11.11,
+     "kolonneMin": 12.43,
+     "glyffpar": "g|t"
+    },
+    {
+     "mellom": "2->3",
+     "grunnAvstand": 26,
+     "linjeVerst": 9.91,
+     "kolonneMin": 9.98,
+     "glyffpar": "j|å"
+    }
+   ],
+   "krav": {
+    "nedMaks": 2.97,
+    "nedMaksEm": 0.19,
+    "oppSmaaMaks": 13.13,
+    "oppSmaaEm": 0.82,
+    "oppStorMaks": 15.26,
+    "oppStorEm": 0.95
+   },
+   "norskSmaa": 9.91,
+   "norskSmaaEm": 0.62,
+   "norskStor": 7.77,
+   "norskStorEm": 0.49,
+   "blekkUnderBoks": -4.03,
+   "blekkOverBoks": -7.08,
+   "hoyreMarg": 831.81,
+   "venstreMarg": 819.66,
+   "utenforSkjerm": 0,
+   "tilNeste": null,
+   "ordhull": {
+    "ordMin": 4.17,
+    "ordMinEm": 0.26,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": "p",
+   "tag": "p",
+   "klasse": "pekerkort__tekst",
+   "fs": 16,
+   "lh": 26,
+   "forhold": 1.63,
+   "ls": 0,
+   "lsEm": 0,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 3,
+   "linjer": [
+    {
+     "t": "Befaringsbilder,strekkoderogGPS",
+     "grunn": 2266.16,
+     "blekkTopp": 2254.23,
+     "blekkBunn": 2269.13,
+     "v": 1182.33,
+     "h": 1435.5
+    },
+    {
+     "t": "rettinniordren.Deterherfeltarbeid",
+     "grunn": 2292.16,
+     "blekkTopp": 2280.23,
+     "blekkBunn": 2292.3,
+     "v": 1182.33,
+     "h": 1447.33
+    },
+    {
+     "t": "faktisksparertid.",
+     "grunn": 2318.16,
+     "blekkTopp": 2306.23,
+     "blekkBunn": 2320.97,
+     "v": 1182.33,
+     "h": 1307.7
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 26,
+     "linjeVerst": 11.11,
+     "kolonneMin": 11.11,
+     "glyffpar": "g|i"
+    },
+    {
+     "mellom": "2->3",
+     "grunnAvstand": 26,
+     "linjeVerst": 13.93,
+     "kolonneMin": 14,
+     "glyffpar": ".|i"
+    }
+   ],
+   "krav": {
+    "nedMaks": 2.97,
+    "nedMaksEm": 0.19,
+    "oppSmaaMaks": 13.13,
+    "oppSmaaEm": 0.82,
+    "oppStorMaks": 15.26,
+    "oppStorEm": 0.95
+   },
+   "norskSmaa": 9.91,
+   "norskSmaaEm": 0.62,
+   "norskStor": 7.77,
+   "norskStorEm": 0.49,
+   "blekkUnderBoks": -4.19,
+   "blekkOverBoks": -7.08,
+   "hoyreMarg": 472.67,
+   "venstreMarg": 1182.33,
+   "utenforSkjerm": 0,
+   "tilNeste": null,
+   "ordhull": {
+    "ordMin": 4.17,
+    "ordMinEm": 0.26,
+    "bokMedian": 0,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": "p",
+   "tag": "p",
+   "klasse": "horisont__tekst",
+   "fs": 18,
+   "lh": 27.9,
+   "forhold": 1.55,
+   "ls": 0,
+   "lsEm": 0,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 3,
+   "linjer": [
+    {
+     "t": "Nestenalleapp-ideerertreideerien",
+     "grunn": 2876.09,
+     "blekkTopp": 2862.72,
+     "blekkBunn": 2879.25,
+     "v": 433,
+     "h": 730.81
+    },
+    {
+     "t": "trenchcoat.Viskillerutdeneneoppgavensom",
+     "grunn": 2903.98,
+     "blekkTopp": 2890.61,
+     "blekkBunn": 2907.32,
+     "v": 433,
+     "h": 808.44
+    },
+    {
+     "t": "faktiskgjentarseghveruke,oglarrestenvente.",
+     "grunn": 2931.88,
+     "blekkTopp": 2918.5,
+     "blekkBunn": 2935.21,
+     "v": 433,
+     "h": 816.02
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 27.89,
+     "linjeVerst": 11.36,
+     "kolonneMin": 11.36,
+     "glyffpar": "p|i"
+    },
+    {
+     "mellom": "2->3",
+     "grunnAvstand": 27.89,
+     "linjeVerst": 11.18,
+     "kolonneMin": 14.35,
+     "glyffpar": "c|i"
+    }
+   ],
+   "krav": {
+    "nedMaks": 3.34,
+    "nedMaksEm": 0.19,
+    "oppSmaaMaks": 14.7,
+    "oppSmaaEm": 0.82,
+    "oppStorMaks": 17.14,
+    "oppStorEm": 0.95
+   },
+   "norskSmaa": 9.85,
+   "norskSmaaEm": 0.55,
+   "norskStor": 7.42,
+   "norskStorEm": 0.41,
+   "blekkUnderBoks": -4.55,
+   "blekkOverBoks": -6.62,
+   "hoyreMarg": 1103.98,
+   "venstreMarg": 433,
+   "utenforSkjerm": 0,
+   "tilNeste": null,
+   "ordhull": {
+    "ordMin": 4.55,
+    "ordMinEm": 0.25,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": "p",
+   "tag": "p",
+   "klasse": "horisont__tekst",
+   "fs": 18,
+   "lh": 27.9,
+   "forhold": 1.55,
+   "ls": 0,
+   "lsEm": 0,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 3,
+   "linjer": [
+    {
+     "t": "Lengeførdenerferdig.Enappsombareersett",
+     "grunn": 3171.83,
+     "blekkTopp": 3158.45,
+     "blekkBunn": 3175.16,
+     "v": 433,
+     "h": 815.75
+    },
+    {
+     "t": "påenskjermietmøterom,oppdagerman",
+     "grunn": 3199.72,
+     "blekkTopp": 3185.01,
+     "blekkBunn": 3203.05,
+     "v": 433,
+     "h": 767.78
+    },
+    {
+     "t": "feileneiførstetterlansering.",
+     "grunn": 3227.61,
+     "blekkTopp": 3214.23,
+     "blekkBunn": 3230.95,
+     "v": 433,
+     "h": 660.94
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 27.89,
+     "linjeVerst": 9.85,
+     "kolonneMin": 13.02,
+     "glyffpar": "e|å"
+    },
+    {
+     "mellom": "2->3",
+     "grunnAvstand": 27.89,
+     "linjeVerst": 11.18,
+     "kolonneMin": 11.34,
+     "glyffpar": "j|f"
+    }
+   ],
+   "krav": {
+    "nedMaks": 3.34,
+    "nedMaksEm": 0.19,
+    "oppSmaaMaks": 14.7,
+    "oppSmaaEm": 0.82,
+    "oppStorMaks": 17.14,
+    "oppStorEm": 0.95
+   },
+   "norskSmaa": 9.85,
+   "norskSmaaEm": 0.55,
+   "norskStor": 7.42,
+   "norskStorEm": 0.41,
+   "blekkUnderBoks": -4.55,
+   "blekkOverBoks": -6.62,
+   "hoyreMarg": 1104.25,
+   "venstreMarg": 433,
+   "utenforSkjerm": 0,
+   "tilNeste": null,
+   "ordhull": {
+    "ordMin": 4.53,
+    "ordMinEm": 0.25,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": "p",
+   "tag": "p",
+   "klasse": "horisont__tekst",
+   "fs": 18,
+   "lh": 27.9,
+   "forhold": 1.55,
+   "ls": 0,
+   "lsEm": 0,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 3,
+   "linjer": [
+    {
+     "t": "Appenhenterfrasammestedsomnettsidenog",
+     "grunn": 3467.56,
+     "blekkTopp": 3454.19,
+     "blekkBunn": 3470.9,
+     "v": 433,
+     "h": 814.72
+    },
+    {
+     "t": "regnskapet.Etegetdatasettvedsidenaveren",
+     "grunn": 3495.45,
+     "blekkTopp": 3482.08,
+     "blekkBunn": 3498.79,
+     "v": 433,
+     "h": 810.03
+    },
+    {
+     "t": "nykildetiluenighetomhvilketallsomgjelder.",
+     "grunn": 3523.34,
+     "blekkTopp": 3509.97,
+     "blekkBunn": 3526.68,
+     "v": 433,
+     "h": 798.09
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 27.89,
+     "linjeVerst": 11.18,
+     "kolonneMin": 14.51,
+     "glyffpar": "s|d"
+    },
+    {
+     "mellom": "2->3",
+     "grunnAvstand": 27.89,
+     "linjeVerst": 11.18,
+     "kolonneMin": 11.34,
+     "glyffpar": "g|k"
+    }
+   ],
+   "krav": {
+    "nedMaks": 3.34,
+    "nedMaksEm": 0.19,
+    "oppSmaaMaks": 14.7,
+    "oppSmaaEm": 0.82,
+    "oppStorMaks": 17.14,
+    "oppStorEm": 0.95
+   },
+   "norskSmaa": 9.85,
+   "norskSmaaEm": 0.55,
+   "norskStor": 7.42,
+   "norskStorEm": 0.41,
+   "blekkUnderBoks": -4.55,
+   "blekkOverBoks": -6.62,
+   "hoyreMarg": 1105.28,
+   "venstreMarg": 433,
+   "utenforSkjerm": 0,
+   "tilNeste": null,
+   "ordhull": {
+    "ordMin": 4.55,
+    "ordMinEm": 0.25,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": "p",
+   "tag": "p",
+   "klasse": "horisont__tekst",
+   "fs": 18,
+   "lh": 27.9,
+   "forhold": 1.55,
+   "ls": 0,
+   "lsEm": 0,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 4,
+   "linjer": [
+    {
+     "t": "AppStoreogGooglePlaykreveren",
+     "grunn": 3763.3,
+     "blekkTopp": 3750.09,
+     "blekkBunn": 3766.63,
+     "v": 433,
+     "h": 717.42
+    },
+    {
+     "t": "utviklerkonto.Denstårpådinbedrift,ikkepå",
+     "grunn": 3791.19,
+     "blekkTopp": 3776.48,
+     "blekkBunn": 3794.38,
+     "v": 433,
+     "h": 790.98
+    },
+    {
+     "t": "oss,såappenblirværendedinogsåomdu",
+     "grunn": 3819.08,
+     "blekkTopp": 3804.37,
+     "blekkBunn": 3822.41,
+     "v": 433,
+     "h": 776.13
+    },
+    {
+     "t": "bytterleverandør.",
+     "grunn": 3846.97,
+     "blekkTopp": 3833.76,
+     "blekkBunn": 3850.28,
+     "v": 433,
+     "h": 574.13
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 27.89,
+     "linjeVerst": 9.85,
+     "kolonneMin": 9.88,
+     "glyffpar": "y|å"
+    },
+    {
+     "mellom": "2->3",
+     "grunnAvstand": 27.89,
+     "linjeVerst": 9.99,
+     "kolonneMin": 11.52,
+     "glyffpar": "p|d"
+    },
+    {
+     "mellom": "3->4",
+     "grunnAvstand": 27.89,
+     "linjeVerst": 11.34,
+     "kolonneMin": 12.79,
+     "glyffpar": ",|t"
+    }
+   ],
+   "krav": {
+    "nedMaks": 3.34,
+    "nedMaksEm": 0.19,
+    "oppSmaaMaks": 14.7,
+    "oppSmaaEm": 0.82,
+    "oppStorMaks": 17.14,
+    "oppStorEm": 0.95
+   },
+   "norskSmaa": 9.85,
+   "norskSmaaEm": 0.55,
+   "norskStor": 7.42,
+   "norskStorEm": 0.41,
+   "blekkUnderBoks": -4.58,
+   "blekkOverBoks": -6.79,
+   "hoyreMarg": 1129.02,
+   "venstreMarg": 433,
+   "utenforSkjerm": 0,
+   "tilNeste": null,
+   "ordhull": {
+    "ordMin": 4.55,
+    "ordMinEm": 0.25,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": "p",
+   "tag": "p",
+   "klasse": "horisont__hjelp small",
+   "fs": 14,
+   "lh": 20,
+   "forhold": 1.43,
+   "ls": 0,
+   "lsEm": 0,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 1,
+   "linjer": [
+    {
+     "t": "Drasporet,ellerbrukpiltastenenårdetharfokus.",
+     "grunn": 3934.86,
+     "blekkTopp": 3923.38,
+     "blekkBunn": 3937.37,
+     "v": 400,
+     "h": 720.8
+    }
+   ],
+   "par": [],
+   "krav": {
+    "nedMaks": 2.6,
+    "nedMaksEm": 0.19,
+    "oppSmaaMaks": 11.48,
+    "oppSmaaEm": 0.82,
+    "oppStorMaks": 13.35,
+    "oppStorEm": 0.95
+   },
+   "norskSmaa": 5.92,
+   "norskSmaaEm": 0.42,
+   "norskStor": 4.05,
+   "norskStorEm": 0.29,
+   "blekkUnderBoks": -2.49,
+   "blekkOverBoks": -3.52,
+   "hoyreMarg": 1199.2,
+   "venstreMarg": 400,
+   "utenforSkjerm": 0,
+   "tilNeste": null,
+   "ordhull": {
+    "ordMin": 3.77,
+    "ordMinEm": 0.27,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": "p",
+   "tag": "p",
+   "klasse": "kk-eyebrow",
+   "fs": 12,
+   "lh": 16,
+   "forhold": 1.33,
+   "ls": 0.96,
+   "lsEm": 0.08,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 1,
+   "linjer": [
+    {
+     "t": "//05AI",
+     "grunn": 4054.86,
+     "blekkTopp": 4044.9,
+     "blekkBunn": 4056.18,
+     "v": 432,
+     "h": 497.14
+    }
+   ],
+   "par": [],
+   "krav": {
+    "nedMaks": 2.16,
+    "nedMaksEm": 0.18,
+    "oppSmaaMaks": 10.09,
+    "oppSmaaEm": 0.84,
+    "oppStorMaks": 11.98,
+    "oppStorEm": 1
+   },
+   "norskSmaa": 3.75,
+   "norskSmaaEm": 0.31,
+   "norskStor": 1.86,
+   "norskStorEm": 0.16,
+   "blekkUnderBoks": -2.68,
+   "blekkOverBoks": -2.04,
+   "hoyreMarg": 1422.86,
+   "venstreMarg": 432,
+   "utenforSkjerm": 0,
+   "tilNeste": null,
+   "ordhull": {
+    "ordMin": 8,
+    "ordMinEm": 0.67,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": "p",
+   "tag": "p",
+   "klasse": "kk-eyebrow",
+   "fs": 12,
+   "lh": 16,
+   "forhold": 1.33,
+   "ls": 0.96,
+   "lsEm": 0.08,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 1,
+   "linjer": [
+    {
+     "t": "//06Ipraksis",
+     "grunn": 4776.34,
+     "blekkTopp": 4766.38,
+     "blekkBunn": 4778.5,
+     "v": 432,
+     "h": 554.27
+    }
+   ],
+   "par": [],
+   "krav": {
+    "nedMaks": 2.16,
+    "nedMaksEm": 0.18,
+    "oppSmaaMaks": 10.09,
+    "oppSmaaEm": 0.84,
+    "oppStorMaks": 11.98,
+    "oppStorEm": 1
+   },
+   "norskSmaa": 3.75,
+   "norskSmaaEm": 0.31,
+   "norskStor": 1.86,
+   "norskStorEm": 0.16,
+   "blekkUnderBoks": -1.84,
+   "blekkOverBoks": -2.04,
+   "hoyreMarg": 1365.73,
+   "venstreMarg": 432,
+   "utenforSkjerm": 0,
+   "tilNeste": null,
+   "ordhull": {
+    "ordMin": 8,
+    "ordMinEm": 0.67,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": "p",
+   "tag": "p",
+   "klasse": "muted",
+   "fs": 16,
+   "lh": 26,
+   "forhold": 1.63,
+   "ls": 0,
+   "lsEm": 0,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 4,
+   "linjer": [
+    {
+     "t": "Detsomfaktiskvirkerforensmåbedriftersmaltogk",
+     "grunn": 4948.34,
+     "blekkTopp": 4935.22,
+     "blekkBunn": 4951.31,
+     "v": 432,
+     "h": 889.84
+    },
+    {
+     "t": "assistentsomsvarerpådetjuespørsmålenedufårhv",
+     "grunn": 4974.34,
+     "blekkTopp": 4961.22,
+     "blekkBunn": 4977.23,
+     "v": 432,
+     "h": 888.58
+    },
+    {
+     "t": "verktøysomleserenPDF-fakturaogfyllerutskjema",
+     "grunn": 5000.34,
+     "blekkTopp": 4988.42,
+     "blekkBunn": 5003.31,
+     "v": 432,
+     "h": 886.86
+    },
+    {
+     "t": "oppsummeringavukenshenvendelser.",
+     "grunn": 5026.34,
+     "blekkTopp": 5014.42,
+     "blekkBunn": 5029.31,
+     "v": 432,
+     "h": 713.83
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 26,
+     "linjeVerst": 9.91,
+     "kolonneMin": 11.27,
+     "glyffpar": "g|k"
+    },
+    {
+     "mellom": "2->3",
+     "grunnAvstand": 26,
+     "linjeVerst": 11.19,
+     "kolonneMin": 11.34,
+     "glyffpar": "j|k"
+    },
+    {
+     "mellom": "3->4",
+     "grunnAvstand": 26,
+     "linjeVerst": 11.11,
+     "kolonneMin": 14.08,
+     "glyffpar": "m|i"
+    }
+   ],
+   "krav": {
+    "nedMaks": 2.97,
+    "nedMaksEm": 0.19,
+    "oppSmaaMaks": 13.13,
+    "oppSmaaEm": 0.82,
+    "oppStorMaks": 15.26,
+    "oppStorEm": 0.95
+   },
+   "norskSmaa": 9.91,
+   "norskSmaaEm": 0.62,
+   "norskStor": 7.77,
+   "norskStorEm": 0.49,
+   "blekkUnderBoks": -4.03,
+   "blekkOverBoks": -5.87,
+   "hoyreMarg": 1030.16,
+   "venstreMarg": 432,
+   "utenforSkjerm": 0,
+   "tilNeste": {
+    "tag": "p.muted",
+    "boksGap": 24,
+    "blekkGap": 35.11,
+    "blekkGapEm": 2.19
+   },
+   "ordhull": {
+    "ordMin": 4.17,
+    "ordMinEm": 0.26,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": "p",
+   "tag": "p",
+   "klasse": "muted",
+   "fs": 16,
+   "lh": 26,
+   "forhold": 1.63,
+   "ls": 0,
+   "lsEm": 0,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 4,
+   "linjer": [
+    {
+     "t": "Detsomikkevirkererenchatbotsomlatersomdenere",
+     "grunn": 5076.34,
+     "blekkTopp": 5064.42,
+     "blekkBunn": 5076.49,
+     "v": 432,
+     "h": 903.72
+    },
+    {
+     "t": "DerformerkesalleAI-flatertydelig,deloveraldr",
+     "grunn": 5102.34,
+     "blekkTopp": 5089.22,
+     "blekkBunn": 5105.31,
+     "v": 432,
+     "h": 935.63
+    },
+    {
+     "t": "ogdeloggerikkesensitivedata.Ogdetskrivesdata",
+     "grunn": 5128.34,
+     "blekkTopp": 5116.42,
+     "blekkBunn": 5131.31,
+     "v": 432,
+     "h": 926.06
+    },
+    {
+     "t": "førnoesettesidrift.",
+     "grunn": 5154.34,
+     "blekkTopp": 5142.42,
+     "blekkBunn": 5154.75,
+     "v": 432,
+     "h": 578.45
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 26,
+     "linjeVerst": 12.73,
+     "kolonneMin": 12.88,
+     "glyffpar": "n|å"
+    },
+    {
+     "mellom": "2->3",
+     "grunnAvstand": 26,
+     "linjeVerst": 11.11,
+     "kolonneMin": 11.27,
+     "glyffpar": "g|d"
+    },
+    {
+     "mellom": "3->4",
+     "grunnAvstand": 26,
+     "linjeVerst": 11.11,
+     "kolonneMin": 12.43,
+     "glyffpar": "g|t"
+    }
+   ],
+   "krav": {
+    "nedMaks": 2.97,
+    "nedMaksEm": 0.19,
+    "oppSmaaMaks": 13.13,
+    "oppSmaaEm": 0.82,
+    "oppStorMaks": 15.26,
+    "oppStorEm": 0.95
+   },
+   "norskSmaa": 9.91,
+   "norskSmaaEm": 0.62,
+   "norskStor": 7.77,
+   "norskStorEm": 0.49,
+   "blekkUnderBoks": -6.59,
+   "blekkOverBoks": -7.08,
+   "hoyreMarg": 984.38,
+   "venstreMarg": 432,
+   "utenforSkjerm": 0,
+   "tilNeste": {
+    "tag": "a.kk-btn",
+    "boksGap": 24,
+    "blekkGap": 47.32,
+    "blekkGapEm": 2.96
+   },
+   "ordhull": {
+    "ordMin": 4.17,
+    "ordMinEm": 0.26,
+    "bokMedian": 0,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": "p",
+   "tag": "p",
+   "klasse": "kk-eyebrow",
+   "fs": 12,
+   "lh": 16,
+   "forhold": 1.33,
+   "ls": 0.96,
+   "lsEm": 0.08,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 1,
+   "linjer": [
+    {
+     "t": "//07Kontakt",
+     "grunn": 5435.34,
+     "blekkTopp": 5425.38,
+     "blekkBunn": 5436.66,
+     "v": 432,
+     "h": 537.94
+    }
+   ],
+   "par": [],
+   "krav": {
+    "nedMaks": 2.16,
+    "nedMaksEm": 0.18,
+    "oppSmaaMaks": 10.09,
+    "oppSmaaEm": 0.84,
+    "oppStorMaks": 11.98,
+    "oppStorEm": 1
+   },
+   "norskSmaa": 3.75,
+   "norskSmaaEm": 0.31,
+   "norskStor": 1.86,
+   "norskStorEm": 0.16,
+   "blekkUnderBoks": -2.68,
+   "blekkOverBoks": -2.04,
+   "hoyreMarg": 1382.06,
+   "venstreMarg": 432,
+   "utenforSkjerm": 0,
+   "tilNeste": {
+    "tag": "h2.display-lg",
+    "boksGap": 12,
+    "blekkGap": 22.45,
+    "blekkGapEm": 1.87
+   },
+   "ordhull": {
+    "ordMin": 8,
+    "ordMinEm": 0.67,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": "p",
+   "tag": "p",
+   "klasse": "muted",
+   "fs": 16,
+   "lh": 26,
+   "forhold": 1.63,
+   "ls": 0,
+   "lsEm": 0,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 2,
+   "linjer": [
+    {
+     "t": "Velgetledigkvarterikalenderen.Dufårenbekreft",
+     "grunn": 5769.34,
+     "blekkTopp": 5756.22,
+     "blekkBunn": 5772.31,
+     "v": 457,
+     "h": 890.06
+    },
+    {
+     "t": "lenke–ingene-postframogtilbake.",
+     "grunn": 5795.34,
+     "blekkTopp": 5783.42,
+     "blekkBunn": 5798.31,
+     "v": 457,
+     "h": 721.77
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 26,
+     "linjeVerst": 11.11,
+     "kolonneMin": 11.27,
+     "glyffpar": "g|k"
+    }
+   ],
+   "krav": {
+    "nedMaks": 2.97,
+    "nedMaksEm": 0.19,
+    "oppSmaaMaks": 13.13,
+    "oppSmaaEm": 0.82,
+    "oppStorMaks": 15.26,
+    "oppStorEm": 0.95
+   },
+   "norskSmaa": 9.91,
+   "norskSmaaEm": 0.62,
+   "norskStor": 7.77,
+   "norskStorEm": 0.49,
+   "blekkUnderBoks": -4.03,
+   "blekkOverBoks": -5.87,
+   "hoyreMarg": 1029.94,
+   "venstreMarg": 457,
+   "utenforSkjerm": 0,
+   "tilNeste": {
+    "tag": "a.kk-btn",
+    "boksGap": 16,
+    "blekkGap": 36.75,
+    "blekkGapEm": 2.3
+   },
+   "ordhull": {
+    "ordMin": 4.17,
+    "ordMinEm": 0.26,
+    "bokMedian": 0,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": "p",
+   "tag": "p",
+   "klasse": "small faint",
+   "fs": 14,
+   "lh": 20,
+   "forhold": 1.43,
+   "ls": 0,
+   "lsEm": 0,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 2,
+   "linjer": [
+    {
+     "t": "Vibrukeropplysningenebareforåsvaredeg,ogslet",
+     "grunn": 6289.34,
+     "blekkTopp": 6277.86,
+     "blekkBunn": 6291.94,
+     "v": 1001,
+     "h": 1458.63
+    },
+    {
+     "t": "månederhvisdetikkebliretoppdrag.Sepersonvern",
+     "grunn": 6309.34,
+     "blekkTopp": 6297.86,
+     "blekkBunn": 6311.94,
+     "v": 1001,
+     "h": 1422.98
+    }
+   ],
+   "par": [
+    {
+     "mellom": "1->2",
+     "grunnAvstand": 20,
+     "linjeVerst": 5.92,
+     "kolonneMin": 7.11,
+     "glyffpar": "p|i"
+    }
+   ],
+   "krav": {
+    "nedMaks": 2.6,
+    "nedMaksEm": 0.19,
+    "oppSmaaMaks": 11.48,
+    "oppSmaaEm": 0.82,
+    "oppStorMaks": 13.35,
+    "oppStorEm": 0.95
+   },
+   "norskSmaa": 5.92,
+   "norskSmaaEm": 0.42,
+   "norskStor": 4.05,
+   "norskStorEm": 0.29,
+   "blekkUnderBoks": -2.4,
+   "blekkOverBoks": -3.52,
+   "hoyreMarg": 461.38,
+   "venstreMarg": 1001,
+   "utenforSkjerm": 0,
+   "tilNeste": null,
+   "ordhull": {
+    "ordMin": 3.77,
+    "ordMinEm": 0.27,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": "p",
+   "tag": "p",
+   "klasse": "kk-wordmark",
+   "fs": 20,
+   "lh": 28,
+   "forhold": 1.4,
+   "ls": -0.6,
+   "lsEm": -0.03,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 1,
+   "linjer": [
+    {
+     "t": "KodeKonsulentene",
+     "grunn": 6489.34,
+     "blekkTopp": 6474.7,
+     "blekkBunn": 6489.61,
+     "v": 456,
+     "h": 636.23
+    }
+   ],
+   "par": [],
+   "krav": {
+    "nedMaks": 4.07,
+    "nedMaksEm": 0.2,
+    "oppSmaaMaks": 16.14,
+    "oppSmaaEm": 0.81,
+    "oppStorMaks": 19.47,
+    "oppStorEm": 0.97
+   },
+   "norskSmaa": 7.78,
+   "norskSmaaEm": 0.39,
+   "norskStor": 4.45,
+   "norskStorEm": 0.22,
+   "blekkUnderBoks": -6.73,
+   "blekkOverBoks": -6.35,
+   "hoyreMarg": 1283.77,
+   "venstreMarg": 456,
+   "utenforSkjerm": 0,
+   "tilNeste": {
+    "tag": "p",
+    "boksGap": 8,
+    "blekkGap": 19.3,
+    "blekkGapEm": 0.97
+   },
+   "ordhull": {
+    "ordMin": null,
+    "ordMinEm": null,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": "p",
+   "tag": "p",
+   "klasse": "",
+   "fs": 14,
+   "lh": 20,
+   "forhold": 1.43,
+   "ls": 0,
+   "lsEm": 0,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 1,
+   "linjer": [
+    {
+     "t": "Nettsidersomvirker.Systemersomhengersammen.",
+     "grunn": 6519.34,
+     "blekkTopp": 6508.91,
+     "blekkBunn": 6521.94,
+     "v": 456,
+     "h": 797.28
+    }
+   ],
+   "par": [],
+   "krav": {
+    "nedMaks": 2.6,
+    "nedMaksEm": 0.19,
+    "oppSmaaMaks": 11.48,
+    "oppSmaaEm": 0.82,
+    "oppStorMaks": 13.35,
+    "oppStorEm": 0.95
+   },
+   "norskSmaa": 5.92,
+   "norskSmaaEm": 0.42,
+   "norskStor": 4.05,
+   "norskStorEm": 0.29,
+   "blekkUnderBoks": -2.4,
+   "blekkOverBoks": -4.57,
+   "hoyreMarg": 1122.72,
+   "venstreMarg": 456,
+   "utenforSkjerm": 0,
+   "tilNeste": {
+    "tag": "p.kk-orgnr",
+    "boksGap": 8,
+    "blekkGap": 13.3,
+    "blekkGapEm": 0.95
+   },
+   "ordhull": {
+    "ordMin": 3.77,
+    "ordMinEm": 0.27,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  },
+  {
+   "velger": "p",
+   "tag": "p",
+   "klasse": "kk-orgnr",
+   "fs": 13,
+   "lh": 20,
+   "forhold": 1.54,
+   "ls": 0,
+   "lsEm": 0,
+   "padBunn": 0,
+   "boksavvik": 0,
+   "antLinjer": 1,
+   "linjer": [
+    {
+     "t": "OOrrgga.nnirs.as9j3o6ns3n7u4mm3e3r6",
+     "grunn": 6545.34,
+     "blekkTopp": 6535.24,
+     "blekkBunn": 6548.68,
+     "v": 455,
+     "h": 604.2
+    }
+   ],
+   "par": [],
+   "krav": {
+    "nedMaks": 2.34,
+    "nedMaksEm": 0.18,
+    "oppSmaaMaks": 10.87,
+    "oppSmaaEm": 0.84,
+    "oppStorMaks": 12.92,
+    "oppStorEm": 0.99
+   },
+   "norskSmaa": 6.79,
+   "norskSmaaEm": 0.52,
+   "norskStor": 4.74,
+   "norskStorEm": 0.36,
+   "blekkUnderBoks": -3.66,
+   "blekkOverBoks": -2.9,
+   "hoyreMarg": 1315.8,
+   "venstreMarg": 455,
+   "utenforSkjerm": 0,
+   "tilNeste": null,
+   "ordhull": {
+    "ordMin": null,
+    "ordMinEm": null,
+    "bokMedian": -1.02,
+    "bokMedianEm": -0.08
+   }
+  },
+  {
+   "velger": "p",
+   "tag": "p",
+   "klasse": "kkterm__hint",
+   "fs": 12,
+   "lh": 16,
+   "forhold": 1.33,
+   "ls": 0,
+   "lsEm": 0,
+   "padBunn": 4,
+   "boksavvik": 0,
+   "antLinjer": 1,
+   "linjer": [
+    {
+     "t": "Trykk~forterminal",
+     "grunn": 875,
+     "blekkTopp": 865.68,
+     "blekkBunn": 877.16,
+     "v": 1751,
+     "h": 1895
+    }
+   ],
+   "par": [],
+   "krav": {
+    "nedMaks": 2.16,
+    "nedMaksEm": 0.18,
+    "oppSmaaMaks": 10.03,
+    "oppSmaaEm": 0.84,
+    "oppStorMaks": 11.93,
+    "oppStorEm": 0.99
+   },
+   "norskSmaa": 3.81,
+   "norskSmaaEm": 0.32,
+   "norskStor": 1.91,
+   "norskStorEm": 0.16,
+   "blekkUnderBoks": -6.84,
+   "blekkOverBoks": -7.68,
+   "hoyreMarg": 25,
+   "venstreMarg": 1751,
+   "utenforSkjerm": 0,
+   "tilNeste": null,
+   "ordhull": {
+    "ordMin": 7.19,
+    "ordMinEm": 0.6,
+    "bokMedian": -0.02,
+    "bokMedianEm": 0
+   }
+  }
+ ],
+ "tema": "light",
+ "viewport": 1920
+}

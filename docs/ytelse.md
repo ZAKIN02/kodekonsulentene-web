@@ -1,158 +1,184 @@
-# Ytelse — målte tall
+# Ytelse – målt 6. oktober 2026
 
-Målt første gang **6. oktober 2026**. Fram til da hadde nettsiden påstått
-«Lighthouse 95+» i brandboken, i tjenestekortet på forsiden og i salgsmateriellet
-**uten at det var målt en eneste gang**. Dette dokumentet er rettelsen.
+Målt med Lighthouse 12.8.2, median av to kjøringer per side, simulert struping.
+Mobil er Pixel 7: 390×844 CSS-piksler med `deviceScaleFactor` 2,625 – tallet er
+fysiske piksler delt på CSS-piksler, ikke en bredde på 1080.
 
-Metode: Lighthouse 13.5.0, mobil (390×844, DPR 2,625), simulert struping,
-`--only-categories=performance,accessibility,best-practices,seo`.
-Tre kjøringer per side, **median** — ikke snitt, fordi én kald kjøring ellers
-drar tallet ned under det brukere faktisk opplever.
+Produksjon er målt kl. 10:36–10:48. Sju agenter skrev i repoet samtidig, så
+lokale tall er et øyeblikksbilde av et tre med ucommittet arbeid fra alle sju.
+Produksjonstallene er de pålitelige.
 
-```
-npm run ytelse            # lokalt mot http://127.0.0.1:4399
-npm run ytelse:prod       # mot produksjon
-npm run lhci              # med terskler, feiler ved brudd
-```
+Kjøres med:
 
-## Lokalt (bygget kode, 6. oktober 2026)
+    node .skudd/ytelse.mjs https://kodekonsulentene.no / /priser/
+    FORM=desktop node .skudd/ytelse.mjs https://kodekonsulentene.no /
 
-| Side | Ytelse | UU | Praksis | SEO | LCP | CLS | TBT |
-|---|---|---|---|---|---|---|---|
-| `/` | 99 | 100 | 100 | 100 | 2105 ms | 0,002 | 0 ms |
-| `/historie` | 100 | 100 | 100 | 100 | 1729 ms | 0 | 0 ms |
-| `/sjekk` | 99 | 100 | 100 | 100 | 1653 ms | 0 | 0 ms |
-| `/priser` | 100 | **98** | 100 | 100 | 1578 ms | 0,001 | 0 ms |
-| `/verktoy` | 99 | **98** | 100 | 100 | 1803 ms | 0,002 | 0 ms |
+Lighthouse ligger ikke i `package.json`. Den hentes fra en egen mappe, overstyrbar
+med `LH=<sti til node_modules>`, nettopp fordi flere agenter skriver i package.json.
 
-## Produksjon (kodekonsulentene.no, samme dag)
+## Alle sider, produksjon
 
-| Side | Ytelse | UU | Praksis | SEO | LCP | CLS | TBT |
-|---|---|---|---|---|---|---|---|
-| `/` | 100 | 100 | 100 | 100 | 1001 ms | 0,002 | 0 ms |
-| `/historie` | **94** | 100 | 100 | 100 | 1131 ms | **0,145** | 0 ms |
-| `/sjekk` | 100 | 100 | 100 | 100 | 983 ms | 0 | 0 ms |
-| `/priser` | 100 | **98** | 100 | 100 | 873 ms | 0 | 0 ms |
-| `/verktoy` | 100 | **98** | 100 | 100 | 840 ms | 0 | 0 ms |
+Y/UU/P/S = ytelse / tilgjengelighet / beste praksis / SEO.
 
-Produksjon er raskere enn lokalt fordi den lokale målingen kjører mot en
-ukomprimert utviklingsserver på samme maskin som nettleseren.
+| Side | Mobil Y/UU/P/S | Mobil CLS | Skrivebord Y/UU/P/S | Skrivebord CLS | kB mobil |
+|---|---|---|---|---|---|
+| / | 100/100/100/100 | 0.002 | 100/97/100/100 | 0.002 | 594 |
+| /nettsider/ | 92/97/100/100 | 0.174 | 100/97/100/100 | 0.018 | 105 |
+| /systemer/ | 100/97/100/100 | 0.005 | 100/100/100/100 | 0.022 | 588 |
+| /sikkerhet/ | 100/100/100/100 | 0.001 | 100/100/100/100 | 0.01 | 106 |
+| /priser/ | 100/98/100/100 | 0.001 | 100/98/100/100 | 0.008 | 105 |
+| /caser/ | 100/100/100/100 | 0.01 | 100/100/100/100 | 0.007 | 103 |
+| /om/ | 100/100/100/100 | 0.013 | 100/100/100/100 | 0.01 | 104 |
+| /sjekk/ | 100/100/100/100 | 0 | 100/100/100/100 | 0 | 104 |
+| /verktoy/ | 100/98/100/100 | 0.002 | 100/98/100/100 | 0.015 | 1552 |
+| /historie/ | 95/100/100/100 | 0.139 | 88/96/100/100 | 0.235 | 767 |
+| /status/ | 100/100/100/100 | 0 | 100/100/100/100 | 0 | 104 |
+| /kontakt/ | 100/97/100/100 | 0.001 | 100/97/100/100 | 0.007 | 107 |
+| /apper-og-ai/ | 100/97/100/100 | 0.004 | 100/100/100/100 | 0.014 | 104 |
+| /handbok/ | 100/100/100/100 | 0.002 | 100/100/100/100 | 0.011 | 105 |
+| /personvern/ | 100/100/100/100 | 0 | 100/100/100/100 | 0 | 102 |
+| /vilkar/ | 100/100/100/100 | 0 | 100/100/100/100 | 0 | 103 |
+| /terminal/ | 100/100/100/100 | 0.025 | 100/100/100/100 | 0 | 102 |
+| /bransjer/handverkere/ | 100/97/100/100 | 0.004 | 100/100/100/100 | 0.018 | 105 |
+| /bransjer/klinikker/ | 100/97/100/100 | 0.004 | 100/100/100/100 | 0.018 | 105 |
+| /verktoy/cookie-sjekk/ | 100/97/100/100 | 0.002 | 82/100/100/100 | 0.374 | 106 |
+| /verktoy/dmarc/ | 100/97/100/100 | 0.001 | 100/100/100/100 | 0.008 | 105 |
+| /verktoy/priskalkulator/ | 100/100/100/100 | 0.001 | 100/100/100/100 | 0.006 | 108 |
+| /verktoy/uu-sjekk/ | 100/97/100/100 | 0.001 | 100/97/100/100 | 0.006 | 106 |
 
-**Målingene inkluderer videoene.** Forsiden laster 657 kB over 12 forespørsler,
-hvorav 472 kB er `systemer-1280.mp4`. `/historie` laster 788 kB, `/verktoy`
-1 572 kB. Tallene over er altså ikke kunstig gode fordi mediene uteble.
+Alle 23 sider ligger på 100 i beste praksis og SEO. TBT er 0 ms overalt –
+det er ingen JavaScript-kostnad å snakke om noe sted.
 
-## Funn 1 — logoen flytter layouten på hver sidelasting
+## Tre sider bryter løftet om 95
 
-**Dette er den eneste grunnen til at `/historie` får 94 i produksjon.**
+| Side | Hvor | Score | CLS | Årsak |
+|---|---|---|---|---|
+| `/verktoy/cookie-sjekk/` | skrivebord | **82** | 0,374 | nettfont laster og flytter `<h1 class="mega">` |
+| `/nettsider/` | mobil | **92** | 0,174 | nettfont laster og flytter `section.scene` |
+| `/historie/` | skrivebord | **88** | 0,235 | scroll-historien bygger om DOM-en etter maling |
 
-`src/components/Topbar.astro` oppgir:
+Terskelen i `lighthouserc.json` er CLS ≤ 0,1. Alle tre ligger over.
 
-```html
-<img src="/logo/kk-lockup-dark.svg" width="220" height="22" …>
-```
+### 1. Fontene er den største enkeltfeilen
 
-men SVG-en har egen størrelse **309 × 40**, og CSS-en setter
-`height: 22px; width: auto`. Nettleseren reserverer altså 220 px fra attributtet,
-og krymper til 169,9 px når filen er lastet.
+`src/styles/fonter.css:11` har `font-display: swap`, og **ingen av fontene
+forhåndslastes** – det finnes ingen `rel="preload"` i `src/layouts/Base.astro`.
+Reservefonten males først, den ekte fonten kommer etterpå, og alt flytter seg.
 
-Målt direkte i nettleser, begge temaer:
+Isolert ved å blokkere fontfilene og måle skiftet på nytt:
 
-```
-dark   før: 220 x 22   etter: 169.9 x 22   endring: -50.1 px
-light  før: 220 x 22   etter: 169.9 x 22   endring: -50.1 px
-```
-
-Lighthouse peker på nøyaktig dette: skiftet på 0,1445 skjer i `.hist__scener`,
-med årsak `header.topbar > div.wrap > a.topbar__logo > img`.
-
-**Hvorfor den er usynlig lokalt:** SVG-en lastes fra disk før første maling, så
-skiftet rekker aldri å telle. Den dukker bare opp med ekte nettverkslatens. Det er
-grunnen til at `npm run ytelse:prod` må kjøres i tillegg til den lokale.
-
-**Rettingen** (i `src/`, utenfor mitt mandat — ikke utført):
-sett `width="170"` på begge logo-taggene i `src/components/Topbar.astro`.
-309 ÷ 40 × 22 = 169,95. Alternativt `aspect-ratio: 309 / 40` i CSS-en.
-
-Forventet gevinst: CLS fra 0,145 til ~0 på `/historie`, ytelse fra 94 til 100.
-Skiftet skjer på **alle** sider siden toppmenyen er felles; `/historie` er bare
-den eneste der layouten gjør det stort nok til å måles.
-
-## Funn 2 — overskriftsrekkefølgen hopper over `h2`
-
-`/priser` og `/verktoy` får 98 i universell utforming, ikke 100. Lighthouse:
-`heading-order` — «Heading elements are not in a sequentially-descending order».
-
-Målt struktur fra servert markup:
-
-```
-/priser     h1 Prisene står her          → h3 Start, h3 Bedrift, h3 System
-/verktoy    h1 Verktøy du kan bruke …    → h3 Sjekk nettsiden din, h3 Hva koster det?, …
-```
-
-Kortene i sidens første seksjon bruker `h3`, og når seksjonstittelen er sidens
-`h1`, hoppes `h2` over. Det er WCAG 1.3.1 (Informasjon og relasjoner).
-
-**Rettingen** (i `src/`, utenfor mitt mandat — ikke utført): la `PriceCard.astro`
-og verktøykortene ta imot et overskriftsnivå, slik `Section.astro` allerede gjør
-med `nivaa`, og sett `h2` der kortet står rett under sidens `h1`.
-
-Dette er verdt å rette selv om 98 består terskelen: siden selger WCAG-samsvar og
-kjører en sjekk som rapporterer nøyaktig denne typen brudd hos andre.
-
-## Påstander på nettsiden, vurdert mot målingene
-
-| Påstand | Hvor | Holder? |
+| Side | Fonter tillatt | Fonter blokkert |
 |---|---|---|
-| «Lighthouse 95+ som krav, ikke mål» | `src/data/tjenester.ts`, `/nettsider` | **Ja, nå målt.** Fire av fem sider ligger på 99–100 lokalt og 100 i produksjon. `/historie` ligger på 94 i produksjon til funn 1 er rettet. |
-| «Lighthouse ≥ 95 på alle fire kategorier, mobil» | `docs/sidemonstre.md` | Ja, med samme forbehold. |
-| «0 cookies før samtykke» | bevis-stripen | Ja — bekreftet av skanneren, ikke av Lighthouse. |
-| «6/6 sikkerhetsheadere» | bevis-stripen, `/sikkerhet` | Ja — Lighthouse gir 100 i beste praksis på alle sider. |
-| «0,1 s svartid, målt fra Oslo» | bevis-stripen | Ja — LCP i produksjon er 840–1131 ms, og svartid er lavere enn LCP. |
+| `/nettsider/` | CLS 0,1742 | **CLS 0,0000** |
+| `/historie/` | CLS 0,1392 | CLS 0,1392 |
 
-**Ingenting på siden må skrives om.** Men påstanden var ikke etterprøvd før i dag,
-og `/historie` oppfyller den ikke før logoen er rettet.
+Fontene forklarer `/nettsider` fullstendig og `/historie` overhodet ikke.
 
-## Hva som ikke ble funnet
+Det treffer hardest der `Mega`-overskriften er størst, altså på skrivebord:
+`/verktoy/cookie-sjekk/` får CLS 0,374 på skrivebord mot 0,002 på mobil. Jo større
+typografi, desto flere piksler flytter seg når fontmetrikken endrer seg.
 
-Lighthouse rapporterte **null muligheter** og **null feilende diagnostikk** på
-forsiden: ingen render-blokkerende ressurser, ingen ubrukt JavaScript eller CSS
-verdt å nevne, ingen tredjeparter, ingen manglende `font-display`, ingen
-treg serverrespons. Det var ingenting å rette i `astro.config.mjs` eller
-`server.mjs`, så de er urørt.
+Mulige grep, i rekkefølge etter hvor godt de fjerner skiftet:
+`font-display: optional` fjerner det helt, men dropper fonten på trege
+førstebesøk. `rel="preload"` på de to latinske woff2-filene pluss en
+`@font-face`-reserve med `size-adjust`/`ascent-override` beholder fonten og
+fjerner nesten alt skiftet. Det siste er mest arbeid og best resultat.
 
-## Verifisering av terskelverdiene
+### 2. `/historie`: scroll-historien bygger om siden etter at den er malt
 
-`lighthouserc.json` er ikke bare skrevet, den er kjørt. Mot produksjon,
-6. oktober 2026:
+Skiftet kommer presis 486 ms etter navigasjonsstart, og geometrien viser hva
+som skjer:
 
-```
-Checking assertions against 2 URL(s), 2 total run(s)
+    OL.hist__scener   626×218  ->  433×411     (vokser og flyttes opp)
+    DIV.hist__kort    674×132  ->  0×0         (kollapser)
 
-1 result(s) for https://kodekonsulentene.no/historie :
-  ✘  cumulative-layout-shift failure for maxNumericValue assertion
-      expected: <=0.1
-         found: 0.1401795027206262
+Listen nesten dobler høyden mens et kort forsvinner. Det er JavaScript som
+endrer oppsettet etter første maling. Riktig grep er å reservere sluttilstandens
+høyde i markupen, slik at skriptet ikke endrer geometri.
 
-Assertion failed. Exiting with status code 1.
-```
+**Lighthouse pekte på feil årsak tre ganger her.** Den oppga etter tur logoen i
+toppfeltet, «Media element lacking an explicit size», og ikonene i temabryteren.
+Jeg målte alle tre: logoen er 170 px oppgitt mot 169,9 px malt, header-høyden står
+stabilt på 65 px gjennom hele lastingen, og å blokkere fontene endret ingenting.
+Attribusjonen i rapporten er et hint, ikke en årsak.
 
-Forsiden bestod alle sju påstandene. `/historie` feilet på nøyaktig det funn 1
-beskriver. En terskel som aldri har blitt rød, er ikke en terskel — denne har.
+Målingen er dessuten ustabil: ytelse på `/historie` svinger ±12 poeng mellom
+kjøringer på skrivebord, fordi skiftet avhenger av om skriptet rekker å kjøre før
+eller etter maling.
 
-## Kjent begrensning i denne målingen
+### 3. `/verktoy` laster 1,4 MB video på mobil
 
-Den fulle `lhci autorun`-kjøringen mot lokal server kunne **ikke** fullføres, fordi
-bygget var ødelagt av en parallell endring utenfor mitt område:
+| Fil | Størrelse |
+|---|---|
+| `/historie/verktoy-1280.mp4` | **1401 kB** |
+| `/historie/verktoy-1920.mp4` | 2847 kB |
+| `/historie/hero-1280.mp4` | 1473 kB |
+| `/scener/systemer-1280.mp4` | 469 kB |
 
-```
-[vite]: Rolldown failed to resolve import "scroll-timeline-polyfill"
-        from "src/pages/lab/bibliotek.astro"
-```
+`/verktoy/` veier 1552 kB på mobil. Nest tyngste side er `/historie/` på 767 kB,
+og medianen er 105 kB. Alle videoelementene har riktig `preload="none"`, så det er
+skriptet som starter nedlastingen – ikke nettleseren.
 
-Tallene i tabellene over ble målt før dette oppsto, mot en fungerende server, og
-står ved lag. Men `npm run lhci` bør kjøres på nytt når `src/` er i en bygg-bar
-tilstand, for å bekrefte at terskelene passerer lokalt også.
+`verktoy-1280.mp4` er tre ganger så stor som `systemer-1280.mp4` i samme
+oppløsning. Enten er klippet mye lengre, eller så er bitraten satt mye høyere.
 
-Merk også at flere prosesser i prosjektet bruker port 4399. `lighthouserc.json`
-bruker derfor **4477**, så en LHCI-kjøring ikke kolliderer med en testserver.
+I tillegg: `verktoy-poster.avif` er 44 kB der 1,4 kB ville holdt for den størrelsen
+den vises i – 43 kB kastet bort på et bilde som bare vises til videoen starter.
+
+## Tilgjengelighet: tre mønstre
+
+**`color-contrast` på åtte sider** gir 97 i stedet for 100: `/nettsider`,
+`/systemer`, `/apper-og-ai`, begge `/bransjer/*`, og tre verktøysider. axe måler
+ordene i `Mega`-overskriften midt i inntoningen, der de ligger på delvis
+gjennomsiktighet – målt 2,36:1 og 2,18:1.
+
+**Dette er ikke en lesbarhetsfeil.** Jeg verifiserte sluttilstanden: med
+`prefers-reduced-motion: reduce` står alle 27 ord på `opacity: 1` uten animasjon,
+og i Firefox – som mangler `animation-timeline` – er ingen ord usynlige, fordi
+animasjonen da fullføres umiddelbart til synlig slutttilstand. Degraderingen
+fungerer. Men scoren blir stående på 97, og den vil variere mellom kjøringer
+avhengig av hvor i animasjonen axe måler.
+
+**`heading-order` på `/priser` og `/verktoy`** gir 98. Begge går `h1` → `h3` og
+hopper over `h2`; kortkomponentene har `<h3>` hardkodet.
+
+**`link-name` på `/kontakt`** gir 97, og dette er en ekte feil i produksjon:
+
+    <a class="kk-link" href="tel:">
+
+`firma.telefon` er tom streng. `LegalFooter.astro:31` har vakten
+`{phone && ...}`. `ContactBlock.astro:35` har den ikke, og sender derfor en tom
+lenke uten tilgjengelig navn.
+
+To grunner til at ingen test fanget det: `/kontakt` har `prerender = false` og
+havner aldri i `dist/client`, som testene over bygget HTML går gjennom. Samme
+blindsone ga CSP-feilen på `/kontakt` tidligere.
+
+## Buffer
+
+`/_astro/`-filene har innholdshash og bufres et år. Alt annet lå på én time.
+Lighthouse målte 604 kB med for kort buffer på forsiden alene.
+
+Fontene er flyttet til et år med `immutable` i `server.mjs`. Filnavnet koder
+familie, vektintervall og subsett, så endret innhold betyr ny skrift og dermed
+nytt navn uansett.
+
+Video og bilder står med vilje igjen på én time. De regenereres nå, og en lang
+buffer ville låst gamle klipp hos alle som har vært innom. Riktig løsning der er
+innholdshash i filnavnet – ikke lengre buffer på et navn som kan peke på nytt
+innhold i morgen.
+
+Revalidering er verifisert: alle filer svarer 304 på `If-None-Match`.
+
+## Porten i CI
+
+`lighthouserc.json` dekket fem sider. Den dekker nå elleve, valgt etter hvor
+risikoen ligger: alt med film, stor typografi og scroll-avdekking, pluss
+`/kontakt`, som ingen test over bygget HTML kan se.
+
+**Porten vil være rød med en gang.** `/nettsider` og `/historie` ligger over
+CLS-terskelen på 0,1. Det er meningen – løftet er brutt i produksjon nå.
+
+`lighthouserc.desktop.json` er lagt til med samme terskler. Uten den ville
+`/verktoy/cookie-sjekk/` på 82 og `/historie` på 88 aldri blitt oppdaget; begge
+måler 100 og 95 på mobil.

@@ -13,7 +13,7 @@ import scener from "../data/historie.json";
 import Button from "./Button.astro";
 import { bookUrl } from "../data/firma";
 ---
-<section class="hist" data-story aria-label="Historien om en nettside som henger sammen">
+<section class="hist" data-aktiv data-story aria-label="Historien om en nettside som henger sammen">
   <a class="skip hist__hopp" href="#etter-historien">Hopp over historien</a>
 
   <div class="hist__media" aria-hidden="true">
@@ -80,7 +80,24 @@ import { bookUrl } from "../data/firma";
   .hist__kort .body-lg { color: var(--ink-muted); }
   .hist__slutt { display: grid; gap: var(--space-4); padding-top: var(--space-8); max-width: 60ch; }
 
-  /* Aktiv modus: mediet festes, scenene glir over. Settes bare av skriptet. */
+  /* Aktiv modus: mediet festes, scenene glir over.
+     Porten er en media-spørring og IKKE skriptet, fordi nettleseren kan avgjøre
+     den før første maling. Ber brukeren om mindre bevegelse, faller seksjonen
+     tilbake til vanlig stabling. */
+  @media (prefers-reduced-motion: reduce) {
+    .hist[data-aktiv] .hist__media,
+    .hist[data-aktiv] .hist__scener,
+    .hist[data-aktiv] .hist__scene,
+    .hist[data-aktiv] .hist__kort,
+    .hist[data-aktiv] .hist__slutt {
+      position: static;
+      width: auto;
+      height: auto;
+      min-height: 0;
+      margin-inline: 0;
+      margin-top: 0;
+    }
+  }
   .hist[data-aktiv] .hist__media {
     /* Mediet bryter ut av enhver maksbredde. En exploded view som ligger i en
        1120 px boks med grå marger rundt, ser ut som et skjermbilde – ikke som en scene. */
@@ -185,7 +202,9 @@ import { bookUrl } from "../data/firma";
     (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
 
   if (rot && video && kilde && !redusert && !sparData) {
-    rot.dataset.aktiv = "";
+    // data-aktiv står i markupen. Ble det satt HER, byttet hele seksjonen oppsett
+    // etter første maling: hist__scener gikk fra 626x218 til 433x411 presis 486 ms
+    // inn, og ga CLS 0,26 på skrivebord. CSS må avgjøre oppsettet, ikke skriptet.
 
     let planlagt = false;
     const oppdater = () => {

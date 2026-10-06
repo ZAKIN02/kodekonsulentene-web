@@ -103,10 +103,23 @@ async function serverFil(req, res, funn) {
 
   // Filer under /_astro/ har innholdshash i navnet og kan bufres for alltid.
   // Alt annet revalideres, slik at en ny tekst er ute med én gang.
+  //
+  // Fontene er det ene unntaket uten innholdshash som likevel tåler evig buffer:
+  // filnavnet koder familie, vektintervall og subsett, så en endring av selve
+  // filinnholdet ville betydd en ny skrift – og da bytter navnet uansett.
+  // Lighthouse målte 39 kB + 27 kB «wasted» på forsiden med én times buffer;
+  // det er to ekstra rundturer på hvert gjenbesøk, for filer som aldri endres.
+  //
+  // Video og bilder står med vilje på én time. De regenereres, og en lang
+  // buffer ville låst gamle klipp hos dem som har vært innom. Riktig løsning
+  // der er innholdshash i filnavnet – ikke en lengre buffer på et navn som
+  // kan peke på nytt innhold i morgen.
+  const evig = funn.sti.includes(`${path.sep}_astro${path.sep}`)
+    || funn.sti.includes(`${path.sep}fonts${path.sep}`);
   res.setHeader("content-type", type);
   res.setHeader(
     "cache-control",
-    funn.sti.includes(`${path.sep}_astro${path.sep}`)
+    evig
       ? "public, max-age=31536000, immutable"
       : ext === ".html"
         ? "public, max-age=0, must-revalidate"

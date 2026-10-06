@@ -25,15 +25,20 @@
           "best-practices",
           "seo"
         ],
-        "formFactor": "mobile",
+        "formFactor": "desktop",
         "screenEmulation": {
-          "mobile": true,
-          "width": 390,
-          "height": 844,
-          "deviceScaleFactor": 2.625,
+          "mobile": false,
+          "width": 1440,
+          "height": 900,
+          "deviceScaleFactor": 1,
           "disabled": false
         },
-        "throttlingMethod": "simulate"
+        "throttlingMethod": "simulate",
+        "throttling": {
+          "rttMs": 40,
+          "throughputKbps": 10240,
+          "cpuSlowdownMultiplier": 1
+        }
       }
     },
     "assert": {
@@ -84,7 +89,7 @@
     },
     "upload": {
       "target": "filesystem",
-      "outputDir": ".lighthouseci"
+      "outputDir": ".lighthouseci-desktop"
     }
   }
 }

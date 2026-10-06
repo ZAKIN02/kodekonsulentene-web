@@ -69,6 +69,13 @@ const localBusiness = {
     {/* 180x180, ikke 1024. apple-touch-icon pekte på en fil beregnet for App Store –
         flere hundre kilobyte der det skulle vært tre. */}
     <link rel="apple-touch-icon" href="/logo/apple-touch-icon.png" />
+    {/* Forhåndslast de to latinske subsettene. Uten dem oppdages fontene først når
+        CSS-en er parset, og `font-display: swap` bytter skrift ETTER første maling –
+        på /nettsider ga det CLS 0,174. Isolert ved å blokkere fontfilene: skiftet
+        falt til 0,000. Rammer hardest der Mega er størst, altså på skrivebord.
+        Bare latin-subsettene; latin-ext lastes bare hvis teksten trenger den. */}
+    <link rel="preload" href="/fonts/schibsted-grotesk-700_800-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/jetbrains-mono-400_600-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="theme-color" content="#0b0d10" />
     <link rel="sitemap" href="/sitemap-index.xml" />

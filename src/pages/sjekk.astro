@@ -4,8 +4,11 @@ import Section from "../components/Section.astro";
 import UrlCheck from "../components/UrlCheck.astro";
 import Button from "../components/Button.astro";
 import Terminal from "../components/Terminal.astro";
+import SceneFilm from "../components/SceneFilm.astro";
 import ContactBlock from "../components/ContactBlock.astro";
 import { firma } from "../data/firma";
+
+import "../styles/scener.css";
 
 // Siden er statisk. Sjekken kjøres av skriptet under mot /api/sjekk, slik at
 // rapporten kan hentes uten full sidelasting – og uten at siden trenger SSR.
@@ -77,12 +80,30 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
     </div>
   </Section>
 
+  {/* Scenen bak HANDLINGEN, ikke bak forklaringen.
+
+      Første forsøk la den bak seksjon 2. Målt der: 1,31:1 på skrivebord – et klart
+      AA-brudd. Synderen var <p class="small faint"> under terminalen, sidens
+      aller svakeste tekstfarge, som ligger i høyre kolonne der masken slipper
+      filmen inn og uten et kort til å skjerme seg. Nøyaktig samme felle som
+      /sikkerhet gikk i.
+
+      Her er teksten en ingress i body-lg og to knapper med egen flate. Mindre
+      tekst, større tekst, og ingenting i faint. Målt etter flyttingen. */}
+  <div class="scenefilm-ramme">
+    <SceneFilm
+      smal="/scener/verktoy-sjekk-960.mp4"
+      bred="/scener/verktoy-sjekk-1920.mp4"
+      plakat="/scener/verktoy-sjekk-poster.avif"
+      tekst="venstre"
+    />
   <Section n={3} eyebrow="Etterpå" tittel="Vil du at vi fikser det?" ingress="Lovsjekk-pakken er 7 900 kr eks. mva og dekker cookies, universell utforming, lovpålagt informasjon og personvernerklæring på den siden du har i dag. Du trenger ikke ny nettside for det.">
     <div class="row">
       <Button variant="primary" href="/priser">Se hva det koster</Button>
       <Button variant="ghost" href="/sikkerhet">Les om sikkerhetsarbeidet</Button>
     </div>
   </Section>
+  </div>
 
   <ContactBlock n={4} tittel="Eller bare ring" ingress="Har du rapporten foran deg og vil vite hva som er viktigst å starte med, tar det fem minutter på telefon." />
 </Base>

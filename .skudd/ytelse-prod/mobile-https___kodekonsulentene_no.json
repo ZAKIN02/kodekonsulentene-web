@@ -1,0 +1,699 @@
+[
+  {
+    "sti": "/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 100,
+    "uu": 100,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 992,
+    "cls": 0.002,
+    "tbt": 0,
+    "fcp": 992,
+    "byte": 607805,
+    "lcpEl": "<h1 class=\"display-xl\" data-astro-cid-lcdefpme=\"\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.50",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/scener/systemer-1280.mp4 3600s 481879B",
+      "/fonts/schibsted-grotesk-700_800-latin.woff2 3600s 47110B",
+      "/fonts/jetbrains-mono-400_600-latin.woff2 3600s 31470B",
+      "/scener/systemer-poster.avif 3600s 12544B",
+      "/terminal.js 3600s 5594B",
+      "/logo/kk-lockup-dark.svg 3600s 4337B",
+      "/logo/kk-lockup-light.svg 3600s 4323B",
+      "/hero-live.js 3600s 1515B"
+    ]
+  },
+  {
+    "sti": "/nettsider/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 92,
+    "uu": 97,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 1000,
+    "cls": 0.174,
+    "tbt": 0,
+    "fcp": 823,
+    "byte": 107097,
+    "lcpEl": "<p class=\"scene__ingress body-lg\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.00",
+      "cls-culprits-insight=0.00",
+      "color-contrast=0.00",
+      "cumulative-layout-shift=0.69",
+      "layout-shifts=0.00",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/fonts/schibsted-grotesk-700_800-latin.woff2 3600s 47038B",
+      "/fonts/jetbrains-mono-400_600-latin.woff2 3600s 31487B",
+      "/terminal.js 3600s 5595B",
+      "/logo/kk-lockup-dark.svg 3600s 4328B",
+      "/logo/kk-lockup-light.svg 3600s 4311B",
+      "/hero-live.js 3600s 1515B"
+    ]
+  },
+  {
+    "sti": "/systemer/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 100,
+    "uu": 97,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 1001,
+    "cls": 0.005,
+    "tbt": 0,
+    "fcp": 828,
+    "byte": 601763,
+    "lcpEl": "<p class=\"scene__ingress body-lg\" data-astro-cid-via4icy4=\"\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.50",
+      "color-contrast=0.00",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/scener/systemer-1280.mp4 3600s 482738B",
+      "/fonts/schibsted-grotesk-700_800-latin.woff2 3600s 47104B",
+      "/fonts/jetbrains-mono-400_600-latin.woff2 3600s 31508B",
+      "/scener/systemer-poster.avif 3600s 12503B",
+      "/terminal.js 3600s 5608B",
+      "/logo/kk-lockup-dark.svg 3600s 4340B",
+      "/logo/kk-lockup-light.svg 3600s 4325B",
+      "/hero-live.js 3600s 1527B"
+    ]
+  },
+  {
+    "sti": "/sikkerhet/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 100,
+    "uu": 100,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 1001,
+    "cls": 0.001,
+    "tbt": 0,
+    "fcp": 828,
+    "byte": 108156,
+    "lcpEl": "<p class=\"scene__ingress body-lg\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.50",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/fonts/schibsted-grotesk-700_800-latin.woff2 3600s 47016B",
+      "/fonts/jetbrains-mono-400_600-latin.woff2 3600s 31482B",
+      "/terminal.js 3600s 5609B",
+      "/logo/kk-lockup-dark.svg 3600s 4350B",
+      "/logo/kk-lockup-light.svg 3600s 4325B",
+      "/hero-live.js 3600s 1529B"
+    ]
+  },
+  {
+    "sti": "/priser/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 100,
+    "uu": 98,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 1001,
+    "cls": 0.001,
+    "tbt": 0,
+    "fcp": 821,
+    "byte": 107685,
+    "lcpEl": "<p class=\"scene__ingress body-lg\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.50",
+      "heading-order=0.00",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/fonts/schibsted-grotesk-700_800-latin.woff2 3600s 47024B",
+      "/fonts/jetbrains-mono-400_600-latin.woff2 3600s 31492B",
+      "/terminal.js 3600s 5608B",
+      "/logo/kk-lockup-dark.svg 3600s 4351B",
+      "/logo/kk-lockup-light.svg 3600s 4325B",
+      "/hero-live.js 3600s 1520B"
+    ]
+  },
+  {
+    "sti": "/caser/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 100,
+    "uu": 100,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 1002,
+    "cls": 0.01,
+    "tbt": 0,
+    "fcp": 820,
+    "byte": 105735,
+    "lcpEl": "<p class=\"scene__ingress body-lg\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.00",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/fonts/schibsted-grotesk-700_800-latin.woff2 3600s 47024B",
+      "/fonts/jetbrains-mono-400_600-latin.woff2 3600s 31501B",
+      "/terminal.js 3600s 5608B",
+      "/logo/kk-lockup-dark.svg 3600s 4351B",
+      "/logo/kk-lockup-light.svg 3600s 4326B",
+      "/hero-live.js 3600s 1529B"
+    ]
+  },
+  {
+    "sti": "/om/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 100,
+    "uu": 100,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 920,
+    "cls": 0.013,
+    "tbt": 0,
+    "fcp": 826,
+    "byte": 106355,
+    "lcpEl": "<p class=\"body-lg muted\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.00",
+      "cache-insight=0.50",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/fonts/schibsted-grotesk-700_800-latin.woff2 3600s 47006B",
+      "/fonts/jetbrains-mono-400_600-latin.woff2 3600s 31482B",
+      "/terminal.js 3600s 5607B",
+      "/logo/kk-lockup-dark.svg 3600s 4351B",
+      "/logo/kk-lockup-light.svg 3600s 4325B",
+      "/hero-live.js 3600s 1529B"
+    ]
+  },
+  {
+    "sti": "/sjekk/",
+    "form": "mobile",
+    "n": 1,
+    "ytelse": 100,
+    "uu": 100,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 926,
+    "cls": 0,
+    "tbt": 0,
+    "fcp": 819,
+    "byte": 106852,
+    "lcpEl": "<p class=\"body-lg\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.00",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/fonts/schibsted-grotesk-700_800-latin.woff2 3600s 47010B",
+      "/fonts/jetbrains-mono-400_600-latin.woff2 3600s 31477B",
+      "/terminal.js 3600s 5622B",
+      "/logo/kk-lockup-dark.svg 3600s 4364B",
+      "/logo/kk-lockup-light.svg 3600s 4339B",
+      "/hero-live.js 3600s 1543B"
+    ]
+  },
+  {
+    "sti": "/verktoy/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 100,
+    "uu": 98,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 1230,
+    "cls": 0.002,
+    "tbt": 0,
+    "fcp": 832,
+    "byte": 1589052,
+    "lcpEl": "<p class=\"scene__ingress body-lg\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.00",
+      "heading-order=0.00",
+      "image-delivery-insight=0.00",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/historie/verktoy-1280.mp4 3600s 1437409B",
+      "/fonts/schibsted-grotesk-700_800-latin.woff2 3600s 47010B",
+      "/historie/verktoy-poster.avif 3600s 44851B",
+      "/fonts/jetbrains-mono-400_600-latin.woff2 3600s 31469B",
+      "/terminal.js 3600s 5622B",
+      "/logo/kk-lockup-dark.svg 3600s 4365B",
+      "/logo/kk-lockup-light.svg 3600s 4340B",
+      "/hero-live.js 3600s 1543B"
+    ]
+  },
+  {
+    "sti": "/historie/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 95,
+    "uu": 100,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 1002,
+    "cls": 0.139,
+    "tbt": 0,
+    "fcp": 823,
+    "byte": 785839,
+    "lcpEl": "<video data-story-video=\"\" muted=\"\" playsinline=\"\" preload=\"auto\" poster=\"/historie/poster",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.00",
+      "cls-culprits-insight=0.00",
+      "cumulative-layout-shift=0.79",
+      "layout-shifts=0.00",
+      "lcp-discovery-insight=0.00",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/historie/historie-1280.mp4 3600s 673216B",
+      "/fonts/schibsted-grotesk-700_800-latin.woff2 3600s 47046B",
+      "/fonts/jetbrains-mono-400_600-latin.woff2 3600s 31477B",
+      "/historie/poster.avif 3600s 7317B",
+      "/terminal.js 3600s 5622B",
+      "/logo/kk-lockup-dark.svg 3600s 4356B",
+      "/logo/kk-lockup-light.svg 3600s 4339B",
+      "/hero-live.js 3600s 1543B"
+    ]
+  },
+  {
+    "sti": "/status/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 100,
+    "uu": 100,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 817,
+    "cls": 0,
+    "tbt": 0,
+    "fcp": 817,
+    "byte": 106249,
+    "lcpEl": "<p class=\"small faint\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.50",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/fonts/schibsted-grotesk-700_800-latin.woff2 3600s 47028B",
+      "/fonts/jetbrains-mono-400_600-latin.woff2 3600s 31478B",
+      "/terminal.js 3600s 5622B",
+      "/logo/kk-lockup-dark.svg 3600s 4356B",
+      "/logo/kk-lockup-light.svg 3600s 4339B",
+      "/hero-live.js 3600s 1543B"
+    ]
+  },
+  {
+    "sti": "/kontakt/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 100,
+    "uu": 97,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 1001,
+    "cls": 0.001,
+    "tbt": 0,
+    "fcp": 821,
+    "byte": 109255,
+    "lcpEl": "<p class=\"scene__ingress body-lg\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.50",
+      "link-name=0.00",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/fonts/schibsted-grotesk-700_800-latin.woff2 3600s 47019B",
+      "/fonts/jetbrains-mono-400_600-latin.woff2 3600s 31469B",
+      "/terminal.js 3600s 5622B",
+      "/logo/kk-lockup-dark.svg 3600s 4356B",
+      "/logo/kk-lockup-light.svg 3600s 4339B",
+      "/hero-live.js 3600s 1544B"
+    ]
+  },
+  {
+    "sti": "/apper-og-ai/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 100,
+    "uu": 97,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 1000,
+    "cls": 0.004,
+    "tbt": 0,
+    "fcp": 823,
+    "byte": 106689,
+    "lcpEl": "<p class=\"scene__ingress body-lg\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.00",
+      "color-contrast=0.00",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/fonts/schibsted-grotesk-700_800-latin.woff2 3600s 47010B",
+      "/fonts/jetbrains-mono-400_600-latin.woff2 3600s 31486B",
+      "/terminal.js 3600s 5621B",
+      "/logo/kk-lockup-dark.svg 3600s 4366B",
+      "/logo/kk-lockup-light.svg 3600s 4339B",
+      "/hero-live.js 3600s 1543B"
+    ]
+  },
+  {
+    "sti": "/handbok/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 100,
+    "uu": 100,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 825,
+    "cls": 0.002,
+    "tbt": 0,
+    "fcp": 825,
+    "byte": 107141,
+    "lcpEl": "<p class=\"muted\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.50",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/fonts/schibsted-grotesk-700_800-latin.woff2 3600s 47133B",
+      "/fonts/jetbrains-mono-400_600-latin.woff2 3600s 31477B",
+      "/terminal.js 3600s 5623B",
+      "/logo/kk-lockup-dark.svg 3600s 4365B",
+      "/logo/kk-lockup-light.svg 3600s 4339B",
+      "/hero-live.js 3600s 1544B"
+    ]
+  },
+  {
+    "sti": "/personvern/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 100,
+    "uu": 100,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 812,
+    "cls": 0,
+    "tbt": 0,
+    "fcp": 812,
+    "byte": 104637,
+    "lcpEl": "<p class=\"body-lg\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.00",
+      "cache-insight=0.50",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/fonts/schibsted-grotesk-700_800-latin.woff2 3600s 47020B",
+      "/fonts/jetbrains-mono-400_600-latin.woff2 3600s 31486B",
+      "/terminal.js 3600s 5623B",
+      "/logo/kk-lockup-dark.svg 3600s 4365B",
+      "/logo/kk-lockup-light.svg 3600s 4340B",
+      "/hero-live.js 3600s 1544B"
+    ]
+  },
+  {
+    "sti": "/vilkar/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 100,
+    "uu": 100,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 924,
+    "cls": 0,
+    "tbt": 0,
+    "fcp": 811,
+    "byte": 105426,
+    "lcpEl": "<p class=\"muted\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.00",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/fonts/schibsted-grotesk-700_800-latin.woff2 3600s 47064B",
+      "/fonts/jetbrains-mono-400_600-latin.woff2 3600s 31549B",
+      "/terminal.js 3600s 5613B",
+      "/logo/kk-lockup-dark.svg 3600s 4356B",
+      "/logo/kk-lockup-light.svg 3600s 4340B",
+      "/hero-live.js 3600s 1543B"
+    ]
+  },
+  {
+    "sti": "/terminal/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 100,
+    "uu": 100,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 999,
+    "cls": 0.025,
+    "tbt": 0,
+    "fcp": 810,
+    "byte": 104230,
+    "lcpEl": "<p class=\"body-lg\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.00",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/fonts/schibsted-grotesk-700_800-latin.woff2 3600s 47082B",
+      "/fonts/jetbrains-mono-400_600-latin.woff2 3600s 31505B",
+      "/terminal.js 3600s 5622B",
+      "/logo/kk-lockup-dark.svg 3600s 4365B",
+      "/logo/kk-lockup-light.svg 3600s 4339B",
+      "/hero-live.js 3600s 1543B"
+    ]
+  },
+  {
+    "sti": "/bransjer/handverkere/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 100,
+    "uu": 97,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 999,
+    "cls": 0.004,
+    "tbt": 0,
+    "fcp": 823,
+    "byte": 107397,
+    "lcpEl": "<p class=\"scene__ingress body-lg\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.00",
+      "color-contrast=0.00",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/fonts/schibsted-grotesk-700_800-latin.woff2 3600s 47002B",
+      "/fonts/jetbrains-mono-400_600-latin.woff2 3600s 31477B",
+      "/terminal.js 3600s 5622B",
+      "/logo/kk-lockup-dark.svg 3600s 4365B",
+      "/logo/kk-lockup-light.svg 3600s 4340B",
+      "/hero-live.js 3600s 1544B"
+    ]
+  },
+  {
+    "sti": "/bransjer/klinikker/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 100,
+    "uu": 97,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 1000,
+    "cls": 0.004,
+    "tbt": 0,
+    "fcp": 823,
+    "byte": 107263,
+    "lcpEl": "<p class=\"scene__ingress body-lg\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.00",
+      "color-contrast=0.00",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/fonts/schibsted-grotesk-700_800-latin.woff2 3600s 47028B",
+      "/fonts/jetbrains-mono-400_600-latin.woff2 3600s 31477B",
+      "/terminal.js 3600s 5622B",
+      "/logo/kk-lockup-dark.svg 3600s 4365B",
+      "/logo/kk-lockup-light.svg 3600s 4340B",
+      "/hero-live.js 3600s 1544B"
+    ]
+  },
+  {
+    "sti": "/verktoy/cookie-sjekk/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 100,
+    "uu": 97,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 1001,
+    "cls": 0.002,
+    "tbt": 0,
+    "fcp": 825,
+    "byte": 108757,
+    "lcpEl": "<p class=\"scene__ingress body-lg\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.50",
+      "color-contrast=0.00",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/fonts/schibsted-grotesk-700_800-latin.woff2 3600s 47010B",
+      "/fonts/jetbrains-mono-400_600-latin.woff2 3600s 31496B",
+      "/terminal.js 3600s 5622B",
+      "/logo/kk-lockup-dark.svg 3600s 4356B",
+      "/logo/kk-lockup-light.svg 3600s 4339B",
+      "/hero-live.js 3600s 1535B"
+    ]
+  },
+  {
+    "sti": "/verktoy/dmarc/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 100,
+    "uu": 97,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 1001,
+    "cls": 0.001,
+    "tbt": 0,
+    "fcp": 830,
+    "byte": 107910,
+    "lcpEl": "<p class=\"scene__ingress body-lg\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.50",
+      "color-contrast=0.00",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/fonts/schibsted-grotesk-700_800-latin.woff2 3600s 47064B",
+      "/fonts/jetbrains-mono-400_600-latin.woff2 3600s 31513B",
+      "/terminal.js 3600s 5622B",
+      "/logo/kk-lockup-dark.svg 3600s 4356B",
+      "/logo/kk-lockup-light.svg 3600s 4339B",
+      "/hero-live.js 3600s 1534B"
+    ]
+  },
+  {
+    "sti": "/verktoy/priskalkulator/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 100,
+    "uu": 100,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 1000,
+    "cls": 0.001,
+    "tbt": 0,
+    "fcp": 925,
+    "byte": 110192,
+    "lcpEl": "<p class=\"scene__ingress body-lg\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.50",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/fonts/schibsted-grotesk-700_800-latin.woff2 3600s 47064B",
+      "/fonts/jetbrains-mono-400_600-latin.woff2 3600s 31496B",
+      "/terminal.js 3600s 5623B",
+      "/logo/kk-lockup-dark.svg 3600s 4365B",
+      "/logo/kk-lockup-light.svg 3600s 4340B",
+      "/hero-live.js 3600s 1544B"
+    ]
+  },
+  {
+    "sti": "/verktoy/uu-sjekk/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 100,
+    "uu": 97,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 1001,
+    "cls": 0.001,
+    "tbt": 0,
+    "fcp": 824,
+    "byte": 108634,
+    "lcpEl": "<p class=\"scene__ingress body-lg\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.00",
+      "cache-insight=0.50",
+      "color-contrast=0.00",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/fonts/schibsted-grotesk-700_800-latin.woff2 3600s 47010B",
+      "/fonts/jetbrains-mono-400_600-latin.woff2 3600s 31486B",
+      "/terminal.js 3600s 5623B",
+      "/logo/kk-lockup-dark.svg 3600s 4365B",
+      "/logo/kk-lockup-light.svg 3600s 4340B",
+      "/hero-live.js 3600s 1543B"
+    ]
+  }
+]

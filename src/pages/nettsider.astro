@@ -3,6 +3,7 @@ import Base from "../layouts/Base.astro";
 import Scene from "../components/Scene.astro";
 import Mega from "../components/Mega.astro";
 import Avslor from "../components/Avslor.astro";
+import SceneFilm from "../components/SceneFilm.astro";
 import Button from "../components/Button.astro";
 import Terminal from "../components/Terminal.astro";
 import ProcessSteps from "../components/ProcessSteps.astro";
@@ -115,9 +116,17 @@ const schema = {
     </Avslor>
   </Scene>
 
+  <div class="scenefilm-ramme">
+    <SceneFilm
+      smal="/scener/nettsider-1280.mp4"
+      bred="/scener/nettsider-1920.mp4"
+      plakat="/scener/nettsider-poster.avif"
+      tekst="venstre"
+    />
   <Scene n={4} eyebrow="Prosess" tittel="Fra samtale til lansering">
     <ProcessSteps steps={prosess} />
   </Scene>
+  </div>
 
   <Scene n={5} eyebrow="Pris" tittel="14 900 kr eller 29 900 kr" ingress="Start-pakken er for deg som trenger å finnes og bli ringt. Bedrift er for deg som skal rangere lokalt og endre teksten selv. Begge eks. mva.">
     <Button variant="primary" href="/priser">Se hele prislisten</Button>
@@ -136,5 +145,23 @@ const schema = {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+</style>
+<style is:global>
+  /* Scenetittelen bryter ut til 1320 px over 1200 px bredde (se
+     .scene__head .stortekst i scener.css) og møter da filmen der masken
+     slipper den inn. Masken skyves ut så overskriften står på ren bakgrunn.
+
+     is:global er IKKE valgfritt her. .scenefilm ligger inne i SceneFilm.astro
+     og får dét komponentens scope-id, mens .scenefilm-ramme får sidens. En
+     vanlig <style> kompilerer til en selektor som krever sidens id på begge,
+     og regelen matcher da ingenting – den er død CSS. Verifisert 6. oktober
+     2026: med vanlig <style> ga maske 46 % og maske 92 % nøyaktig samme måling
+     (5,11:1), fordi ingen av dem ble brukt. Med is:global flyttet tallet seg. */
+  @media (min-width: 1200px) {
+    .scenefilm-ramme .scenefilm--venstre {
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 62%, rgb(0 0 0 / 0.25) 72%, #000 86%);
+      mask-image: linear-gradient(90deg, transparent 0%, transparent 62%, rgb(0 0 0 / 0.25) 72%, #000 86%);
+    }
   }
 </style>

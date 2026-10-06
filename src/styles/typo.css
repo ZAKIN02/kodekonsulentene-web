@@ -36,9 +36,16 @@
   letter-spacing: -0.04em;
   color: var(--ink);
   text-wrap: balance;
-  /* Bryter ut av innholdsbredden, men aldri ut av skjermen. */
+  /* Bryter ut av innholdsbredden, men aldri ut av skjermen.
+     `margin-inline: auto` holdt IKKE: auto blir null når elementet er bredere enn
+     forelderen, så boksen ble forankret til venstre innholdskant og stakk ut til
+     høyre. På 1680 px var «funnet» på /nettsider kuttet midt i bokstaven – 130 px
+     utenfor skjermen – på siden som handler om å bli funnet.
+     Ingen test fanget det: overflow-x: clip holder scrollWidth lik clientWidth, så
+     overflytstester melder grønt mens teksten klippes stille bort.
+     Negativ marg sentrerer boksen også når den er bredere enn forelderen. */
   width: min(100vw - 2 * var(--space-5), 1600px);
-  margin-inline: auto;
+  margin-inline: calc((100% - min(100vw - 2 * var(--space-5), 1600px)) / 2);
   max-width: none;
 }
 

@@ -3,6 +3,7 @@ import Base from "../../layouts/Base.astro";
 import Scene from "../../components/Scene.astro";
 import Mega from "../../components/Mega.astro";
 import Avslor from "../../components/Avslor.astro";
+import Stillbilde from "../../components/Stillbilde.astro";
 import ContactBlock from "../../components/ContactBlock.astro";
 import { tillegg, timepris, TIMER_PER_EKSTRA_SIDE, TIMER_APP_FRA } from "../../lib/priskalkyle";
 import { markedspriser, markedTimepris } from "../../data/markedspriser";
@@ -106,6 +107,12 @@ const kr = (n: number) => `${n.toLocaleString("nb-NO").replace(/ /g, " ")} kr`;
         </ul>
       </div>
     </div>
+    </Avslor>
+
+    <Avslor trinn={2}>
+      <Stillbilde id="verktoy-pris" sizes="(min-width: 1120px) 1120px, 100vw">
+        Like trinn, så de kan telles. Den grønne linjen markerer høyden du har valgt – en målestokk, ikke et tilbud.
+      </Stillbilde>
     </Avslor>
   </Scene>
 

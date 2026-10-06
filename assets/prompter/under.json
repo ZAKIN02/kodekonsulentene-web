@@ -1,0 +1,55 @@
+{
+  "_om": "Scener for undersidene /sikkerhet, /nettsider og /priser. Bygges med `npm run scene-under -- <id>`. Samme kildebilde som scenene på forsiden og historiesiden, med vilje: da er kamera, lys, materiale og bakgrunn identiske, og hele siden ser ut som én fotosesjon av det samme objektet i stedet for tre urelaterte AI-bilder. Det er dét som skiller et motiv som er vårt fra et som kunne stått hvor som helst.",
+  "_bevar": "Keep exactly identical: camera position, focal length, perspective, framing, lighting direction and intensity, the thin hard rim light, the near-black #0b0d10 seamless background, the suspension wires, and the material, surface finish, colour and thickness of every plate. Do not restyle, do not change the lens, do not add a horizon or gradient. Only the arrangement described below changes. All surfaces stay plain and unmarked: no text, letters, numbers, logos, icons, symbols or watermarks.",
+  "_bevegelse": "Locked-off static camera; the camera does not move, zoom, pan or reframe. Silent product shot. Start exactly on the first frame and end exactly on the last frame. Hold still for the first and last half second; in between, one single continuous movement at constant speed. The objects are rigid and keep their exact shape, size, thickness and material in every frame and never bend, melt, morph or rotate. The same number of objects is visible in every frame. Lighting, reflections and the background stay constant. Avoid: camera movement, camera shake, zoom, pan, cut, scene change, lens switch, morphing, melting, warping, extra objects, missing objects, text, letters, logos, watermark, flicker, particles, lens flare, motion blur.",
+  "scener": [
+    {
+      "id": "sikkerhet",
+      "mappe": "scener",
+      "basis": "6f5a4bd2-4820-4797-a67c-1ae32fb8444b",
+      "_hvorfor": "Siden handler om å bevise hva som ligger inne i en nettside, ikke å påstå det. Den sealte blokken er en side som ser grei ut utenfra; når én plate trekkes ut, blir innsiden synlig og målbar. Det er bokstavelig talt det verktøyet vårt gjør.",
+      "start": "Change only one thing: every plate in the stack is perfectly flush and aligned on one shared vertical axis, with none protruding sideways. The stack keeps the same number of separate plates with the same even vertical gaps between them as in the supplied image, and every individual plate stays clearly visible as its own distinct plate. No lime green line is visible anywhere.",
+      "slutt": "Change only one thing: one single plate in the middle of the stack has slid straight out sideways to the right by about one third of its own width. Every other plate stays exactly where it was, flush and aligned, with the same even vertical gaps. The stack keeps the same number of separate plates as in the supplied image. One single hair-thin lime green edge line runs along the front edge of the plate that slid out, and nowhere else.",
+      "bevegelse": "One single plate in the middle of the stack slides straight out sideways to the right along its own plane, at constant speed, staying perfectly level and parallel. Every other plate stays completely still. The number of plates never changes. As the plate clears the stack, a hair-thin lime green edge line lights up softly along its front edge.",
+      "pingpong": false,
+      "bredder": [
+        2560,
+        1920,
+        1280
+      ]
+    },
+    {
+      "id": "nettsider",
+      "mappe": "scener",
+      "basis": "6f5a4bd2-4820-4797-a67c-1ae32fb8444b",
+      "_hvorfor": "Ingressen sier at de fleste småbedriftssider er trege, bryter cookie-reglene og mangler org.nr. – tre ting som er skjeve, ikke fraværende. Derfor starter scenen skjevt og ender rett: ikke noe bygges fra ingenting, det rettes opp. Bevegelsen er ren sidelengs forskyvning, ingen rotasjon, fordi roterende plater er det første en videomodell morfer.",
+      "start": "Change only the arrangement: the plates are still stacked in the same order and still perfectly level and parallel, but each plate is shifted sideways by a different random amount, some left and some right, by up to a third of a plate width, so the stack is visibly ragged and misaligned along its vertical edges. The vertical gaps between plates are uneven. No lime green line is visible anywhere.",
+      "slutt": "Change only the arrangement: every plate is shifted back so that all plates are perfectly aligned on one shared vertical axis, every edge flush with the one above and below, and the vertical gaps between plates are exactly equal. One hair-thin lime green edge line runs along the front edge of the lowest plate.",
+      "bevegelse": "Each plate slides sideways into alignment along its own plane at constant speed, the largest offsets travelling furthest, until every plate is flush on one shared vertical axis with exactly equal gaps. The plates stay perfectly level and parallel throughout and never rotate or tilt. As the last plate seats, a hair-thin lime green edge line lights up softly along the front edge of the lowest plate.",
+      "pingpong": false,
+      "bredder": [
+        2560,
+        1920,
+        1280
+      ]
+    },
+    {
+      "id": "priser",
+      "mappe": "scener",
+      "basis": "6f5a4bd2-4820-4797-a67c-1ae32fb8444b",
+      "_hvorfor": "Prissiden sier at prisene star apent fordi den som skjuler dem sjelden gjor det til kundens fordel. En tett stabel deler seg i tre bolker pa to, tre og fire plater, sa tykkelsen kan males mot hverandre. Tre bolker, tre pakker. Platetallet er last til ni i begge bilder, fordi forste forsok lot modellen finne opp 24 nye plater for a lage tykkelse.",
+      "start": "Change only the spacing: the nine plates are stacked tightly together with only a hair-thin gap between each one, so the stack reads as one compact block, but every individual plate edge stays clearly visible as a fine separate seam. All nine plates stay perfectly level, parallel and aligned on one shared vertical axis. There are exactly nine plates and no more. No lime green line is visible anywhere.",
+      "slutt": "Change only the spacing: the same nine plates are separated into exactly three groups along the vertical axis - a group of two plates at the top, a group of three plates in the middle, and a group of four plates at the bottom, so the three groups have visibly different thicknesses. The plates inside each group stay pressed tightly together with only hair-thin gaps between them, and the two gaps between the three groups are exactly equal and generous. There are exactly nine plates in total and no more. All plates stay perfectly level, parallel and aligned on one shared vertical axis. One single hair-thin lime green edge line runs along the front edge of the bottom group of four, and nowhere else.",
+      "bevegelse": "The nine tightly stacked plates separate into exactly three groups that move apart straight along the vertical axis at constant speed: two plates stay together at the top, three stay together in the middle, and four stay together at the bottom. The plates inside each group never separate from one another. There are exactly nine plates in every single frame and none are ever added or removed. Every plate stays perfectly level and parallel. As the groups settle, a hair-thin lime green edge line lights up softly along the front edge of the bottom group.",
+      "pingpong": false,
+      "bredder": [
+        2560,
+        1920,
+        1280
+      ]
+    }
+  ],
+  "_felle": "Si ALDRI «pressed together into one monolithic slab» i startbildet. Modellen tegner da en massiv eske uten plater, og start- og sluttbilde blir to FORSKJELLIGE objekter. Klippet mellom dem blir en morf – nøyaktig det som får AI-video til å se billig ut. Begge bildene må vise samme gjenkjennelige objekt; bare det ene beskrevne forholdet skal skille dem. Verifisert 6. oktober 2026: første forsøk på «sikkerhet» ga en blank aluminiumseske som startbilde og en korrekt platestabel som sluttbilde.",
+  "_felle2": "Be ALDRI om «a thick group of plates» uten å si hvor mange. Modellen lager tykkelse ved å finne opp nye plater – målt 6. oktober 2026: startbildet hadde ni plater, sluttbildet omtrent 33. Videomodellen må da multiplisere objekter underveis, og det er morfing. Ulik tykkelse må komme av hvordan de EKSISTERENDE platene grupperes.",
+  "_pingpong": "Alltid false for scroll-spolte scener. Spolingen knytter scrollposisjon til tid, så ruller man oppover spilles bevegelsen baklengs av seg selv. Ping-pong legger reversen inn i FILA i tillegg, og da får man bevegelsen fram og tilbake på én nedoverrulling – til dobbel filstørrelse. Målt 6. oktober 2026 på «sikkerhet»: 1920-trinnet gikk fra 8,49 MB til 4,34 MB med uendret bitrate (4,43 -> 4,53 Mbit/s). Ingenting gikk tapt."
+}

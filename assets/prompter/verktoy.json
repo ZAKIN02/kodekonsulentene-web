@@ -1,0 +1,67 @@
+{
+  "_om": "Materiale til verktøysidene: /sjekk, /verktoy/uu-sjekk, /verktoy/cookie-sjekk, /verktoy/dmarc og /verktoy/priskalkulator. Samme basisbilde som scenene på forsiden, historiesiden og undersidene – den opphengte stabelen av aluminiumsplater. Det er hele poenget: film og stillbilder skal høre til ETT objekt fotografert i én sesjon, ikke se ut som fem urelaterte AI-renders. Hver oppføring er en omstokking av den samme stabelen, der arrangementet bærer sidens innhold.\n\nBygges med `node scripts/scene-verktoy.mjs <id>` og `node scripts/bilde-verktoy.mjs <id>`.",
+
+  "basis": "6f5a4bd2-4820-4797-a67c-1ae32fb8444b",
+
+  "_bevar": "Keep exactly identical: camera position, focal length, perspective, framing, the near-black #0b0d10 seamless background, the thin suspension wires, and the material, surface finish, colour and thickness of every plate (matte bead-blasted anodized aluminium with fine 45-degree chamfered edges). Do not restyle, do not change the lens, do not add a horizon or gradient. Only the one arrangement described below changes. All surfaces stay plain and unmarked: no text, letters, numbers, logos, icons, symbols or watermarks anywhere. No people, no hands. Every metal surface is strictly neutral grey aluminium with no colour tint whatsoever.",
+
+  "_bevegelse": "Locked-off static camera; the camera does not move, zoom, pan or reframe. Silent product shot. Start exactly on the first frame and end exactly on the last frame. Hold still for the first and last half second; in between, one single continuous change at constant speed. The objects are completely rigid: every plate keeps its exact shape, size, thickness, position and material in every single frame and never moves, bends, melts, morphs, rotates or tilts. The same number of plates is visible in every frame. The background stays constant. Avoid: camera movement, camera shake, zoom, pan, cut, scene change, lens switch, morphing, melting, warping, extra objects, missing objects, objects moving, text, letters, logos, watermark, flicker, particles, lens flare, motion blur.",
+
+  "scener": [
+    {
+      "id": "verktoy-sjekk",
+      "mappe": "scener",
+      "basis": "6f5a4bd2-4820-4797-a67c-1ae32fb8444b",
+      "_hvorfor": "/sjekk er leadmagneten: du gir oss en adresse, og vi lyser opp det du ikke kunne se selv. Derfor er dette den ENESTE scenen der ingenting beveger seg – bare lyset vandrer. Geometrien er låst i hver eneste ramme, og en videomodell kan ikke morfe et objekt som ikke flytter seg. Det er et bevisst valg etter at «sikkerhet» først ga en morf: morfing oppstår når geometrien endrer seg, så her endres den ikke.",
+      "start": "Change only the lighting: the top two plates of the stack catch the key light and their chamfered edges read crisply, while every plate below them falls away into deep near-black shadow so their edges are barely discernible. The stack keeps exactly the same number of plates in exactly the same positions with the same even vertical gaps as in the supplied image; nothing moves. No lime green line is visible anywhere.",
+      "slutt": "Change only the lighting: every single plate in the stack is now evenly lit from the same direction, so each plate's thickness and its fine 45-degree chamfer are equally crisp and readable from top to bottom. The stack keeps exactly the same number of plates in exactly the same positions with the same even vertical gaps as in the supplied image; nothing has moved. One single hair-thin lime green edge line runs along the front edge of the lowest plate, and nowhere else.",
+      "_pingpong_hvorfor": "AV, med vilje. Ping-pong finnes for bevegelser som må ende der de startet – «sikkerhet» skyver en plate ut og må skyve den inn igjen. Her ville det slukket lyset til slutt og tatt tilbake hele poenget: seksjonen skal ENDE opplyst. Scroll-spoling spiller av bakover av seg selv når man scroller opp, så returen trenger ingen ping-pong. Halverte samtidig klippet fra 16 til 8 sekunder og mobilfila fra 2098 til rundt 1000 kB.",
+      "bevegelse": "Nothing moves. Every plate stays frozen in exactly the same position, at the same size and thickness, for the entire clip. The ONLY change is light: a soft pool of key light travels slowly and steadily straight down the face of the stack, from the top plate to the bottom plate, revealing each plate's edge and chamfer in turn as it passes, and leaving it evenly lit behind it. By the end the whole stack is uniformly lit. As the light reaches the lowest plate, a hair-thin lime green edge line fades up softly along its front edge. The camera is locked off. No plate ever moves, slides, rotates, tilts or changes size.",
+      "_bredder_hvorfor": "960 er mobiltrinnet, ikke 1280. SceneFilm setter opacity 0.42 og en egen maske på mobil – det er en svak bakgrunnsflate, ikke en flate man studerer. Og IntersectionObserver-en i SceneFilm bruker rootMargin 150 %, så en seksjon innenfor de første 2,5 skjermhøydene lastes ved FØRSTE last, ikke ved scroll: målt 1064 kB på /sjekk uten å scrolle i det hele tatt. 960 koster 716 kB mot 1064. Og bare TO trinn bygges: SceneFilm har bare smal og bred, så et 2560-trinn ville blitt liggende i repoet uten at noe refererte det – samme dødvekt som hero-scenen laget.",
+      "pingpong": false,
+      "crf": { "960": "19" },
+      "bredder": [1920, 960]
+    }
+  ],
+
+  "bilder": [
+    {
+      "id": "verktoy-uu",
+      "side": "/verktoy/uu-sjekk",
+      "endring": "Change only the spacing: the plates are separated by clear, even vertical gaps so that each one reads as its own distinct plate, EXCEPT for two plates near the middle of the stack which sit pressed flush together with no gap at all between them, so that those two read as one single thicker plate. All plates stay perfectly level, parallel and aligned on one shared vertical axis. One single hair-thin lime green edge line runs along the seam where the two flush plates meet, and nowhere else.",
+      "forhold": "16:9",
+      "alt": "Stabel aluminiumsplater med jevne mellomrom, bortsett fra to plater på midten som ligger tett inntil hverandre og leses som én.",
+      "hvorfor": "Universell utforming handler om at ting som er forskjellige skal kunne skilles fra hverandre. To plater som smelter sammen til én ER en perseptuell svikt, gjort fysisk – ikke en illustrasjon av den."
+    },
+    {
+      "id": "verktoy-cookie",
+      "side": "/verktoy/cookie-sjekk",
+      "endring": "Change only the arrangement: the single topmost plate has been lifted straight up and now hangs clear above the rest of the stack, separated from it by a generous empty gap about three plate-thicknesses tall, like a lid raised off a box. Every remaining plate below stays exactly where it was, perfectly level, parallel and aligned on one shared vertical axis with the same even gaps. The lifted plate stays perfectly level and parallel too. One single hair-thin lime green edge line runs along the front edge of the lifted plate, and nowhere else.",
+      "forhold": "16:9",
+      "alt": "Den øverste platen i en stabel er løftet rett opp og henger fritt over resten, som et lokk som er tatt av.",
+      "hvorfor": "Cookie-sjekken løfter lokket og teller hva som allerede ligger der før du har sagt ja. Løftet plate, resten synlig under – samme handling."
+    },
+    {
+      "id": "verktoy-dmarc",
+      "side": "/verktoy/dmarc",
+      "endring": "Change the arrangement: there are now exactly THREE plates and no more, hanging one above the other with generous equal vertical gaps between them. The top plate and the bottom plate are perfectly aligned on one shared vertical axis. The MIDDLE plate is clearly shifted sideways to the right, out of line with the other two by about one third of its own width. All three plates stay perfectly level and parallel. Count carefully: exactly three plates. One single hair-thin lime green edge line runs along the front edge of the shifted middle plate, and nowhere else.",
+      "forhold": "16:9",
+      "alt": "Tre aluminiumsplater over hverandre. Den øverste og nederste står i flukt, den midterste er tydelig forskjøvet sidelengs.",
+      "hvorfor": "SPF, DKIM og DMARC er tre poster. Nesten alle som feiler sjekken har to av dem på plass og én som ikke står der den skal. Tre plater, én ute av flukt."
+    },
+    {
+      "id": "verktoy-pris",
+      "side": "/verktoy/priskalkulator",
+      "endring": "Change only the spacing and the viewpoint: the stack is seen more side-on, almost edge-on, so the plates read as evenly spaced graduations on a measuring scale. Every vertical gap between plates is exactly equal, and each plate's thickness is clearly readable. All plates stay perfectly level, parallel and aligned on one shared vertical axis, and the number of plates is unchanged from the supplied image. One single hair-thin lime green edge line runs along the front edge of one plate roughly two thirds of the way up the stack, marking a specific height, and nowhere else.",
+      "forhold": "16:9",
+      "alt": "Stabel aluminiumsplater sett nesten fra siden, med helt like mellomrom, der én plate to tredeler oppe har en limegrønn kantlinje.",
+      "hvorfor": "Kalkulatoren er en målestokk, ikke et tilbud. Like mellomrom betyr at trinnene kan telles, og den grønne linjen markerer høyden du har valgt."
+    }
+  ],
+
+  "_negativt": "text, letters, numbers, logos, watermark, people, hands, faces, glossy plastic, neon glow, purple, violet, magenta, lilac, blue tint, colour cast, tinted metal, blue gradient, mesh gradient, glassmorphism, bokeh, lens flare, sparkles, hologram, floating screens, motion blur, vignette",
+
+  "_felle": "Arvet fra assets/prompter/under.json, verifisert 6. oktober 2026. (1) Si ALDRI «pressed together into one monolithic slab» – modellen tegner da en massiv eske uten plater, og start- og sluttbilde blir to FORSKJELLIGE objekter. Klippet mellom dem blir en morf. (2) Be ALDRI om «a thick group of plates» uten å si hvor mange – modellen lager tykkelse ved å finne opp nye plater, målt 9 i startbildet mot omtrent 33 i sluttbildet. Ulik tykkelse må komme av hvordan de EKSISTERENDE platene grupperes.",
+
+  "_felle3": "Scenen «verktoy-sjekk» endrer BARE lys, ikke geometri, og overstyrer derfor ikke _bevegelse – den skjerper den. Et objekt som ikke flytter seg kan ikke morfe. Det er den billigste forsikringen mot AI-video-preget som finnes, og den bør brukes oftere enn den blir."
+}

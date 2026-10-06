@@ -1,0 +1,247 @@
+[
+  {
+    "sti": "/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 99,
+    "uu": 100,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 1878,
+    "cls": 0.002,
+    "tbt": 0,
+    "fcp": 1353,
+    "byte": 633397,
+    "lcpEl": "<h1 class=\"display-xl\" data-astro-cid-lcdefpme=\"\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.00",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/scener/systemer-1280.mp4 3600s 483208B",
+      "/scener/systemer-poster.avif 3600s 14615B",
+      "/terminal.js 3600s 7769B",
+      "/logo/kk-lockup-dark.svg 3600s 6495B",
+      "/logo/kk-lockup-light.svg 3600s 6469B",
+      "/hero-live.js 3600s 3690B"
+    ]
+  },
+  {
+    "sti": "/nettsider/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 92,
+    "uu": 97,
+    "praksis": 96,
+    "seo": 100,
+    "lcp": 1876,
+    "cls": 0.174,
+    "tbt": 0,
+    "fcp": 1351,
+    "byte": 166001,
+    "lcpEl": "<p class=\"scene__ingress body-lg\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.00",
+      "cache-insight=0.50",
+      "cls-culprits-insight=0.00",
+      "color-contrast=0.00",
+      "cumulative-layout-shift=0.69",
+      "errors-in-console=0.00",
+      "layout-shifts=0.00",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/terminal.js 3600s 7769B",
+      "/logo/kk-lockup-dark.svg 3600s 6495B",
+      "/logo/kk-lockup-light.svg 3600s 6469B",
+      "/hero-live.js 3600s 3690B"
+    ]
+  },
+  {
+    "sti": "/systemer/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 100,
+    "uu": 97,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 1727,
+    "cls": 0.005,
+    "tbt": 0,
+    "fcp": 1203,
+    "byte": 627028,
+    "lcpEl": "<p class=\"scene__ingress body-lg\" data-astro-cid-via4icy4=\"\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.00",
+      "color-contrast=0.00",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/scener/systemer-1280.mp4 3600s 483208B",
+      "/scener/systemer-poster.avif 3600s 14615B",
+      "/terminal.js 3600s 7769B",
+      "/logo/kk-lockup-dark.svg 3600s 6495B",
+      "/logo/kk-lockup-light.svg 3600s 6469B",
+      "/hero-live.js 3600s 3690B"
+    ]
+  },
+  {
+    "sti": "/historie/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 94,
+    "uu": 100,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 1727,
+    "cls": 0.139,
+    "tbt": 0,
+    "fcp": 1352,
+    "byte": 810707,
+    "lcpEl": "<video data-story-video=\"\" muted=\"\" playsinline=\"\" preload=\"auto\" poster=\"/historie/poster",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.00",
+      "cache-insight=0.50",
+      "cls-culprits-insight=0.00",
+      "cumulative-layout-shift=0.79",
+      "layout-shifts=0.00",
+      "lcp-discovery-insight=0.00",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/historie/historie-1280.mp4 3600s 674131B",
+      "/historie/poster.avif 3600s 9424B",
+      "/terminal.js 3600s 7769B",
+      "/logo/kk-lockup-dark.svg 3600s 6495B",
+      "/logo/kk-lockup-light.svg 3600s 6469B",
+      "/hero-live.js 3600s 3690B"
+    ]
+  },
+  {
+    "sti": "/verktoy/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 99,
+    "uu": 100,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 1877,
+    "cls": 0.002,
+    "tbt": 0,
+    "fcp": 1352,
+    "byte": 1612853,
+    "lcpEl": "<p class=\"scene__ingress body-lg\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.00",
+      "image-delivery-insight=0.00",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/historie/verktoy-1280.mp4 3600s 1437191B",
+      "/historie/verktoy-poster.avif 3600s 46921B",
+      "/terminal.js 3600s 7769B",
+      "/logo/kk-lockup-dark.svg 3600s 6495B",
+      "/logo/kk-lockup-light.svg 3600s 6469B",
+      "/hero-live.js 3600s 3690B"
+    ]
+  },
+  {
+    "sti": "/kontakt/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 99,
+    "uu": 97,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 1952,
+    "cls": 0.001,
+    "tbt": 0,
+    "fcp": 1505,
+    "byte": 165142,
+    "lcpEl": "<p class=\"scene__ingress body-lg\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.00",
+      "cache-insight=0.50",
+      "document-latency-insight=0.50",
+      "link-name=0.00",
+      "network-dependency-tree-insight=0.00",
+      "unused-css-rules=0.50",
+      "uses-long-cache-ttl=0.50",
+      "uses-text-compression=0.00"
+    ],
+    "cache": [
+      "/terminal.js 3600s 7769B",
+      "/logo/kk-lockup-dark.svg 3600s 6495B",
+      "/logo/kk-lockup-light.svg 3600s 6469B",
+      "/hero-live.js 3600s 3690B"
+    ]
+  },
+  {
+    "sti": "/verktoy/cookie-sjekk/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 100,
+    "uu": 97,
+    "praksis": 100,
+    "seo": 100,
+    "lcp": 1728,
+    "cls": 0.002,
+    "tbt": 0,
+    "fcp": 1353,
+    "byte": 132562,
+    "lcpEl": "<p class=\"scene__ingress body-lg\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.50",
+      "color-contrast=0.00",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/terminal.js 3600s 7769B",
+      "/logo/kk-lockup-dark.svg 3600s 6495B",
+      "/logo/kk-lockup-light.svg 3600s 6469B",
+      "/hero-live.js 3600s 3690B"
+    ]
+  },
+  {
+    "sti": "/priser/",
+    "form": "mobile",
+    "n": 2,
+    "ytelse": 100,
+    "uu": 98,
+    "praksis": 96,
+    "seo": 100,
+    "lcp": 1727,
+    "cls": 0.001,
+    "tbt": 0,
+    "fcp": 1352,
+    "byte": 132047,
+    "lcpEl": "<p class=\"scene__ingress body-lg\">",
+    "spredning": 0,
+    "trekk": [
+      "cache-insight=0.50",
+      "errors-in-console=0.00",
+      "heading-order=0.00",
+      "network-dependency-tree-insight=0.00",
+      "uses-long-cache-ttl=0.50"
+    ],
+    "cache": [
+      "/terminal.js 3600s 7769B",
+      "/logo/kk-lockup-dark.svg 3600s 6495B",
+      "/logo/kk-lockup-light.svg 3600s 6469B",
+      "/hero-live.js 3600s 3690B"
+    ]
+  }
+]

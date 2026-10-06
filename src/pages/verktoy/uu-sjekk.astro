@@ -6,6 +6,7 @@ import Avslor from "../../components/Avslor.astro";
 import UrlCheck from "../../components/UrlCheck.astro";
 import Button from "../../components/Button.astro";
 import Terminal from "../../components/Terminal.astro";
+import Stillbilde from "../../components/Stillbilde.astro";
 import ContactBlock from "../../components/ContactBlock.astro";
 import { firma } from "../../data/firma";
 
@@ -86,6 +87,12 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
         />
       </div>
     </div>
+    </Avslor>
+
+    <Avslor trinn={2}>
+      <Stillbilde id="verktoy-uu" sizes="(min-width: 1120px) 1120px, 100vw">
+        Ni plater med jevn avstand. To av dem ligger så tett at de leses som én – nøyaktig det en kontrastfeil gjør med to elementer som skulle vært til å skille fra hverandre.
+      </Stillbilde>
     </Avslor>
   </Scene>
 

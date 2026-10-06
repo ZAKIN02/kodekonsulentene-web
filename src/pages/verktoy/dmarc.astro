@@ -5,6 +5,7 @@ import Mega from "../../components/Mega.astro";
 import Avslor from "../../components/Avslor.astro";
 import Button from "../../components/Button.astro";
 import Terminal from "../../components/Terminal.astro";
+import Stillbilde from "../../components/Stillbilde.astro";
 import ContactBlock from "../../components/ContactBlock.astro";
 import { firma } from "../../data/firma";
 
@@ -102,6 +103,12 @@ const forhandsutfylt = Astro.url.searchParams.get("domene") ?? "";
         </p>
       </div>
     </div>
+    </Avslor>
+
+    <Avslor trinn={2}>
+      <Stillbilde id="verktoy-dmarc" sizes="(min-width: 1120px) 1120px, 100vw">
+        Tre poster. Nesten alle som feiler sjekken har to på plass og én som ikke står der den skal.
+      </Stillbilde>
     </Avslor>
   </Scene>
 

@@ -3,6 +3,7 @@ import Base from "../layouts/Base.astro";
 import Scene from "../components/Scene.astro";
 import Mega from "../components/Mega.astro";
 import Avslor from "../components/Avslor.astro";
+import SceneFilm from "../components/SceneFilm.astro";
 import PriceCard from "../components/PriceCard.astro";
 import Button from "../components/Button.astro";
 import Faq from "../components/Faq.astro";
@@ -102,6 +103,13 @@ const prisFaq = faq.filter((f) => /binding|endre|koster|eier/i.test(f.q));
     </p>
   </Scene>
 
+  <div class="scenefilm-ramme">
+    <SceneFilm
+      smal="/scener/priser-1280.mp4"
+      bred="/scener/priser-1920.mp4"
+      plakat="/scener/priser-poster.avif"
+      tekst="venstre"
+    />
   <Scene n={5} eyebrow="Usikker" tittel="Vet du ikke hva du trenger?" ingress="Kjør den gratis sjekken på siden du har i dag. Da ser vi begge hva som er problemet før vi snakker om pris.">
     <Avslor>
     <div class="row">
@@ -110,6 +118,7 @@ const prisFaq = faq.filter((f) => /binding|endre|koster|eier/i.test(f.q));
     </div>
     </Avslor>
   </Scene>
+  </div>
 
   <ContactBlock n={6} />
 </Base>
@@ -124,5 +133,23 @@ const prisFaq = faq.filter((f) => /binding|endre|koster|eier/i.test(f.q));
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+</style>
+<style is:global>
+  /* Scenetittelen bryter ut til 1320 px over 1200 px bredde (se
+     .scene__head .stortekst i scener.css) og møter da filmen der masken
+     slipper den inn. Masken skyves ut så overskriften står på ren bakgrunn.
+
+     is:global er IKKE valgfritt her. .scenefilm ligger inne i SceneFilm.astro
+     og får dét komponentens scope-id, mens .scenefilm-ramme får sidens. En
+     vanlig <style> kompilerer til en selektor som krever sidens id på begge,
+     og regelen matcher da ingenting – den er død CSS. Verifisert 6. oktober
+     2026: med vanlig <style> ga maske 46 % og maske 92 % nøyaktig samme måling
+     (5,11:1), fordi ingen av dem ble brukt. Med is:global flyttet tallet seg. */
+  @media (min-width: 1200px) {
+    .scenefilm-ramme .scenefilm--venstre {
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 62%, rgb(0 0 0 / 0.25) 72%, #000 86%);
+      mask-image: linear-gradient(90deg, transparent 0%, transparent 62%, rgb(0 0 0 / 0.25) 72%, #000 86%);
+    }
   }
 </style>

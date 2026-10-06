@@ -1,0 +1,1668 @@
+{
+ "base": "http://127.0.0.1:4443",
+ "merke": "lokal",
+ "naar": "2026-10-06T09:05:30.519Z",
+ "funn": [
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Se hva som ligger inne i en nettside→» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 03Tjenester» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Og én ting vi ikke gjør: selge deg noe du ikke trenger. Tren» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Nettsider01Rask side som rangerer lokalt, består lovkravene » opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Systemer og integrasjoner02Booking, betaling og regnskap som» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Apper og AI03Intern app eller iOS-app fra samme sted som byg» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 04Caser» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Problem, løsning, resultat. Står det et tall her, er det mål» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«//DemoDemo – ikke et levert oppdragBookingsystem for klinikk» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Konseptarbeid er alltid merket «Konsept, ikke oppdrag». Alle» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 05Verktøy» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Skriv inn adressen. På 30 sekunder får du ytelse, sikkerhets» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Nettadresse$Kjør sjekkenIngen innlogging. Du velger selv om » opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«En side vi sjekketSikkerhetsheadere3/6Cookies før samtykke0U» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Kjør den på din side→» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 06Prosess» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Du ser en klikkbar prototype før du har betalt noe. Sier du » opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«01Samtale20 minVi går gjennom hva som faktisk tar tid i bedr» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 07Priser» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Fordi du skal kunne regne på det før du ringer. Alle priser » opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Start14 900 kreks. mvaÉn til tre sider for deg som trenger å» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«BedriftAnbefalt29 900 kreks. mvaFem til åtte sider med CMS, » opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Systemfra60 000 kreks. mvaWeb-app, kundeportal eller integra» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«AbonnementSide bygget, hosting, endringer og sikkerhetsoppda» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Alle priser er eks. mva.40 % faktureres ved oppstart, resten» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 08Om» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«KodeKonsulentene er et utviklermiljø i Oslo med sikkerhet so» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«01DesignDet kunden ser02KodeDet som gjør at det virker03Sikk» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 09Spørsmål» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Eier jeg koden og domenet?Ja. Domenet står registrert på dit» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/apper-og-ai",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 02Apper» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/apper-og-ai",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«VarslerPush når en ny jobb kommer inn, eller når en time avb» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/apper-og-ai",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 03AI» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/apper-og-ai",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«SSB melder at 48 % av foretakene med minst ti ansatte brukte» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/apper-og-ai",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Det som faktisk virker for en småbedrift er smalt og kjedeli» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/bransjer/handverkere",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 02Tallene» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/bransjer/handverkere",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«SSB oppgir at 72 % av foretakene i bygg og anlegg med 10–19 » opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/bransjer/handverkere",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 03Demo» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/bransjer/handverkere",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Dette er flyten vi bygger for håndverkere. Den er ikke en ko» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/bransjer/handverkere",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 04Kobles mot» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/bransjer/handverkere",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Tripletex og FikenGodtatt tilbud blir ordre blir faktura. In» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/bransjer/handverkere",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 05Start her» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/bransjer/handverkere",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Før vi snakker om ny side: kjør den gratis sjekken. Mangler » opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/bransjer/klinikker",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 02Problemet» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/bransjer/klinikker",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Timer brukt på telefon i ukaTODOTimer som ikke møtes oppTODO» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/bransjer/klinikker",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 03Demo» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/bransjer/klinikker",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Fire steg som skjer uten at noen i resepsjonen gjør noe. Det» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/bransjer/klinikker",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 04Også aktuelt» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/bransjer/klinikker",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«MedlemsregisterMånedstrekk, frysing av medlemskap og oversik» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/bransjer/klinikker",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 05Start her» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/bransjer/klinikker",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Mange klinikksider laster Google Analytics før samtykke. Det» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/kontakt",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 02Før du ringer» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/kontakt",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Har du en side i dag, bruk et halvt minutt på den gratis sje» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/nettsider",
+   "type": "konsoll",
+   "alvor": 1,
+   "hva": "Konsollfeil",
+   "maalt": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/nettsider",
+   "type": "konsoll",
+   "alvor": 1,
+   "hva": "Konsollfeil",
+   "maalt": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/nettsider",
+   "type": "forespørsel",
+   "alvor": 1,
+   "hva": "Lastet ikke: HTTP 404",
+   "maalt": "http://127.0.0.1:4443/scener/nettsider-poster.avif"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/nettsider",
+   "type": "forespørsel",
+   "alvor": 1,
+   "hva": "Lastet ikke: HTTP 404",
+   "maalt": "http://127.0.0.1:4443/scener/nettsider-1920.mp4"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/nettsider",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Rask på mobilLighthouse 95 eller bedre på alle fire kategori» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/nettsider",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 03Teknisk» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/nettsider",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Du trenger ikke å bry deg om dette. Det står her fordi noen » opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/nettsider",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«~/din-side$ npm run build\nastro build · 14 sider · 0 kB JS p» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/nettsider",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 05Pris» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/nettsider",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Start-pakken er for deg som trenger å finnes og bli ringt. B» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/nettsider",
+   "type": "video",
+   "alvor": 1,
+   "hva": "Video lastet ingen metadata",
+   "maalt": "nettsider-1920.mp4, readyState 0"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/priser",
+   "type": "konsoll",
+   "alvor": 1,
+   "hva": "Konsollfeil",
+   "maalt": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/priser",
+   "type": "konsoll",
+   "alvor": 1,
+   "hva": "Konsollfeil",
+   "maalt": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/priser",
+   "type": "forespørsel",
+   "alvor": 1,
+   "hva": "Lastet ikke: HTTP 404",
+   "maalt": "http://127.0.0.1:4443/scener/priser-poster.avif"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/priser",
+   "type": "forespørsel",
+   "alvor": 1,
+   "hva": "Lastet ikke: HTTP 404",
+   "maalt": "http://127.0.0.1:4443/scener/priser-1920.mp4"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/priser",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 02Løpende» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/priser",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«AbonnementSide bygget, hosting, endringer og sikkerhetsoppda» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/priser",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 03Sammenligning» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/priser",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Fordi du får noe annet. Her er hva pengene faktisk kjøper, s» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/priser",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«AlternativPrisHva du får – og ikke fårWix, Squarespace, Webf» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/priser",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 04Spørsmål» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/priser",
+   "type": "video",
+   "alvor": 1,
+   "hva": "Video lastet ingen metadata",
+   "maalt": "priser-1920.mp4, readyState 0"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/sikkerhet",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 02Et funn» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/sikkerhet",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«6. oktober 2026 kjørte vi cookie-skanningen mot vår egen for» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/sikkerhet",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Fontene våre lå hos Google. Ingen cookies ble satt, så den g» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/sikkerhet",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 04Lovkrav» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/sikkerhet",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«De færreste bryter dem med vilje. De fleste vet ikke at de g» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/sikkerhet",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Org.nr. og foretaksnavnRegistrert foretaksnavn og organisasj» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/sikkerhet",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 05Lovsjekk» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/sikkerhet",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Du trenger ikke ny nettside for å bli lovlig. Lovsjekk-pakke» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/sikkerhet",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Lovsjekk-pakkeFastpris på eksisterende side: cookie-samtykke» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/status",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Dette er ikke mål. Det er grenser. Går en leveranse over dem» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/status",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«95Lighthouse, mobil – alle fire kategorier2,5 sLCP, øvre gre» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/status",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 03Avvik» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/status",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Ring . Kunder med driftsavtale får beskjed fra oss før de re» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/systemer",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 02Typisk» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/systemer",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 04Pris» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/systemer",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Prisen følger antall integrasjoner og hvor mye som må holdes» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 02Slik ser det ut» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Opptak av sjekken som kjører mot nkom.no. Funnene er ekte. 6» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 03Åpent» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Sjekkene kjører også som kommandolinjeverktøy og som GitHub » opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy/cookie-sjekk",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 02Loven» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy/cookie-sjekk",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Fra 1. januar 2025 må samtykke til informasjonskapsler oppfy» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy/cookie-sjekk",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 03Etterpå» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy/cookie-sjekk",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Lovsjekk-pakken dekker cookies, universell utforming, lovpål» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy/cookie-sjekk",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Se hva det kosterKjør den fulle sjekken→Sjekk universell utf» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy/dmarc",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 02Hva det betyr» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy/dmarc",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«SPFhvem får sendeDKIMsignatur på e-postenDMARChva mottaker s» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy/dmarc",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 03Etterpå» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy/dmarc",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Å sette opp SPF, DKIM og DMARC riktig tar vanligvis en til t» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy/dmarc",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Book 20 minutterSe de andre verktøyene→» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy/priskalkulator",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 02Forutsetninger» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy/priskalkulator",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«En kalkulator som ikke viser forutsetningene sine er bare en» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy/priskalkulator",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«TimeanslagPakkeprisene er faste. Alt utover dem regnes ut fr» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy/priskalkulator",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 03Markedet» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy/priskalkulator",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Tallene under er ikke våre. De er hentet fra leverandørenes » opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy/priskalkulator",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«LeverandørGjelderPrisKildeWebmesternStartpakke til standard » opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy/uu-sjekk",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Dette er den viktigste seksjonen på siden. En grønn rapport » opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy/uu-sjekk",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Automatiske tester finner det som kan leses ut av koden: man» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy/uu-sjekk",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 03Etterpå» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy/uu-sjekk",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«En manuell revisjon dekker det automatiske tester ikke når: » opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "js",
+   "side": "/verktoy/uu-sjekk",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Se hva det kosterKjør den fulle sjekken→Sjekk cookies→» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Se hva som ligger inne i en nettside→» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 03Tjenester» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Og én ting vi ikke gjør: selge deg noe du ikke trenger. Tren» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Nettsider01Rask side som rangerer lokalt, består lovkravene » opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Systemer og integrasjoner02Booking, betaling og regnskap som» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Apper og AI03Intern app eller iOS-app fra samme sted som byg» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 04Caser» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Problem, løsning, resultat. Står det et tall her, er det mål» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«//DemoDemo – ikke et levert oppdragBookingsystem for klinikk» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Konseptarbeid er alltid merket «Konsept, ikke oppdrag». Alle» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 05Verktøy» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Skriv inn adressen. På 30 sekunder får du ytelse, sikkerhets» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Nettadresse$Kjør sjekkenIngen innlogging. Du velger selv om » opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«En side vi sjekketSikkerhetsheadere3/6Cookies før samtykke0U» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Dra skillelinjen, eller bruk piltastene.» opacity 1, visibility visible, animation none, timeline auto"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Kjør den på din side→» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 06Prosess» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Du ser en klikkbar prototype før du har betalt noe. Sier du » opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«01Samtale20 minVi går gjennom hva som faktisk tar tid i bedr» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 07Priser» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Fordi du skal kunne regne på det før du ringer. Alle priser » opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Start14 900 kreks. mvaÉn til tre sider for deg som trenger å» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«BedriftAnbefalt29 900 kreks. mvaFem til åtte sider med CMS, » opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Systemfra60 000 kreks. mvaWeb-app, kundeportal eller integra» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«AbonnementSide bygget, hosting, endringer og sikkerhetsoppda» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Alle priser er eks. mva.40 % faktureres ved oppstart, resten» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 08Om» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«KodeKonsulentene er et utviklermiljø i Oslo med sikkerhet so» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«01DesignDet kunden ser02KodeDet som gjør at det virker03Sikk» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Dra i stabelen, eller bruk piltastene.» opacity 1, visibility visible, animation none, timeline auto"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 09Spørsmål» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Eier jeg koden og domenet?Ja. Domenet står registrert på dit» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/sikkerhet",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 02Et funn» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/sikkerhet",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«6. oktober 2026 kjørte vi cookie-skanningen mot vår egen for» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/sikkerhet",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Fontene våre lå hos Google. Ingen cookies ble satt, så den g» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/sikkerhet",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 04Lovkrav» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/sikkerhet",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«De færreste bryter dem med vilje. De fleste vet ikke at de g» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/sikkerhet",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Org.nr. og foretaksnavnRegistrert foretaksnavn og organisasj» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/sikkerhet",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 05Lovsjekk» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/sikkerhet",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Du trenger ikke ny nettside for å bli lovlig. Lovsjekk-pakke» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/sikkerhet",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Lovsjekk-pakkeFastpris på eksisterende side: cookie-samtykke» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/kontakt",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 02Før du ringer» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/kontakt",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Har du en side i dag, bruk et halvt minutt på den gratis sje» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/systemer",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 02Typisk» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/systemer",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 04Pris» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/systemer",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Prisen følger antall integrasjoner og hvor mye som må holdes» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/status",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Dette er ikke mål. Det er grenser. Går en leveranse over dem» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/status",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«95Lighthouse, mobil – alle fire kategorier2,5 sLCP, øvre gre» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/status",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«// 03Avvik» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  },
+  {
+   "nettleser": "chromium",
+   "modus": "utenjs",
+   "side": "/status",
+   "type": "usynlig",
+   "alvor": 1,
+   "hva": "Tekst er usynlig og blir aldri synlig",
+   "maalt": "«Ring . Kunder med driftsavtale får beskjed fra oss før de re» opacity 0, visibility visible, animation avslor-inn, timeline view()"
+  }
+ ],
+ "kontroller": [
+  {
+   "navn": "video spolbar (chromium)",
+   "verdi": 1,
+   "detalj": "/ systemer-1920.mp4: seekable 6.04s"
+  },
+  {
+   "navn": "scroll-tidslinjer (chromium)",
+   "verdi": 56,
+   "detalj": "/"
+  },
+  {
+   "navn": "scroll-tidslinjer (chromium)",
+   "verdi": 0,
+   "detalj": "/404"
+  },
+  {
+   "navn": "scroll-tidslinjer (chromium)",
+   "verdi": 24,
+   "detalj": "/apper-og-ai"
+  },
+  {
+   "navn": "scroll-tidslinjer (chromium)",
+   "verdi": 31,
+   "detalj": "/bransjer/handverkere"
+  },
+  {
+   "navn": "scroll-tidslinjer (chromium)",
+   "verdi": 26,
+   "detalj": "/bransjer/klinikker"
+  },
+  {
+   "navn": "scroll-tidslinjer (chromium)",
+   "verdi": 0,
+   "detalj": "/caser"
+  },
+  {
+   "navn": "scroll-tidslinjer (chromium)",
+   "verdi": 0,
+   "detalj": "/handbok"
+  },
+  {
+   "navn": "video spolbar (chromium)",
+   "verdi": 1,
+   "detalj": "/historie historie-1920.mp4: seekable 8.04s"
+  },
+  {
+   "navn": "scroll-tidslinjer (chromium)",
+   "verdi": 16,
+   "detalj": "/historie"
+  },
+  {
+   "navn": "scroll-tidslinjer (chromium)",
+   "verdi": 5,
+   "detalj": "/kontakt"
+  },
+  {
+   "navn": "scroll-tidslinjer (chromium)",
+   "verdi": 28,
+   "detalj": "/nettsider"
+  },
+  {
+   "navn": "scroll-tidslinjer (chromium)",
+   "verdi": 0,
+   "detalj": "/om"
+  },
+  {
+   "navn": "scroll-tidslinjer (chromium)",
+   "verdi": 0,
+   "detalj": "/personvern"
+  },
+  {
+   "navn": "scroll-tidslinjer (chromium)",
+   "verdi": 26,
+   "detalj": "/priser"
+  },
+  {
+   "navn": "video spolbar (chromium)",
+   "verdi": 1,
+   "detalj": "/sikkerhet sikkerhet-1920.mp4: seekable 16.08s"
+  },
+  {
+   "navn": "scroll-tidslinjer (chromium)",
+   "verdi": 32,
+   "detalj": "/sikkerhet"
+  },
+  {
+   "navn": "scroll-tidslinjer (chromium)",
+   "verdi": 0,
+   "detalj": "/sjekk"
+  },
+  {
+   "navn": "scroll-tidslinjer (chromium)",
+   "verdi": 14,
+   "detalj": "/status"
+  },
+  {
+   "navn": "video spolbar (chromium)",
+   "verdi": 1,
+   "detalj": "/systemer systemer-1920.mp4: seekable 6.04s"
+  },
+  {
+   "navn": "scroll-tidslinjer (chromium)",
+   "verdi": 18,
+   "detalj": "/systemer"
+  },
+  {
+   "navn": "scroll-tidslinjer (chromium)",
+   "verdi": 0,
+   "detalj": "/terminal"
+  },
+  {
+   "navn": "video spolbar (chromium)",
+   "verdi": 1,
+   "detalj": "/verktoy verktoy-1920.mp4: seekable 7.58s"
+  },
+  {
+   "navn": "scroll-tidslinjer (chromium)",
+   "verdi": 11,
+   "detalj": "/verktoy"
+  },
+  {
+   "navn": "scroll-tidslinjer (chromium)",
+   "verdi": 16,
+   "detalj": "/verktoy/cookie-sjekk"
+  },
+  {
+   "navn": "scroll-tidslinjer (chromium)",
+   "verdi": 15,
+   "detalj": "/verktoy/dmarc"
+  },
+  {
+   "navn": "scroll-tidslinjer (chromium)",
+   "verdi": 13,
+   "detalj": "/verktoy/priskalkulator"
+  },
+  {
+   "navn": "scroll-tidslinjer (chromium)",
+   "verdi": 19,
+   "detalj": "/verktoy/uu-sjekk"
+  },
+  {
+   "navn": "scroll-tidslinjer (chromium)",
+   "verdi": 0,
+   "detalj": "/vilkar"
+  },
+  {
+   "navn": "nøkkeltall uten JS (chromium)",
+   "verdi": 4,
+   "detalj": "/: 6/6 · 0 · 0,1 s · 24 t"
+  },
+  {
+   "navn": "FAQ i DOM uten JS (chromium)",
+   "verdi": 8,
+   "detalj": "/"
+  },
+  {
+   "navn": "kvittering uten JS (chromium)",
+   "verdi": 1,
+   "detalj": "«Takk – meldingen kom fram» funnet"
+  },
+  {
+   "navn": "nøkkeltall uten JS (chromium)",
+   "verdi": 4,
+   "detalj": "/status: 95 · 2,5 s · 0 · 6"
+  }
+ ]
+}

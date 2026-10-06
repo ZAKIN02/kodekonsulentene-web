@@ -1,0 +1,1206 @@
+[
+ {
+  "side": "/",
+  "bredde": 390,
+  "status": 200,
+  "fil": ".skudd/syn/forside-390.png",
+  "feil": [],
+  "dode": [],
+  "blekkTotal": 0.29323697528933285,
+  "overflyt": 0,
+  "utenfor": [
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 435
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 496
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 543
+   }
+  ],
+  "antallUtenfor": 3,
+  "video": [
+   {
+    "src": "systemer-1280.mp4",
+    "spolbar": 6,
+    "klar": 4
+   }
+  ],
+  "bilder": [
+   {
+    "src": "kk-lockup-dark.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "kk-lockup-light.svg",
+    "lastet": true,
+    "maal": true
+   }
+  ],
+  "hoyde": 12996,
+  "h1": 1,
+  "animerte": 88
+ },
+ {
+  "side": "/nettsider",
+  "bredde": 390,
+  "status": 200,
+  "fil": ".skudd/syn/nettsider-390.png",
+  "feil": [],
+  "dode": [],
+  "blekkTotal": 0.29558109177819203,
+  "overflyt": 0,
+  "utenfor": [
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 435
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 496
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 543
+   }
+  ],
+  "antallUtenfor": 3,
+  "video": [
+   {
+    "src": "nettsider-1280.mp4",
+    "spolbar": 8,
+    "klar": 4
+   }
+  ],
+  "bilder": [
+   {
+    "src": "kk-lockup-dark.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "kk-lockup-light.svg",
+    "lastet": true,
+    "maal": true
+   }
+  ],
+  "hoyde": 6648,
+  "h1": 1,
+  "animerte": 39
+ },
+ {
+  "side": "/systemer",
+  "bredde": 390,
+  "status": 200,
+  "fil": ".skudd/syn/systemer-390.png",
+  "feil": [],
+  "dode": [],
+  "blekkTotal": 0.37062626239637575,
+  "overflyt": 0,
+  "utenfor": [
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 435
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 496
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 543
+   }
+  ],
+  "antallUtenfor": 3,
+  "video": [
+   {
+    "src": "systemer-1280.mp4",
+    "spolbar": 6,
+    "klar": 4
+   }
+  ],
+  "bilder": [
+   {
+    "src": "kk-lockup-dark.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "kk-lockup-light.svg",
+    "lastet": true,
+    "maal": true
+   }
+  ],
+  "hoyde": 5843,
+  "h1": 1,
+  "animerte": 33
+ },
+ {
+  "side": "/sikkerhet",
+  "bredde": 390,
+  "status": 200,
+  "fil": ".skudd/syn/sikkerhet-390.png",
+  "feil": [],
+  "dode": [],
+  "blekkTotal": 0.3533507499898331,
+  "overflyt": 0,
+  "utenfor": [
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 435
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 496
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 543
+   },
+   {
+    "tag": "table",
+    "kl": "",
+    "hoyre": 790
+   },
+   {
+    "tag": "thead",
+    "kl": "",
+    "hoyre": 790
+   },
+   {
+    "tag": "tr",
+    "kl": "",
+    "hoyre": 790
+   }
+  ],
+  "antallUtenfor": 31,
+  "video": [
+   {
+    "src": "sikkerhet-1280.mp4",
+    "spolbar": 8,
+    "klar": 4
+   }
+  ],
+  "bilder": [
+   {
+    "src": "kk-lockup-dark.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "kk-lockup-light.svg",
+    "lastet": true,
+    "maal": true
+   }
+  ],
+  "hoyde": 7981,
+  "h1": 1,
+  "animerte": 45
+ },
+ {
+  "side": "/apper-og-ai",
+  "bredde": 390,
+  "status": 200,
+  "fil": ".skudd/syn/apper-og-ai-390.png",
+  "feil": [],
+  "dode": [],
+  "blekkTotal": 0.2964608194678147,
+  "overflyt": 0,
+  "utenfor": [
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 435
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 496
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 543
+   }
+  ],
+  "antallUtenfor": 3,
+  "video": [],
+  "bilder": [
+   {
+    "src": "kk-lockup-dark.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "kk-lockup-light.svg",
+    "lastet": true,
+    "maal": true
+   }
+  ],
+  "hoyde": 4899,
+  "h1": 1,
+  "animerte": 33
+ },
+ {
+  "side": "/priser",
+  "bredde": 390,
+  "status": 200,
+  "fil": ".skudd/syn/priser-390.png",
+  "feil": [
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "dode": [],
+  "blekkTotal": 0.3269636538828788,
+  "overflyt": 0,
+  "utenfor": [
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 435
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 496
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 543
+   },
+   {
+    "tag": "thead",
+    "kl": "",
+    "hoyre": 395
+   },
+   {
+    "tag": "tr",
+    "kl": "",
+    "hoyre": 395
+   },
+   {
+    "tag": "th",
+    "kl": "",
+    "hoyre": 395
+   }
+  ],
+  "antallUtenfor": 17,
+  "video": [
+   {
+    "src": "priser-1280.mp4",
+    "spolbar": 0,
+    "klar": 0
+   }
+  ],
+  "bilder": [
+   {
+    "src": "kk-lockup-dark.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "kk-lockup-light.svg",
+    "lastet": true,
+    "maal": true
+   }
+  ],
+  "hoyde": 7394,
+  "h1": 1,
+  "animerte": 38
+ },
+ {
+  "side": "/caser",
+  "bredde": 390,
+  "status": 200,
+  "fil": ".skudd/syn/caser-390.png",
+  "feil": [],
+  "dode": [],
+  "blekkTotal": 0.1446550867754386,
+  "overflyt": 0,
+  "utenfor": [
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 435
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 496
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 543
+   }
+  ],
+  "antallUtenfor": 3,
+  "video": [],
+  "bilder": [
+   {
+    "src": "kk-lockup-dark.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "kk-lockup-light.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "rekke-800.avif",
+    "lastet": true,
+    "maal": true
+   }
+  ],
+  "hoyde": 3449,
+  "h1": 1,
+  "animerte": 5
+ },
+ {
+  "side": "/om",
+  "bredde": 390,
+  "status": 200,
+  "fil": ".skudd/syn/om-390.png",
+  "feil": [],
+  "dode": [],
+  "blekkTotal": 0.23633579044450154,
+  "overflyt": 0,
+  "utenfor": [
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 435
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 496
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 543
+   }
+  ],
+  "antallUtenfor": 3,
+  "video": [],
+  "bilder": [
+   {
+    "src": "kk-lockup-dark.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "kk-lockup-light.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "nart-800.avif",
+    "lastet": true,
+    "maal": true
+   }
+  ],
+  "hoyde": 4545,
+  "h1": 1,
+  "animerte": 4
+ },
+ {
+  "side": "/kontakt",
+  "bredde": 390,
+  "status": 200,
+  "fil": ".skudd/syn/kontakt-390.png",
+  "feil": [],
+  "dode": [],
+  "blekkTotal": 0.33481009966140846,
+  "overflyt": 0,
+  "utenfor": [
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 435
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 496
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 543
+   }
+  ],
+  "antallUtenfor": 3,
+  "video": [],
+  "bilder": [
+   {
+    "src": "kk-lockup-dark.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "kk-lockup-light.svg",
+    "lastet": true,
+    "maal": true
+   }
+  ],
+  "hoyde": 3200,
+  "h1": 1,
+  "animerte": 11
+ },
+ {
+  "side": "/historie",
+  "bredde": 390,
+  "status": 200,
+  "fil": ".skudd/syn/historie-390.png",
+  "feil": [],
+  "dode": [],
+  "blekkTotal": 0.2228510674447223,
+  "overflyt": 0,
+  "utenfor": [
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 435
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 496
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 543
+   }
+  ],
+  "antallUtenfor": 3,
+  "video": [
+   {
+    "src": "historie-1280.mp4",
+    "spolbar": 8,
+    "klar": 4
+   }
+  ],
+  "bilder": [
+   {
+    "src": "kk-lockup-dark.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "kk-lockup-light.svg",
+    "lastet": true,
+    "maal": true
+   }
+  ],
+  "hoyde": 8787,
+  "h1": 1,
+  "animerte": 22
+ },
+ {
+  "side": "/status",
+  "bredde": 390,
+  "status": 200,
+  "fil": ".skudd/syn/status-390.png",
+  "feil": [],
+  "dode": [],
+  "blekkTotal": 0.08338384845484767,
+  "overflyt": 0,
+  "utenfor": [
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 435
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 496
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 543
+   }
+  ],
+  "antallUtenfor": 3,
+  "video": [],
+  "bilder": [
+   {
+    "src": "kk-lockup-dark.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "kk-lockup-light.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "side-status-800.avif",
+    "lastet": true,
+    "maal": true
+   }
+  ],
+  "hoyde": 3604,
+  "h1": 1,
+  "animerte": 16
+ },
+ {
+  "side": "/handbok",
+  "bredde": 390,
+  "status": 200,
+  "fil": ".skudd/syn/handbok-390.png",
+  "feil": [],
+  "dode": [],
+  "blekkTotal": 0.2135857791836112,
+  "overflyt": 0,
+  "utenfor": [
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 435
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 496
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 543
+   }
+  ],
+  "antallUtenfor": 3,
+  "video": [],
+  "bilder": [
+   {
+    "src": "kk-lockup-dark.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "kk-lockup-light.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "side-handbok-800.avif",
+    "lastet": true,
+    "maal": true
+   }
+  ],
+  "hoyde": 6269,
+  "h1": 1,
+  "animerte": 5
+ },
+ {
+  "side": "/sjekk",
+  "bredde": 390,
+  "status": 200,
+  "fil": ".skudd/syn/sjekk-390.png",
+  "feil": [],
+  "dode": [],
+  "blekkTotal": 0.24795943325976047,
+  "overflyt": 0,
+  "utenfor": [
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 435
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 496
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 543
+   }
+  ],
+  "antallUtenfor": 3,
+  "video": [
+   {
+    "src": "verktoy-sjekk-1280.mp4",
+    "spolbar": 8,
+    "klar": 4
+   }
+  ],
+  "bilder": [
+   {
+    "src": "kk-lockup-dark.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "kk-lockup-light.svg",
+    "lastet": true,
+    "maal": true
+   }
+  ],
+  "hoyde": 4141,
+  "h1": 1,
+  "animerte": 7
+ },
+ {
+  "side": "/verktoy",
+  "bredde": 390,
+  "status": 200,
+  "fil": ".skudd/syn/verktoy-390.png",
+  "feil": [],
+  "dode": [],
+  "blekkTotal": 0.13154854104996508,
+  "overflyt": 0,
+  "utenfor": [
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 435
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 496
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 543
+   },
+   {
+    "tag": "code",
+    "kl": "mono",
+    "hoyre": 402
+   },
+   {
+    "tag": "code",
+    "kl": "mono",
+    "hoyre": 419
+   }
+  ],
+  "antallUtenfor": 5,
+  "video": [
+   {
+    "src": "verktoy-1280.mp4",
+    "spolbar": 7.6,
+    "klar": 4
+   }
+  ],
+  "bilder": [
+   {
+    "src": "kk-lockup-dark.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "kk-lockup-light.svg",
+    "lastet": true,
+    "maal": true
+   }
+  ],
+  "hoyde": 5725,
+  "h1": 1,
+  "animerte": 22
+ },
+ {
+  "side": "/verktoy/uu-sjekk",
+  "bredde": 390,
+  "status": 200,
+  "fil": ".skudd/syn/verktoy-uu-sjekk-390.png",
+  "feil": [],
+  "dode": [],
+  "blekkTotal": 0.2430726399184538,
+  "overflyt": 0,
+  "utenfor": [
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 435
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 496
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 543
+   }
+  ],
+  "antallUtenfor": 3,
+  "video": [],
+  "bilder": [
+   {
+    "src": "kk-lockup-dark.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "kk-lockup-light.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "verktoy-uu-800.avif",
+    "lastet": true,
+    "maal": true
+   }
+  ],
+  "hoyde": 4666,
+  "h1": 1,
+  "animerte": 27
+ },
+ {
+  "side": "/verktoy/cookie-sjekk",
+  "bredde": 390,
+  "status": 200,
+  "fil": ".skudd/syn/verktoy-cookie-sjekk-390.png",
+  "feil": [],
+  "dode": [],
+  "blekkTotal": 0.23421903778303113,
+  "overflyt": 0,
+  "utenfor": [
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 435
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 496
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 543
+   }
+  ],
+  "antallUtenfor": 3,
+  "video": [],
+  "bilder": [
+   {
+    "src": "kk-lockup-dark.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "kk-lockup-light.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "verktoy-cookie-800.avif",
+    "lastet": true,
+    "maal": true
+   }
+  ],
+  "hoyde": 4687,
+  "h1": 1,
+  "animerte": 24
+ },
+ {
+  "side": "/verktoy/dmarc",
+  "bredde": 390,
+  "status": 200,
+  "fil": ".skudd/syn/verktoy-dmarc-390.png",
+  "feil": [],
+  "dode": [],
+  "blekkTotal": 0.24277310104257754,
+  "overflyt": 0,
+  "utenfor": [
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 435
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 496
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 543
+   }
+  ],
+  "antallUtenfor": 3,
+  "video": [],
+  "bilder": [
+   {
+    "src": "kk-lockup-dark.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "kk-lockup-light.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "verktoy-dmarc-800.avif",
+    "lastet": true,
+    "maal": true
+   }
+  ],
+  "hoyde": 4694,
+  "h1": 1,
+  "animerte": 22
+ },
+ {
+  "side": "/verktoy/priskalkulator",
+  "bredde": 390,
+  "status": 200,
+  "fil": ".skudd/syn/verktoy-priskalkulator-390.png",
+  "feil": [],
+  "dode": [],
+  "blekkTotal": 0.3515679866624463,
+  "overflyt": 0,
+  "utenfor": [
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 435
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 496
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 543
+   },
+   {
+    "tag": "thead",
+    "kl": "",
+    "hoyre": 689
+   },
+   {
+    "tag": "tr",
+    "kl": "",
+    "hoyre": 689
+   },
+   {
+    "tag": "th",
+    "kl": "",
+    "hoyre": 627
+   }
+  ],
+  "antallUtenfor": 26,
+  "video": [],
+  "bilder": [
+   {
+    "src": "kk-lockup-dark.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "kk-lockup-light.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "verktoy-pris-800.avif",
+    "lastet": true,
+    "maal": true
+   }
+  ],
+  "hoyde": 6905,
+  "h1": 1,
+  "animerte": 21
+ },
+ {
+  "side": "/bransjer/handverkere",
+  "bredde": 390,
+  "status": 200,
+  "fil": ".skudd/syn/bransjer-handverkere-390.png",
+  "feil": [],
+  "dode": [],
+  "blekkTotal": 0.24539767196360662,
+  "overflyt": 0,
+  "utenfor": [
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 435
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 496
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 543
+   }
+  ],
+  "antallUtenfor": 3,
+  "video": [],
+  "bilder": [
+   {
+    "src": "kk-lockup-dark.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "kk-lockup-light.svg",
+    "lastet": true,
+    "maal": true
+   }
+  ],
+  "hoyde": 6541,
+  "h1": 1,
+  "animerte": 42
+ },
+ {
+  "side": "/bransjer/klinikker",
+  "bredde": 390,
+  "status": 200,
+  "fil": ".skudd/syn/bransjer-klinikker-390.png",
+  "feil": [],
+  "dode": [],
+  "blekkTotal": 0.28718306816154154,
+  "overflyt": 0,
+  "utenfor": [
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 435
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 496
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 543
+   }
+  ],
+  "antallUtenfor": 3,
+  "video": [],
+  "bilder": [
+   {
+    "src": "kk-lockup-dark.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "kk-lockup-light.svg",
+    "lastet": true,
+    "maal": true
+   }
+  ],
+  "hoyde": 6450,
+  "h1": 1,
+  "animerte": 37
+ },
+ {
+  "side": "/personvern",
+  "bredde": 390,
+  "status": 200,
+  "fil": ".skudd/syn/personvern-390.png",
+  "feil": [],
+  "dode": [],
+  "blekkTotal": 0.10614028684605628,
+  "overflyt": 0,
+  "utenfor": [
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 435
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 496
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 543
+   }
+  ],
+  "antallUtenfor": 3,
+  "video": [],
+  "bilder": [
+   {
+    "src": "kk-lockup-dark.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "kk-lockup-light.svg",
+    "lastet": true,
+    "maal": true
+   }
+  ],
+  "hoyde": 4084,
+  "h1": 1,
+  "animerte": 1
+ },
+ {
+  "side": "/vilkar",
+  "bredde": 390,
+  "status": 200,
+  "fil": ".skudd/syn/vilkar-390.png",
+  "feil": [],
+  "dode": [],
+  "blekkTotal": 0.11061525623882039,
+  "overflyt": 0,
+  "utenfor": [
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 435
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 496
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 543
+   }
+  ],
+  "antallUtenfor": 3,
+  "video": [],
+  "bilder": [
+   {
+    "src": "kk-lockup-dark.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "kk-lockup-light.svg",
+    "lastet": true,
+    "maal": true
+   }
+  ],
+  "hoyde": 5895,
+  "h1": 1,
+  "animerte": 3
+ },
+ {
+  "side": "/terminal",
+  "bredde": 390,
+  "status": 200,
+  "fil": ".skudd/syn/terminal-390.png",
+  "feil": [],
+  "dode": [],
+  "blekkTotal": 0.06874023618556675,
+  "overflyt": 0,
+  "utenfor": [
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 435
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 496
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 543
+   }
+  ],
+  "antallUtenfor": 3,
+  "video": [],
+  "bilder": [
+   {
+    "src": "kk-lockup-dark.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "kk-lockup-light.svg",
+    "lastet": true,
+    "maal": true
+   }
+  ],
+  "hoyde": 2117,
+  "h1": 1,
+  "animerte": 2
+ },
+ {
+  "side": "/finnes-ikke-404-test",
+  "bredde": 390,
+  "status": 404,
+  "fil": ".skudd/syn/finnes-ikke-404-test-390.png",
+  "feil": [
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "dode": [],
+  "blekkTotal": 0.061021061217499464,
+  "overflyt": 0,
+  "utenfor": [
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 435
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 496
+   },
+   {
+    "tag": "a",
+    "kl": "",
+    "hoyre": 543
+   }
+  ],
+  "antallUtenfor": 3,
+  "video": [],
+  "bilder": [
+   {
+    "src": "kk-lockup-dark.svg",
+    "lastet": true,
+    "maal": true
+   },
+   {
+    "src": "kk-lockup-light.svg",
+    "lastet": true,
+    "maal": true
+   }
+  ],
+  "hoyde": 1903,
+  "h1": 1,
+  "animerte": 2
+ }
+]

@@ -1,0 +1,35 @@
+{
+ "base": "http://127.0.0.1:4423",
+ "merke": "lokal",
+ "naar": "2026-10-06T08:36:58.254Z",
+ "funn": [
+  {
+   "side": "/kontakt",
+   "type": "lenke",
+   "alvor": 1,
+   "hva": "Lenke til tomt kontaktpunkt",
+   "maalt": "tel:"
+  },
+  {
+   "side": "/kontakt",
+   "type": "lenke",
+   "alvor": 1,
+   "hva": "Lenke uten tilgjengelig navn",
+   "maalt": "tel:"
+  },
+  {
+   "side": "/lab/interaksjon",
+   "type": "csp",
+   "alvor": 1,
+   "hva": "Blokkert av CSP: script-src-elem",
+   "maalt": "http://127.0.0.1:4423/lab/interaksjon:12 → inline"
+  },
+  {
+   "side": "/lab/interaksjon",
+   "type": "konsoll",
+   "alvor": 1,
+   "hva": "Konsoll error",
+   "maalt": "Executing inline script violates the following Content Security Policy directive 'script-src 'self' 'sha256-g+sZzo3ahObLAYxv5wnHu4py5E92TZBxB6f/SG6QzpU=' 'sha256-NY11WAvEsrVfq2e2wQwNwbZ7L+4udXpwoSilLb"
+  }
+ ]
+}

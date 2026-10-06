@@ -6,6 +6,7 @@ import Avslor from "../../components/Avslor.astro";
 import UrlCheck from "../../components/UrlCheck.astro";
 import Button from "../../components/Button.astro";
 import Terminal from "../../components/Terminal.astro";
+import Stillbilde from "../../components/Stillbilde.astro";
 import ContactBlock from "../../components/ContactBlock.astro";
 import { firma } from "../../data/firma";
 
@@ -86,6 +87,12 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
         </p>
       </div>
     </div>
+    </Avslor>
+
+    <Avslor trinn={2}>
+      <Stillbilde id="verktoy-cookie" sizes="(min-width: 1120px) 1120px, 100vw">
+        Lokket løftet av. Det som allerede ligger der, lå der før du fikk spørsmålet.
+      </Stillbilde>
     </Avslor>
   </Scene>
 

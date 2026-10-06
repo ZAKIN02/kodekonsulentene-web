@@ -45,9 +45,9 @@
     "headereAv6": 6,
     "cookiesForSamtykke": 0,
     "uuFeil": 0,
-    "axeBrudd": 4,
-    "bestaar": false,
-    "ttfbMs": 127,
+    "axeBrudd": 0,
+    "bestaar": true,
+    "ttfbMs": 133,
     "sumAv100": 90,
     "orgnr": true
   }

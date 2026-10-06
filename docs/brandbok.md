@@ -6,7 +6,9 @@ KodeKonsulentene er et utviklermiljø i Oslo som bygger nettsider, interne syste
 
 1. **Vis, ikke påstå.** Siden er det første caset. Ekte tall (`mono-stat`), ekte skjermbilder, et verktøy som faktisk kjører. Ingen stock-illustrasjoner, ingen AI-bilder, ingen floskler som «digitale opplevelser».
 2. **Presisjon er estetikken.** Tynne linjer (`hairline` i `line`), små radier (`radius-sm`, `radius-md`), monospace der det er tall eller system. Dybde kommer fra kanter, ikke skygger (`shadow-none` er standard).
-3. **Én detalj per skjerm.** Aksentfargen `accent` brukes på én ting i hvert visningsområde: primærknappen, et tall, en markør. Blir det to, fjern den ene.
+3. **Én detalj per skjerm – eller hele flaten.** Aksentfargen `accent` brukes på én ting i hvert visningsområde: primærknappen, et tall, en markør. Blir det to, fjern den ene.
+
+   Unntaket er `.flate--aksent`, der aksenten er hele seksjonen i stedet for en strek. Det er forskjellen på en detalj og et grep, og det skal stå **ett sted per side**. Regelen om én detalj var riktig for en detalj, men den var samtidig taket: målt mot referansene hadde vi flere skriftstørrelser og ni ganger så mange animasjoner som dem, og var likevel den flateste siden. Det som manglet var ikke bevegelse – det var flate.
 4. **Alt skal kunne måles.** Lighthouse 95+, WCAG 2.2 AA, ingen cookies før samtykke. Systemet gir ingen komponent lov til å bryte det det selges for.
 
 ## Innhold og tone
@@ -25,6 +27,12 @@ KodeKonsulentene er et utviklermiljø i Oslo som bygger nettsider, interne syste
 
 Mørkt tema (`dark`) er standard og første tema; lyst tema (`light`) følger `prefers-color-scheme` og brukerens valg via `data-theme`. Alle komponenter skal se riktige ut i begge.
 
+**Flateregistre.** En seksjon kan bytte HELE tokensettet, ikke bare bakgrunnen. Da følger hvert barn med av seg selv, fordi alt leser `var(--ink)`, `var(--line)` og `var(--bg-raised)`. Registrene er `.flate--lys`, `.flate--aksent` (full aksentflate, maks én per side) og `.flate--varm` (dyp leirgrunn som varm motvekt – bevisst ikke en mettet oransje, siden status eier rød, gul og teal og en sterk varmfarge ville lest som «feil»).
+
+Annenhver seksjon snur grunnen mot gjeldende tema automatisk. Det var det enkeltgrepet som monokromien faktisk sto på: forsiden hadde tre grunnfarger, mens `/systemer`, `/nettsider`, `/priser`, `/om`, `/sikkerhet` og `/caser` hadde **én**. Ti like mørke seksjoner leses som en liste, ikke som en side.
+
+**Et register må remappe mer enn du tror.** Glemmer du én, får du et brudd som ikke synes i koden: `--ok` uten `--ok-soft` ga 1,37:1 på fire statusmerker, og `--link` fulgte aldri med fordi aliaset `--link: var(--ink)` substitueres én gang på `:root` og aldri tracker en lokal `--ink`. Det ga 1,18:1 på lenker på ni sider. Skyggene (`--kk-hvile`, `--kk-loft`) må også følge flaten, ikke bare temaet. Sjekklisten er: grunn, hevet, innfelt, linjer, ink i tre nivåer, aksent med `on-accent` og `accent-text`, status med `-soft`, `--link`, `--focus` og skyggene.
+
 - Sidegrunn er `bg`. Kort og paneler er `bg-raised` med `hairline` kant i `line` – aldri skygge for å skille dem fra grunnen. Inputfelt og innfelte flater er `bg-sunken`.
 - Terminal- og rapportblokker er `terminal` i begge temaer, med `on-terminal` som tekst, `on-terminal-muted` til prompt-tegn og `accent` til markører. Det er den ene flaten som ikke bytter tema; det er med vilje.
 - Tekst er `ink` på `bg`, `bg-raised` og `bg-sunken`. Sekundærtekst er `ink-muted`, metadata `ink-faint`. Ikke lag lysere gråtoner – `ink-faint` er gulvet (≥ 4,5:1 i begge temaer).
@@ -32,7 +40,12 @@ Mørkt tema (`dark`) er standard og første tema; lyst tema (`light`) følger `p
 - Status har tre nivåer, alltid med ord eller ikon ved siden av fargen: `ok` (teal, «bestått»), `warn` (amber, «bør fikses»), `fail` (rød, «brudd»). `ok` ligger mot blå for å ikke være avhengig av rød–grønn-skillet. Hvert nivå har en `-soft`-tone til merker og rapportrader.
 - Fokus er `focus`: 2px solid ring med 2px offset i `bg`-fargen. Den er aksentfarget i mørkt tema og `ink` i lyst tema, slik at den holder 3:1 på alle flater. Fjern aldri fokusringen.
 - Lenker i løpende tekst er `link` (alias av `ink`) med 1px understrek i `line-strong`; hover flytter understreken til `accent-text`. Lenker i navigasjon har ingen understrek, men `accent-text` på aktiv side.
-- Forbudt: mesh-gradienter, glassmorphism, fargede venstrekanter på kort, lilla/blå «AI-farger». Én grain-tekstur via CSS på `bg` er tillatt hvis den holder seg under 4 % opasitet.
+- Forbudt: mesh-gradienter som atmosfære, glassmorphism, fargede venstrekanter på kort, lilla/blå «AI-farger». Én grain-tekstur via CSS på `bg` er tillatt hvis den holder seg under 4 % opasitet.
+- **Gradient i display-typografi er tillatt**, og er noe annet enn forbudet over. Forbudet gjelder atmosfærisk pynt – flater som får siden til å se ut som hvilken som helst SaaS-tjeneste. En gradient som fyller en stor overskrift er typografisk, ikke atmosfærisk.
+
+  Grunnlaget er målt. `spinxdigital.com` er den nærmeste sammenlignbare referansen vi har: et nettbyrå, mørk grunn, limegrønn knapp i `rgb(180,227,0)` mot vår `rgb(182,230,42)`. De bruker aksenten **fem** ganger mot våre sju, har **sju** animasjoner mot våre ni, og 38 transformerte elementer mot våre 69. De roper mindre enn oss på alt vi trodde var problemet. Det de faktisk gjør, er å fylle heroens typografi med gradient.
+
+  Regler: bare på mørke flater, bare i vår egen lime mot `ink`, og **begge ytterpunktene skal måles** mot grunnen – våre ligger på 15,06:1 og 16,41:1. Solid farge er fallback, og i `forced-colors` vinner systemfargen.
 
 ## Typografi
 

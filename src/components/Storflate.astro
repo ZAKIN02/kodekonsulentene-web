@@ -1,0 +1,103 @@
+---
+/**
+ * Et klipp vist i FULL styrke, kant til kant – ikke som tapet bak tekst.
+ *
+ * Maalt paa alle 26 sider: vi viste ni klipp paa 42 % opasitet bak tekst, og
+ * betalte megabyte uten aa faa effekten. Paa /priser laa 4,71 MB video under
+ * tekst, og bare 29,7 % av flaten endret seg maalbart. Samtidig blør
+ * referansene langt forbi skjermkanten – osmo.supply 770 elementer, spinx 85 –
+ * mens vi laa paa 1 til 8.
+ *
+ * Denne flaten gjoer det motsatte: full opasitet, full bredde, loekke. Teksten
+ * staar UNDER klippet, ikke oppaa, saa kontrasten er aldri et spoersmaal og
+ * motivet slipper aa deles med noe.
+ */
+interface Props {
+  smal: string;
+  bred: string;
+  stor?: string;
+  plakat: string;
+  /** Bildetekst. Skal si hva motivet BETYR, ikke hva det forestiller. */
+  tekst: string;
+  /** Hoeyde som andel av vinduet. Under ~50 forsvinner virkningen. */
+  hoyde?: number;
+  class?: string;
+}
+const { smal, bred, stor, plakat, tekst, hoyde = 72, class: cls } = Astro.props;
+---
+<figure class:list={["storflate", cls]} style={`--h: ${hoyde}svh`} data-storflate>
+  <div class="storflate__ramme">
+    <video
+      class="storflate__film"
+      poster={plakat}
+      muted
+      loop
+      playsinline
+      preload="none"
+      aria-hidden="true"
+      data-storflate-film
+    ><source data-smal={smal} data-bred={bred} data-stor={stor} type="video/mp4" /></video>
+  </div>
+  <figcaption class="small muted">{tekst}</figcaption>
+</figure>
+
+<style>
+  .storflate { margin: 0; display: grid; gap: var(--space-3); }
+  /* Bryter ut av lesebredden til hele vinduet, uten aa lage en scroll-beholder.
+     calc med 50vw virker fordi forelderen er sentrert; margin-inline: calc(50% - 50vw)
+     ville regnet mot forelderens bredde og bommet inne i et rutenett. */
+  .storflate__ramme {
+    position: relative;
+    inline-size: 100vw;
+    margin-inline-start: 50%;
+    transform: translateX(-50%);
+    block-size: var(--h);
+    overflow: hidden;
+    background: #060708;
+  }
+  .storflate__film {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .storflate figcaption { max-inline-size: 62ch; }
+
+  /* Degraderingen gaar mot synlig: plakaten staar, motivet er der, bare uten bevegelse. */
+  @media (prefers-reduced-motion: reduce) {
+    .storflate__film { display: none; }
+    .storflate__ramme {
+      background-image: var(--plakat);
+      background-size: cover;
+      background-position: center;
+    }
+  }
+</style>
+
+<script>
+  for (const rot of document.querySelectorAll<HTMLElement>("[data-storflate]")) {
+    const film = rot.querySelector<HTMLVideoElement>("[data-storflate-film]");
+    const kilde = film?.querySelector<HTMLSourceElement>("source");
+    if (!film || !kilde) continue;
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) continue;
+
+    // Kilden settes FOER play(). Motsatt rekkefoelge spiller av et <source> uten
+    // src og feiler stille – da staar flaten svart uten at noe logges.
+    const io = new IntersectionObserver((poster) => {
+      if (!poster.some((p) => p.isIntersecting)) return;
+      io.disconnect();
+      const nett = (navigator as Navigator & { connection?: { effectiveType?: string; saveData?: boolean } }).connection;
+      const treigt = nett?.saveData === true || /2g|3g/.test(nett?.effectiveType ?? "");
+      const px = window.innerWidth * (window.devicePixelRatio || 1);
+      kilde.src =
+        !treigt && px >= 2200 && kilde.dataset.stor
+          ? kilde.dataset.stor
+          : window.innerWidth >= 1024
+            ? kilde.dataset.bred!
+            : kilde.dataset.smal!;
+      film.load();
+      film.play().catch(() => {});
+    }, { rootMargin: "40% 0px" });
+    io.observe(rot);
+  }
+</script>

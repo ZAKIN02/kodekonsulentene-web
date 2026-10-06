@@ -262,3 +262,22 @@ describe("skjermopptakene av verktøyene spiller, de spoles ikke", () => {
     }
   });
 });
+
+describe("storflaten viser klippet i full styrke", () => {
+  /**
+   * Vi viste ni klipp på 42 % opasitet bak tekst og betalte megabyte uten å få
+   * effekten: på /priser lå 4,71 MB video under tekst, og bare 29,7 % av flaten
+   * endret seg målbart. Samtidig blør referansene langt forbi skjermkanten –
+   * osmo.supply 770 elementer, spinx 85 – mens vi lå på 1 til 8.
+   *
+   * Testen finnes fordi tilsvarende avspillingsgrener i SceneFilm og Demo begge
+   * har blitt borte uten at noe feilet synlig.
+   */
+  test("flaten looper, bryter ut til vindusbredde og toner ikke ned", () => {
+    const kilde = readFileSync("src/components/Storflate.astro", "utf8");
+    assert.ok(/film\.loop\s*=\s*true/.test(kilde) || /\bloop\b/.test(kilde), "flaten går ikke i løkke");
+    assert.ok(/film\.play\(\)/.test(kilde), "flaten starter aldri avspilling");
+    assert.ok(/inline-size:\s*100vw/.test(kilde), "flaten bryter ikke ut til vindusbredde");
+    assert.ok(!/opacity:\s*0?\.\d/.test(kilde), "flaten toner ned klippet – da er vi tilbake til tapet");
+  });
+});

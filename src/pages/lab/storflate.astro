@@ -1,0 +1,17 @@
+---
+import Base from "../../layouts/Base.astro";
+import Storflate from "../../components/Storflate.astro";
+---
+<Base tittel="Storflate – lab" beskrivelse="Klipp i full styrke, kant til kant." noindex>
+  <main class="wrap" style="padding-block: var(--space-8); display: grid; gap: var(--space-6)">
+    <h1 class="display-lg">Storflate</h1>
+    <p class="muted">Samme klipp som ligger bak tekst på 42 % andre steder. Her i full styrke.</p>
+    <Storflate
+      smal="/scener/priser-1280.mp4"
+      bred="/scener/priser-1920.mp4"
+      stor="/scener/priser-2560.mp4"
+      plakat="/scener/priser-poster.avif"
+      tekst="Stabelen deler seg i tre grupper. Tre nivåer, tre priser."
+    />
+  </main>
+</Base>

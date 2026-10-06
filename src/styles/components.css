@@ -122,7 +122,12 @@
 
 /* LegalFooter */
 .kk-footer { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: var(--space-6); padding: var(--space-6) var(--space-5); border-top: var(--hairline) solid var(--line); font-size: 14px; line-height: 20px; color: var(--ink-muted); }
-.kk-footer .kk-wordmark { margin: 0 0 var(--space-2); font-family: var(--font-display); font-size: 20px; line-height: 28px; font-weight: 800; letter-spacing: -0.03em; color: var(--ink); }
+/* Bunnteksten har tre avsnitt under hverandre, men den globale nullstillingen
+   setter p-marg til 0. Bare ordmerket hadde egen marg, saa slagordet og org.nr.
+   klistret seg sammen paa NULL piksler paa seks sider. Kolonnen faar derfor sin
+   egen gap i stedet for at hvert avsnitt maa huske sin marg. */
+.kk-footer > div { display: grid; gap: var(--space-2); align-content: start; }
+.kk-footer .kk-wordmark { margin: 0; font-family: var(--font-display); font-size: 20px; line-height: 28px; font-weight: 800; letter-spacing: -0.03em; color: var(--ink); }
 .kk-footer address { font-style: normal; }
 .kk-footer .kk-orgnr { font-family: var(--font-mono); font-size: 13px; color: var(--ink); }
 .kk-footer ul { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--space-1); }

@@ -151,6 +151,11 @@ const OPPTAK = {
     url: "/systemer",
     sek: 7,
     bevegelse: "no-preference",
+    // Smalere vindu, fordi figuren ikke kan klippes: den er 1056 px bred uansett
+    // vindu, så i 1600 fyller den 66 % av bredden og drukner i teksten rundt.
+    // I 1200 fyller den 88 %. Tetthet 3 gir 3600 px og dermed ekte nedskalering.
+    vindu: { width: 1200, height: 675 },
+    tetthet: 3,
     tekst: "Flytdiagrammet på /systemer tegner seg selv mens du scroller. Nodene er systemene vi faktisk kobler sammen, og figuren koster null kilobyte JavaScript.",
     plass: "/nettsider eller /om – den forklarer hva «systemer som snakker sammen» betyr, uten metafor",
     async klar(p) {
@@ -203,8 +208,16 @@ const OPPTAK = {
    */
   skjema: {
     url: "/kontakt",
-    sek: 7,
+    // 6 s, ikke 7. Med 7 landet den groenne tilstanden paa 90 % av tidslinjen og
+    // de siste 0,7 sekundene stod helt stille – 3 av 27 intervaller frosset.
+    // En kort hvile paa sluttilstanden er riktig, saa oeyet rekker aa lese ✓,
+    // men den skal vaere kort.
+    sek: 6,
     tetthet: 3,
+    // Feltene er 462x494 og står på y=150 uansett vindusbredde – målt på tre.
+    // Et 16:9-utsnitt rundt dem blir 906x510, og det får bare plass i 1600.
+    // Utsnittet er fast: ingenting scroller i denne scenen, så flaten vandrer ikke.
+    klipp: { x: 618, y: 130, width: 906, height: 510 },
     tekst: "Kontaktskjemaet sier fra før du sender. Den røde kanten og ✕ kommer fra CSS alene – :has() og :user-invalid – uten en linje JavaScript.",
     plass: "/kontakt, over skjemaet – eller /nettsider, som bevis på at vi bygger skjemaer som virker uten skript",
     async klar(p) {
@@ -212,49 +225,77 @@ const OPPTAK = {
       // havner nederste felt utenfor visningsvinduet.
       await p.evaluate(() => {
         const f = document.querySelector("form .field");
-        scrollTo(0, f.getBoundingClientRect().top + scrollY - 150);
+        const y = f.getBoundingClientRect().top + scrollY - 150;
+        scrollTo(0, y);
+        window.__laas = y; // samme posisjon hver ramme, se under
       });
       await p.waitForTimeout(700);
     },
+    /**
+     * Tre slag: navnet fylles ut, e-posten er ugyldig og blir rød, e-posten
+     * rettes og blir grønn.
+     *
+     * BLUR, IKKE TAB. Første forsøk tabbet mellom feltene, og nettleseren rullet
+     * da neste felt inn i synsranden – skjemaet vandret ut av det faste utsnittet,
+     * og de tre siste sekundene viste bunnteksten. `blur()` utløser
+     * `:user-invalid` like godt uten å flytte siden. Scrollposisjonen låses i
+     * tillegg hver ramme, så ingenting kan skyve flaten.
+     *
+     * «kari» og ikke «kari@eksempel» som ugyldig verdi. Første forsøk brukte det
+     * siste, og feltet ble GRØNT: `input[type=email]` godtar `bruker@vert` uten
+     * toppdomene, så strengen var gyldig. Rødtilstanden – halve poenget – dukket
+     * aldri opp. Uten krøllalfa er den utvetydig ugyldig.
+     */
     async ramme(p, a, st) {
       const navn = p.locator('input[name="navn"]');
       const epost = p.locator('input[name="epost"]');
+      await p.evaluate(() => scrollTo(0, window.__laas));
 
-      // 1. Navnet, tegn for tegn, og tab videre så ✓ kommer fram.
-      if (a < 0.30) {
+      // 1. Navnet, tegn for tegn, og ut av feltet så ✓ kommer fram.
+      if (a < 0.24) {
         const ord = "Kari Nordmann";
-        const n = Math.min(ord.length, Math.ceil((a / 0.28) * ord.length));
+        const n = Math.min(ord.length, Math.ceil((a / 0.22) * ord.length));
         st.n ??= 0;
         if (st.n === 0) await navn.click({ timeout: 3000 }).catch(() => {});
         while (st.n < n) { await navn.press(ord[st.n], { timeout: 3000 }).catch(() => {}); st.n++; }
         return;
       }
 
-      // 2. Halvferdig e-post, og tab ut – da slår :user-invalid inn.
-      if (a < 0.58) {
-        if (!st.tab1) { st.tab1 = true; await navn.press("Tab").catch(() => {}); }
-        const ord = "kari@eksempel";
-        const n = Math.min(ord.length, Math.ceil(((a - 0.30) / 0.24) * ord.length));
+      // 2. Ugyldig e-post, og ut av feltet – da slår :user-invalid inn.
+      if (a < 0.46) {
+        if (!st.ut1) {
+          st.ut1 = true;
+          await p.evaluate(() => document.activeElement?.blur());
+          await epost.click({ timeout: 3000 }).catch(() => {});
+        }
+        const ord = "kari";
+        const n = Math.min(ord.length, Math.ceil(((a - 0.24) / 0.18) * ord.length));
         st.m ??= 0;
         while (st.m < n) { await epost.press(ord[st.m], { timeout: 3000 }).catch(() => {}); st.m++; }
         return;
       }
       if (!st.rod) {
         st.rod = true;
-        await epost.press("Tab").catch(() => {});
+        await p.evaluate(() => document.activeElement?.blur());
         return;
       }
 
-      // La den røde tilstanden stå noen rammer – den er halve poenget.
-      if (a < 0.72) return;
+      // La den røde tilstanden stå. Den er halve poenget, og et øye trenger tid.
+      if (a < 0.62) return;
 
-      // 3. Fullfør e-posten og tab ut igjen: ✕ blir ✓.
+      // 3. Rett e-posten og gå ut igjen: ✕ blir ✓.
       if (!st.fikset) {
         st.fikset = true;
         await epost.click({ timeout: 3000 }).catch(() => {});
         await epost.press("End").catch(() => {});
-        for (const c of ".no") await epost.press(c, { timeout: 3000 }).catch(() => {});
-        await epost.press("Tab").catch(() => {});
+      }
+      const rest = "@eksempel.no";
+      const n = Math.min(rest.length, Math.ceil(((a - 0.62) / 0.26) * rest.length));
+      st.r ??= 0;
+      while (st.r < n) { await epost.press(rest[st.r], { timeout: 3000 }).catch(() => {}); st.r++; }
+      if (st.r >= rest.length && !st.gronn) {
+        st.gronn = true;
+        await p.evaluate(() => document.activeElement?.blur());
       }
     },
   },
@@ -591,14 +632,23 @@ rmSync(tmp, { recursive: true, force: true });
 mkdirSync(tmp, { recursive: true });
 mkdirSync(UT, { recursive: true });
 
-console.log(`Tar opp «${id}» – ${rammer} rammer à ${BREDDE * (scene.tetthet ?? TETTHET)}x${HOYDE * (scene.tetthet ?? TETTHET)}`);
+console.log(`Tar opp «${id}» – ${rammer} rammer`);
 const nettleser = await chromium.launch();
 // Et lite utsnitt må tas opp tettere, ellers skaleres det OPP til 1920 og blir
 // mykt. Lagstabelen er 926x520 CSS – på tetthet 2 blir det 1852 px bredt, altså
 // under 1920. Scenen kan derfor overstyre tettheten.
 const tetthet = scene.tetthet ?? TETTHET;
+/**
+ * Visningsvinduet kan overstyres per scene.
+ *
+ * Et motiv som ikke kan klippes – fordi det VANDRER gjennom bildet mens det
+ * animeres – må i stedet rammes av et smalere vindu. Flytdiagrammet er 1056 px
+ * bredt uansett vindu, så i 1600 fyller det 66 % av bredden og drukner i
+ * omkringliggende tekst; i 1200 fyller det 88 %. Målt på fem bredder.
+ */
+const vindu = scene.vindu ?? { width: BREDDE, height: HOYDE };
 const ctx = await nettleser.newContext({
-  viewport: { width: BREDDE, height: HOYDE },
+  viewport: vindu,
   deviceScaleFactor: tetthet,
   colorScheme: "dark",
   /**

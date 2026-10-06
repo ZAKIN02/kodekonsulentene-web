@@ -1,5 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
+import Snitt from "../components/Snitt.astro";
+import { snitt } from "../data/flyter";
 import Demo from "../components/Demo.astro";
 import opptak from "../data/opptak.json";
 import Section from "../components/Section.astro";
@@ -70,6 +72,12 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
           bryter minst ett av. Du får svaret i klartekst, ikke i utviklersjargong.
         </p>
       </Avslor>
+
+    <Avslor trinn={2}>
+      {/* Tegning med ekte navn, hentet ordrett fra siden. Brandboken rangerer
+          diagram over generert materiale – det forklarer, og koster 0 kB. */}
+      <Snitt snitt={snitt.sjekk} />
+    </Avslor>
 
       <div class="stack">
         <Avslor trinn={2}>

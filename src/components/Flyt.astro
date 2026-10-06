@@ -184,8 +184,13 @@ const nr = (i: number) => String(i + 1).padStart(2, "0");
     opacity: 1;
   }
 
-  /* Siste ledd er poenget – det ene stedet aksenten brukes i figuren. */
-  .flyt__node--siste .flyt__boks { stroke: var(--accent); }
+  /* Siste ledd er poenget – det ene stedet aksenten brukes i figuren.
+     `accent-text`, ikke `accent`: aksentfargen er et FYLL, og brandboken sier den
+     aldri skal være tekst på lyse flater. Som strøk har den samme svakhet – målt
+     1,46:1 mot flaten i LYST tema, altså en aksentboks som nesten ikke syntes.
+     I mørkt tema var den 14,03:1, så feilen var usynlig helt til begge temaer ble
+     målt. `accent-text` holder i begge: 14,03:1 mørk, 6,78:1 lys. */
+  .flyt__node--siste .flyt__boks { stroke: var(--accent-text); }
   .flyt__node--siste .flyt__navn { fill: var(--accent-text); }
 
   /* Størrelsene er oppgitt i viewBox-enheter. Med VB_B = 1000 mot en spalte på

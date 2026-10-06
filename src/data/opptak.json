@@ -78,5 +78,25 @@
     "hoyde": 1080,
     "tekst": "Terminalen på siden kjører de samme sjekkene som verktøyene. Her mot vårt eget domene, og tallene er det sjekken faktisk svarte – forbeholdet inkludert.",
     "kilde": "6. oktober 2026"
+  },
+  "flyt": {
+    "smal": "/opptak/flyt-960.mp4",
+    "bred": "/opptak/flyt-1280.mp4",
+    "stor": "/opptak/flyt-1920.mp4",
+    "plakat": "/opptak/flyt-poster.avif",
+    "bredde": 1920,
+    "hoyde": 1080,
+    "tekst": "Flytdiagrammet på /systemer tegner seg selv mens du scroller. Nodene er systemene vi faktisk kobler sammen, og figuren koster null kilobyte JavaScript.",
+    "kilde": "6. oktober 2026"
+  },
+  "skjema": {
+    "smal": "/opptak/skjema-960.mp4",
+    "bred": "/opptak/skjema-1280.mp4",
+    "stor": "/opptak/skjema-1920.mp4",
+    "plakat": "/opptak/skjema-poster.avif",
+    "bredde": 1920,
+    "hoyde": 1080,
+    "tekst": "Kontaktskjemaet sier fra før du sender. Den røde kanten og ✕ kommer fra CSS alene – :has() og :user-invalid – uten en linje JavaScript.",
+    "kilde": "6. oktober 2026"
   }
 }

@@ -1,0 +1,293 @@
+---
+/**
+ * Snitt: lag stablet oppå hverandre, sett fra siden, med ekte navn.
+ *
+ * HVORFOR EN TIL FIGURTYPE. `Flyt` tegner en VEI: noe beveger seg fra venstre til
+ * høyre og blir til noe annet. Et snitt tegner en OPPBYGNING: lagene finnes
+ * samtidig, og det nederste bærer det øverste. De tre stedene denne brukes –
+ * lagene i en nettside, punktene sjekken måler, postene i e-postoppsettet – er
+ * alle oppbygninger. Å tegne dem som kjeder ville vært samme feil som å kalle en
+ * kjede «Én kundeliste, tre flater»: figuren og påstanden må beskrive samme form.
+ *
+ * KOSTER 0 kB JAVASCRIPT. Samme mekanikk som Flyt: `pathLength="1"` normaliserer
+ * banen til lengde 1, så `stroke-dashoffset` kan animeres uten at noe måles med
+ * `getTotalLength()`. Det er hele grunnen til at vivus, lazy-line-painter og
+ * walkway.js finnes, og hele grunnen til at vi ikke trenger dem.
+ * Se docs/research-svg.md.
+ *
+ * DEGRADERING: standardtilstanden i CSS er FERDIG TEGNET. Bare der
+ * `animation-timeline: view()` finnes, skjules figuren og tegnes på nytt. Firefox
+ * mangler den fortsatt, og der står figuren komplett av seg selv – ingen reserve i
+ * JavaScript, og ingenting kan bli stående usynlig.
+ *
+ * TILGJENGELIGHET: SVG-en er `aria-hidden`, og lista under bærer meningen. Uten
+ * det ville en skjermleser lest hvert lagnavn to ganger. Teksten i figuren er
+ * likevel ekte `<text>`, ikke baner: den kan markeres, søkes i med Ctrl+F og
+ * skaleres uten å bli uskarp.
+ */
+import type { Snitt } from "../data/flyter";
+
+interface Props {
+  snitt: Snitt;
+  /** Overskriftsnivå. Figuren står som regel i en scene som eier h2. */
+  nivaa?: 2 | 3;
+  class?: string;
+}
+const { snitt, nivaa = 3, class: cls } = Astro.props;
+const Tittel = `h${nivaa}` as "h2" | "h3";
+
+const lag = snitt.lag;
+const n = lag.length;
+
+/**
+ * viewBox-bredden er ~spaltebredden med vilje, så skalaen blir rundt 1:1 og
+ * skriftstørrelsene males i den størrelsen de er oppgitt i.
+ *
+ * Flyt brukte først 1200 mot en spalte på ~1005 og ble skalert til 0,84:
+ * 13px-merket ble malt på 9,2 px. Kontrasten besto hele veien, og teksten var
+ * likevel for liten å lese. Samme tall her, av samme grunn.
+ */
+const VB_B = 1000;
+
+const PAD_T = 8;
+const STOLPE_H = 34;
+const STEG = 56;
+const GAP = STEG - STOLPE_H;
+const VB_H = PAD_T + n * STEG - GAP + PAD_T;
+
+const NR_X = 26;
+const STOLPE_X = 40;
+const STOLPE_B = 400;
+const STOLPE_SLUTT = STOLPE_X + STOLPE_B;
+const NAVN_X = STOLPE_X + 20;
+const LEDER_1 = STOLPE_SLUTT + 10;
+const LEDER_2 = STOLPE_SLUTT + 62;
+const DETALJ_X = LEDER_2 + 16;
+const R = 8;
+
+const y0 = (i: number) => PAD_T + i * STEG;
+const midt = (i: number) => y0(i) + STOLPE_H / 2;
+
+/** Avrundet rektangel som én bane, så den kan tegne seg med stroke-dashoffset. */
+function stolpeBane(i: number) {
+  const x = STOLPE_X;
+  const y = y0(i);
+  const w = STOLPE_B;
+  const h = STOLPE_H;
+  return [
+    `M${x + R},${y}`,
+    `H${x + w - R}`,
+    `A${R},${R} 0 0 1 ${x + w},${y + R}`,
+    `V${y + h - R}`,
+    `A${R},${R} 0 0 1 ${x + w - R},${y + h}`,
+    `H${x + R}`,
+    `A${R},${R} 0 0 1 ${x},${y + h - R}`,
+    `V${y + R}`,
+    `A${R},${R} 0 0 1 ${x + R},${y}`,
+    "Z",
+  ].join(" ");
+}
+
+const nr = (i: number) => String(i + 1).padStart(2, "0");
+---
+
+<figure class:list={["snitt", cls]}>
+  <Tittel class="heading snitt__tittel">{snitt.tittel}</Tittel>
+
+  <div class="snitt__ramme">
+    <svg
+      class="snitt__svg"
+      viewBox={`0 0 ${VB_B} ${VB_H}`}
+      preserveAspectRatio="xMidYMid meet"
+      aria-hidden="true"
+      focusable="false"
+    >
+      {lag.map((l, i) => (
+        <g class:list={["snitt__lag", i === snitt.aksent && "snitt__lag--aksent"]} style={`--i:${i}`}>
+          <text class="snitt__nr" x={NR_X} y={midt(i) + 4} text-anchor="end">{nr(i)}</text>
+          <path class="snitt__stolpe" d={stolpeBane(i)} pathLength="1" fill="none" />
+          <text class="snitt__navn" x={NAVN_X} y={midt(i) + 6}>{l.navn}</text>
+          <path
+            class="snitt__leder"
+            d={`M${LEDER_1},${midt(i)} H${LEDER_2}`}
+            pathLength="1"
+            fill="none"
+          />
+          <text class="snitt__detalj" x={DETALJ_X} y={midt(i) + 4}>{l.detalj}</text>
+        </g>
+      ))}
+    </svg>
+
+    {/*
+      Hele meningen i tekst. Skjult for øyet på bred skjerm, der figuren sier det
+      samme – men alltid i DOM-en, så skjermlesere og folk uten SVG får den. Under
+      900 px skjules figuren og denne lista ER innholdet.
+    */}
+    <ol class="snitt__liste visually-hidden">
+      {lag.map((l, i) => (
+        <li>
+          <span class="mono-label snitt__liste-nr">{nr(i)}</span>
+          <strong class="body-strong">{l.navn}</strong>
+          <span class="small muted">{l.detalj}</span>
+        </li>
+      ))}
+    </ol>
+  </div>
+
+  <figcaption class="small faint snitt__bunn">{snitt.beskrivelse}</figcaption>
+</figure>
+
+<style>
+  .snitt { display: grid; gap: var(--space-4); margin: 0; }
+  .snitt__tittel { margin: 0; }
+
+  .snitt__ramme {
+    border: var(--hairline) solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--bg-raised);
+    padding: var(--space-6) var(--space-5);
+  }
+
+  /* overflow: visible – strøkene ligger i kanten av viewBox og ville ellers blitt
+     klippet på halve bredden. */
+  .snitt__svg { width: 100%; height: auto; display: block; overflow: visible; }
+
+  /* Standardtilstand er FERDIG TEGNET. Alt som skjuler noe står i @supports under,
+     så en nettleser uten scroll-tidslinjer viser hele figuren uten å gjøre noe. */
+  .snitt__stolpe,
+  .snitt__leder {
+    stroke-width: 1;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+  }
+  /* `line-strong`, ikke `line`. Stolpene ER innholdet her – stablingen er hele
+     påstanden – og `line` måler 1,22:1 mot flaten i mørkt tema, altså så vidt
+     synlig. Brandbokens hairline-regel gjelder STREKBREDDEN (1px), ikke fargen;
+     Flyt bruker samme skille og gir `line` til bokser som bare rammer inn, og
+     `line-strong` til pilene, som bærer mening. Målt: 3,10:1 mørk, 4,06:1 lys. */
+  .snitt__stolpe { stroke: var(--line-strong); }
+  .snitt__leder { stroke: var(--line-strong); }
+
+  /* Ett lag er poenget – det ene stedet aksenten brukes i figuren.
+     `accent-text`, ikke `accent`: aksentfargen er et FYLL, og brandboken sier den
+     aldri skal være tekst på lyse flater. Som strøk har den samme problem – målt
+     1,46:1 i lyst tema, praktisk talt usynlig. `accent-text` er den dempede
+     olivenen som holder i begge: 14,03:1 mørk, 6,78:1 lys. */
+  .snitt__lag--aksent .snitt__stolpe { stroke: var(--accent-text); }
+  .snitt__lag--aksent .snitt__navn { fill: var(--accent-text); }
+
+  /* Størrelsene er i viewBox-enheter. Med VB_B = 1000 mot en spalte på rundt
+     1005 px males de omtrent 1:1, og aldri under ~13 px før figuren byttes ut
+     med lista på 900 px. */
+  .snitt__nr {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    fill: var(--ink-faint);
+  }
+  .snitt__navn {
+    font-family: var(--font-mono);
+    font-size: 17px;
+    fill: var(--ink);
+  }
+  .snitt__detalj {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    fill: var(--ink-muted);
+  }
+
+  .snitt__bunn { margin: 0; max-width: 72ch; }
+  .snitt__liste { margin: 0; padding: 0; list-style: none; }
+
+  /* Under 900 px males teksten i figuren under ~13 px fordi SVG-en skaleres med
+     spalten. Da er lista hele innholdet. Samme grense som Flyt, av samme grunn:
+     tall som består kontrastkravet kan likevel være for små å lese. */
+  @media (max-width: 900px) {
+    .snitt__svg { display: none; }
+    .snitt__liste {
+      position: static;
+      width: auto;
+      height: auto;
+      margin: 0;
+      overflow: visible;
+      clip: auto;
+      white-space: normal;
+      display: grid;
+      gap: var(--space-4);
+    }
+    .snitt__liste li { display: grid; gap: 2px; }
+    .snitt__liste-nr { color: var(--accent-text); }
+  }
+
+  /*
+    LANGFORMER MED VILJE. Skriver man `animation: navn linear both` og
+    `animation-timeline: view()` som to erklæringer, slår lightningcss dem sammen
+    til `animation: linear both navn view()`. Den formen er ugyldig –
+    animation-timeline er ikke del av stenografien – og BÅDE Chromium og Firefox
+    forkaster hele erklæringen uten å si fra. Testen i test/bygget-html.test.ts
+    feiler hvis mønsteret dukker opp i bygget.
+
+    ÉN GEST OM GANGEN. Stolpen tegner seg, så kommer navnet, så lederen ut til
+    detaljen. Lagene er forskjøvet med --i, så øyet leser oppbygningen ovenfra og
+    ned i stedet for å få alt samtidig.
+  */
+  @supports (animation-timeline: view()) {
+    .snitt__stolpe {
+      animation-name: snitt-tegnes;
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: entry calc(12% + var(--i) * 11%) cover calc(26% + var(--i) * 11%);
+    }
+    .snitt__nr,
+    .snitt__navn {
+      animation-name: snitt-tones-inn;
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: entry calc(20% + var(--i) * 11%) cover calc(32% + var(--i) * 11%);
+    }
+    /* Lederen og detaljen kommer sist i hvert lag: først finnes laget, så får det
+       navn, så peker vi på hva det er. */
+    .snitt__leder {
+      animation-name: snitt-tegnes;
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: entry calc(26% + var(--i) * 11%) cover calc(38% + var(--i) * 11%);
+    }
+    .snitt__detalj {
+      animation-name: snitt-tones-inn;
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: entry calc(30% + var(--i) * 11%) cover calc(42% + var(--i) * 11%);
+    }
+  }
+
+  @keyframes snitt-tegnes {
+    from { stroke-dashoffset: 1; }
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes snitt-tones-inn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Redusert bevegelse: figuren står ferdig, ingenting beveger seg. */
+  @media (prefers-reduced-motion: reduce) {
+    .snitt__stolpe,
+    .snitt__leder,
+    .snitt__nr,
+    .snitt__navn,
+    .snitt__detalj {
+      animation: none !important;
+      stroke-dashoffset: 0 !important;
+      opacity: 1 !important;
+    }
+  }
+</style>

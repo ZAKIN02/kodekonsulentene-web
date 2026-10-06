@@ -1,5 +1,7 @@
 ---
 import Base from "../../layouts/Base.astro";
+import Snitt from "../../components/Snitt.astro";
+import { snitt } from "../../data/flyter";
 import Scene from "../../components/Scene.astro";
 import Mega from "../../components/Mega.astro";
 import Avslor from "../../components/Avslor.astro";
@@ -23,6 +25,12 @@ const forhandsutfylt = Astro.url.searchParams.get("domene") ?? "";
     <Mega som="h1" merke="Verktøy" n={1} tekst="Kan noen sende e-post i ditt navn?" />
     <Avslor trinn={1}>
       <p class="scene__ingress body-lg">Tre poster i DNS avgjør det: SPF, DKIM og DMARC. Mangler de, kan hvem som helst sende faktura som ser ut til å komme fra bedriften din – og din egen e-post havner oftere i søppelposten.</p>
+    </Avslor>
+
+    <Avslor trinn={2}>
+      {/* Tegning med ekte navn, hentet ordrett fra siden. Brandboken rangerer
+          diagram over generert materiale – det forklarer, og koster 0 kB. */}
+      <Snitt snitt={snitt.epost} />
     </Avslor>
 
     <Avslor>

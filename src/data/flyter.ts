@@ -197,20 +197,27 @@ export const snitt = {
   /**
    * /verktoy/dmarc – de tre postene, som faktisk ER en oppbygning.
    *
-   * DMARC er ikke neste ledd etter DKIM i en kjede. Den LESER resultatet av
-   * SPF og DKIM og bestemmer hva mottakeren skal gjøre. Derfor ligger den
-   * øverst og hviler på de to andre, og derfor er den aksenten.
+   * DMARC er ikke neste ledd etter DKIM i en kjede. Den LESER resultatet av SPF
+   * og DKIM og bestemmer hva mottakeren skal gjøre. Derfor er den aksenten.
+   *
+   * REKKEFØLGEN er SPF, DKIM, DMARC – den samme som definisjonslista på siden og
+   * den samme som prosaen under den. Første utkast la DMARC øverst for å vise at
+   * den hviler på de to andre, men da ble den nummerert «01», og et tall øverst
+   * leses som «dette kommer først». Figuren påsto dermed det motsatte av teksten
+   * ved siden av. Det er samme feil som da apper-flyten het «Én kundeliste, tre
+   * flater» mens streken tegnet en kjede: figur og påstand må beskrive det samme.
+   * Avhengigheten bæres nå av aksenten og av beskrivelsen, ikke av stablingen.
    */
   epost: {
     tittel: "Tre poster som bygger på hverandre",
     beskrivelse:
       "SPF sier hvilke servere som får sende for domenet. DKIM signerer hver e-post så mottakeren ser at innholdet ikke er endret. DMARC leser begge og sier hva mottakeren skal gjøre når noe ikke stemmer.",
     lag: [
-      { navn: "DMARC", detalj: "hva mottaker skal gjøre" },
-      { navn: "DKIM", detalj: "signatur på e-posten" },
       { navn: "SPF", detalj: "hvem får sende" },
+      { navn: "DKIM", detalj: "signatur på e-posten" },
+      { navn: "DMARC", detalj: "leser begge, bestemmer utfallet" },
     ],
-    aksent: 0,
+    aksent: 2,
   },
 } as const satisfies Record<string, Snitt>;
 

@@ -21,13 +21,22 @@
  */
 import Base from "../../layouts/Base.astro";
 import Flyt from "../../components/Flyt.astro";
-import { flyter } from "../../data/flyter";
+import Snitt from "../../components/Snitt.astro";
+import { flyter, snitt } from "../../data/flyter";
 
 const varianter = [
   { nokkel: "systemer", hvor: "/systemer – i bruk" },
   { nokkel: "klinikker", hvor: "/bransjer/klinikker – foreslått" },
   { nokkel: "handverkere", hvor: "/bransjer/handverkere – foreslått" },
   { nokkel: "apper", hvor: "/apper-og-ai – foreslått" },
+  { nokkel: "prosess", hvor: "forsiden, seksjon 06 – foreslått" },
+] as const;
+
+/** Snitt tegner en oppbygning, ikke en vei. Se merknaden i Snitt.astro. */
+const snittVarianter = [
+  { nokkel: "nettside", hvor: "/nettsider – foreslått" },
+  { nokkel: "sjekk", hvor: "/sjekk, seksjon 02 – foreslått" },
+  { nokkel: "epost", hvor: "/verktoy/dmarc, seksjon 02 – foreslått" },
 ] as const;
 ---
 
@@ -59,8 +68,15 @@ const varianter = [
 
     {varianter.map((v) => (
       <section class="lab__sak">
-        <p class="mono-label faint">{v.hvor} · {flyter[v.nokkel].noder.length} ledd</p>
+        <p class="mono-label faint">Flyt · {v.hvor} · {flyter[v.nokkel].noder.length} ledd</p>
         <Flyt flyt={flyter[v.nokkel]} nivaa={2} />
+      </section>
+    ))}
+
+    {snittVarianter.map((v) => (
+      <section class="lab__sak">
+        <p class="mono-label faint">Snitt · {v.hvor} · {snitt[v.nokkel].lag.length} lag</p>
+        <Snitt snitt={snitt[v.nokkel]} nivaa={2} />
       </section>
     ))}
 

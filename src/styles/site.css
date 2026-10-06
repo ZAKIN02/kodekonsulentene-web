@@ -112,8 +112,11 @@ html:not([data-theme="light"]) .iconbtn [data-icon="sun"] { display: none; }
 html[data-theme="light"] .iconbtn [data-icon="moon"] { display: none; }
 
 /* ---- Hero: 7/5-kolonner på desktop ---- */
-.hero { padding-block: var(--space-8) var(--space-7); }
-@media (min-width: 861px) { .hero { padding-block: var(--space-9) var(--space-8); } }
+.hero { position: relative; isolation: isolate; padding-block: var(--space-8) var(--space-7); }
+/* Innholdet skal alltid ligge over hero-filmen. */
+.hero > .wrap { position: relative; z-index: 1; }
+@media (min-width: 861px) { .hero { padding-block: var(--space-9) var(--space-8); min-height: 78svh; display: flex; align-items: center; } }
+@media (min-width: 861px) { .hero > .wrap { width: 100%; } }
 .hero__grid { display: grid; gap: var(--space-7); align-items: start; }
 @media (min-width: 861px) { .hero__grid { grid-template-columns: 7fr 5fr; gap: var(--space-8); } }
 .hero h1 { max-width: 20ch; }

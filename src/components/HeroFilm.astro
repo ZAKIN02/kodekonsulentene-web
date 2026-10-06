@@ -1,0 +1,84 @@
+---
+/**
+ * Hero-bakgrunn: scroll-spolt video i full bredde, med innholdet liggende over.
+ *
+ * Den spoles av scroll og spiller ikke av seg selv – da gjelder ikke kravet i
+ * WCAG 2.2.2 om pauseknapp, og den bruker ingen CPU når siden står stille.
+ * Plakaten (AVIF) er LCP-elementet og står alene ved redusert bevegelse,
+ * Save-Data, eller hvis videoen ikke rekker å laste.
+ */
+---
+<div class="herofilm" data-herofilm aria-hidden="true">
+  <video
+    data-herofilm-video
+    muted
+    playsinline
+    preload="none"
+    poster="/historie/hero-poster.avif"
+    width="1440"
+    height="810"
+  >
+    <source data-smal="/historie/hero-900.mp4" data-bred="/historie/hero-1440.mp4" type="video/mp4" />
+  </video>
+</div>
+
+<style>
+  .herofilm {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    /* Bildet er dekorasjon. Det skal aldri kjempe med teksten, så det tones ned
+       og får en maske som lar venstre side gå i null. */
+    opacity: 0.9;
+    /* Teksten eier venstre halvdel. Masken må være helt gjennomsiktig der, ellers
+       havner platene bak ingressen – målt 1,01:1 med den gamle kurven. */
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 46%, rgb(0 0 0 / 0.25) 58%, #000 76%);
+    mask-image: linear-gradient(90deg, transparent 0%, transparent 46%, rgb(0 0 0 / 0.25) 58%, #000 76%);
+  }
+  .herofilm video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 72% center;
+    display: block;
+  }
+  @media (max-width: 860px) {
+    .herofilm {
+      opacity: 0.5;
+      -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgb(0 0 0 / 0.3) 30%, #000 70%);
+      mask-image: linear-gradient(180deg, transparent 0%, rgb(0 0 0 / 0.3) 30%, #000 70%);
+    }
+    .herofilm video { object-position: center 60%; }
+  }
+</style>
+
+<script>
+  const rot = document.querySelector<HTMLElement>("[data-herofilm]");
+  const film = rot?.querySelector<HTMLVideoElement>("[data-herofilm-video]");
+  const kilde = film?.querySelector<HTMLSourceElement>("source");
+  const redusert = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const sparData =
+    (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
+
+  if (rot && film && kilde && !redusert && !sparData) {
+    kilde.src = window.innerWidth >= 1024 ? kilde.dataset.bred! : kilde.dataset.smal!;
+    film.preload = "auto";
+    film.load();
+
+    let planlagt = false;
+    const oppdater = () => {
+      planlagt = false;
+      if (!film.duration) return;
+      // Hero-en spoles over de to første skjermhøydene. Etter det er den forbi.
+      const strekk = window.innerHeight * 1.6;
+      const andel = Math.min(1, Math.max(0, window.scrollY / strekk));
+      film.currentTime = andel * film.duration;
+    };
+    film.addEventListener("loadedmetadata", () => { rot.dataset.klar = "true"; oppdater(); });
+    addEventListener("scroll", () => {
+      if (!planlagt) { planlagt = true; requestAnimationFrame(oppdater); }
+    }, { passive: true });
+  }
+</script>

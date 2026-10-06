@@ -16,7 +16,9 @@
     "logs": "fly logs -a kodekonsulentene",
     "dns:list": "node scripts/dns-godaddy.mjs list",
     "dns:plan": "node scripts/dns-godaddy.mjs plan",
-    "dns:apply": "node scripts/dns-godaddy.mjs apply"
+    "dns:apply": "node scripts/dns-godaddy.mjs apply",
+    "se": "node .skudd/filmstripe.mjs",
+    "kontrast": "node .skudd/herokontrast.mjs"
   },
   "dependencies": {
     "@astrojs/node": "^11.1.6",

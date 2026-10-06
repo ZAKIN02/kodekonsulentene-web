@@ -5,7 +5,7 @@ import Eyebrow from "../components/Eyebrow.astro";
 import Button from "../components/Button.astro";
 import UrlCheck from "../components/UrlCheck.astro";
 import ProofStrip from "../components/ProofStrip.astro";
-import HistorieTeaser from "../components/HistorieTeaser.astro";
+import HeroFilm from "../components/HeroFilm.astro";
 import ServiceCard from "../components/ServiceCard.astro";
 import Terminal from "../components/Terminal.astro";
 import CheckReport from "../components/CheckReport.astro";
@@ -57,6 +57,7 @@ const eksempelRapport = [
 >
   <!-- 01 Hero -->
   <section class="hero">
+    <HeroFilm />
     <div class="wrap hero__grid">
       <div class="stack">
         <h1 class="display-xl">Nettsider og <em>systemer</em> som jobber for bedriften din</h1>
@@ -83,9 +84,8 @@ const eksempelRapport = [
     <ProofStrip items={bevis} label="Målbare påstander om denne siden og dette foretaket" />
   </div>
 
-  <!-- 02b Se innsiden -->
-  <div class="wrap">
-    <HistorieTeaser />
+  <div class="wrap" style="padding-top: var(--space-5)">
+    <Button variant="ghost" href="/historie">Se hva som ligger inne i en nettside</Button>
   </div>
 
   <!-- 03 Tjenester -->

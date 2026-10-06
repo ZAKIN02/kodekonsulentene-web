@@ -209,7 +209,7 @@ const heroTerminal = [
     «Fire steg, kjente tider» gjort fysisk. Seksjonen gir bare mening fordi du
     har sett akt 1 lenger oppe: der ble blokken aapnet, her fylles den.
   */}
-  <div class="scenefilm-ramme">
+  <div class="scenefilm-ramme scenefilm-ramme--akt2">
     <SceneFilm
       smal="/scener/hist2-steg-960.mp4"
       bred="/scener/hist2-steg-1280.mp4"
@@ -340,4 +340,29 @@ const heroTerminal = [
      display-lg via Scene; denne ene går til Mega. Brandboken: «én detalj per
      skjerm» – derfor nøyaktig én slik på hele forsiden. */
   .priser__mega { margin-bottom: var(--space-6); }
+</style>
+
+<style is:global>
+  /*
+    Akt 2 ligger bak en firekolonners tekstrad, ikke bak en tekstspalte med ledig
+    plass ved siden av. Masken hjelper ikke der: kolonne 04 staar lengst til hoyre,
+    altsaa midt i den delen masken SKAL slippe filmen inn i. Maalt «Lansering og
+    drift» mot blokken: 3,70:1, under AA-kravet paa 4,5.
+
+    Loesningen er den samme som ScrollHistorie allerede bruker: gi teksten en
+    ugjennomsiktig flate. Filmen skal leses RUNDT teksten, ikke bak den. Aa dempe
+    filmen i stedet ville loest maalingen ved aa fjerne grunnen til at filmen er
+    der - samme feil som ble gjort paa /nettsider og rettet der.
+
+    Regelen er global fordi .kk-steps ligger i en komponent med egen scope-id, og
+    en scoped regel herfra ville ikke matchet - den fellen gjorde maske-
+    overstyringen paa /systemer til doed CSS. Klassen paa rammen holder den likevel
+    til denne ene seksjonen.
+  */
+  .scenefilm-ramme--akt2 .kk-steps > * {
+    background: var(--bg);
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--line) 55%, transparent);
+  }
 </style>

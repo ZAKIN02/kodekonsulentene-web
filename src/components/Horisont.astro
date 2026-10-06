@@ -160,7 +160,17 @@ const nr = typeof n === "number" ? String(n).padStart(2, "0") : null;
       align-content: start;
       gap: var(--space-3);
     }
-    .horisont__nr { font-size: 12px; line-height: 16px; letter-spacing: 0.08em; }
+    /* Fargen MÅ byttes sammen med størrelsen. Som 76 px grafikk er --line-strong
+       riktig – det er en strekfarge, og stor tekst krever 3:1. Som 12 px er tallet
+       en etikett, og da gjelder 4,5:1. --line-strong måler 3,09:1 og stryker.
+       Dette traff bare brukere med redusert bevegelse, og var derfor usynlig i
+       alle målinger som ikke satte det flagget. */
+    .horisont__nr {
+      font-size: 12px;
+      line-height: 16px;
+      letter-spacing: 0.08em;
+      color: var(--ink-faint);
+    }
   }
 </style>
 

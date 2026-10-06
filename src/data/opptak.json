@@ -28,5 +28,25 @@
     "hoyde": 1080,
     "tekst": "DMARC-sjekken gjør ekte DNS-oppslag. Her mot nkom.no, og statusene er det DNS faktisk svarte.",
     "kilde": "6. oktober 2026"
+  },
+  "uu-sjekk": {
+    "smal": "/opptak/uu-sjekk-960.mp4",
+    "bred": "/opptak/uu-sjekk-1280.mp4",
+    "stor": "/opptak/uu-sjekk-1920.mp4",
+    "plakat": "/opptak/uu-sjekk-poster.avif",
+    "bredde": 1920,
+    "hoyde": 1080,
+    "tekst": "Universell utforming kjørt mot digdir.no. Sjekken starter en ekte nettleser og kjører axe-core; antall brudd og regler er det axe faktisk rapporterte.",
+    "kilde": "6. oktober 2026"
+  },
+  "cookie-sjekk": {
+    "smal": "/opptak/cookie-sjekk-960.mp4",
+    "bred": "/opptak/cookie-sjekk-1280.mp4",
+    "stor": "/opptak/cookie-sjekk-1920.mp4",
+    "plakat": "/opptak/cookie-sjekk-poster.avif",
+    "bredde": 1920,
+    "hoyde": 1080,
+    "tekst": "Cookie-sjekken laster forsiden med tom nettleserprofil og klikker ikke på noe. Alt som står i listen ble satt uten samtykke – her ingenting.",
+    "kilde": "6. oktober 2026"
   }
 }

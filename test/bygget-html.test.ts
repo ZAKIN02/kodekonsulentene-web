@@ -192,3 +192,26 @@ describe("plassholdere kommer aldri ut til kunder", () => {
     }
   });
 });
+
+describe("terminalen har fast mørk flate i begge temaer", () => {
+  /**
+   * .kk-term har --terminal: #060708 i BEGGE temaer, men --ok, --warn og --fail
+   * byttet med temaet. I lyst tema ble derfor mørk tekst malt på mørk flate:
+   * warn 3,31:1, fail 2,96:1, ok 3,85:1 mot WCAG-kravet på 4,5.
+   *
+   * Vår EGEN uu-sjekk fant dette på vår EGEN forside – på siden som selger
+   * universell utforming.
+   */
+  test("terminalfargene er faste, ikke temavariabler", () => {
+    const css = readFileSync("src/styles/components.css", "utf8");
+    for (const klasse of ["kk-ok", "kk-warn", "kk-fail"]) {
+      const regel = css.match(new RegExp(`\\\\.kk-term \\\\.${klasse}\\\\s*\\\\{[^}]*\\\\}`));
+      assert.ok(regel, `Fant ingen regel for .kk-term .${klasse}`);
+      assert.ok(
+        !regel![0].includes("var(--"),
+        `.kk-term .${klasse} bruker en temavariabel. Terminalflaten er mørk i begge ` +
+          `temaer, så fargen må være fast – ellers males mørk tekst på mørk flate i lyst tema.`,
+      );
+    }
+  });
+});

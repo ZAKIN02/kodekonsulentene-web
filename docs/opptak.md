@@ -21,6 +21,8 @@ Dette er mer av det.
 | `rontgen` | 8 s | 2,01 MB · 2,11 Mbit/s | At vi faktisk kan lese hva som ligger under en side |
 | `priskalkulator` | 9 s | 5,25 MB · 4,89 Mbit/s | At prisen er en utregning med poster, ikke et forhandlingsutspill |
 | `dmarc` | 9 s | 6,02 MB · 5,61 Mbit/s | At verktøyet gjør et reelt DNS-oppslag |
+| `uu-sjekk` | 6 s | 3,84 MB · 5,37 Mbit/s | At sjekken starter en ekte nettleser og kjører axe-core |
+| `cookie-sjekk` | 6 s | 3,72 MB · 5,21 Mbit/s | Hva «før samtykke» faktisk betyr, målt |
 
 Alle i 1920, 1280 og 960 med AVIF-plakat. CRF 19 og `-g 8`, som de genererte
 scenene. Dimensjonene i `src/data/opptak.json` er målt med `ffprobe` etter at
@@ -81,7 +83,72 @@ node scripts/opptak.mjs dmarc --base https://kodekonsulentene.no
 node scripts/opptak.mjs rontgen --behold         # behold rammene for feilsøk
 ```
 
-Opptak som avhenger av skanner-tjenesten (`uu-sjekk`, `cookie-sjekk`) er ikke
-laget. Lokalt degraderer de ærlig til «Skanneren er ikke satt opp ennå», og det
-er riktig oppførsel, men det er ikke materiale som selger. De bør tas opp mot
-produksjon når tjenesten svarer.
+Opptak som avhenger av skanner-tjenesten (`uu-sjekk`, `cookie-sjekk`) må tas opp
+mot produksjon, der tjenesten kjører. Lokalt degraderer de ærlig til «Skanneren
+er ikke satt opp ennå» – riktig oppførsel, men ikke materiale som selger:
+
+```
+node scripts/opptak.mjs uu-sjekk --base https://kodekonsulentene.no
+node scripts/opptak.mjs cookie-sjekk --base https://kodekonsulentene.no
+```
+
+## Subjektvalget er et ærlighetsspørsmål
+
+`Slepesammenligning.astro` sier: «Den sjekkede siden er ikke navngitt – vi
+publiserer ikke navn på sider som kommer dårlig ut.» Den regelen binder også
+opptakene.
+
+nkom.no **stryker** på uu-sjekken – tre brudd på `link-name`, WCAG 2.4.4 – og
+kunne derfor ikke brukes, selv om den er riktig subjekt for DMARC-opptaket der
+den kommer godt ut med 83 av 100. digdir.no består begge: 0 maskinelle brudd og
+0 cookies før samtykke. Da bryter det ingen regel å navngi dem.
+
+Vår egen forside ble også vurdert og forkastet som subjekt – ikke av hensyn til
+regelen, som ikke gjelder oss selv, men fordi den **stryker med ni
+kontrastbrudd** (se under).
+
+## Hvorfor klippene er 6 s og ikke 10
+
+Første forsøk brukte 10 s. En rapport fra en side som består er kort, så
+rulletrekket blir nesten null, og de siste 65 % av fila viste et bilde som ikke
+endret seg – 1,2 MB på mobil der halvparten var stillstand. Det er samme feil
+som `verktoy`-klippet har, der all endring skjer mellom 15 % og 45 %.
+
+Med 6 s og tidsaksen flyttet (skriving 0–30 %, lastetilstand 30–42 %, rapport
+42–100 %) falt mobilfila til 0,73 MB for `uu-sjekk` og 0,57 MB for
+`cookie-sjekk`, uten at noe innhold gikk tapt.
+
+Ventetiden komprimeres med vilje: rammene tas sekvensielt, så et `await` inne i
+ramme-funksjonen pauser opptaket i stedet for å fylle fila med spinner. Det er
+ikke juks – rapporten viser selv «Skannet på 2,5 s», som er den ekte tiden.
+
+## To funn utenfor opptakene
+
+**`Demo.astro` laster for tidlig.** `rootMargin: "200% 0px"` betyr at videoen
+hentes når rammen er innenfor to og en halv skjermhøyde – altså før brukeren har
+scrollet. Målt på mobil, førstelast:
+
+| Side | Med video | Uten video | Lastet før scroll |
+|---|---|---|---|
+| `/verktoy/dmarc` | 1304 kB | 142 kB | **1162 kB** |
+| `/verktoy/uu-sjekk` | 886 kB | 139 kB | **747 kB** |
+| `/verktoy/cookie-sjekk` | 715 kB | 133 kB | **582 kB** |
+| `/verktoy/priskalkulator` | 145 kB | 145 kB | 0 kB |
+
+Kalkulatoren koster ingenting fordi opptaket ligger langt nok ned på en lang
+side til at 200 % ikke rekker. De tre andre betaler full pris før brukeren har
+bedt om noe. `SceneFilm` hadde samme feil og ble satt til `60%`; `Demo` står
+fortsatt på `200%`. Én linje, og tre sider faller til ~140 kB førstelast.
+
+**Vår egen forside stryker på uu-sjekken.** Ni brudd på `color-contrast`
+(WCAG 1.4.3, alvorlighet «serious»), alle i terminalblokken: `.kk-fail` og
+`.kk-warn` har for svak kontrast mot bakgrunnen. Kjør selv:
+
+```
+curl -sS -X POST https://kodekonsulentene.no/api/uu-sjekk \
+  -H 'content-type: application/json' -d '{"url":"https://kodekonsulentene.no"}'
+```
+
+Det er «den feilen flest faktisk merker», med vår egen formulering, på siden som
+selger universell utforming. Fargene ligger i `src/styles/`, så det er ikke
+rettet her.

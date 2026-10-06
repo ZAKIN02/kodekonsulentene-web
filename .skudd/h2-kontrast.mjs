@@ -22,7 +22,14 @@ const mål = await p.evaluate(() => {
   if (!ramme) return ut;
   ramme.querySelectorAll(":scope > section").forEach((sek, si) => {
     const navn = (sek.querySelector("h2,.mega")?.textContent || `seksjon ${si}`).trim().slice(0, 26);
-    const kand = sek.querySelectorAll("h2, .scene__ingress, p.muted, p.small, .card p, .kk-hint, label, .heading");
+    // Klasselister traff ikke ProcessSteps, som har sin egen markup - da ble
+    // seksjonen rapportert som «ingen funn» i stedet for aa bli maalt. Velg
+    // bladnoder med tekst i stedet, uavhengig av klassenavn.
+    const kand = [...sek.querySelectorAll("p, h2, h3, h4, dt, dd, li, span, label, a")]
+      .filter((e) => {
+        const egen = [...e.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent.trim()).join("");
+        return egen.length >= 12;
+      });
     kand.forEach((el, i) => {
       const t = (el.textContent || "").trim();
       if (t.length < 12) return;
@@ -52,11 +59,39 @@ for (const m of mål) {
     await p.evaluate((id) => { const el = document.querySelector(`[data-maal="${id}"]`); el.style.removeProperty("color"); el.style.removeProperty("text-shadow"); }, m.id);
     continue;
   }
-  const png = await p.screenshot({ clip: boks });
-  await p.evaluate((id) => { const el = document.querySelector(`[data-maal="${id}"]`); el.style.removeProperty("color"); el.style.removeProperty("text-shadow"); }, m.id);
-  const im = PNG.sync.read(png);
-  let maks = -1;
-  for (let i = 0; i < im.data.length; i += 4) maks = Math.max(maks, lum(im.data[i], im.data[i + 1], im.data[i + 2]));
+  // To skudd: ett MED tekst, ett med teksten gjort gjennomsiktig. Differansen
+  // viser nøyaktig hvilke piksler som er glyffer. Uten dette måles hele
+  // tekstboksen – og en kort linje i en bred boks har mye tom flate til høyre der
+  // filmen skinner gjennom. Da rapporteres filmens lyshet som om det lå tekst der.
+  await p.evaluate((id) => {
+    const el = document.querySelector(`[data-maal="${id}"]`);
+    el.style.removeProperty("color"); el.style.removeProperty("text-shadow");
+  }, m.id);
+  const medTekst = PNG.sync.read(await p.screenshot({ clip: boks }));
+  await p.evaluate((id) => {
+    const el = document.querySelector(`[data-maal="${id}"]`);
+    el.style.setProperty("color", "transparent", "important");
+    el.style.setProperty("text-shadow", "none", "important");
+  }, m.id);
+  const utenTekst = PNG.sync.read(await p.screenshot({ clip: boks }));
+  await p.evaluate((id) => {
+    const el = document.querySelector(`[data-maal="${id}"]`);
+    el.style.removeProperty("color"); el.style.removeProperty("text-shadow");
+  }, m.id);
+
+  let maks = -1, glyffer = 0;
+  const W2 = utenTekst.width, H2 = utenTekst.height;
+  for (let y = 0; y < H2; y++) for (let x = 0; x < W2; x++) {
+    const i = (W2 * y + x) << 2;
+    const d = Math.abs(medTekst.data[i] - utenTekst.data[i])
+            + Math.abs(medTekst.data[i + 1] - utenTekst.data[i + 1])
+            + Math.abs(medTekst.data[i + 2] - utenTekst.data[i + 2]);
+    if (d < 24) continue;             // ingen glyff her
+    glyffer++;
+    // Bakgrunnen RETT BAK glyffen, lest fra skuddet uten tekst.
+    maks = Math.max(maks, lum(utenTekst.data[i], utenTekst.data[i + 1], utenTekst.data[i + 2]));
+  }
+  if (glyffer < 20) continue;         // fant ikke nok glyffer til å stole på målingen
   const c = m.farge.match(/\d+/g).map(Number);
   const Lt = lum(c[0], c[1], c[2]);
   const k = (Math.max(Lt, maks) + 0.05) / (Math.min(Lt, maks) + 0.05);

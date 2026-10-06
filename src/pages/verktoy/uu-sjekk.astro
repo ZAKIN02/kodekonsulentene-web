@@ -7,6 +7,8 @@ import UrlCheck from "../../components/UrlCheck.astro";
 import Button from "../../components/Button.astro";
 import Terminal from "../../components/Terminal.astro";
 import Stillbilde from "../../components/Stillbilde.astro";
+import Demo from "../../components/Demo.astro";
+import opptak from "../../data/opptak.json";
 import ContactBlock from "../../components/ContactBlock.astro";
 import { firma } from "../../data/firma";
 
@@ -90,6 +92,21 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
     </Avslor>
 
     <Avslor trinn={2}>
+      {/* Ekte opptak av verktøyet mens det kjører, ikke en render. Det BEVISER at
+          sjekken gjør et reelt oppslag i stedet for å antyde det. Demo og ikke
+          SceneFilm: Demo rammer med hårlinje og bildetekst med kildedato, mens
+          SceneFilm toner ned video som bakgrunn – og da leser et bevis som tapet. */}
+      <Demo
+        smal={opptak["uu-sjekk"].smal}
+        bred={opptak["uu-sjekk"].bred}
+        stor={opptak["uu-sjekk"].stor}
+        plakat={opptak["uu-sjekk"].plakat}
+        tekst={opptak["uu-sjekk"].tekst}
+        kilde={opptak["uu-sjekk"].kilde}
+      />
+    </Avslor>
+
+    <Avslor trinn={3}>
       <Stillbilde id="verktoy-uu" sizes="(min-width: 1120px) 1120px, 100vw">
         Ni plater med jevn avstand. To av dem ligger så tett at de leses som én – nøyaktig det en kontrastfeil gjør med to elementer som skulle vært til å skille fra hverandre.
       </Stillbilde>
@@ -115,7 +132,67 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
      Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
   .scene:first-of-type .mega .ord,
   .scene:first-of-type .mega-blokk,
-  .scene:first-of-type .avslor {
+  /* Bare FØRSTE avdekking i første scene, ikke hele scenen.
+     Regelen fantes for at innhold over folden ikke skal ligge usynlig og vente på
+     en scroll som aldri kommer. Men `.scene:first-of-type .avslor` traff ALLE
+     avdekkinger i scenen – og /caser og /handbok er én eneste scene, så den slo av
+     all bevegelse på hele siden. Målt: 0 bevegelsesøyeblikk, 5,5 skjermhøyder uten
+     at ett element endrer seg. */
+  .scene:first-of-type .avslor:first-of-type {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Resultatet glir inn når skriptet setter det inn i DOM-en.
+     @starting-style gir startverdien for et element som ikke fantes ved forrige
+     maling. Før den måtte man sette en klasse fra JavaScript én ramme etterpå –
+     her er det ren CSS, 0 B.
+
+     Langformer og ikke `transition:`-stenografi. CSS-minifieren slår stenografi
+     sammen på måter både Chromium og Firefox har forkastet STILLE her før.
+
+     Rekkefølgen er ikke valgfri: @starting-style må stå ETTER hovedregelen, ellers
+     vinner hovedregelen og startverdien blir lik sluttverdien – altså ingen overgang.
+     Uten støtte vises resultatet uten overgang. Degraderingen går mot «synlig». */
+  #resultat > * {
+    opacity: 1;
+    transform: none;
+    transition-property: opacity, transform;
+    transition-duration: 260ms;
+    transition-timing-function: ease;
+  }
+  @starting-style {
+    #resultat > * {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #resultat > * { transition-duration: 0.01ms; }
+  }
+
+  /* Skjemaet er sidens handling, og det skal aldri vente på en scroll.
+     Unntaket over gjelder bare FØRSTE avdekking. Den andre inneholder selve
+     skjemaet, og på 900 px høyde ligger det akkurat i foldekanten: målt 0,56
+     opasitet ved innlasting på /verktoy/cookie-sjekk, 0,87 på kalkulatoren.
+     Det er view()-tidslinjen som gjør jobben sin – elementet er delvis inne i
+     bildet – men en halvgjennomsiktig inngang er feil på den siden som skal få
+     folk til å kjøre sjekken.
+
+     :has(form) treffer nøyaktig den blokken og ingenting annet. Uten støtte for
+     :has() faller siden tilbake til dagens oppførsel: innholdet er fortsatt der
+     og blir helt synlig ved første scroll. Degraderingen går mot «synlig». */
+  /* Ikke barnekombinator: .avslor ligger inne i .scene__inner, ikke rett under
+     .scene. Med «>» traff regelen ingenting – målt på /verktoy/cookie-sjekk, der
+     skjemaet sto på 0,56 opasitet ved innlasting selv med unntaket på plass. */
+  /* Ingressen treffes på hva den ER, ikke på posisjon. `:first-of-type` gjelder
+     TAGG, ikke klasse: står det et annet <div> foran avdekkingen, peker den et
+     annet sted. Målt på /verktoy/cookie-sjekk – ingressen lå på 0,78 ved
+     innlasting selv med unntaket på plass. */
+  .scene:first-of-type .avslor:has(.scene__ingress),
+  .scene:first-of-type .avslor:has(form) {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;

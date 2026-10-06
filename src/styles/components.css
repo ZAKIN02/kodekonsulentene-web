@@ -82,8 +82,14 @@
 .kk-term .kk-cmd { color: var(--on-terminal); }
 .kk-term .kk-out { color: var(--on-terminal-muted); }
 .kk-term .kk-ok { color: var(--ok); }
-.kk-term .kk-warn { color: var(--warn); }
-.kk-term .kk-fail { color: var(--fail); }
+/* Terminalen er MØRK i begge temaer (--terminal: #060708), men --warn og --fail
+   bytter med temaet. I lyst tema ble derfor mørk tekst malt på mørk flate:
+   warn 3,31:1 og fail 2,96:1, mot WCAG-kravet på 4,5. Ni brudd på vår EGEN forside,
+   funnet av vår egen uu-sjekk – på siden som selger universell utforming.
+   Terminalen må bruke de lyse variantene uansett tema, siden flaten er lik. */
+.kk-term .kk-warn { color: #f3b63f; }
+.kk-term .kk-fail { color: #ff7b72; }
+.kk-term .kk-ok { color: #5fe3c0; }
 .kk-term .kk-cursor { display: inline-block; width: 8px; height: 16px; vertical-align: -3px; background: var(--accent); animation: kk-blink 1s steps(1) infinite; }
 @keyframes kk-blink { 50% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .kk-term .kk-cursor { animation: none; } }

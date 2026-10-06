@@ -4,6 +4,8 @@ import Scene from "../../components/Scene.astro";
 import Mega from "../../components/Mega.astro";
 import Avslor from "../../components/Avslor.astro";
 import Stillbilde from "../../components/Stillbilde.astro";
+import Demo from "../../components/Demo.astro";
+import opptak from "../../data/opptak.json";
 import ContactBlock from "../../components/ContactBlock.astro";
 import { tillegg, timepris, TIMER_PER_EKSTRA_SIDE, TIMER_APP_FRA } from "../../lib/priskalkyle";
 import { markedspriser, markedTimepris } from "../../data/markedspriser";
@@ -110,6 +112,21 @@ const kr = (n: number) => `${n.toLocaleString("nb-NO").replace(/ /g, " ")} kr`;
     </Avslor>
 
     <Avslor trinn={2}>
+      {/* Ekte opptak av verktøyet mens det kjører, ikke en render. Det BEVISER at
+          sjekken gjør et reelt oppslag i stedet for å antyde det. Demo og ikke
+          SceneFilm: Demo rammer med hårlinje og bildetekst med kildedato, mens
+          SceneFilm toner ned video som bakgrunn – og da leser et bevis som tapet. */}
+      <Demo
+        smal={opptak["priskalkulator"].smal}
+        bred={opptak["priskalkulator"].bred}
+        stor={opptak["priskalkulator"].stor}
+        plakat={opptak["priskalkulator"].plakat}
+        tekst={opptak["priskalkulator"].tekst}
+        kilde={opptak["priskalkulator"].kilde}
+      />
+    </Avslor>
+
+    <Avslor trinn={3}>
       <Stillbilde id="verktoy-pris" sizes="(min-width: 1120px) 1120px, 100vw">
         Like trinn, så de kan telles. Den grønne linjen markerer høyden du har valgt – en målestokk, ikke et tilbud.
       </Stillbilde>
@@ -163,7 +180,78 @@ const kr = (n: number) => `${n.toLocaleString("nb-NO").replace(/ /g, " ")} kr`;
      Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
   .scene:first-of-type .mega .ord,
   .scene:first-of-type .mega-blokk,
-  .scene:first-of-type .avslor {
+  /* Bare FØRSTE avdekking i første scene, ikke hele scenen.
+     Regelen fantes for at innhold over folden ikke skal ligge usynlig og vente på
+     en scroll som aldri kommer. Men `.scene:first-of-type .avslor` traff ALLE
+     avdekkinger i scenen – og /caser og /handbok er én eneste scene, så den slo av
+     all bevegelse på hele siden. Målt: 0 bevegelsesøyeblikk, 5,5 skjermhøyder uten
+     at ett element endrer seg. */
+  .scene:first-of-type .avslor:first-of-type {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Avkrysningen svarer med én gang, uten en linje JavaScript.
+     :has() leser :checked rett fra DOM-en, så dette virker like godt med JS slått
+     av – og kalkulatorens egen utregning er det eneste på siden som krever JS.
+     Bruksandel 94,82 %, bredest støttet av alt i docs/research-teknikker.md.
+     Uten støtte står raden som før: ingen markør, fullt lesbar tekst. */
+  /* Kontrollene tegnes av operativsystemet og kom i systemets blå. På en side der
+     aksenten er limegrønn leses de som fremmedelementer. `accent-color` er den
+     eneste måten å fargelegge en avkrysningsboks uten å bygge den på nytt – og en
+     hjemmelaget avkrysningsboks taper tastaturoppførsel og skjermleserrolle.
+
+     Hører egentlig hjemme globalt. Reglene for dette ligger i
+     src/styles/interaksjon.css, men den fila importeres BARE av /lab/interaksjon –
+     se rapporten. Her settes den på sidene jeg eier. */
+  #kalk input[type="checkbox"],
+  #kalk input[type="number"] {
+    accent-color: var(--accent);
+  }
+
+  #kalk label.row {
+    /* Markøren legges i kortets egen luft, ikke i teksten. Padding alene smalnet
+       tekstkolonnen med 12 px, og «Booking» brøt til en ekstra linje – raden
+       vokste fra 80 til 106 px. Negativ marg av samme størrelse gir tilbake
+       nøyaktig den bredden teksten hadde før. Målt, ikke antatt. */
+    margin-inline-start: calc(-1 * var(--space-3));
+    padding-inline-start: calc(var(--space-3) - 2px);
+    border-inline-start: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    transition-property: border-color, color;
+    transition-duration: 140ms;
+    transition-timing-function: ease;
+  }
+  #kalk label.row:has(input:checked) {
+    border-inline-start-color: var(--accent);
+    color: var(--accent-text);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #kalk label.row { transition-duration: 0.01ms; }
+  }
+
+  /* Skjemaet er sidens handling, og det skal aldri vente på en scroll.
+     Unntaket over gjelder bare FØRSTE avdekking. Den andre inneholder selve
+     skjemaet, og på 900 px høyde ligger det akkurat i foldekanten: målt 0,56
+     opasitet ved innlasting på /verktoy/cookie-sjekk, 0,87 på kalkulatoren.
+     Det er view()-tidslinjen som gjør jobben sin – elementet er delvis inne i
+     bildet – men en halvgjennomsiktig inngang er feil på den siden som skal få
+     folk til å kjøre sjekken.
+
+     :has(form) treffer nøyaktig den blokken og ingenting annet. Uten støtte for
+     :has() faller siden tilbake til dagens oppførsel: innholdet er fortsatt der
+     og blir helt synlig ved første scroll. Degraderingen går mot «synlig». */
+  /* Ikke barnekombinator: .avslor ligger inne i .scene__inner, ikke rett under
+     .scene. Med «>» traff regelen ingenting – målt på /verktoy/cookie-sjekk, der
+     skjemaet sto på 0,56 opasitet ved innlasting selv med unntaket på plass. */
+  /* Ingressen treffes på hva den ER, ikke på posisjon. `:first-of-type` gjelder
+     TAGG, ikke klasse: står det et annet <div> foran avdekkingen, peker den et
+     annet sted. Målt på /verktoy/cookie-sjekk – ingressen lå på 0,78 ved
+     innlasting selv med unntaket på plass. */
+  .scene:first-of-type .avslor:has(.scene__ingress),
+  .scene:first-of-type .avslor:has(form) {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
@@ -206,7 +294,7 @@ const kr = (n: number) => `${n.toLocaleString("nb-NO").replace(/ /g, " ")} kr`;
     svar.innerHTML = `
       <div class="card">
         <p class="kk-eyebrow"><span class="kk-eyebrow-n" aria-hidden="true">//</span><span>${esc(e.pakke)}-pakken</span></p>
-        <p class="mono-stat">${sum}</p>
+        <p class="mono-stat" data-sum>${sum}</p>
         <p class="small faint">eks. mva${e.aapentOppe ? " · gulv, ikke tak" : ""}</p>
         <p class="muted">${esc(e.pakkeBegrunnelse)}</p>
         <dl class="kv">${linjer}</dl>
@@ -221,6 +309,78 @@ const kr = (n: number) => `${n.toLocaleString("nb-NO").replace(/ /g, " ")} kr`;
           ${e.forutsetninger.map((f) => `<li>${esc(f)}</li>`).join("")}
         </ul>
       </details>`;
+
+    animerSum(e);
+  }
+
+  /**
+   * Summen teller til den nye verdien når du huker av noe.
+   *
+   * Hvorfor i det hele tatt: kalkulatoren er sidens eneste ekte interaksjon, og
+   * et tall som bare bytter verdi mellom to malinger leses ikke som et svar på
+   * det du nettopp gjorde. Opptellingen knytter handlingen til resultatet.
+   *
+   * Hvorfor skrevet her og ikke gjenbrukt fra Nokkeltall: den teller ÉN gang når
+   * raden kommer i syne, styrt av en IntersectionObserver. Her endrer tallet seg
+   * hver gang du rører skjemaet, og det er en annen mekanikk.
+   *
+   * Første visning står ferdig. En opptelling fra null ved innlasting ville sagt
+   * at noe skjedde, mens brukeren ennå ikke har gjort noe.
+   */
+  const REDUSERT = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let forrige: { lav: number; hoy: number } | null = null;
+  let raf = 0;
+
+  function animerSum(e: { lav: number; hoy: number; aapentOppe: boolean }) {
+    const el = svar.querySelector<HTMLElement>("[data-sum]");
+    if (!el) return;
+
+    const maal = { lav: e.lav, hoy: e.hoy };
+    const fra = forrige;
+    forrige = maal;
+    if (REDUSERT || !fra || (fra.lav === maal.lav && fra.hoy === maal.hoy)) return;
+
+    cancelAnimationFrame(raf);
+    // Spennet avgjøres av MÅLET, ikke av de interpolerte tallene. Ellers blinker
+    // «fra 14 900 kr» fram i det ene bildet der lav tilfeldigvis passerer hoy.
+    const spenn = maal.lav !== maal.hoy;
+    const tekst = (lav: number, hoy: number) =>
+      spenn
+        ? `${formaterKr(lav)}\u2013${formaterKr(hoy)}`
+        : `${e.aapentOppe ? "fra " : ""}${formaterKr(lav)}`;
+
+    // Bredden låses til sluttverdien først. Uten den vokser elementet mens
+    // sifrene skifter, og hele kortet rykker sidelengs under avkryssingen.
+    // Låsen regnes ÉN gang og brukes som fast pikselverdi – leses den på nytt
+    // hver ramme, mater den seg selv.
+    const laas = `${el.getBoundingClientRect().width}px`;
+
+    const VARIGHET = 420;
+    const start = performance.now();
+    const steg = (naa: number) => {
+      // Elementet slås opp på nytt hver ramme, ikke én gang utenfor løkken.
+      // Avkryssing utløser BÅDE «input» og «change», så tegn() kjører to ganger
+      // i samme tikk og bytter ut hele kortet. Holdt vi på referansen fra første
+      // ramme, skrev vi resten av animasjonen til et element som ikke lenger satt
+      // i dokumentet – tallet hoppet rett til sluttverdien, og opptellingen var
+      // usynlig. Målt: 1 unik verdi gjennom hele endringen.
+      const n = svar.querySelector<HTMLElement>("[data-sum]");
+      if (!n) return;
+      n.style.minInlineSize = laas;
+
+      const t = Math.min(1, (naa - start) / VARIGHET);
+      const k = 1 - Math.pow(1 - t, 3);
+      n.textContent = tekst(
+        Math.round(fra.lav + (maal.lav - fra.lav) * k),
+        Math.round(fra.hoy + (maal.hoy - fra.hoy) * k),
+      );
+      if (t < 1) raf = requestAnimationFrame(steg);
+      else {
+        n.textContent = tekst(maal.lav, maal.hoy);
+        n.style.minInlineSize = "";
+      }
+    };
+    raf = requestAnimationFrame(steg);
   }
 
   skjema.addEventListener("input", tegn);

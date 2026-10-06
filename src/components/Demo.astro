@@ -77,7 +77,10 @@ const { smal, bred, stor, plakat, tekst, kilde } = Astro.props;
             : kilde.dataset.smal!;
       film.preload = "auto";
       film.load();
-    }, { rootMargin: "200% 0px" });
+          // 200 % hentet videoen to skjermhøyder før den var i nærheten av synsranden:
+      // 1162 kB på /verktoy/dmarc, 747 på uu-sjekk, 582 på cookie-sjekk, alt før
+      // brukeren hadde scrollet. SceneFilm hadde samme feil og står nå på 60 %.
+    }, { rootMargin: "60% 0px" });
     io.observe(rot);
     film.addEventListener("loadedmetadata", () => { rot.dataset.klar = "true"; oppdater(); });
     addEventListener("scroll", () => {

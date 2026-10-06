@@ -1,0 +1,10 @@
+import { chromium } from "@playwright/test";
+const b = await chromium.launch();
+const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: "reduce" });
+const p = await ctx.newPage();
+let v = 0;
+p.on("response", (r) => { if (r.url().includes("/opptak/") && r.url().endsWith(".mp4")) v++; });
+await p.goto(process.argv[2] + "/verktoy/uu-sjekk", { waitUntil: "networkidle" });
+await p.waitForTimeout(1500);
+console.log(`  videofiler lastet med redusert bevegelse: ${v} (plakaten vises i stedet)`);
+await b.close();

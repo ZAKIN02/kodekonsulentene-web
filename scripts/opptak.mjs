@@ -45,6 +45,84 @@ const mykt = (t) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
  * Hvert opptak sier hva det viser, hvor det hører hjemme, og hvordan det kjøres.
  * `rammer` kalles én gang per ramme med (side, andel 0–1).
  */
+/**
+ * Felles opptaksløp for de to skanneverktøyene. De deler markup (UrlCheck-skjema
+ * + #resultat), så de deler også opptaksløp.
+ *
+ * SUBJEKTVALG ER ET ÆRLIGHETSSPØRSMÅL. Slepesammenligningen på forsiden sier
+ * «vi publiserer ikke navn på sider som kommer dårlig ut». nkom.no stryker på
+ * uu-sjekken (3 brudd) og kan derfor ikke navngis i et opptak. digdir.no består
+ * begge sjekkene – 0 brudd, 0 cookies før samtykke – så å navngi dem bryter
+ * ingen regel. At det er Digitaliseringsdirektoratet, altså etaten bak selve
+ * regelverket, er en bonus og ikke poenget.
+ *
+ * Ventetiden komprimeres: rammene tas sekvensielt, så et await inne i
+ * ramme-funksjonen pauser opptaket i stedet for å fylle fila med spinner. Det
+ * er ikke juks – rapporten viser selv «Skannet på X s», som er den ekte tiden.
+ */
+function skannOpptak({ url, domene, tekst, plass }) {
+  return {
+    url,
+    // 6 s, ikke 10. Rapporten fra en side som BESTÅR er kort, så rulletrekket blir
+    // nesten null og de siste sekundene står stille. Første forsøk brukte 10 s og
+    // brukte 65 % av fila på et bilde som ikke endret seg – samme feil som
+    // verktoy-klippet, der all endring skjer mellom 15 % og 45 %.
+    sek: 6,
+    tekst,
+    plass,
+    async klar(p) {
+      await p.locator("[data-urlcheck]").scrollIntoViewIfNeeded();
+      await p.waitForTimeout(600);
+    },
+    async ramme(p, a, st) {
+      const felt = p.locator("[data-urlcheck] input[name='url']").first();
+
+      if (a < 0.30) {
+        const n = Math.min(domene.length, Math.ceil((a / 0.29) * domene.length));
+        st.skrevet ??= 0;
+        if (st.skrevet === 0) await felt.click({ timeout: 3000 }).catch(() => {});
+        while (st.skrevet < n) {
+          await felt.press(domene[st.skrevet], { timeout: 3000 }).catch(() => {});
+          st.skrevet++;
+        }
+        return;
+      }
+
+      if (!st.sendt) {
+        st.sendt = true;
+        // Hele strengen MÅ stå før Enter. Et tidligere opptak slo opp «nkom.n»
+        // fordi tidsaksen aldri rakk siste tegn, og rapporten viste «SPF: BRUDD»
+        // under en bildetekst som påsto et ekte oppslag mot nkom.no.
+        if ((await felt.inputValue().catch(() => "")) !== domene) await felt.fill(domene);
+        const na = await felt.inputValue();
+        if (na !== domene) throw new Error(`Feltet inneholder «${na}», ikke «${domene}». Opptaket avbrytes.`);
+        await felt.press("Enter");
+        return;
+      }
+
+      // La den ekte lastetilstanden stå noen rammer før svaret hentes.
+      if (a < 0.42) return;
+
+      if (!st.ventet) {
+        st.ventet = true;
+        const rapport = p.locator("#resultat .kk-report").first();
+        await rapport.waitFor({ state: "visible", timeout: 90000 });
+        st.boks = await p.evaluate(() => {
+          const el = document.querySelector("#resultat");
+          const r = el.getBoundingClientRect();
+          return { topp: r.top + scrollY, hoyde: r.height, vh: innerHeight };
+        });
+      }
+
+      // Rull sakte gjennom rapporten, så funnene faktisk er lesbare.
+      const f = mykt(Math.min(1, (a - 0.42) / 0.58));
+      const { topp, hoyde, vh } = st.boks;
+      const reise = Math.max(0, hoyde - (vh - 220));
+      await p.evaluate((y) => scrollTo(0, y), Math.round(topp - 120 + reise * f));
+    },
+  };
+}
+
 const OPPTAK = {
   rontgen: {
     url: "/lab/rontgen",
@@ -146,6 +224,20 @@ const OPPTAK = {
       }
     },
   },
+
+  "uu-sjekk": skannOpptak({
+    url: "/verktoy/uu-sjekk",
+    domene: "digdir.no",
+    tekst: "Universell utforming kjørt mot digdir.no. Sjekken starter en ekte nettleser og kjører axe-core; antall brudd og regler er det axe faktisk rapporterte.",
+    plass: "/verktoy/uu-sjekk – den beviser at sjekken starter en ekte nettleser",
+  }),
+
+  "cookie-sjekk": skannOpptak({
+    url: "/verktoy/cookie-sjekk",
+    domene: "digdir.no",
+    tekst: "Cookie-sjekken laster forsiden med tom nettleserprofil og klikker ikke på noe. Alt som står i listen ble satt uten samtykke – her ingenting.",
+    plass: "/verktoy/cookie-sjekk – den viser hva «før samtykke» faktisk betyr",
+  }),
 };
 
 // ---- argumenter -------------------------------------------------------------

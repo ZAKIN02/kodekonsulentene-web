@@ -1,41 +1,62 @@
-import { chromium } from "@playwright/test";
+/**
+ * Kontrast for tekst som ligger over en SceneFilm.
+ *
+ * To målefeil er unngått med vilje, begge gjort i dette prosjektet før:
+ *  1. `visibility: hidden` settes bare på TEKST-elementene, aldri på kort eller
+ *     wrappere. Skjuler man wrapperen, forsvinner kortflaten under, og man måler
+ *     mot filmen et sted teksten aldri ligger – det ga en gang 1,00:1 på et kort
+ *     som var fullt lesbart.
+ *  2. Klippet hentes i SIDEKOORDINATER. `boundingBox()` er relativt til
+ *     visningsvinduet, `screenshot({clip})` er relativt til siden; blandes de,
+ *     klippes feil sted.
+ * Verste piksel brukes, ikke snittet: lys tekst stryker mot den lyseste flekken.
+ */
+import { chromium } from "playwright";
 import { PNG } from "pngjs";
-const lum=(r,g,b)=>{const f=(c)=>{c/=255;return c<=0.03928?c/12.92:((c+0.055)/1.055)**2.4;};return 0.2126*f(r)+0.7152*f(g)+0.0722*f(b);};
-const br = await chromium.launch();
-for (const [merke, w, h] of [["desktop",1440,900],["mobil",390,844]]) {
-  console.log("--", merke);
-  const p = await br.newPage({ viewport: { width: w, height: h }, colorScheme: "dark" });
-  await p.goto("http://127.0.0.1:4399/", { waitUntil: "networkidle" });
-  await p.waitForTimeout(600);
-  const n = await p.locator(".scene").count();
-  for (let i = 0; i < n; i++) {
-    const s = p.locator(".scene").nth(i);
-    const har = await s.locator(".scene__ingress, .stortekst").count();
-    if (!har) continue;
-    const t = s.locator(".scene__ingress, .stortekst").first();
-    await t.scrollIntoViewIfNeeded();
-    await p.waitForTimeout(300);
-    const navn = (await s.locator(".kk-eyebrow").first().textContent().catch(() => null))?.trim() ?? `scene ${i}`;
-    const farge = await t.evaluate((e) => getComputedStyle(e).color);
-    const rel = await t.evaluate((e) => {
-      const sc = e.closest(".scene"), a = sc.getBoundingClientRect(), c = e.getBoundingClientRect();
-      e.style.visibility = "hidden";
-      return { x: c.x - a.x, y: c.y - a.y, w: c.width, h: c.height };
-    });
-    await p.waitForTimeout(150);
-    const png = PNG.sync.read(await s.screenshot());
-    await t.evaluate((e) => { e.style.visibility = ""; });
-    let maks = -1;
-    for (let y = Math.max(0, Math.round(rel.y)); y < Math.min(png.height, Math.round(rel.y + rel.h)); y++)
-      for (let x = Math.max(0, Math.round(rel.x)); x < Math.min(png.width, Math.round(rel.x + rel.w)); x++) {
-        const o = (png.width * y + x) << 2;
-        maks = Math.max(maks, lum(png.data[o], png.data[o+1], png.data[o+2]));
-      }
-    const [r,g,b] = farge.match(/\d+/g).map(Number);
-    const Lt = lum(r,g,b);
-    const k = (Math.max(Lt,maks)+0.05)/(Math.min(Lt,maks)+0.05);
-    console.log("   %s %s:1 %s", navn.padEnd(22), k.toFixed(2), k>=4.5?"OK":"STRYKER");
+import { readFileSync } from "node:fs";
+
+const url = process.argv[2];
+const lum = ([r, g, b]) => {
+  const f = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
+  return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+};
+const ratio = (a, b) => { const [h, l] = [lum(a), lum(b)].sort((x, y) => y - x); return (h + 0.05) / (l + 0.05); };
+
+const b = await chromium.launch();
+for (const [merke, w, h] of [["skrivebord", 1440, 900], ["mobil", 390, 844]]) {
+  const p = await b.newPage({ viewport: { width: w, height: h } });
+  await p.goto(url, { waitUntil: "networkidle" });
+  const treff = await p.evaluate(() => {
+    const sek = document.querySelector(".scenefilm-ramme > section");
+    if (!sek) return null;
+    const tekster = [...sek.querySelectorAll("p, h2, h3, li, dt, dd, span")]
+      .filter((e) => e.textContent.trim() && e.getClientRects().length);
+    const ut = tekster.map((e) => {
+      const r = e.getBoundingClientRect();
+      return { farge: getComputedStyle(e).color,
+               x: Math.round(r.left + scrollX), y: Math.round(r.top + scrollY),
+               w: Math.round(r.width), h: Math.round(r.height) };
+    }).filter((t) => t.w > 30 && t.h > 8);
+    // Bare selve teksten skjules. Kort og flater blir stående.
+    for (const e of tekster) e.style.visibility = "hidden";
+    return ut;
+  });
+  if (!treff?.length) { console.log(`  ${merke}: fant ingen tekst i filmseksjonen`); await p.close(); continue; }
+  let verst = { r: Infinity };
+  for (const t of treff) {
+    await p.screenshot({ path: "/tmp/kontrast.png", clip: { x: t.x, y: t.y, width: t.w, height: t.h } });
+    const png = PNG.sync.read(readFileSync("/tmp/kontrast.png"));
+    let lysest = [0, 0, 0];
+    for (let i = 0; i < png.data.length; i += 4) {
+      const px = [png.data[i], png.data[i + 1], png.data[i + 2]];
+      if (lum(px) > lum(lysest)) lysest = px;
+    }
+    const f = t.farge.match(/\d+/g).slice(0, 3).map(Number);
+    const r = ratio(f, lysest);
+    if (r < verst.r) verst = { r, t, lysest };
   }
+  const ok = verst.r >= 4.5 ? "består" : "STRYKER";
+  console.log(`  ${merke}: verste ${verst.r.toFixed(2)}:1  ${ok}  (${treff.length} tekstelementer målt)`);
   await p.close();
 }
-await br.close();
+await b.close();

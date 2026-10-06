@@ -1,0 +1,70 @@
+{
+  "apper-par": {
+    "alt": "To hengende stabler av aluminiumsplater side om side: en høy til venstre og en mindre til høyre, bygget på samme måte og av samme materiale.",
+    "side": "/apper-og-ai",
+    "bredde": 1600,
+    "hoyde": 900,
+    "avif": [
+      {
+        "fil": "/bilder/apper-par-1600.avif",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/apper-par-1200.avif",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/apper-par-800.avif",
+        "bredde": 800
+      }
+    ],
+    "webp": [
+      {
+        "fil": "/bilder/apper-par-1600.webp",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/apper-par-1200.webp",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/apper-par-800.webp",
+        "bredde": 800
+      }
+    ]
+  },
+  "apper-lag": {
+    "alt": "En stabel aluminiumsplater der én enkelt plate er finperforert, slik at lyset slipper gjennom akkurat den.",
+    "side": "/apper-og-ai",
+    "bredde": 1600,
+    "hoyde": 900,
+    "avif": [
+      {
+        "fil": "/bilder/apper-lag-1600.avif",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/apper-lag-1200.avif",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/apper-lag-800.avif",
+        "bredde": 800
+      }
+    ],
+    "webp": [
+      {
+        "fil": "/bilder/apper-lag-1600.webp",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/apper-lag-1200.webp",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/apper-lag-800.webp",
+        "bredde": 800
+      }
+    ]
+  }
+}

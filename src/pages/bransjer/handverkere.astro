@@ -7,6 +7,8 @@ import Button from "../../components/Button.astro";
 import Terminal from "../../components/Terminal.astro";
 import UrlCheck from "../../components/UrlCheck.astro";
 import ProcessSteps from "../../components/ProcessSteps.astro";
+import Stillbilde from "../../components/Stillbilde.astro";
+import Horisont from "../../components/Horisont.astro";
 import ContactBlock from "../../components/ContactBlock.astro";
 import { bookUrl } from "../../data/firma";
 
@@ -17,6 +19,13 @@ const steg = [
   { title: "Du får varsel", time: "Straks", text: "Push eller SMS med adresse, bilder og beskrivelse. Du ser om det er verdt turen før du setter deg i bilen." },
   { title: "Du foreslår tid", time: "1 klikk", text: "Kunden velger blant tidene du faktisk har ledig. Ingen telefonrunde." },
   { title: "Tilbudet går ut", time: "Samme dag", text: "Mal med dine priser, signert digitalt. Blir det ja, ligger ordren i regnskapet." },
+];
+
+const kobles = [
+  { nr: "01", tittel: "Tripletex og Fiken", tekst: "Godtatt tilbud blir ordre blir faktura. Ingen taster timene inn på nytt om kvelden." },
+  { nr: "02", tittel: "Vipps", tekst: "Depositum eller sluttbetaling med én skanning. Norske kunder forventer det." },
+  { nr: "03", tittel: "Mittanbud", tekst: "Siden din er det kunden sjekker etter at de har sett deg der. Da bør den si noe mer enn navnet ditt." },
+  { nr: "04", tittel: "SMS og push", tekst: "Varselet om ny befaring kommer dit du faktisk ser det, ikke i en innboks du leser om kvelden." },
 ];
 
 const schema = {
@@ -33,7 +42,7 @@ const schema = {
   schema={[schema]}
 >
   <Scene lav>
-    <Mega som="h1" merke="Håndverkere" n={1} tekst="Slutt å kjøre på befaring du ikke ville tatt" />
+    <Mega som="h1" merke="Håndverkere" n={1} tekst="Slutt å kjøre på befaring du ikke ville tatt" aksent="befaring" />
     <Avslor trinn={1}>
       <p class="scene__ingress body-lg">De fleste håndverkersider er et telefonnummer og et skjema. Det gir deg forespørsler du må ringe tilbake på for å finne ut om de er noe verdt.</p>
     </Avslor>
@@ -83,8 +92,18 @@ const schema = {
     </Avslor>
   </Scene>
 
+  <Scene n={3} eyebrow="Forespørslene" tittel="Slik ser de ut før noen har sett på dem">
+    <Avslor>
+      <p class="body-lg muted">
+        Sju forespørsler i uka er sju like anonyme klumper til noen gjør jobben med å
+        skille dem. Den jobben gjør du i dag på telefon, etter at du har kjørt.
+      </p>
+      <Stillbilde id="bransje-handverk" sizes="(min-width: 1120px) 1120px, 100vw" />
+    </Avslor>
+  </Scene>
+
   <Scene
-    n={3}
+    n={4}
     eyebrow="Demo"
     tittel="Befaring uten telefonrunde"
     ingress="Dette er flyten vi bygger for håndverkere. Den er ikke en kontaktside med flere felt – den er laget for å sortere bort turene du ikke vil ha."
@@ -92,39 +111,28 @@ const schema = {
   >
     <ProcessSteps steps={steg} />
     <div class="card" style="margin-top: var(--space-6)">
-      <h3 class="heading">Klikkbar demo</h3>
+      <h3 class="heading">Se den på skjerm</h3>
       <p class="muted">
-        TODO: lenk til den klikkbare demoen av befaringsflyten når den er bygget.
-        En demo kunden kan trykke seg gjennom slår et avsnitt som beskriver den.
+        Vi går gjennom flyten med deg i stedet for å beskrive den her. Da ser du
+        feltene, varselet og tilbudsmalen med dine egne priser i.
       </p>
       <Button variant="secondary" href="/kontakt">Be om en gjennomgang</Button>
     </div>
   </Scene>
 
-  <Scene n={4} eyebrow="Kobles mot" tittel="Det du allerede betaler for">
-    <Avslor>
-    <div class="grid-3">
-      <div class="card">
-        <h3 class="subheading">Tripletex og Fiken</h3>
-        <p class="muted">Godtatt tilbud blir ordre blir faktura. Ingen taster timene inn på nytt om kvelden.</p>
-      </div>
-      <div class="card">
-        <h3 class="subheading">Vipps</h3>
-        <p class="muted">Depositum eller sluttbetaling med én skanning. Norske kunder forventer det.</p>
-      </div>
-      <div class="card">
-        <h3 class="subheading">Mittanbud</h3>
-        <p class="muted">Siden din er det kunden sjekker etter at de har sett deg der. Da bør den si noe mer enn navnet ditt.</p>
-      </div>
-    </div>
-    </Avslor>
-  </Scene>
+  <Horisont
+    n={5}
+    merke="Kobles mot"
+    tittel="Det du allerede betaler for"
+    navn="Systemer vi kobler siden mot"
+    poster={kobles}
+  />
 
-  <Scene n={5} eyebrow="Start her" tittel="Sjekk den siden du har" ingress="Før vi snakker om ny side: kjør den gratis sjekken. Mangler org.nr. eller settes det cookies før samtykke, er det raskt fikset – og det er billigere enn en ny side.">
+  <Scene n={6} eyebrow="Start her" tittel="Sjekk den siden du har" ingress="Før vi snakker om ny side: kjør den gratis sjekken. Mangler org.nr. eller settes det cookies før samtykke, er det raskt fikset – og det er billigere enn en ny side.">
     <UrlCheck buttonLabel="Kjør sjekken" hint="30 sekunder. Du ser hva som er galt før du bruker penger." />
   </Scene>
 
-  <ContactBlock n={6} tittel="Ring, så tar vi det på fem minutter" ingress="Vi vet hva en befaring koster deg i tid. Fortell hvor mange forespørsler du får i uka, så regner vi på om dette lønner seg." />
+  <ContactBlock n={7} tittel="Ring, så tar vi det på fem minutter" ingress="Vi vet hva en befaring koster deg i tid. Fortell hvor mange forespørsler du får i uka, så regner vi på om dette lønner seg." />
 </Base>
 <style is:global>
   /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
@@ -133,7 +141,19 @@ const schema = {
      Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
   .scene:first-of-type .mega .ord,
   .scene:first-of-type .mega-blokk,
-  .scene:first-of-type .avslor {
+  /* Bare FØRSTE avdekking i første scene, ikke hele scenen.
+     Regelen fantes for at innhold over folden ikke skal ligge usynlig og vente på
+     en scroll som aldri kommer. Men `.scene:first-of-type .avslor` traff ALLE
+     avdekkinger i scenen – og /caser og /handbok er én eneste scene, så den slo av
+     all bevegelse på hele siden. Målt: 0 bevegelsesøyeblikk, 5,5 skjermhøyder uten
+     at ett element endrer seg. */
+  /* Treffer på HVA elementet er, ikke hvor det tilfeldigvis står.
+     `> .avslor` traff ingenting fordi .avslor ligger i .scene__inner, og
+     `:first-of-type` gjelder tagg og ikke klasse. Begge varianter var stille døde:
+     skjemaet på /verktoy/cookie-sjekk sto på 0,56 opasitet ved innlasting –
+     sidens primære handling, halvgjennomsiktig til du scrollet. */
+  .scene:first-of-type .avslor:has(.scene__ingress),
+  .scene:first-of-type .avslor:has(form) {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;

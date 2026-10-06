@@ -36,6 +36,8 @@ const NOKKEL = process.env.HF_CREDENTIALS
 const filFlagg = process.argv.indexOf("--fil");
 const PROMPTFIL = filFlagg > -1 ? process.argv[filFlagg + 1] : "assets/prompter/bilder.json";
 const OMRADE = PROMPTFIL.replace(/.*\//, "").replace(/\.json$/, "");
+// Lisensraden fulgte ikke --fil og havnet alltid i bilder.md.
+const LISENSFIL = `assets/lisenser/${OMRADE}.md`;
 const DEF = JSON.parse(readFileSync(PROMPTFIL, "utf8"));
 const STIL = readFileSync("assets/prompter/stilkort.txt", "utf8").trim();
 const args = process.argv.slice(2);
@@ -156,7 +158,7 @@ console.log(`  manifest oppdatert: ${manifestSti} (${storst.bredde}x${storst.hoy
 
 // Lisensloggen er beviset vårt. En fil som ikke står der, skal ikke ligge i repoet.
 const dato = new Date().toISOString().slice(0, 10);
-const lis = "assets/lisenser/bilder.md";
+const lis = LISENSFIL;
 if (!existsSync(lis)) {
   writeFileSync(lis, `# Lisenser – stillbilder
 

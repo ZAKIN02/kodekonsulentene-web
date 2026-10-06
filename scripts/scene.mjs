@@ -25,7 +25,12 @@ const NOKKEL = process.env.HF_CREDENTIALS
       ? `${process.env.HIGGSFIELD_API_KEY}:${process.env.HIGGSFIELD_API_SECRET}`
       : null);
 
-const DEF = JSON.parse(readFileSync("assets/prompter/scener.json", "utf8"));
+// --fil velger promptsett, som i stillbilde.mjs. Uten flagget måtte to agenter
+// kopiere hele skriptet for å bruke egne filmprompter.
+const filFlagg = process.argv.indexOf("--fil");
+const PROMPTFIL = filFlagg > -1 ? process.argv[filFlagg + 1] : "assets/prompter/scener.json";
+const OMRADE = PROMPTFIL.replace(/.*\//, "").replace(/\.json$/, "");
+const DEF = JSON.parse(readFileSync(PROMPTFIL, "utf8"));
 const STIL = readFileSync("assets/prompter/stilkort.txt", "utf8").trim();
 const args = process.argv.slice(2);
 

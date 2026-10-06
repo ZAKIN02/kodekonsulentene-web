@@ -1,0 +1,24 @@
+{
+  "_om": "Stillbilder til /apper-og-ai. Redigert ut fra SAMME basisbilde som videoscenene – den opphengte stabelen av aluminiumsplater – slik at film og bilder hører til ett objekt og ikke ser ut som løsrevne AI-renders. Bygg med: node scripts/stillbilde.mjs <id> --fil assets/prompter/apper.json",
+  "_bevar": "Keep exactly identical: the near-black #0b0d10 background, the lighting direction and intensity, the rim light, the material and surface finish of every plate (matte bead-blasted anodized aluminium with fine chamfered edges), and the thin suspension wires. All surfaces stay plain and unmarked: no text, letters, numbers, logos, icons or watermarks anywhere. No people, no hands. Every metal surface is strictly neutral grey aluminium with no colour tint whatsoever.",
+  "basis": "6f5a4bd2-4820-4797-a67c-1ae32fb8444b",
+  "bilder": [
+    {
+      "id": "apper-par",
+      "side": "/apper-og-ai",
+      "endring": "Change the arrangement: there are now exactly TWO separate hanging objects, standing side by side in the right two thirds of the frame. On the LEFT stands the familiar tall stack of exactly SIX plates, evenly spaced, every plate level and parallel on one vertical axis, hanging from thin wires. On the RIGHT, clearly smaller, stands a second object built the same way from exactly THREE small plates of the same material and the same finish, stacked with the same even spacing, hanging from its own thin wires; it is about one third as wide and about one third as tall as the left stack, and its lower edge sits at the same height as the left stack's lower edge. Count the plates carefully: SIX on the left, THREE on the right. Both objects are lit identically by the same light. Exactly one hair-thin lime green edge line appears, on a single plate in the SMALL right-hand object only; the tall left stack has no green at all. The left third of the frame stays calm empty near-black negative space.",
+      "forhold": "16:9",
+      "alt": "To hengende stabler av aluminiumsplater side om side: en høy til venstre og en mindre til høyre, bygget på samme måte og av samme materiale.",
+      "hvorfor": "Appen er ikke et annet produkt, den er samme håndverk i mindre format. To objekter av samme materiale, bygget likt og hengt i samme lys, sier det uten en eneste påstand i tekst."
+    },
+    {
+      "id": "apper-lag",
+      "side": "/apper-og-ai",
+      "endring": "Change the arrangement: the stack now holds exactly SEVEN plates, hanging close together with small even gaps, every plate level and parallel on one vertical axis. SIX of them are the usual solid matte aluminium plates. Exactly ONE plate, the third one counted from the top, is different: it is a fine perforated plate of the same aluminium and the same thickness, pierced by a dense regular grid of tiny square holes, so the rim light passes through that one plate while the six solid plates block it completely. Count carefully: seven plates in total, exactly one of them perforated. Exactly one hair-thin lime green edge line appears, on that single perforated plate only; the six solid plates have no green at all. The left third of the frame stays calm empty near-black negative space.",
+      "forhold": "16:9",
+      "alt": "En stabel aluminiumsplater der én enkelt plate er finperforert, slik at lyset slipper gjennom akkurat den.",
+      "hvorfor": "AI som gjør én jobb, ikke AI som pynt. Ett lag i stabelen slipper noe gjennom og siler resten – resten av bygget er uendret. Det er den smale, kjedelige AI-en som faktisk virker for en småbedrift."
+    }
+  ],
+  "_negativt": "text, letters, numbers, logos, watermark, people, hands, faces, phone, smartphone, tablet, screen, display, user interface, icons, app icons, glossy plastic, neon glow, purple, violet, magenta, lilac, blue tint, colour cast, tinted metal, blue gradient, mesh gradient, glassmorphism, bokeh, lens flare, sparkles, hologram, floating screens, motion blur, vignette"
+}

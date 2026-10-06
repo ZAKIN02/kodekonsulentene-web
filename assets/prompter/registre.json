@@ -1,0 +1,69 @@
+{
+  "_om": "Visuelle registre. Fire ulike måter å se på det samme, i stedet for ett motiv gjentatt.",
+
+  "_hvorfor": [
+    "En synrunde fant at 19 av 21 medieelementer var det samme objektet: en hengende",
+    "stabel aluminiumsplater, sett fra samme vinkel, i samme lys. Årsaken var ikke smak.",
+    "Den var mekanisk: ALLE stillbilder ble laget som en redigering av ETT basisbilde",
+    "(6f5a4bd2-4820-4797-a67c-1ae32fb8444b), og hver prompt begynte med en _bevar-setning",
+    "som uttrykkelig påla modellen å holde kamera, brennvidde, perspektiv, utsnitt,",
+    "lysretning, kantlys, bakgrunn, materiale og overflate IDENTISK. Det var umulig for",
+    "bildene å bli forskjellige i annet enn hvordan platene lå.",
+    "",
+    "_bevar er riktig verktøy på feil nivå. INNE i ett klipp er den nødvendig: skifter",
+    "objektet mellom start- og sluttbilde, blir mellomrommet en morph, og det er nettopp",
+    "det som får AI-video til å se billig ut. PÅ TVERS av sider er den det som gjør",
+    "nettstedet ensformig. Derfor arver registrene her ikke stilkortet; hvert register",
+    "bærer sin egen beskrivelse av kamera, lys og materiale."
+  ],
+
+  "_merkevare": [
+    "Dette er det som ALDRI endres, uansett register. Det er disse fem tingene som gjør",
+    "et bilde til vårt, ikke platestabelen:",
+    "1. Nesten svart grunn #0b0d10, jevn, uten gradient, vignett eller horisont.",
+    "2. Én aksent: limegrønn #c8f24a, under 3 % av flaten, alltid som hårtynn linje.",
+    "3. Hårlinjen er tegneredskapet. Presisjon framfor effekt.",
+    "4. Ingen tekst, tall, logoer, ikoner, mennesker eller hender.",
+    "5. Rolig negativ plass som typografi kan ligge i."
+  ],
+
+  "_vane": [
+    "Dette trodde vi var merkevaren, men er bare noe vi gjorde første gang og så gjentok:",
+    "den hengende platestabelen, opphengstrådene, 85 mm trekvartvisning 25 grader ovenfra,",
+    "ett mykt hovedlys fra øvre venstre, halvtotal som eneste skala, objektet i høyre 60 %,",
+    "og aluminium som eneste materiale. Stilkortet LISTER fem materialer – børstet stål,",
+    "frostet borosilikatglass, mørkt kretskort med kobberbaner, matt teknisk keramikk – og",
+    "fire av dem er aldri brukt, fordi _bevar forbød å endre materiale."
+  ],
+
+  "_negativt": "purple or blue gradient, glassmorphism, neon glow, glossy plastic, chrome bling, bokeh orbs, lens flare, sparkles, hologram, floating screen, person, hand, face, text, letters, numbers, logo, watermark, signature, stock photo look, busy background, horizon line, vignette",
+
+  "registre": {
+    "naer": {
+      "navn": "Nært",
+      "endrer": "skala",
+      "side": "prøve",
+      "forhold": "16:9",
+      "hvorfor": "Makro er det billigste bruddet som finnes: samme materiale og samme merkevare, men i en skala der objektet ikke lenger er gjenkjennelig som stabelen. Egner seg der teksten handler om detaljer og håndverk.",
+      "stil": "Extreme macro photograph of a single chamfered metal edge, shot at 100mm at f/2.8 so depth of field is very shallow. Background: seamless near-black #0b0d10 void, completely out of focus. The frame is filled by one long 45-degree chamfer running diagonally from lower left to upper right, in matte bead-blasted anodized aluminium; the bead-blast texture is clearly resolved as fine grain. Only a narrow band across the middle is in focus; everything nearer and further falls away into soft near-black. A single hair-thin lime green #c8f24a emissive line runs along the very crest of the chamfer, sharp where the focus plane crosses it and softening to a faint thread at both ends, covering under 2% of the frame. Lighting: cool neutral 5600K grazing light from the left, raking across the surface so the grain reads; deep unlit shadow on the right two thirds. Mood: tactile, precise, quiet. No text, letters, numbers, logos or watermarks. No people or hands."
+    },
+
+    "plan": {
+      "navn": "Plan",
+      "endrer": "kamera",
+      "side": "prøve",
+      "forhold": "16:9",
+      "hvorfor": "Ortografisk oppriss uten perspektiv leser som en teknisk tegning. Dette er det mest merkevaretro registeret av alle, fordi hårlinjen og presisjonen ER merkevaren – her er de hele motivet i stedet for en detalj på et objekt.",
+      "stil": "Orthographic technical elevation, absolutely dead-on, zero perspective convergence, no vanishing point, as in an engineering drawing. Background: flat near-black #0b0d10, perfectly even. Subject: seven thin horizontal bars of pale steel #c9ced6, each exactly 2 pixels thick, stacked with precisely even gaps, spanning the full width of the frame; between them, finer hairlines of dark gunmetal #23272e act as measurement ticks at regular intervals. One single bar, the third from the bottom, is lime green #c8f24a. The composition is flat, graphic and diagrammatic, with no shading, no specular highlight, no contact shadow and no material rendering whatsoever. Generous calm near-black space above and below the stack. Mood: schematic, exact, Swiss. No text, letters, numbers, dimensions, logos or watermarks anywhere. No people or hands."
+    },
+
+    "gjennomlyst": {
+      "navn": "Gjennomlyst",
+      "endrer": "materiale og lys",
+      "side": "prøve",
+      "forhold": "16:9",
+      "hvorfor": "Glass snur hele tonestrukturen: lyset går GJENNOM i stedet for å reflekteres av. Mellomtonene blir lysende i stedet for at høylysene ligger som striper på svart. Materialet står allerede i stilkortet og har aldri vært brukt.",
+      "stil": "Photorealistic studio photograph of five upright panes of frosted borosilicate glass, standing parallel in a row, lit from directly behind by a large soft 5600K panel so the light passes through them rather than reflecting off them. Background: near-black #0b0d10 at the edges of the frame, rising to soft luminous grey behind the glass. Each pane is 8mm thick with polished square edges; the frosted surfaces diffuse the backlight into smooth even glow, and the stacked panes grow progressively denser and darker where they overlap, so depth reads as accumulated density. The polished edges catch a thin bright specular line. One single pane, the second from the left, has a hair-thin lime green #c8f24a emissive line along its top edge, covering under 2% of the frame. No key light from the front; almost no specular highlight on the faces. Camera: 85mm, straight on at eye level, f/5.6. Calm empty near-black space on the left third for typography. Mood: luminous, clinical, calm. No text, letters, numbers, logos or watermarks. No people or hands."
+    }
+  }
+}

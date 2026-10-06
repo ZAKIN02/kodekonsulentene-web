@@ -1,0 +1,46 @@
+{
+  "_om": "Filmscener til de to bransjesidene. Motsatt struktur med vilje: håndverk = én enhet VELGES UT av en ujevn samling, klinikk = mange like felt FYLLES. Samme studio og palett, motsatt bevegelse. Bygget med `node .skudd/scene-bransjer.mjs <id>`.",
+  "_bevar": "Keep exactly identical: camera position, perspective, framing, lighting direction and intensity, rim light, the near-black #0b0d10 background, and the size, proportions, material and surface finish of every object. Nothing is added or removed, and the number of objects is identical. All surfaces stay plain and unmarked: no text, letters, numbers, logos or watermarks anywhere. No people, no hands.",
+  "_bevegelse": "Locked-off static camera; the camera does not move, zoom, pan or reframe. Silent product shot. Start exactly on the first frame and end exactly on the last frame. Hold still for the first and last half second; in between, one single continuous movement at constant speed. The objects are rigid and keep their exact shape, size, thickness and material in every frame and never bend, melt, morph or rotate. The same number of objects is visible in every frame. Lighting, reflections and the background stay constant. Avoid: camera movement, camera shake, zoom, pan, cut, scene change, lens switch, morphing, melting, warping, extra objects, missing objects, text, letters, logos, watermark, flicker, particles, lens flare, motion blur.",
+  "scener": [
+    {
+      "id": "bransje-sortering",
+      "mappe": "scener",
+      "_hvorfor": "Siden handler om å slippe å kjøre på befaringer du ikke ville tatt. Bevegelsen er derfor et UTVALG: sju like anonyme blokker ligger i en ujevn rad, og nøyaktig én løftes rett opp og ut av rekka. Ingenting annet beveger seg. Det er triagen, gjort fysisk.",
+      "basisPrompt": "SEVEN solid rectangular blocks of matte bead-blasted anodised aluminium rest directly on the invisible floor, SCATTERED ACROSS THE FLOOR AT CLEARLY DIFFERENT DEPTHS — some near the camera, some far back. They are NOT aligned on one line, NOT standing in a row, NOT sorted by size, and must NOT form a rising or falling sequence. Count them carefully: exactly SEVEN blocks. Each block is a different size and lies at a different casual angle. Every block sits flat on the floor, none lifted. All faces are plain and blank with fine 45-degree chamfered edges. The group occupies the right 60 percent of the frame; the left third is calm empty near-black negative space.",
+      "bevar": "Keep exactly identical: camera position, perspective, framing, lighting direction and intensity, rim light, the near-black #0b0d10 background, and the exact size, proportions, horizontal position, material and surface finish of all SEVEN blocks. Exactly seven blocks are visible at all times. The six blocks that stay down never move at all. No object is added or removed. All faces stay plain and blank: no text, letters, numbers, logos or watermarks anywhere.",
+      "start": "Change only the vertical position: all SEVEN blocks rest flat on the floor, scattered at different depths exactly as they are, none lifted. There is no lime green line anywhere in the image.",
+      "slutt": "Change only the vertical position of ONE block: the block nearest the centre of the group has risen straight up and now hangs level and clear in the air above the gap it left, separated from the floor by about its own height. The other SIX blocks still rest flat on the floor in exactly the same scattered positions. One single hair-thin lime green #c8f24a edge line runs along the top chamfer of the lifted block only; the other six stay completely plain.",
+      "bevegelse": "One single block, the second from the right, rises straight up along one vertical axis at constant speed, staying perfectly level and parallel, until it reaches the height of the last frame. The other six blocks stay completely still on the floor throughout. As the lifted block clears the row, a single hair-thin lime green edge line lights up softly along its top chamfer.",
+      "pingpong": true,
+      "bredder": [
+        1920,
+        960
+      ],
+      "crf": {
+        "1920": "19",
+        "960": "20"
+      }
+    },
+    {
+      "id": "bransje-fylling",
+      "mappe": "scener",
+      "_hvorfor": "Siden handler om timer som bestilles mens klinikken er stengt. Bevegelsen er derfor en FYLLING av en helt jevn inndeling: sju frostede glassinnlegg senkes parallelt ned i tomme felt på en målestokk. Motsatt av håndverkersiden, der én enhet løftes UT av noe ujevnt.",
+      "basisPrompt": "ONE single long horizontal bar of matte bead-blasted anodised aluminium lies flat across the frame like a precision measuring rail. Its top face is divided along its whole length into TWELVE identical rectangular recesses of exactly equal width, separated by thin raised ribs with fine 45-degree chamfers, so the bar reads as a strictly regular graduated scale. Count them carefully: exactly TWELVE equal recesses. THREE scattered recesses hold a flush insert of frosted borosilicate glass with soft internal diffusion. SEVEN further frosted glass inserts of the same size hover in a level row in the air directly above seven of the empty recesses, separated from the bar by about their own thickness. TWO recesses are empty with nothing above them. The bar occupies the right 60 percent of the frame; the left third is calm empty near-black negative space.",
+      "bevar": "Keep exactly identical: camera position, perspective, framing, lighting direction and intensity, rim light, the near-black #0b0d10 background, and the exact size, proportions, position, material and surface finish of the bar and of every glass insert. The bar itself never moves. Exactly TWELVE recesses and exactly TEN glass inserts are visible at all times. No object is added or removed. All surfaces stay plain and blank: no text, letters, numbers, logos or watermarks anywhere.",
+      "start": "Change only the vertical position of the hovering inserts: the SEVEN raised frosted glass inserts hover level in the air directly above their recesses, clearly separated from the bar. THREE recesses are already filled flush. TWO recesses are empty. There is no lime green line anywhere in the image.",
+      "slutt": "Change only the vertical position of the hovering inserts: every one of the hovering frosted glass inserts has descended and is now seated flush in a recess on the bar. THE AIR ABOVE THE BAR IS COMPLETELY EMPTY — there is no row of floating inserts, nothing hovers, nothing is suspended, and the space above the bar shows only plain near-black background. Most recesses on the bar are now filled flush with frosted glass; a few at the far end remain empty and show the dark machined floor. One single hair-thin lime green #c8f24a edge line runs along the rib beside one filled recess only.",
+      "bevegelse": "The row of raised frosted glass inserts descends straight down in parallel along one vertical axis at constant speed, each insert settling flush into the recess directly beneath it, until the air above the bar is completely empty and nothing hovers any more. The bar itself stays completely still throughout. As the last insert seats, a single hair-thin lime green edge line lights up softly along the rib beside it.",
+      "pingpong": true,
+      "bredder": [
+        1920,
+        960
+      ],
+      "crf": {
+        "1920": "19",
+        "960": "20"
+      }
+    }
+  ],
+  "basis": "6f5a4bd2-4820-4797-a67c-1ae32fb8444b"
+}

@@ -1,0 +1,12 @@
+{
+  "rontgen": {
+    "smal": "/opptak/rontgen-960.mp4",
+    "bred": "/opptak/rontgen-1280.mp4",
+    "stor": "/opptak/rontgen-1920.mp4",
+    "plakat": "/opptak/rontgen-poster.avif",
+    "bredde": 1920,
+    "hoyde": 1120,
+    "tekst": "Røntgenlinsen på vår egen side. Headerne og WCAG-kravene som kommer fram er hentet fra svaret du akkurat fikk.",
+    "kilde": "6. oktober 2026"
+  }
+}

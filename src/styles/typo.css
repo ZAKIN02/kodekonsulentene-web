@@ -286,11 +286,16 @@
 .nokkeltall__verdi {
   font-family: var(--font-mono);
   font-weight: 600;
-  /* Samme logikk som mega: tallet skal lese som grafikk, ikke som brødtekst. */
-  font-size: clamp(44px, 8vw, 120px);
+  /* Samme logikk som mega: tallet skal lese som grafikk, ikke som brødtekst.
+     Men i firefeltsoppsettet har tallet en firedels bredde, ikke hele. 8vw lot
+     «0,1 s» sprenge feltet sitt. */
+  font-size: clamp(38px, 4.4vw, 76px);
   line-height: 1;
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
+  /* «0,1 s» og «24 t» brakk over to linjer i en firedels bredde. Tallet er én
+     enhet og skal aldri deles. */
+  white-space: nowrap;
   color: var(--ink);
 }
 .nokkeltall__post--aksent .nokkeltall__verdi { color: var(--accent-text); }
@@ -303,12 +308,7 @@
   max-width: 34ch;
 }
 
-@media (min-width: 861px) {
-  .nokkeltall__post {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: baseline;
-    gap: var(--space-6);
-    padding-block: var(--space-6);
-  }
-  .nokkeltall__merke { justify-self: start; }
-}
+/* To-kolonners oppsett lå her og ga tall og etikett hver sin halvdel av raden.
+   Tallet maler bare sin egen bredde, så resten ble et hull – 306 til 476 px, ulikt
+   per rad fordi «0» er smalere enn «0,1 s». Formen er nå fire felt ved siden av
+   hverandre, satt i Nokkeltall.astro, og tallet står rett over etiketten sin. */

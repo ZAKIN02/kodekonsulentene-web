@@ -1,0 +1,70 @@
+{
+  "bransje-handverk": {
+    "alt": "Sju massive aluminiumsblokker av ulik størrelse spredt utover et nesten svart gulv i ulike dybder og vinkler. Ingen av dem er løftet eller merket.",
+    "side": "/bransjer/handverkere",
+    "bredde": 1600,
+    "hoyde": 900,
+    "avif": [
+      {
+        "fil": "/bilder/bransje-handverk-1600.avif",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/bransje-handverk-1200.avif",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/bransje-handverk-800.avif",
+        "bredde": 800
+      }
+    ],
+    "webp": [
+      {
+        "fil": "/bilder/bransje-handverk-1600.webp",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/bransje-handverk-1200.webp",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/bransje-handverk-800.webp",
+        "bredde": 800
+      }
+    ]
+  },
+  "bransje-klinikk": {
+    "alt": "En lang aluminiumsskinne delt i like store felt langs hele lengden. Noen få felt er fylt med frostet glass; de aller fleste står tomme.",
+    "side": "/bransjer/klinikker",
+    "bredde": 1600,
+    "hoyde": 900,
+    "avif": [
+      {
+        "fil": "/bilder/bransje-klinikk-1600.avif",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/bransje-klinikk-1200.avif",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/bransje-klinikk-800.avif",
+        "bredde": 800
+      }
+    ],
+    "webp": [
+      {
+        "fil": "/bilder/bransje-klinikk-1600.webp",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/bransje-klinikk-1200.webp",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/bransje-klinikk-800.webp",
+        "bredde": 800
+      }
+    ]
+  }
+}

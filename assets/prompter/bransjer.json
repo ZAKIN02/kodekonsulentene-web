@@ -1,0 +1,26 @@
+{
+  "_om": "Materiale til de to bransjesidene. De to sidene SKAL ikke ligne hverandre – det er hele poenget med bransjesider. Derfor to motsatte materialspråk: håndverkersiden er en UJEVN samling der én enhet velges ut, klinikksiden er en JEVN inndeling som fylles. Begge er samme studio, samme lys, samme palett, men strukturen er motsatt. Bygg med `node scripts/stillbilde.mjs <id> --fil assets/prompter/bransjer.json`.",
+  "_bevar": "Keep exactly identical: the near-black #0b0d10 seamless studio background, the cool neutral 5600K lighting direction and intensity, the thin hard rim light from behind right, the soft short contact shadow, and the matte bead-blasted anodised aluminium material with fine 45-degree chamfered edges. All surfaces stay plain and unmarked: no text, letters, numbers, logos, icons or watermarks anywhere. No people, no hands, no faces.",
+  "basis": "6f5a4bd2-4820-4797-a67c-1ae32fb8444b",
+  "bilder": [
+    {
+      "id": "bransje-handverk",
+      "side": "/bransjer/handverkere",
+      "endring": "Replace the arrangement entirely: there is no longer a stack of plates. Instead SEVEN solid rectangular blocks of matte bead-blasted anodised aluminium rest directly on the invisible floor, SCATTERED ACROSS THE FLOOR AT CLEARLY DIFFERENT DEPTHS — some near the camera, some far back, none of them aligned on a single line and none standing in a row. Count them carefully: exactly SEVEN blocks. Each block is a different size and lies at a different casual angle, rotated loosely so no two face the same way. They are NOT sorted, NOT ordered by size, and must NOT form a rising or falling sequence. Every block sits flat on the floor, none is lifted or tilted up. All seven are completely plain and blank, with no lime green line anywhere in the image. The blocks occupy the right 60 percent of the frame; the left third stays calm empty near-black negative space.",
+      "forhold": "16:9",
+      "alt": "Sju massive aluminiumsblokker av ulik størrelse spredt utover et nesten svart gulv i ulike dybder og vinkler. Ingen av dem er løftet eller merket.",
+      "hvorfor": "Forespørslene slik de kommer inn: usortert, ulike, og umulig å skille før noen ser nærmere etter. Blokkene er bevisst spredt i dybden og rotert ulikt – på rad ville de lest som et søylediagram, og siden har ekte SSB-tall rett under. Et bilde som ser ut som en graf ville påstått noe tallene ikke sier.",
+      "_merk": "Ingen grønn linje her: ingenting er valgt ut ennå. Utvalget skjer i filmen."
+    },
+    {
+      "id": "bransje-klinikk",
+      "side": "/bransjer/klinikker",
+      "endring": "Replace the arrangement entirely: there is no longer a stack of plates. Instead ONE single long horizontal bar of matte bead-blasted anodised aluminium lies flat across the frame, like a precision measuring rail. Its top face is divided along its whole length into TWELVE identical rectangular recesses of exactly equal width, separated by thin raised ribs with fine 45-degree chamfers, so the bar reads as a strictly regular graduated scale. Count them carefully: exactly TWELVE equal recesses. THREE of the recesses hold a flush insert of frosted borosilicate glass with soft internal diffusion; the remaining NINE recesses are empty and show the dark machined floor of the recess. The three filled recesses are scattered, not adjacent. No lime green line anywhere in the image. The bar occupies the right 60 percent of the frame; the left third stays calm empty near-black negative space.",
+      "forhold": "16:9",
+      "alt": "En lang aluminiumsskinne delt i like store felt langs hele lengden. Noen få felt er fylt med frostet glass; de aller fleste står tomme.",
+      "hvorfor": "Timeboken som en målestokk: tiden er alltid like lang og like inndelt, og det eneste som varierer er hvor mange felt som er fylt. Ni tomme av tolv er problemet siden beskriver, uten å påstå et tall om kundens egen klinikk.",
+      "_merk": "Modellen tegnet flere felt enn de tolv prompten ba om, og fire fylte i stedet for tre. Alt-teksten oppgir derfor ingen tall – den beskriver det som faktisk står i bildet. Et tall i alt-teksten som ikke stemmer med bildet er en reell uu-feil."
+    }
+  ],
+  "_negativt": "bar chart, graph, diagram, chart, histogram, infographic, text, letters, numbers, logos, watermark, people, hands, faces, clock, clock face, dial, calendar, glossy plastic, neon glow, purple, violet, magenta, lilac, blue tint, colour cast, tinted metal, blue gradient, mesh gradient, glassmorphism, bokeh, lens flare, sparkles, hologram, floating screens, motion blur, vignette"
+}

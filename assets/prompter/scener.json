@@ -12,12 +12,13 @@
       "start": "Change only the core plug: it sits fully seated and flush in the block, its seam a hair-thin dark line, the front face reading as one unbroken solid surface. No interior is visible anywhere.",
       "slutt": "Change only the core plug: it has slid straight out toward the viewer, clear of the block, held level like a drawn core sample. The rectangular cavity it left is now open in the block, and both the cavity walls and the plug's exposed sides reveal a dense engineered interior in cross-section: fine stacked material strata, a thin dark green-black circuit layer with fine copper traces, and frosted glass. One single hair-thin lime green #c8f24a edge line runs along the exposed inner face. The block's outer faces stay plain and blank.",
       "bevegelse": "The rectangular core plug slides straight forward out of the block along one horizontal axis at constant speed, staying perfectly level and parallel, until it reaches the position of the last frame, progressively revealing the layered interior in the cavity behind it. The block itself stays completely still. As the plug clears the surface, a single hair-thin lime green edge line lights up softly along the exposed inner face.",
-      "pingpong": true,
+      "pingpong": false,
       "bredder": [
         2560,
         1920,
         1280
-      ]
+      ],
+      "_pingpong_hvorfor": "Ping-pong var paa og la reversen inn i fila. Maalt: start mot slutt skilte 1,17 av 255 - klippet endte der det begynte, og halve fila var bortkastet. Scroll-spoling knytter scroll til tid, saa oppoverrulling reverserer av seg selv."
     },
     {
       "id": "lag",
@@ -28,6 +29,7 @@
       "bevegelse": "The stacked plates separate and spread apart straight along one vertical axis, each plate staying perfectly level and parallel, until they reach the arrangement of the last frame. The suspension wires stay taut and vertical.",
       "pingpong": true,
       "bredder": [
+        2560,
         1920,
         1280
       ]
@@ -41,9 +43,29 @@
       "bevegelse": "The five black braided cables glide straight forward and plug into the five ports along the slab's lower edge, one after another from left to right. As the last cable seats, a single hair-thin lime green seam line lights up softly along one joint in the slab.",
       "pingpong": false,
       "bredder": [
+        2560,
         1920,
         1280
       ]
+    },
+    {
+      "id": "apper",
+      "mappe": "scener",
+      "basis": "6f5a4bd2-4820-4797-a67c-1ae32fb8444b",
+      "_hvorfor": "Sidens paastand er at nettsiden, systemet bak og appen henger sammen fordi samme haand bygger dem. Derfor to objekter av samme materiale, koblet med EN kabel, der ingenting flytter seg og det eneste som skjer er at lyset gaar gjennom koblingen. Geometrien er helt laast i hver ramme, saa klippet kan ikke morfe - det var nettopp en formulering som fikk modellen til aa bytte objekt mellom start og slutt som ga morph paa /sikkerhet.",
+      "start": "Change the arrangement: there are now exactly TWO separate hanging objects. On the LEFT stands the tall stack of plates, evenly spaced, every plate level and parallel on one vertical axis, hanging from thin bare steel wires. On the RIGHT, clearly smaller, stands a second object built the same way from a few small plates of the same material and finish, about one third as wide and one third as tall, hanging from its own thin bare steel wires. A single thin matte black braided cable runs between them, plugged in at both ends into a small machined aluminium connector on the lower edge of each object, hanging in a shallow relaxed curve. There is no green light anywhere in the frame: every edge, every plate and every wire is plain neutral aluminium or bare steel.",
+      "slutt": "Change the arrangement: there are now exactly TWO separate hanging objects. On the LEFT stands the tall stack of plates, evenly spaced, every plate level and parallel on one vertical axis, hanging from thin bare steel wires. On the RIGHT, clearly smaller, stands a second object built the same way from a few small plates of the same material and finish, about one third as wide and one third as tall, hanging from its own thin bare steel wires. A single thin matte black braided cable runs between them, plugged in at both ends into a small machined aluminium connector on the lower edge of each object, hanging in a shallow relaxed curve. Exactly one hair-thin lime green #c8f24a line glows softly along the full length of the black braided cable, and exactly one hair-thin lime green edge line is lit along the top plate of the SMALL right-hand object. Nothing else is green: the suspension wires stay bare steel and are never green, the tall left stack has no green at all, and the green covers less than three percent of the image.",
+      "bevegelse": "Nothing moves. The two objects, the cable, the suspension wires, the camera and the framing are completely static and strictly identical in every single frame; no object moves, shifts, bends, rotates, grows, shrinks or changes shape, material or position at any point. The ONLY change in the whole clip is light: one single hair-thin lime green glow travels along the cable at constant speed from the left stack toward the small right-hand object, and as it arrives at the far end, one hair-thin lime green edge line lights up softly on the top plate of the small object and stays lit.",
+      "pingpong": false,
+      "crf": {
+        "1920": "19",
+        "960": "20"
+      },
+      "bredder": [
+        1920,
+        960
+      ],
+      "_merknad": "Sluttbildet maa beskrive HELE oppstillingen paa nytt. Begge rammer redigeres uavhengig ut fra basisbildet, saa «arrangementet er det samme som i startbildet» viser ikke til noe - foerste forsoek ga et sluttbilde der det lille objektet og kabelen var borte og opphengstraadene hadde blitt limegroenne. Det ville blitt en morph."
     }
   ]
 }

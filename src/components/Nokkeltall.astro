@@ -50,19 +50,44 @@ const { poster = bevis, navn = "Målte tall for denne siden", class: cls } = Ast
    * Subgrid gir alle radene SAMME kolonnebredder: første kolonne blir så bred som
    * det bredeste tallet, ikke halve raden.
    */
-  @media (min-width: 861px) {
+  /**
+   * FIRE FELT SIDE VED SIDE, ikke fire rader med et tomrom i.
+   *
+   * Radformen var feil form, ikke feil tall. Tallet maler bare sin egen bredde, så
+   * en rad over hele skjermen etterlater uunngåelig et hull mellom tall og etikett –
+   * målt 306 til 476 px etter første rettingsforsøk, og ulikt per rad fordi «0» er
+   * smalere enn «0,1 s». Å justere kolonnebredden kunne krympe hullet, aldri fjerne det.
+   *
+   * Som felt står tallet rett over etiketten sin. Paret leses som ett, loddrette
+   * hårlinjer deler feltene, og de fire tallene kan sammenlignes med et blikk i
+   * stedet for å leses nedover. Det er også formen innholdet faktisk har: fire
+   * uavhengige målinger, ikke en liste.
+   */
+  @media (min-width: 721px) {
     .nokkeltall {
-      /* Første kolonne så bred som det bredeste tallet, ikke halve raden.
-         Andre kolonne tar resten, slik at raden – og dermed hårlinja – fortsatt
-         spenner hele bredden. Krympes grida i stedet, stopper hårlinjene midt
-         på siden og ser avkappet ut. */
-      grid-template-columns: max-content minmax(0, 1fr);
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border-block-end: var(--hairline) solid var(--line);
     }
     .nokkeltall__post {
-      grid-column: 1 / -1;
-      grid-template-columns: subgrid;
-      column-gap: var(--space-6);
+      align-content: start;
+      gap: var(--space-3);
+      padding: var(--space-6) var(--space-5);
+      border-block-end: 0;
     }
+    /* Loddrett hårlinje mellom feltene, ikke rundt dem. */
+    .nokkeltall__post + .nokkeltall__post {
+      border-inline-start: var(--hairline) solid var(--line);
+    }
+    .nokkeltall__post:first-child { padding-inline-start: 0; }
+    .nokkeltall__post:last-child { padding-inline-end: 0; }
+  }
+
+  /* To og to på mellomstore skjermer: fire felt på 600 px blir for trangt for
+     «0,1 s» i monospace. */
+  @media (min-width: 561px) and (max-width: 720px) {
+    .nokkeltall { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .nokkeltall__post:nth-child(even) { border-inline-start: var(--hairline) solid var(--line); padding-inline-start: var(--space-5); }
+  }
   }
 
   /**

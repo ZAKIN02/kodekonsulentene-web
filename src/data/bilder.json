@@ -100,5 +100,209 @@
         "bredde": 800
       }
     ]
+  },
+  "side-status": {
+    "alt": "Stabel aluminiumsplater med helt jevn avstand, der en tynn limegrønn linje går ubrutt nedover kantene på alle platene.",
+    "side": "/status",
+    "bredde": 1600,
+    "hoyde": 900,
+    "avif": [
+      {
+        "fil": "/bilder/side-status-1600.avif",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/side-status-1200.avif",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/side-status-800.avif",
+        "bredde": 800
+      }
+    ],
+    "webp": [
+      {
+        "fil": "/bilder/side-status-1600.webp",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/side-status-1200.webp",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/side-status-800.webp",
+        "bredde": 800
+      }
+    ]
+  },
+  "side-handbok": {
+    "alt": "Stabel aluminiumsplater viftet opp fra ett hengsel, slik at mellomrommet mellom hvert lag er synlig.",
+    "side": "/handbok",
+    "bredde": 1600,
+    "hoyde": 900,
+    "avif": [
+      {
+        "fil": "/bilder/side-handbok-1600.avif",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/side-handbok-1200.avif",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/side-handbok-800.avif",
+        "bredde": 800
+      }
+    ],
+    "webp": [
+      {
+        "fil": "/bilder/side-handbok-1600.webp",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/side-handbok-1200.webp",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/side-handbok-800.webp",
+        "bredde": 800
+      }
+    ]
+  },
+  "verktoy-uu": {
+    "alt": "Stabel aluminiumsplater med jevne mellomrom, bortsett fra to plater på midten som ligger tett inntil hverandre og leses som én.",
+    "side": "/verktoy/uu-sjekk",
+    "bredde": 1600,
+    "hoyde": 900,
+    "avif": [
+      {
+        "fil": "/bilder/verktoy-uu-1600.avif",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/verktoy-uu-1200.avif",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/verktoy-uu-800.avif",
+        "bredde": 800
+      }
+    ],
+    "webp": [
+      {
+        "fil": "/bilder/verktoy-uu-1600.webp",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/verktoy-uu-1200.webp",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/verktoy-uu-800.webp",
+        "bredde": 800
+      }
+    ]
+  },
+  "verktoy-cookie": {
+    "alt": "Den øverste platen i en stabel er løftet rett opp og henger fritt over resten, som et lokk som er tatt av.",
+    "side": "/verktoy/cookie-sjekk",
+    "bredde": 1600,
+    "hoyde": 900,
+    "avif": [
+      {
+        "fil": "/bilder/verktoy-cookie-1600.avif",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/verktoy-cookie-1200.avif",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/verktoy-cookie-800.avif",
+        "bredde": 800
+      }
+    ],
+    "webp": [
+      {
+        "fil": "/bilder/verktoy-cookie-1600.webp",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/verktoy-cookie-1200.webp",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/verktoy-cookie-800.webp",
+        "bredde": 800
+      }
+    ]
+  },
+  "verktoy-dmarc": {
+    "alt": "Tre aluminiumsplater over hverandre. Den øverste og nederste står i flukt, den midterste er tydelig forskjøvet sidelengs.",
+    "side": "/verktoy/dmarc",
+    "bredde": 1600,
+    "hoyde": 900,
+    "avif": [
+      {
+        "fil": "/bilder/verktoy-dmarc-1600.avif",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/verktoy-dmarc-1200.avif",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/verktoy-dmarc-800.avif",
+        "bredde": 800
+      }
+    ],
+    "webp": [
+      {
+        "fil": "/bilder/verktoy-dmarc-1600.webp",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/verktoy-dmarc-1200.webp",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/verktoy-dmarc-800.webp",
+        "bredde": 800
+      }
+    ]
+  },
+  "verktoy-pris": {
+    "alt": "Stabel aluminiumsplater sett nesten fra siden, med helt like mellomrom, der én plate to tredeler oppe har en limegrønn kantlinje.",
+    "side": "/verktoy/priskalkulator",
+    "bredde": 1600,
+    "hoyde": 900,
+    "avif": [
+      {
+        "fil": "/bilder/verktoy-pris-1600.avif",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/verktoy-pris-1200.avif",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/verktoy-pris-800.avif",
+        "bredde": 800
+      }
+    ],
+    "webp": [
+      {
+        "fil": "/bilder/verktoy-pris-1600.webp",
+        "bredde": 1600
+      },
+      {
+        "fil": "/bilder/verktoy-pris-1200.webp",
+        "bredde": 1200
+      },
+      {
+        "fil": "/bilder/verktoy-pris-800.webp",
+        "bredde": 800
+      }
+    ]
   }
 }

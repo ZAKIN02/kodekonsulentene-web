@@ -27,6 +27,12 @@
      veldig brede skjermer. */
   font-size: clamp(44px, 11vw, 200px);
   line-height: 0.92;
+  /* line-height under 1 er med vilje – stram display-typografi. Men da stikker
+     nedstrekerne ut under linjeboksen, og neste element la seg oppå dem: målt 64 px
+     overlapp mot ingressen på alle sider. Synlig bare når siste linje HAR nedstreker,
+     så «jobber, åpent» skar gjennom teksten mens «Driftsstatus» så fin ut.
+     Klaringen er i em, så den følger skriftstørrelsen. */
+  padding-bottom: 0.18em;
   letter-spacing: -0.04em;
   color: var(--ink);
   text-wrap: balance;

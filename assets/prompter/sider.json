@@ -1,0 +1,24 @@
+{
+  "_om": "Stillbilder til de siste sidene uten visuell flate. Som bilder.json redigeres alt ut fra SAMME basisbilde som videoscenene – den opphengte stabelen av aluminiumsplater. Film ble vurdert og valgt bort her: /status er Fly sin helsesjekk og skal være lett og uten avhengigheter, og /handbok er en lang lesetekst der 7 MB video ville vært feil vekt. Begge bildene lastes derfor dovent, under folden.",
+  "_bevar": "Keep exactly identical: the near-black #0b0d10 background, the lighting direction and intensity, the rim light, the material and surface finish of every plate (matte bead-blasted anodized aluminium with fine chamfered edges), and the thin suspension wires. All surfaces stay plain and unmarked: no text, letters, numbers, logos, icons or watermarks anywhere. No people, no hands.",
+  "basis": "6f5a4bd2-4820-4797-a67c-1ae32fb8444b",
+  "bilder": [
+    {
+      "id": "side-status",
+      "side": "/status",
+      "endring": "Change only the alignment and the accent: the plate stack is now perfectly regular, every plate exactly level, exactly parallel, and separated by exactly the same gap as every other, forming an even rhythm from top to bottom. Nothing is offset or tilted. One single hair-thin lime green emissive line runs vertically down the right-hand edges, crossing every plate edge in one continuous unbroken straight line from the topmost plate to the bottommost. The line is perfectly straight because every plate is perfectly aligned. The left third of the frame stays calm empty near-black negative space.",
+      "forhold": "16:9",
+      "alt": "Stabel aluminiumsplater med helt jevn avstand, der en tynn limegrønn linje går ubrutt nedover kantene på alle platene.",
+      "hvorfor": "/status handler om at ingenting har kommet ut av stilling. Linjen er ubrutt bare fordi hvert lag ligger der det skal – var ett av dem forskjøvet, ville den knekt. Det er oppetid som bilde, uten å påstå et tall vi ikke måler ennå."
+    },
+    {
+      "id": "side-handbok",
+      "side": "/handbok",
+      "endring": "Change only the arrangement: the stack is now fanned open from one hinge at the back left, like a sample fan or a fanned deck, so that the plates splay apart at even increasing angles and the viewer looks straight into the gaps between every single layer. Every interior face is lit and readable; nothing is hidden behind another plate. The plates stay the same count and the same material. Exactly one hair-thin lime green edge line appears, on a single plate near the middle of the fan. The left third of the frame stays calm empty near-black negative space.",
+      "forhold": "16:9",
+      "alt": "Stabel aluminiumsplater viftet opp fra ett hengsel, slik at mellomrommet mellom hvert lag er synlig.",
+      "hvorfor": "Håndboken er metoden lagt åpen. En vifte er den samme stabelen som ellers er lukket, men her kan du se inn mellom hvert lag – det er bokstavelig talt det siden gjør med arbeidsmåten vår."
+    }
+  ],
+  "_negativt": "text, letters, numbers, logos, watermark, people, hands, faces, glossy plastic, neon glow, purple, violet, magenta, lilac, blue tint, colour cast, tinted metal, blue gradient, mesh gradient, glassmorphism, bokeh, lens flare, sparkles, hologram, floating screens, motion blur, vignette"
+}

@@ -7,6 +7,7 @@ import Nokkeltall from "../components/Nokkeltall.astro";
 import StatusBadge from "../components/StatusBadge.astro";
 import Terminal from "../components/Terminal.astro";
 import Button from "../components/Button.astro";
+import Stillbilde from "../components/Stillbilde.astro";
 import { firma } from "../data/firma";
 
 import "../styles/scener.css";
@@ -20,6 +21,14 @@ const tjenester = [
 ];
 
 // Samme tall som i budsjett-listen under, bare løftet fram som grafikk.
+// firma er `as const`, så firma.telefon har literal-typen "" mens feltet står tomt.
+// Ingressen under het «Ring ${firma.telefon}.», som ble til «Ring .» – en instruks
+// uten nummer, på siden som skal fortelle deg hva du gjør når noe er nede.
+const telefon: string = firma.telefon;
+const avvikIngress = telefon
+  ? `Ring ${telefon}. Kunder med driftsavtale får beskjed fra oss før de rekker å oppdage det selv.`
+  : "Kunder med driftsavtale får beskjed fra oss før de rekker å oppdage det selv – du trenger ikke melde fra.";
+
 const budsjettTall = [
   { value: "95", label: "Lighthouse, mobil – alle fire kategorier", accent: true },
   { value: "2,5 s", label: "LCP, øvre grense" },
@@ -62,6 +71,10 @@ const budsjett = [
         før den brukes som salgsargument. Inntil da sier den bare at serveren svarer –
         og det er det eneste den påstår.
       </p>
+
+      {/* Linjen er ubrutt bare fordi hvert lag ligger der det skal. Bildet påstår
+          ingen oppetidsprosent – det ville vært et tall vi ikke måler ennå. */}
+      <Stillbilde id="side-status" sizes="(min-width: 60rem) 60rem, 100vw" />
     </div>
   </Scene>
 
@@ -92,7 +105,7 @@ const budsjett = [
     </div>
   </Scene>
 
-  <Scene n={3} eyebrow="Avvik" tittel="Hvis noe er nede" ingress={`Ring ${firma.telefon}. Kunder med driftsavtale får beskjed fra oss før de rekker å oppdage det selv.`}>
+  <Scene n={3} eyebrow="Avvik" tittel="Hvis noe er nede" ingress={avvikIngress}>
     <Button variant="ghost" href="/handbok">Hvordan vi jobber</Button>
   </Scene>
 </Base>

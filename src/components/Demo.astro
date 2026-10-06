@@ -1,0 +1,70 @@
+---
+/**
+ * Et ekte skjermopptak av verktøyet, i ramme.
+ *
+ * Dette er ikke dekorasjon bak tekst. Det er produktet som kjører mot en ekte
+ * side, med ekte funn. Grunnen til at det står i ramme og ikke som nedtonet
+ * bakgrunn: nedtonet video leser som billig tapet, mens et innrammet opptak
+ * leser som bevis. Brandboken sier skjermbilder får hårlinje og radius – det
+ * gjelder også levende bilder.
+ *
+ * Spoles av scroll, spiller aldri av seg selv.
+ */
+interface Props { smal: string; bred: string; plakat: string; tekst: string; kilde?: string }
+const { smal, bred, plakat, tekst, kilde } = Astro.props;
+---
+<figure class="demo" data-demo>
+  <div class="demo__ramme">
+    <video data-demo-video muted playsinline preload="none" poster={plakat} width="1920" height="1080">
+      <source data-smal={smal} data-bred={bred} type="video/mp4" />
+    </video>
+  </div>
+  <figcaption class="small">
+    {tekst}
+    {kilde && <span class="faint mono"> {kilde}</span>}
+  </figcaption>
+</figure>
+
+<style>
+  .demo { margin: 0; display: grid; gap: var(--space-3); }
+  .demo__ramme {
+    border: var(--hairline) solid var(--line);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--bg-sunken);
+  }
+  .demo__ramme video { display: block; width: 100%; height: auto; }
+  .demo figcaption { color: var(--ink-muted); }
+</style>
+
+<script>
+  for (const rot of document.querySelectorAll<HTMLElement>("[data-demo]")) {
+    const film = rot.querySelector<HTMLVideoElement>("[data-demo-video]");
+    const kilde = film?.querySelector<HTMLSourceElement>("source");
+    const redusert = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const spar = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
+    if (!film || !kilde || redusert || spar) continue;
+
+    let planlagt = false;
+    const oppdater = () => {
+      planlagt = false;
+      if (!film.duration) return;
+      const r = rot.getBoundingClientRect();
+      // Spoles over strekningen der rammen er synlig.
+      const andel = Math.min(1, Math.max(0, (window.innerHeight * 0.85 - r.top) / (window.innerHeight * 0.7 + r.height)));
+      film.currentTime = andel * film.duration;
+    };
+    const io = new IntersectionObserver((poster) => {
+      if (!poster.some((p) => p.isIntersecting)) return;
+      io.disconnect();
+      kilde.src = window.innerWidth >= 1024 ? kilde.dataset.bred! : kilde.dataset.smal!;
+      film.preload = "auto";
+      film.load();
+    }, { rootMargin: "200% 0px" });
+    io.observe(rot);
+    film.addEventListener("loadedmetadata", () => { rot.dataset.klar = "true"; oppdater(); });
+    addEventListener("scroll", () => {
+      if (!planlagt) { planlagt = true; requestAnimationFrame(oppdater); }
+    }, { passive: true });
+  }
+</script>

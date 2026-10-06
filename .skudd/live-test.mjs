@@ -1,0 +1,17 @@
+import { chromium } from "@playwright/test";
+const b = await chromium.launch();
+const p = await b.newPage({ viewport: { width: 1440, height: 900 }, colorScheme: "dark" });
+const feil = [];
+p.on("console", (m) => m.type() === "error" && feil.push(m.text().slice(0,120)));
+await p.goto("https://kodekonsulentene.no/", { waitUntil: "networkidle", timeout: 45000 });
+await p.waitForTimeout(1200);
+const foer = await p.evaluate(() => document.querySelector(".kk-term[data-live] pre")?.textContent?.slice(0,60) ?? "FINNES IKKE");
+console.log("terminal før:", JSON.stringify(foer));
+await p.fill("#url", "nkom.no");
+await p.click("form[data-urlcheck] button[type=submit]").catch(() => p.press("#url", "Enter"));
+await p.waitForTimeout(9000);
+const etter = await p.evaluate(() => document.querySelector(".kk-term[data-live] pre")?.textContent?.slice(0,200) ?? "");
+console.log("terminal etter:", JSON.stringify(etter));
+console.log("navigerte bort?", p.url());
+console.log("feil:", feil.length ? feil : "ingen");
+await b.close();

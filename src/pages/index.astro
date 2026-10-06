@@ -6,11 +6,10 @@ import Eyebrow from "../components/Eyebrow.astro";
 import Button from "../components/Button.astro";
 import UrlCheck from "../components/UrlCheck.astro";
 import ProofStrip from "../components/ProofStrip.astro";
-import HeroFilm from "../components/HeroFilm.astro";
 import SceneFilm from "../components/SceneFilm.astro";
+import Demo from "../components/Demo.astro";
 import ServiceCard from "../components/ServiceCard.astro";
 import Terminal from "../components/Terminal.astro";
-import CheckReport from "../components/CheckReport.astro";
 import PriceCard from "../components/PriceCard.astro";
 import ProcessSteps from "../components/ProcessSteps.astro";
 import Faq from "../components/Faq.astro";
@@ -46,13 +45,6 @@ const heroTerminal = [
   { type: "ok" as const, text: "4 ting å fikse. Rapport sendt." },
 ];
 
-const eksempelRapport = [
-  { name: "Ytelse", status: "warn" as const, value: "54/100", note: "Besøkende på mobil venter over tre sekunder før de ser noe. Google ser det samme." },
-  { name: "Sikkerhetsheadere", status: "fail" as const, value: "2/6", note: "Mangler CSP, HSTS og rammevern. Siden kan misbrukes til å lure dine egne kunder." },
-  { name: "Cookies før samtykke", status: "fail" as const, value: "3", note: "Google Analytics laster før noen har sagt ja. Det bryter ekomloven § 3-15." },
-  { name: "Universell utforming", status: "warn" as const, value: "4 feil", note: "Fire brudd mot WCAG i koden, blant annet bilder uten alt-tekst og skjemafelt uten ledetekst." },
-  { name: "Lovpålagt informasjon", status: "fail" as const, value: "Org.nr. mangler", note: "Foretaksnavn og org.nr. skal stå på nettsiden. Det er det første en kunde sjekker." },
-];
 ---
 <Base
   tittel={firma.navn}
@@ -61,7 +53,6 @@ const eksempelRapport = [
 >
   <!-- 01 Hero -->
   <section class="hero">
-    <HeroFilm />
     <div class="wrap hero__grid">
       <div class="stack">
         <h1 class="display-xl">Nettsider og <em>systemer</em> som jobber for bedriften din</h1>
@@ -178,17 +169,16 @@ const eksempelRapport = [
         <UrlCheck id="url-seksjon" buttonLabel="Kjør sjekken" hint="Ingen innlogging. Du velger selv om rapporten skal sendes på e-post." />
       </Avslor>
       <Avslor trinn={1}>
-        <p class="small faint">Slik ser en rapport ut. Dette er et eksempel, ikke en ekte side:</p>
+        <Demo
+          smal="/historie/verktoy-1280.mp4"
+          bred="/historie/verktoy-1920.mp4"
+          plakat="/historie/verktoy-poster.avif"
+          tekst="Opptak av sjekken som kjører mot nkom.no. Funnene er ekte."
+          kilde="6. oktober 2026"
+        />
       </Avslor>
       <Avslor trinn={2}>
-        <CheckReport
-          url="dinbedrift.no"
-          date="eksempel"
-          rows={eksempelRapport}
-          footer="Samlet: 32 av 100. Fire av fem punkter bør fikses."
-        >
-          <Button slot="action" variant="ghost" href="/sjekk">Kjør på din side</Button>
-        </CheckReport>
+        <Button variant="ghost" href="/sjekk">Kjør den på din side</Button>
       </Avslor>
     </div>
   </Scene>

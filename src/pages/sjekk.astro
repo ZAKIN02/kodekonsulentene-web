@@ -1,8 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
-import Sveip from "../components/Sveip.astro";
-import Snitt from "../components/Snitt.astro";
-import { snitt } from "../data/flyter";
+import SjekkSekvens from "../components/SjekkSekvens.astro";
 import Demo from "../components/Demo.astro";
 import opptak from "../data/opptak.json";
 import Section from "../components/Section.astro";
@@ -12,7 +10,6 @@ import Avslor from "../components/Avslor.astro";
 import UrlCheck from "../components/UrlCheck.astro";
 import Button from "../components/Button.astro";
 import Terminal from "../components/Terminal.astro";
-import SceneFilm from "../components/SceneFilm.astro";
 import ContactBlock from "../components/ContactBlock.astro";
 import ForOgEtter from "../components/ForOgEtter.astro";
 import { firma } from "../data/firma";
@@ -28,43 +25,46 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
   beskrivelse="Gratis sjekk av ytelse, sikkerhetsheadere, cookies før samtykke, universell utforming og lovpålagt informasjon. Rapport på 30 sekunder."
 >
   {/*
-    HOVEDSEKSJONEN. Lå tidligere som en vanlig <Section> uten film, og var derfor
-    flatere enn hver eneste søsterside: /systemer og /nettsider åpner i Mega-skala
-    med scene bak, denne åpnet i display-lg uten. Leadmagneten vår så ut som en
-    underside av en underside.
+    HOVEDSEKSJONEN.
 
-    Scenen er BOKSTAVELIG, ikke en metafor. Brandboken ble strammet inn i dag:
-    hvert bilde må bestå prøven «dekk til teksten – skjønner en rørlegger hva det
-    handler om?», og 14 av 16 genererte motiver strøk. Her sveiper en lyslinje
-    nedover en blank, umerket plate, og bak linjen står platen åpen med det
-    maskinerte indre synlig. Det ER operasjonen siden utfører: vi henter forsiden
-    din, og viser hva som ligger inne i den. Platen forblir anonym hele veien,
-    slik sjekken aldri navngir sider som kommer dårlig ut.
+    HVA SOM BLE FJERNET HERFRA, OG HVORFOR. Her sto en scenefilm bak teksten
+    (generert materiale, maskert til bakgrunnstekstur), et abstrakt lyssveip over
+    et rutenett, og et snitt-diagram av de fem punktene. Kunden har nå tre ganger
+    sagt det samme: «de gir ingen mening for oss».
 
-    Masken står på 58 %, ikke standardens 46, og tallet er målt fram – ikke gjettet.
-    Brødtekstens FAKTISKE blekk slutter på 51 % av bredden (ingressen 49 %,
-    URL-feltet 51 %, hintet 47 %), så 58 gir sju prosentpoeng margin. Det eneste
-    som rekker inn i filmbåndet er h1-en, som når 68 % – og den er display-skala,
-    der WCAG krever 3:1. Målt på glyffene selv: 8,30:1 i mørkt tema, 4,18:1 i lyst.
+    Han har rett, og vi brøt vår egen regel. docs/brandbok.md rangerer bilder
+    1) opptak av verktøyet i bruk, 2) diagram med ekte navn, 3) ingenting.
+    Generert abstrakt materiale står ikke på listen, og et lys som glir over et
+    rutenett består ikke prøven «dekk til teksten – skjønner en rørlegger hva
+    dette handler om?». Det gjorde heller ikke jobben filmen fikk: motivet var
+    sterkt som stillbilde, men klippet sto nesten stille (8,29 av 255 i total
+    endring, mot 18,6 for klippene vi kaller tydelige).
 
-    Kontrollen som betyr noe: brødteksten måler IDENTISK med og uten film
-    (hintet 4,28:1, ingressen 5,29:1 i begge tilfeller). Filmen bidrar altså ikke
-    til tallet i det hele tatt – den er maskert helt bort fra tekstspalten. De
-    tallene er sidens egne tokens, ikke noe denne scenen innførte.
+    SNITTET er ikke borte fordi det var dårlig – det er rangordningens nivå 2 og
+    det forklarte. Det var det TREDJE stedet på denne siden som listet de samme
+    fem punktene: akt 3 i sekvensen under, definisjonslista i seksjon 2, og det.
+    Tre kopier av samme liste leses som en side som ikke vet hva den vil si.
 
-    Hvorfor det er verdt å måle: hintet er `--ink-faint`, sidens aller svakeste
-    tekstfarge, og nøyaktig den som ga 1,31:1 da film ble lagt bak seksjon 2 i et
-    tidligere forsøk på denne siden.
+    HVA SOM STÅR HER I STEDET: sjekken, fortalt. Adressen skrives inn, skanneren
+    leser svaret med sine egne feltnavn, dommen lander med tallene. Det er
+    rangordningens nivå 1 i form og nivå 2 i teknikk: operasjonen verktøyet
+    faktisk utfører, tegnet i CSS. Den beveger seg uten at brukeren scroller –
+    som var den målte forskjellen mot referansene – og den koster null kilobyte.
+
+    FILMEN VEIDE MER ENN NOTATET HER PÅSTO. Det sto 716 kB. Målt på filene:
+    /scener/sjekk-scan-960.mp4 er 217 kB, -1280 er 1,46 MB og -1920 er 3,20 MB,
+    og SceneFilm velger `bred` over 1024 px og `stor` over 2200 enhetspiksler –
+    altså 3,20 MB på en vanlig 1440-skjerm med dobbel pikseltetthet. Hele /sjekk
+    laster nå 132 kB, mest skrift. De fire filmfilene er ikke referert noe sted
+    lenger og kan slettes; de ligger i public/, som deles med andre sider, så det
+    blir ikke gjort herfra.
+
+    DIVEN RUNDT SEKSJONEN BLIR STÅENDE selv om filmen er borte. Flaterytmen i
+    scener.css er `main > section:nth-of-type(even)`, og hero-en har aldri vært
+    tellende fordi den ligger inne i en div. Fjernes diven, forskyves annenhver
+    flate på HELE siden med én. Den koster ingenting og holder rytmen i ro.
   */}
-  <div class="scenefilm-ramme">
-    <SceneFilm
-      smal="/scener/sjekk-scan-960.mp4"
-      bred="/scener/sjekk-scan-1280.mp4"
-      stor="/scener/sjekk-scan-1920.mp4"
-      plakat="/scener/sjekk-scan-poster.avif"
-      tekst="venstre"
-      maske={58}
-    />
+  <div class="sjekk-hero">
     <Scene lav>
       <Mega som="h1" merke="Verktøy" n={1} tekst="Sjekk nettsiden din" aksent="Sjekk" />
       <Avslor trinn={1}>
@@ -74,23 +74,12 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
         </p>
       </Avslor>
 
-    <Avslor trinn={2}>
-      {/* Motivet kom fra Higgsfield, men KLIPPET sto nesten stille – 8,29 av 255 i
-          total endring, mot 18,6 for klippene vi kaller tydelige. Et verifisert
-          rammepar garanterer altså ikke bevegelse. Bygget i CSS i stedet: null
-          kilobyte, og det beveger seg UTEN at brukeren scroller – som var hele
-          forskjellen mot referansene. */}
-      <Sveip />
-      <p class="small muted" style="margin-top: var(--space-3)">
-        Sjekken sveiper over siden din og viser hva som ligger under overflaten.
-      </p>
-    </Avslor>
-
-    <Avslor trinn={2}>
-      {/* Tegning med ekte navn, hentet ordrett fra siden. Brandboken rangerer
-          diagram over generert materiale – det forklarer, og koster 0 kB. */}
-      <Snitt snitt={snitt.sjekk} nivaa={2} />
-    </Avslor>
+      {/* IKKE i en Avslor. Avslor venter på scroll, og hele poenget med denne er
+          at den går av seg selv ved innlasting. Pakket inn ville sekvensen stått
+          på opasitet 0 mens akt 1 og 2 spilte seg ferdig bak sløret – og den som
+          ikke scroller, som er hele målgruppen for bevegelse ved innlasting,
+          hadde sett nøyaktig ingenting. */}
+      <SjekkSekvens />
 
       <div class="stack">
         <Avslor trinn={2}>
@@ -102,8 +91,8 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
           />
         </Avslor>
 
-        {/* Rapporten har sin egen ugjennomsiktige flate (.kk-report, --bg-raised),
-            så den skjermer teksten sin mot filmen bak. Den ligger med vilje IKKE
+        {/* Rapporten har sin egen ugjennomsiktige flate (.kk-report, --bg-raised).
+            Den ligger med vilje IKKE
             i en Avslor: den settes inn av skriptet etter at sjekken har kjørt, og
             innhold som kommer fra en handling skal ikke vente på en scroll. */}
         <div id="resultat" aria-live="polite" aria-busy="false"></div>
@@ -193,6 +182,18 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
 
   <ContactBlock n={4} tittel="Eller bare ring" ingress="Har du rapporten foran deg og vil vite hva som er viktigst å starte med, tar det fem minutter på telefon." />
 </Base>
+
+<style is:global>
+  /* `.scene__inner` er ikke en grid og setter ingen avstand mellom barna sine.
+     Hero-en her har fire: megateksten, ingressen, sekvensen og feltstabelen.
+     Uten denne regelen klistrer de seg til hverandre.
+
+     is:global fordi selektoren må nå `.scene__inner`, som rendres av
+     Scene.astro og bærer DEN komponentens scope. Avgrenset til `.sjekk-hero`,
+     så den ikke lekker til en eneste annen side. Samme grep som `.flate--lys` i
+     index.astro, av samme grunn. */
+  .sjekk-hero .scene__inner > * + * { margin-block-start: var(--space-6); }
+</style>
 
 <script>
   const ORD = { ok: "Bestått", warn: "Bør fikses", fail: "Brudd", neutral: "Ikke sjekket" } as const;

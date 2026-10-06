@@ -1,0 +1,176 @@
+{
+ "navn": "systemer",
+ "url": "https://kodekonsulentene.no/systemer/",
+ "viewport": "1440x900",
+ "hoyde": 4779,
+ "aksentBruk": 14,
+ "aksentTreff": [
+  "a.skip",
+  "a.",
+  "a.kk-btn",
+  "span.nr",
+  "span.ord",
+  "a.kk-btn",
+  "span.kk-eyebrow-n",
+  "span.kk-ps",
+  "path.[object",
+  "span.kk-eyebrow-n",
+  "span.kk-eyebrow-n",
+  "a.kk-btn",
+  "span.kk-eyebrow-n",
+  "a.kk-btn"
+ ],
+ "blodning": 3,
+ "blodningEkte": 3,
+ "objekter": 6,
+ "transform": 28,
+ "animasjoner": [
+  "scene-strek",
+  "avslor-inn",
+  "avslor-ord",
+  "flyt-tegnes",
+  "flyt-tones-inn",
+  "",
+  "avslor-skjev"
+ ],
+ "unikeSkriftstorrelser": 13,
+ "videoer": [
+  {
+   "src": "",
+   "w": 1440,
+   "h": 986,
+   "opasitet": 0.85,
+   "mix": "normal",
+   "filter": "none",
+   "autoplay": false,
+   "loop": false,
+   "paused": true,
+   "readyState": 0,
+   "varighet": null,
+   "posisjon": 0,
+   "preload": "none",
+   "poster": true
+  }
+ ],
+ "seksjoner": [
+  {
+   "tag": "section",
+   "klasse": "scene scene--lav",
+   "topp": 80,
+   "h": 804,
+   "tittel": "Få systemene du betaler for til å snakke sammen"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene",
+   "topp": 884,
+   "h": 933,
+   "tittel": "Hvordan det ser ut i praksis"
+  },
+  {
+   "tag": "div",
+   "klasse": "scenefilm-ramme",
+   "topp": 1817,
+   "h": 986,
+   "tittel": "Det vi kobler oftest"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene flate--varm",
+   "topp": 2803,
+   "h": 502,
+   "tittel": "System fra 60 000 kr"
+  },
+  {
+   "tag": "section",
+   "klasse": "section",
+   "topp": 3305,
+   "h": 1108,
+   "tittel": "Snakk med den som koder"
+  }
+ ],
+ "stopp": [
+  {
+   "i": 0,
+   "y": 0,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Få systemene du betaler for til å snakke sam"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 1,
+   "y": 647,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Få systemene du betaler for til å snakke sam",
+    "Hvordan det ser ut i praksis"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 2,
+   "y": 1293,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Hvordan det ser ut i praksis",
+    "Det vi kobler oftest"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 3,
+   "y": 1940,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Det vi kobler oftest"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 4,
+   "y": 2586,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Det vi kobler oftest",
+    "System fra 60 000 kr",
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 5,
+   "y": 3233,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 6,
+   "y": 3879,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  }
+ ],
+ "konsollfeil": []
+}

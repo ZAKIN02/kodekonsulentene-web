@@ -1,0 +1,350 @@
+{
+ "navn": "ref-spinx",
+ "url": "https://spinxdigital.com/",
+ "viewport": "1440x900",
+ "hoyde": 18000,
+ "aksentBruk": 0,
+ "aksentTreff": [],
+ "blodning": 85,
+ "blodningEkte": 85,
+ "objekter": 72,
+ "transform": 5,
+ "animasjoner": [
+  "heroFadeInUp",
+  "",
+  "heroSubFadeInUp",
+  "startright",
+  "startleft",
+  "zoomin"
+ ],
+ "unikeSkriftstorrelser": 15,
+ "videoer": [
+  {
+   "src": "Hero.webm",
+   "w": 978,
+   "h": 414,
+   "opasitet": 1,
+   "mix": "normal",
+   "filter": "none",
+   "autoplay": true,
+   "loop": true,
+   "paused": false,
+   "readyState": 4,
+   "varighet": 10.7,
+   "posisjon": 3.1,
+   "preload": "none",
+   "poster": true
+  },
+  {
+   "src": "C_SPINX_Process_v4.mp4",
+   "w": 0,
+   "h": 0,
+   "opasitet": 1,
+   "mix": "normal",
+   "filter": "none",
+   "autoplay": false,
+   "loop": true,
+   "paused": true,
+   "readyState": 0,
+   "varighet": null,
+   "posisjon": 0,
+   "preload": "none",
+   "poster": false
+  }
+ ],
+ "seksjoner": [],
+ "stopp": [
+  {
+   "i": 0,
+   "y": 0,
+   "snitt": 1.8261,
+   "andelEndret": 6.08,
+   "byteAvvik": 513,
+   "seksjoner": [
+    "That Tell Your Story -And Drive Results"
+   ],
+   "videoerSpiller": 1
+  },
+  {
+   "i": 1,
+   "y": 713,
+   "snitt": 0.0573,
+   "andelEndret": 0.08,
+   "byteAvvik": 188,
+   "seksjoner": [
+    "That Tell Your Story -And Drive Results",
+    "we turn complex ideas into immersive digital",
+    "Featured Projects"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 2,
+   "y": 1425,
+   "snitt": 0.057,
+   "andelEndret": 0.08,
+   "byteAvvik": 548,
+   "seksjoner": [
+    "Featured Projects"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 3,
+   "y": 2138,
+   "snitt": 0.0578,
+   "andelEndret": 0.07,
+   "byteAvvik": 389,
+   "seksjoner": [
+    "Featured Projects"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 4,
+   "y": 2850,
+   "snitt": 0.0571,
+   "andelEndret": 0.08,
+   "byteAvvik": 340,
+   "seksjoner": [
+    "Featured Projects"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 5,
+   "y": 3563,
+   "snitt": 0.0572,
+   "andelEndret": 0.08,
+   "byteAvvik": 220,
+   "seksjoner": [
+    "Featured Projects",
+    "We are"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 6,
+   "y": 4275,
+   "snitt": 0.0575,
+   "andelEndret": 0.08,
+   "byteAvvik": 58,
+   "seksjoner": [
+    "We are"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 7,
+   "y": 4988,
+   "snitt": 0.057,
+   "andelEndret": 0.08,
+   "byteAvvik": 87,
+   "seksjoner": [
+    "We are",
+    "Strategic planning & execution",
+    "Intuitive designs that bring your story to l"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 8,
+   "y": 5700,
+   "snitt": 0.0578,
+   "andelEndret": 0.08,
+   "byteAvvik": 31,
+   "seksjoner": [
+    "Strategic planning & execution",
+    "Intuitive designs that bring your story to l"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 9,
+   "y": 6413,
+   "snitt": 0.0571,
+   "andelEndret": 0.08,
+   "byteAvvik": 24,
+   "seksjoner": [
+    "Intuitive designs that bring your story to l",
+    "No matter if youʼre a startup founder or a C"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 10,
+   "y": 7125,
+   "snitt": 0.0578,
+   "andelEndret": 0.08,
+   "byteAvvik": 199,
+   "seksjoner": [
+    "Intuitive designs that bring your story to l",
+    "No matter if youʼre a startup founder or a C"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 11,
+   "y": 7838,
+   "snitt": 0.0566,
+   "andelEndret": 0.08,
+   "byteAvvik": 66,
+   "seksjoner": [
+    "No matter if youʼre a startup founder or a C",
+    "Helping Brands Big and Small"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 12,
+   "y": 8550,
+   "snitt": 0.058,
+   "andelEndret": 0.08,
+   "byteAvvik": 64,
+   "seksjoner": [
+    "Helping Brands Big and Small",
+    "Get a world-class website that addresses you"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 13,
+   "y": 9263,
+   "snitt": 0.0568,
+   "andelEndret": 0.08,
+   "byteAvvik": 26,
+   "seksjoner": [
+    "Get a world-class website that addresses you"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 14,
+   "y": 9975,
+   "snitt": 0.0575,
+   "andelEndret": 0.08,
+   "byteAvvik": 45,
+   "seksjoner": [
+    "Get a world-class website that addresses you",
+    "This is where remarkable ideas and stories b"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 15,
+   "y": 10688,
+   "snitt": 0.0564,
+   "andelEndret": 0.08,
+   "byteAvvik": 80,
+   "seksjoner": [
+    "This is where remarkable ideas and stories b",
+    "Testimonials"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 16,
+   "y": 11400,
+   "snitt": 0.0575,
+   "andelEndret": 0.08,
+   "byteAvvik": 53,
+   "seksjoner": [
+    "Testimonials"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 17,
+   "y": 12113,
+   "snitt": 0.0566,
+   "andelEndret": 0.08,
+   "byteAvvik": 55,
+   "seksjoner": [
+    "Testimonials",
+    "Awards & Recognition"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 18,
+   "y": 12825,
+   "snitt": 0.0578,
+   "andelEndret": 0.08,
+   "byteAvvik": 146,
+   "seksjoner": [
+    "Awards & Recognition"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 19,
+   "y": 13538,
+   "snitt": 0.058,
+   "andelEndret": 0.08,
+   "byteAvvik": 108,
+   "seksjoner": [
+    "Awards & Recognition"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 20,
+   "y": 14250,
+   "snitt": 0.0575,
+   "andelEndret": 0.08,
+   "byteAvvik": 25,
+   "seksjoner": [
+    "Awards & Recognition",
+    "expertise-content nitro-offscreen"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 21,
+   "y": 14963,
+   "snitt": 0.0573,
+   "andelEndret": 0.08,
+   "byteAvvik": 505,
+   "seksjoner": [
+    "expertise-content nitro-offscreen",
+    "Dive In"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 22,
+   "y": 15675,
+   "snitt": 0.0573,
+   "andelEndret": 0.08,
+   "byteAvvik": 309,
+   "seksjoner": [
+    "Dive In",
+    "Ready to transform your brand’s digital home"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 23,
+   "y": 16388,
+   "snitt": 0.0567,
+   "andelEndret": 0.08,
+   "byteAvvik": 140,
+   "seksjoner": [
+    "Ready to transform your brand’s digital home"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 24,
+   "y": 17100,
+   "snitt": 0.0562,
+   "andelEndret": 0.08,
+   "byteAvvik": 121,
+   "seksjoner": [],
+   "videoerSpiller": 0
+  }
+ ],
+ "konsollfeil": [
+  "Failed to load resource: the server responded with a status of 403 ()"
+ ]
+}

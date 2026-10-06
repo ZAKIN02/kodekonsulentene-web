@@ -1,0 +1,172 @@
+{
+ "navn": "status",
+ "url": "https://kodekonsulentene.no/status/",
+ "viewport": "1440x900",
+ "hoyde": 5330,
+ "aksentBruk": 10,
+ "aksentTreff": [
+  "a.skip",
+  "a.kk-btn",
+  "span.nr",
+  "span.kk-eyebrow-n",
+  "span.nokkeltall__verdi",
+  "span.kk-ps",
+  "span.kk-ps",
+  "span.kk-ps",
+  "span.nr",
+  "span.kk-eyebrow-n"
+ ],
+ "blodning": 12,
+ "blodningEkte": 2,
+ "objekter": 1,
+ "transform": 18,
+ "animasjoner": [
+  "",
+  "scene-strek",
+  "avslor-inn",
+  "avslor-ord"
+ ],
+ "unikeSkriftstorrelser": 13,
+ "videoer": [
+  {
+   "src": "lev-status-1280.mp4",
+   "w": 1054,
+   "h": 593,
+   "opasitet": 1,
+   "mix": "normal",
+   "filter": "none",
+   "autoplay": false,
+   "loop": false,
+   "paused": true,
+   "readyState": 4,
+   "varighet": 8,
+   "posisjon": 0.1,
+   "preload": "auto",
+   "poster": true
+  }
+ ],
+ "seksjoner": [
+  {
+   "tag": "section",
+   "klasse": "scene scene--lav",
+   "topp": 80,
+   "h": 1388,
+   "tittel": "Driftsstatus"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene",
+   "topp": 1468,
+   "h": 993,
+   "tittel": "Ytelsesbudsjettet vi holder oss til"
+  },
+  {
+   "tag": "section",
+   "klasse": "horisont",
+   "topp": 2462,
+   "h": 2007,
+   "tittel": "Hvis noe er nede"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene",
+   "topp": 4469,
+   "h": 495,
+   "tittel": "Du trenger ikke melde fra"
+  }
+ ],
+ "stopp": [
+  {
+   "i": 0,
+   "y": 0,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Driftsstatus"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 1,
+   "y": 633,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Driftsstatus"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 2,
+   "y": 1266,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Driftsstatus",
+    "Ytelsesbudsjettet vi holder oss til"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 3,
+   "y": 1899,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Ytelsesbudsjettet vi holder oss til",
+    "Hvis noe er nede"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 4,
+   "y": 2531,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Hvis noe er nede"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 5,
+   "y": 3164,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Hvis noe er nede"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 6,
+   "y": 3797,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Hvis noe er nede",
+    "Du trenger ikke melde fra"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 7,
+   "y": 4430,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Du trenger ikke melde fra"
+   ],
+   "videoerSpiller": 0
+  }
+ ],
+ "konsollfeil": []
+}

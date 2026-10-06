@@ -41,6 +41,8 @@ Avstanden mellom blokkene er `space-9` på desktop og `space-8` på mobil. Hver 
 
 Hver underside åpner med `Eyebrow` + `display-lg` + `body-lg`, har én `Button primary` over folden, og slutter med samme kontaktblokk som forsiden. Bransjesider har i tillegg én demo som kan klikkes i (bookingsystem, tilbudsgenerator) – en demo slår et avsnitt.
 
+Demoblokken på `/nettsider` er `KodeBygg`, rett etter heroen: ekte kode fra repoet til venstre, den samme komponenten rendret til høyre, bygget linje for linje. Den hører til fordi nettsider er det eneste vi selger der selve arbeidet kan vises direkte, og den står ett sted – blir den gjenbrukt på flere sider, er den ikke lenger et bevis, bare en effekt.
+
 ## Rapport fra «Sjekk nettsiden din»
 
 `CheckReport` viser fem rader i fast rekkefølge: Ytelse (Lighthouse-score), Sikkerhetsheadere (CSP, HSTS, X-Frame-Options), Cookies før samtykke (antall), Universell utforming (antall WCAG-feil funnet), Lovpålagt informasjon (org.nr. funnet ja/nei). Hver rad har `StatusBadge`, en verdi i `mono` og én setning i `small` som sier hva det betyr for bedriften, ikke for utvikleren: «3 cookies settes før samtykke. Det bryter ekomloven § 3-15.»

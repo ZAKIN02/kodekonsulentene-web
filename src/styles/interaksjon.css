@@ -127,6 +127,359 @@ input[type="range"]:focus-visible {
   }
 }
 
+/* ============================================ bevegelse som BÆRER noe ======
+ *
+ * Gestene over er alle innganger: noe kommer til syne. De sier ingenting om hva
+ * som kommer til syne. Eieren har sagt tre ganger at animasjonene «ikke gir
+ * mening» – og det er en riktig observasjon, ikke en smakssak. En inntoning er
+ * utbyttbar: bytt innholdet, og gesten passer like godt. Da bærer den ingen
+ * informasjon.
+ *
+ * De to gestene under er ikke utbyttbare. `rekke` sier at rekkefølgen betyr
+ * noe; bruker du den på innhold uten rekkefølge, blir den feil. `spor` sier at
+ * dette er et punkt på en vei; bruker du den på noe frittstående, blir den feil.
+ * At en gest KAN brukes feil er selve beviset på at den sier noe.
+ *
+ * `straks` er ikke en gest, men en tidslinje: den bytter scroll ut med tid.
+ *
+ * MÅLT PROBLEM DEN LØSER: scroll-drevne animasjoner krever at brukeren gjør noe.
+ * Målt mot referansene i headless Chrome, uten én piksel scroll: vi 153 piksel-
+ * avvik i ro, jeton.com 485. Siden vår sto stille helt til noen rørte den. Et
+ * eget opptak av forsiden viste det verre enn det: opptellingen i Nokkeltall –
+ * den ENE bevegelsen på siden som faktisk bærer informasjon – var ferdig etter
+ * 920 ms, mens åpningsoverlegget lå på opasitet 1,00 til 1071 ms og ikke var
+ * borte før 1525 ms. Bevegelsen spilte bak et ugjennomsiktig lag. Etter 1525 ms
+ * målte vi 45–173 endrede piksler per 200 ms, altså markøren i terminalen.
+ */
+
+/* --- rekke: rekkefølgen ER budskapet ------------------------------------
+ *
+ * Barna lander ETT OM GANGEN, i dokumentrekkefølge. Ikke en bølge, ikke en
+ * trapp som pynter – en sekvens. Brukes på innhold der rekkefølgen betyr noe:
+ * prosessteg, en liste som bygger på seg selv, et regnestykke.
+ *
+ * ÉN TIDSLINJE, IKKE ÉN PER BARN. Dette er den avgjørende detaljen, og den
+ * samme feilen scener.css gjorde på .scene__strek: med `animation-timeline: view()`
+ * på hvert barn blir HVERT BARN sitt eget subjekt, og hver forsinkelse regnes i
+ * barnets egen inngangsfase. Da starter alle i sin egen 4 %, altså samtidig, og
+ * trappen er null. Rekkefølgen må leses av ÉN klokke, og den klokken er
+ * foreldrenes `view-timeline-name`.
+ *
+ * Forelderen står helt stille (`animation-name: none`): to bevegelser oppå
+ * hverandre – forelder som toner inn mens barna lander – gjør sekvensen
+ * uleselig. Det er bare barna som har noe å si her.
+ */
+.avslor.avslor--rekke {
+  view-timeline-name: --avslor-rekke;
+  /* Overstyrer grunngesten i scener.css (0-1-0 mot vår 0-2-0). */
+  animation-name: none;
+}
+/* Leddnummeret. CSS kan ikke regne et tall ut av :nth-child, så det listes.
+   Taket på 7 er samme resonnement som taket på `--trinn`: uten tak ville en
+   liste på tjue punkter gitt en sekvens som varer lenger enn inngangsfasen, og
+   de siste ville stått halvveis landet langt inne i vinduet. Nettopp den feilen
+   – innhold som blir stående halvsynlig – har truffet dette nettstedet før. */
+.avslor--rekke > *:nth-child(1) { --led: 0; }
+.avslor--rekke > *:nth-child(2) { --led: 1; }
+.avslor--rekke > *:nth-child(3) { --led: 2; }
+.avslor--rekke > *:nth-child(4) { --led: 3; }
+.avslor--rekke > *:nth-child(5) { --led: 4; }
+.avslor--rekke > *:nth-child(6) { --led: 5; }
+.avslor--rekke > *:nth-child(7) { --led: 6; }
+.avslor--rekke > *:nth-child(n + 8) { --led: 7; }
+
+/* --- spor: et punkt på en vei -------------------------------------------
+ *
+ * Tre ting i fast rekkefølge: punktet lander (du er kommet hit), innholdet
+ * kommer med det, og DERETTER tegner linjen seg nedover mot neste punkt. Scroller
+ * du gjennom flere av dem etter hverandre, ser du ankomst – vei – ankomst – vei.
+ * Rekkefølgen er hele poenget: veien videre finnes ikke før du har vært her.
+ *
+ * Linjen og punktet er LAYOUT, ikke pynt, og står derfor utenfor @supports. Uten
+ * scroll-drevne animasjoner, uten JavaScript og ved redusert bevegelse står de
+ * ferdig tegnet – degraderingen går mot synlig.
+ */
+.avslor.avslor--spor {
+  position: relative;
+  /* Plass til linjen. Uten dette ligger den under teksten. */
+  padding-inline-start: var(--space-5);
+  view-timeline-name: --avslor-spor;
+  animation-name: none;
+}
+.avslor.avslor--spor::before {
+  /* Veien videre. */
+  content: "";
+  position: absolute;
+  inset-block: 10px 0;
+  inset-inline-start: 3px;
+  inline-size: var(--hairline);
+  background: var(--line-strong);
+  transform-origin: top center;
+}
+.avslor.avslor--spor::after {
+  /* Punktet. Aksenten én gang, samme signatur som skråstrekene i Eyebrow.
+   *
+   * `--accent-text`, IKKE `--accent`. Målt på malte piksler: limen #c8f24a på en
+   * lys flate gir 1,35:1, og flaterytmen i scener.css snur annenhver seksjon mot
+   * lyst – så halvparten av stedene gesten kan brukes er nettopp en lys flate.
+   * `--accent-text` er paret som finnes for akkurat dette: målt 15,06:1 på mørk
+   * flate og 6,26:1 på lys. WCAG 1.4.11 krever 3:1 for grafikk som bærer mening,
+   * og punktet BÆRER mening her – det er ankomsten. */
+  content: "";
+  position: absolute;
+  inset-block-start: 4px;
+  inset-inline-start: 0;
+  inline-size: 7px;
+  block-size: 7px;
+  border-radius: 50%;
+  background: var(--accent-text);
+}
+
+@supports (animation-timeline: view()) {
+  .avslor.avslor--rekke > * {
+    animation-name: avslor-rekke;
+    animation-duration: 1ms;
+    /* IKKE linear, i motsetning til de andre gestene. `linear` binder posisjonen
+       til scrollhjulet 1:1, og da LØFTES elementet av brukeren i stedet for å
+       falle på plass av seg selv. Ease-out gjør at det bremser inn mot plassen
+       sin, og «faller på plass» er nettopp det denne gesten skal si. */
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    animation-fill-mode: both;
+    animation-timeline: --avslor-rekke;
+    /* `cover`, IKKE `entry`, OG DET ER MÅLT FRAM.
+     *
+     * Første versjon brukte `entry`. Målt på en liste med fem ledd i en Avslor
+     * på 250 px høyde, med 8 prøver gjennom hele passeringen:
+     *
+     *     prøve 0   opasiteter  0,00 0,00 0,00 0,00 0,00
+     *     prøve 1   opasiteter  1,00 1,00 1,00 0,97 0,85
+     *     prøve 2   opasiteter  1,00 1,00 1,00 1,00 1,00
+     *
+     * Hele trappen var over mellom to prøver. Grunnen er den samme som for
+     * `spor`: `entry` varer nøyaktig så lenge som ELEMENTETS EGEN HØYDE, altså
+     * 250 px scroll – under et halvt sekund i vanlig fart. Rekkefølgen, som er
+     * hele budskapet i denne gesten, rakk ingen å lese.
+     *
+     * `cover` varer så lenge forelderen overlapper vinduet, her 1070 px, og gir
+     * trappen plass. 6 % per ledd, 20 % varighet hver: ledd 0 går cover 2→22 %,
+     * ledd 4 cover 26→46 %. Det er 470 px scroll for en liste på fem, mot 250 før.
+     *
+     * SLUTTPUNKTET ER HOLDT NEDE MED VILJE. scener.css har allerede betalt for
+     * den feilen: `cover 32%` som sluttpunkt lot tekst i nedre fjerdedel av
+     * vinduet stå permanent nedtonet, målt til 0,60 og 0,38 mens brukeren sto
+     * HELT STILLE. Med 20 % varighet er ledd 4 ferdig på cover 46 %, altså når
+     * forelderen har flyttet seg 490 px opp og leddet står godt inne i vinduet.
+     * Taket på 7 ledd holder det siste leddet på cover 64 %. */
+    animation-range:
+      cover calc(2% + var(--led, 0) * 6%)
+      cover calc(22% + var(--led, 0) * 6%);
+  }
+
+  /* TO ULIKE FASER, OG DET ER MÅLT FRAM, IKKE VALGT.
+   *
+   * Første versjon la alle tre på `entry`. Målt på et steg på 100 px høyde, med
+   * 8 prøver gjennom hele passeringen: prøve 0 hadde veien på scaleY(0) og
+   * punktet på opasitet 0, prøve 1 hadde ALT ferdig. Hele sekvensen – ankomst,
+   * innhold, vei – var over på under 130 px scroll, og rekkefølgen som ER
+   * budskapet rakk ingen å lese.
+   *
+   * Grunnen er hvordan `entry` er definert: fasen varer fra elementets forkant
+   * møter vinduskanten til bakkanten har passert den, altså ELEMENTETS EGEN
+   * HØYDE. Et steg på 100 px får 100 px scroll å spille på, uansett hvor stort
+   * vinduet er. `cover` varer derimot så lenge elementet overlapper vinduet i
+   * det hele tatt – her 920 px – og det er plass nok til å lese en sekvens.
+   *
+   * Hvorfor da ikke alt på `cover`? Fordi scener.css allerede har betalt for det
+   * svaret: med sluttpunkt `cover 32%` sto tekst i nedre fjerdedel av vinduet
+   * permanent nedtonet, målt til 0,60 og 0,38 mens brukeren sto HELT STILLE.
+   * Alt som styrer OPASITET på innhold må derfor være ferdig senest når
+   * elementet er inne, altså på `entry`.
+   *
+   * Veien er den eneste som tåler `cover`, fordi den ikke skjuler noe: den er
+   * ren scaleY på en hårlinje. En halvtegnet vei er ikke innhold som mangler –
+   * det er en vei som ennå ikke er gått, og det er nettopp det den skal si.
+   */
+  .avslor.avslor--spor::after {
+    animation-name: avslor-spor-punkt;
+    animation-duration: 1ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    animation-fill-mode: both;
+    animation-timeline: --avslor-spor;
+    animation-range: entry 10% entry 60%;
+  }
+  .avslor.avslor--spor > * {
+    animation-name: avslor-spor-innhold;
+    animation-duration: 1ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    animation-fill-mode: both;
+    animation-timeline: --avslor-spor;
+    /* Slutt på entry 100 %: full opasitet nøyaktig når elementet er helt inne.
+       Ingenting kan bli stående halvsynlig. */
+    animation-range: entry 20% entry 100%;
+  }
+  .avslor.avslor--spor::before {
+    animation-name: avslor-spor-vei;
+    animation-duration: 1ms;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: --avslor-spor;
+    /* Starter ETTER at punktet har landet. Rekkefølgen er budskapet.
+       På et steg på 100 px i et vindu på 820: punktet kjører cover 1,1–6,5 %,
+       innholdet cover 2,2–10,9 %, veien cover 18–58 %. Rekkefølgen holder.
+       Gesten er laget for ET STEG, altså en kort blokk. På et element høyere
+       enn vinduet blir entry-fasen lengre enn veiens start, og da overlapper de
+       to – fremdeles lesbart, men ikke lenger en ren sekvens. */
+    animation-range: cover 18% cover 58%;
+  }
+}
+
+/* --- straks: bevegelse uten at brukeren gjør noe ------------------------
+ *
+ * Bytter scroll-tidslinjen mot tid. For innhold som står OVER FOLDEN, der det
+ * ikke finnes noen scroll å binde seg til: en scroll-drevet gest på toppen av
+ * siden står ferdig allerede i første frame, og er derfor ingen gest.
+ *
+ * STÅR UTENFOR @supports MED VILJE. Tidsdrevne animasjoner har virket i alle
+ * nettlesere i femten år, og dette er den eneste gesten i vokabularet som
+ * oppfører seg IDENTISK i ekte Firefox som i Chrome. Derfor settes
+ * `animation-name` her også, ikke bare inne i @supports.
+ *
+ * EGNE KEYFRAMES, IKKE `avslor-inn`. `avslor-inn` bor i scener.css, og en side
+ * som bruker Avslor uten å importere den fila ville fått et navn som ikke peker
+ * på noe. Det er samme felle som allerede har truffet denne fila én gang: da
+ * arvet modifikatorene varighet og tidslinje fra scener.css, og målingen viste
+ * `animation-name` riktig satt mens `animation-timeline` sto «auto» og
+ * `fill-mode` «none». Navnet var der, bevegelsen var det ikke. interaksjon.css
+ * skal kunne stå alene.
+ *
+ * REKKEFØLGEN I FILA ER FUNKSJONELL. Disse reglene er 0-2-0, altså samme vekt
+ * som gest-modifikatorene over, og vinner bare fordi de står ETTER dem. Flytter
+ * du dem opp, slutter `straks` å virke uten at noe feiler synlig.
+ *
+ * DERFOR VALIDERER Avslor.astro KOMBINASJONEN: `straks` overstyrer
+ * `animation-name`, så `fra="skjev" straks` ville stille mistet skjevheten.
+ * Komponenten slipper bare gjennom `opp`, `rekke` og `spor`, som er de tre som
+ * har en tidsdrevet variant her. Det er bedre å si fra i komponenten enn å bygge
+ * en :not()-kjede som ingen klarer å lese om et halvår.
+ */
+.avslor.avslor--straks {
+  animation-name: avslor-straks;
+  animation-duration: 560ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: both;
+  animation-timeline: auto;
+  animation-range: normal;
+  animation-delay: calc(120ms + min(var(--trinn, 0), 4) * 110ms);
+}
+.avslor.avslor--rekke.avslor--straks {
+  animation-name: none;
+}
+.avslor.avslor--rekke.avslor--straks > * {
+  animation-name: avslor-rekke;
+  animation-duration: 520ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: both;
+  animation-timeline: auto;
+  animation-range: normal;
+  /* 170 ms mellom leddene. Under ~120 ms leses fire ledd som ett klikk; over
+     ~250 ms begynner den som bare skulle lese å vente på nettsiden. */
+  animation-delay: calc(140ms + var(--led, 0) * 170ms);
+}
+.avslor.avslor--spor.avslor--straks {
+  animation-name: none;
+}
+.avslor.avslor--spor.avslor--straks::after {
+  animation-name: avslor-spor-punkt;
+  animation-duration: 260ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: both;
+  animation-timeline: auto;
+  animation-range: normal;
+  animation-delay: 80ms;
+}
+.avslor.avslor--spor.avslor--straks > * {
+  animation-name: avslor-spor-innhold;
+  animation-duration: 460ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: both;
+  animation-timeline: auto;
+  animation-range: normal;
+  animation-delay: 140ms;
+}
+.avslor.avslor--spor.avslor--straks::before {
+  animation-name: avslor-spor-vei;
+  animation-duration: 620ms;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+  animation-timeline: auto;
+  animation-range: normal;
+  animation-delay: 340ms;
+}
+
+@keyframes avslor-rekke {
+  from {
+    opacity: 0;
+    /* Faller NED på plass, og litt fra siden, så leddene ikke ser ut som en
+       kolonne som skyves opp. 26 px er stort nok til å leses som en landing og
+       lite nok til at ingen linje hopper. */
+    transform: translate3d(-8px, 26px, 0);
+  }
+  to { opacity: 1; transform: none; }
+}
+@keyframes avslor-spor-punkt {
+  from { opacity: 0; transform: scale(0.2); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes avslor-spor-innhold {
+  from { opacity: 0; transform: translate3d(0, 14px, 0); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes avslor-spor-vei {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+@keyframes avslor-straks {
+  from { opacity: 0; transform: translate3d(0, 20px, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+/* REDUSERT BEVEGELSE – SELVSTENDIG HER, IKKE BARE I scener.css.
+ *
+ * scener.css har en tilsvarende blokk, men den fila lastes bare av sidene som
+ * ber om den. interaksjon.css importeres av Avslor selv, altså på HVER side som
+ * bruker komponenten. Da er dette det eneste stedet et forbehold om redusert
+ * bevegelse kan stå og garantert gjelde. Uten den var `skjev`, `naer` og `dybde`
+ * avhengige av at sidefila tilfeldigvis også importerte scener.css for å respektere
+ * brukerens valg – i dag gjør alle 20 det, men ingenting håndhever det.
+ *
+ * Pseudoelementene MÅ listes eksplisitt: `*` treffer dem ikke.
+ *
+ * BARNEVELGERNE ER MED VILJE BUNDET TIL DE TRE NYE MODIFIKATORENE, ikke skrevet
+ * som `.avslor > *`. Den brede formen sto her først, og den var en regresjon jeg
+ * nesten sendte: Avslor pakker inn Slepesammenligning, Lagstabel, Flyt, Terminal
+ * og UrlCheck på forsiden og fem andre sider. `transform: none !important` på
+ * alle direkte barn ville frosset sleperen og lagstabelen for nettopp de
+ * brukerne som har bedt om mindre bevegelse – og de skal ha en komponent som
+ * VIRKER, bare uten utglatting. Det er også det interaksjon.css sier lenger
+ * oppe, der draing beholdes og bare `transition-duration` kuttes.
+ *
+ * `rekke`, `spor` og `straks` er de eneste gestene som animerer barn, og de
+ * brukes bare på innhold. De fem eldre gestene animerer `.avslor` selv, og
+ * dekkes av første linje. */
+@media (prefers-reduced-motion: reduce) {
+  .avslor,
+  .avslor--rekke > *,
+  .avslor--spor > *,
+  .avslor--straks > *,
+  .avslor::before,
+  .avslor::after {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 /* --- utbrudd: bryter ut av innholdsbredden -------------------------------
    Dette er LAYOUT, ikke bevegelse, og står derfor utenfor @supports og utenfor
    redusert bevegelse. Flaten blør ut til skjermkanten mens innholdet beholder

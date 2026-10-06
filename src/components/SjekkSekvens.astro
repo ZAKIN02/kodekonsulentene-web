@@ -1,0 +1,734 @@
+---
+/**
+ * SjekkSekvens – historien om nettsidesjekken, i tre akter.
+ *
+ * HVORFOR DEN FINNES. /sjekk hadde en scenefilm bak hero-en og et abstrakt
+ * lyssveip over et rutenett. Kunden har tre ganger sagt det samme om den typen
+ * materiale: «de gir ingen mening for oss». Han har rett, og docs/brandbok.md
+ * sier det selv: rangordningen er 1) opptak av verktøyet i bruk, 2) diagram med
+ * ekte navn, 3) ingenting. Et lys som glir over et rutenett står ikke på listen,
+ * og det består ikke prøven «dekk til teksten – skjønner en rørlegger hva dette
+ * handler om?».
+ *
+ * Dette gjør det: en adresse skrives inn, skanneren leser svaret, dommen lander.
+ * Det ER operasjonen siden selger, tegnet med motorens egne feltnavn.
+ *
+ * NULL KILOBYTE. Ren CSS og markup. Ingen video, ingen bildefil, og ingen
+ * JavaScript som trengs for at noe skal vises eller bevege seg. Filmen den
+ * erstattet veide 1,46 MB på vanlig desktop og 3,20 MB på en skjerm med
+ * dobbel pikseltetthet (SceneFilm bytter til `stor` over 2200 enhetspiksler, og
+ * 1440 × dpr 2 er over). Målt etterpå: hele /sjekk laster 132 kB.
+ *
+ * DEN MÅLTE FORSKJELLEN MOT REFERANSENE. Sekvensen starter på INNLASTING, ikke
+ * på scroll. Målt mot jeton.com m.fl. beveget siden vår seg bare når noen gjorde
+ * noe. `data-kjor` står i HTML-en, så CSS-en starter av seg selv uten JS. Målt
+ * med .skudd/sjekk-sekvens-maal.mjs: 15 av 24 halvsekundsintervaller har
+ * pikselendring med scrollY = 0 hele veien, og 0 av dem etter at sekvensen er
+ * ferdig.
+ *
+ * DEN GÅR ÉN GANG. Ingen uendelig løkke som stjeler oppmerksomhet fra teksten.
+ * Skriptet nederst gir den én omstart, og bare hvis panelet IKKE var synlig ved
+ * innlasting – altså til den som scroller ned til den etterpå. Målt med
+ * .skudd/sjs-omstart.mjs: på 1440×900 og på Pixel 7 står panelet synlig ved last
+ * og får INGEN omstart (klokka står på 10 550 ms før og etter scroll); på en
+ * 1440×560-skjerm, der det ligger under folden, går klokka fra 10 550 til 883 ms
+ * når det kommer i syne. Skriptet er altså smalt, men ikke dødt.
+ *
+ * DEGRADERING GÅR MOT SYNLIG. Ingen regel i den statiske CSS-en skjuler noe.
+ * Alle utgangstilstander bor i @keyframes med `animation-fill-mode: both`. Uten
+ * JavaScript kjører sekvensen som normalt, fordi CSS-en eier den. Ved
+ * prefers-reduced-motion kjører ingen animasjon i det hele tatt, og da står hele
+ * sekvensen ferdig og lesbar: adressen skrevet, loggen full, dommen felt.
+ *
+ * FASTE FARGER PÅ EN FAST FLATE. Panelet er mørkt i BEGGE temaer, så hver farge
+ * her er en fast heksverdi, aldri en temavariabel. Vi har brent oss: terminalen
+ * brukte --ok/--warn/--fail på en fast mørk flate og ga 2,96:1 i lyst tema.
+ * Målt på FAKTISK MALTE PIKSLER i begge temaer med .skudd/sjekk-sekvens-maal.mjs:
+ * 51 tekstnoder, 0 brudd, verste 5,97:1 («Ikke sjekket» på det nøytrale merket).
+ * Tallene er identiske i mørkt og lyst tema, som er selve poenget med en fast
+ * flate. Hver farge for seg:
+ *   #dfe4ea på #060708 15,77:1 · #8b95a1 6,64:1 · #c8f24a 15,61:1
+ *   #5fe3c0 12,71:1 · #f3b63f 11,11:1 · #ff7b72 8,00:1
+ *   merker: #5fe3c0 på #0d2b24 9,53:1 · #f3b63f på #2d2208 8,61:1 · #ff7b72 på #331312 6,70:1
+ *   knapp: #0b0d10 på #c8f24a 15,06:1
+ * Trådrammen tegnes i #5c6670 = 3,45:1, over kravet på 3:1 for grafikk.
+ *
+ * TILGJENGELIGHET. Panelet er ett `role="img"` med en aria-label som forteller
+ * alle tre aktene i rekkefølge. Uten det ville en skjermleser lest rundt 30
+ * løsrevne mono-fragmenter. Figurteksten under er ekte, synlig tekst og bærer
+ * kilden til tallene.
+ */
+import maalinger from "../data/maalinger.json";
+import { DOMENE, ORD, HEADERE, byggSekvens } from "../data/sjekk-sekvens";
+
+const { logg, dom, totalt, egenSum, antallSider, maaltDato } = byggSekvens(maalinger);
+
+interface Props {
+  class?: string;
+}
+const { class: cls } = Astro.props;
+
+/** Statusikonene er faste i brandboken: hake, trekant, kryss i sirkel, minus. */
+const IKON = {
+  ok: '<path d="M20 6 9 17l-5-5"/>',
+  warn: '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  fail: '<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>',
+  neutral: '<circle cx="12" cy="12" r="10"/><path d="M8 12h8"/>',
+} as const;
+
+const norskDato = (iso: string) =>
+  new Intl.DateTimeFormat("nb-NO", { day: "numeric", month: "long", year: "numeric" })
+    .format(new Date(`${iso}T12:00:00Z`));
+
+/** Hele sekvensen i én setning per akt, for skjermlesere. */
+const beskrivelse = [
+  `Tre akter. Én: adressen ${DOMENE} skrives inn i sjekken, og knappen «Kjør sjekken» trykkes.`,
+  `To: skanneren leser forsiden ovenfra og ned og melder ${logg.length} funn – ${logg
+    .map((l) => `${l.felt}: ${l.verdi}`)
+    .join("; ")}.`,
+  `Tre: dommen – ${dom.map((r) => `${r.navn} ${ORD[r.status].toLowerCase()}, ${r.verdi}`).join("; ")}. Samlet ${totalt} av 100, mot ${egenSum} av 100 for vår egen side.`,
+].join(" ");
+---
+<figure class:list={["sjs", cls]} data-sjekk-sekvens>
+  <div class="sjs__panel" role="img" aria-label={beskrivelse} data-kjor>
+    <div class="sjs__topp">
+      <span class="sjs__prikk"></span>
+      <span class="sjs__sti">~/kodekonsulentene/sjekk</span>
+      <span class="sjs__merke">Eksempel · median av {antallSider} skannede sider</span>
+    </div>
+
+    {/* ------------------------------------------------------ akt 1 ---- */}
+    <section class="sjs__akt sjs__akt--en">
+      <p class="sjs__nr"><span class="sjs__nrtall">01</span> Adressen</p>
+      <div class="sjs__rad">
+        <span class="sjs__felt">
+          <span class="sjs__ps">$ sjekk</span>
+          {/* Klippet som gjør at adressen skriver seg selv. Standardbredden er
+              AUTO: ingenting er klippet før en @keyframes klipper det. */}
+          <span class="sjs__ord">{DOMENE}</span>
+          <span class="sjs__caret"></span>
+        </span>
+        <span class="sjs__knapp">Kjør sjekken</span>
+      </div>
+    </section>
+
+    {/* Akt 2 og 3 står side om side fra 880 px. De ER et oppslag: det som ble
+        lest til venstre, og hva det betyr til høyre. Stablet under hverandre ble
+        panelet 949 px høyt, og da rakk ingen å se dommen uten å scrolle. */}
+    <div class="sjs__spalter">
+    {/* ------------------------------------------------------ akt 2 ---- */}
+    <section class="sjs__akt sjs__akt--to">
+      <p class="sjs__nr"><span class="sjs__nrtall">02</span> Skanningen</p>
+      <div class="sjs__skann">
+        {/* Trådrammen er en forside sett utenfra: topplinje, hovedfelt med to
+            bilderammer, tre tekstlinjer, bunnlinje. Skannelinjen går ÉN gang
+            ovenfra og ned, og flaten bak den får et svakt lime-slør – det er
+            «så langt er lest». */}
+        <div class="sjs__side">
+          <span class="sjs__lest"></span>
+          <span class="sjs__blokk sjs__blokk--topp"></span>
+          <span class="sjs__blokk sjs__blokk--hero">
+            <span class="sjs__bilde"></span>
+            <span class="sjs__bilde"></span>
+          </span>
+          <span class="sjs__tekst sjs__tekst--full"></span>
+          <span class="sjs__tekst sjs__tekst--lang"></span>
+          <span class="sjs__tekst sjs__tekst--kort"></span>
+          <span class="sjs__blokk sjs__blokk--bunn"></span>
+          <span class="sjs__linje"></span>
+        </div>
+
+        {/* Feltnavnene står der fra første bilde – det er lista skanneren
+            arbeider seg gjennom. Bare FUNNET kommer etter hvert, i takt med at
+            linja passerer. Første utkast tonet inn hele raden, og da sto
+            panelet med 800 px svart tomrom mens akt 1 spilte. Et tomt panel i
+            hero-en er verre enn ingen animasjon. */}
+        <ul class="sjs__logg">
+          {logg.map((l, i) => (
+            <li class="sjs__loggrad" style={`--i:${i}`}>
+              <span class:list={["sjs__dot", "sjs__sen", `sjs__dot--${l.status}`]}></span>
+              <span class="sjs__feltnavn">{l.felt}</span>
+              <span class:list={["sjs__verdi", "sjs__sen", `sjs__verdi--${l.status}`]}>{l.verdi}</span>
+              {/* Lovhjemmelen er STATISK, ikke et funn. Den sier hva raden måles
+                  mot, og den sto først i `sjs__sen` – da reserverte den en tom
+                  linje midt i lista, så lista hadde hull i hvert bilde før
+                  funnet landet. */}
+              {l.hjemmel && <span class="sjs__hjemmel">{l.hjemmel}</span>}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Statisk, ikke et funn. Medianen har 1 av 6 satt, men målingen sier ikke
+          hvilken – da kan sekvensen ikke påstå det heller. Navnene står fordi de
+          er de ekte nøklene motoren teller. */}
+      <p class="sjs__headere">
+        <span class="sjs__headeremerke">De seks vi teller</span>
+        {HEADERE.map((h) => <span class="sjs__header">{h}</span>)}
+      </p>
+    </section>
+
+    {/* ------------------------------------------------------ akt 3 ---- */}
+    <section class="sjs__akt sjs__akt--tre">
+      <p class="sjs__nr"><span class="sjs__nrtall">03</span> Dommen</p>
+      {/* Radnavnene står fra første bilde: det er rapportens faste fem, i den
+          faste rekkefølgen. Status og verdi felles etter hvert – skjemaet
+          fylles ut, det bygges ikke. */}
+      <ul class="sjs__dom">
+        {dom.map((r, i) => (
+          <li class="sjs__domrad" style={`--i:${i}`}>
+            <span class="sjs__domnavn">{r.navn}</span>
+            <span class="sjs__domverdi sjs__sen">{r.verdi}</span>
+            <span class:list={["sjs__badge", "sjs__sen", `sjs__badge--${r.status}`]}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><Fragment set:html={IKON[r.status]} /></svg>
+              {ORD[r.status]}
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      <div class="sjs__sum">
+        <p class="sjs__sumtall"><span class="sjs__tall">{totalt}</span><span class="sjs__av">av 100</span></p>
+        <div class="sjs__skala">
+          <span class="sjs__spor"></span>
+          <span class="sjs__fyll" style={`--andel:${totalt}%`}></span>
+          <span class="sjs__egen" style={`--andel:${egenSum}%`}></span>
+        </div>
+        <p class="sjs__nokler">
+          <span class="sjs__nokkel"><span class="sjs__dot sjs__dot--fail"></span>{totalt} – median av {antallSider} sider</span>
+          <span class="sjs__nokkel"><span class="sjs__dot sjs__dot--ok"></span>{egenSum} – vår egen side</span>
+        </p>
+      </div>
+    </section>
+    </div>
+  </div>
+
+  <figcaption class="sjs__under small">
+    Sekvensen er sjekken slik den kjører: adressen skrives inn, skanneren leser
+    forsiden én gang uten å kjøre JavaScript, og dommen felles. Tallene er medianen
+    av {antallSider} småbedriftssider vi skannet {norskDato(maaltDato)} med nøyaktig
+    den motoren feltet under bruker – {totalt} av 100. Vår egen side får {egenSum}.
+    Ingen side navngis, og <span class="sjs__mono">{DOMENE}</span> er en plassholder.
+  </figcaption>
+</figure>
+
+<style>
+  /* ============================================================== rammen ==== */
+
+  .sjs { margin: 0; display: grid; gap: var(--space-3); }
+
+  /* Fast mørk flate i BEGGE temaer. Derfor faste heksverdier under, aldri
+     temavariabler: en flate som ikke bytter, men farger som gjør det, er
+     nøyaktig feilen som ga 2,96:1 på terminalen i lyst tema. */
+  .sjs__panel {
+    --sjs-flate: #060708;
+    --sjs-indre: #0b0d10;
+    --sjs-kant: #23282f;
+    --sjs-strek: #5c6670;
+    --sjs-blekk: #dfe4ea;
+    --sjs-dempet: #8b95a1;
+    --sjs-lime: #c8f24a;
+    --sjs-ok: #5fe3c0;
+    --sjs-warn: #f3b63f;
+    --sjs-fail: #ff7b72;
+
+    background: var(--sjs-flate);
+    color: var(--sjs-blekk);
+    border: var(--hairline) solid var(--sjs-kant);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    isolation: isolate;
+    font-family: var(--font-sans);
+  }
+
+  .sjs__topp {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border-block-end: var(--hairline) solid var(--sjs-kant);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.04em;
+    color: var(--sjs-dempet);
+  }
+  .sjs__prikk {
+    width: 8px;
+    height: 8px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--sjs-dempet);
+    opacity: 0.5;
+  }
+  /* Merket sier at tallene er en median, ikke en måling av én navngitt side. */
+  .sjs__merke { margin-inline-start: auto; color: var(--sjs-lime); text-align: end; }
+
+  .sjs__akt {
+    padding: var(--space-4);
+    border-block-start: var(--hairline) solid var(--sjs-kant);
+  }
+  .sjs__akt--en { border-block-start: 0; }
+  .sjs__spalter { display: grid; }
+
+  .sjs__nr {
+    margin: 0 0 var(--space-3);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--sjs-dempet);
+  }
+  .sjs__nrtall { color: var(--sjs-lime); margin-inline-end: var(--space-2); }
+
+  /* ============================================================== akt 1 ==== */
+
+  .sjs__rad { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+  .sjs__felt {
+    flex: 1 1 15rem;
+    display: flex;
+    /* center, ikke baseline: .sjs__ord har overflow: hidden, og da er
+       baselinjen til et blokkelement bunnkanten – teksten ville stått lavere
+       enn «$ sjekk» ved siden av. */
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+    padding: var(--space-3) var(--space-4);
+    border: var(--hairline) solid var(--sjs-strek);
+    border-radius: var(--radius-sm);
+    background: var(--sjs-indre);
+    font-family: var(--font-mono);
+    font-size: 15px;
+    line-height: 22px;
+  }
+  .sjs__ps { flex: none; color: var(--sjs-lime); }
+  .sjs__ord { overflow: hidden; white-space: nowrap; color: var(--sjs-blekk); }
+  .sjs__caret { flex: none; width: 8px; height: 17px; background: var(--sjs-lime); }
+  .sjs__knapp {
+    flex: none;
+    padding: var(--space-3) var(--space-5);
+    border-radius: var(--radius-sm);
+    background: var(--sjs-lime);
+    color: #0b0d10;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 22px;
+  }
+
+  /* ============================================================== akt 2 ==== */
+
+  .sjs__skann {
+    display: grid;
+    grid-template-columns: 104px minmax(0, 1fr);
+    gap: var(--space-4);
+    align-items: start;
+  }
+
+  /* Trådrammen: en forside sett utenfra. Fast høyde på 196 px, slik at
+     skannelinjen kan flyttes med transform i piksler og aldri rører layout. */
+  .sjs__side {
+    position: relative;
+    block-size: 196px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 7px;
+    border: var(--hairline) solid var(--sjs-strek);
+    border-radius: var(--radius-sm);
+    background: var(--sjs-indre);
+    overflow: hidden;
+  }
+  .sjs__blokk { display: block; border: var(--hairline) solid var(--sjs-strek); border-radius: 1px; }
+  .sjs__blokk--topp { block-size: 12px; flex: none; }
+  .sjs__blokk--hero {
+    flex: 1 1 auto;
+    min-block-size: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  /* Rektangel med diagonal = bilde. Det er den eneste formen her som må leses
+     som noe bestemt, og den har betydd det samme i skisser i førti år. */
+  .sjs__bilde {
+    position: relative;
+    inline-size: 22px;
+    block-size: 18px;
+    border: var(--hairline) solid var(--sjs-strek);
+    overflow: hidden;
+  }
+  .sjs__bilde::before {
+    content: "";
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline: -6px;
+    block-size: var(--hairline);
+    background: var(--sjs-strek);
+    transform: rotate(-38deg);
+  }
+  .sjs__tekst { display: block; block-size: 3px; flex: none; background: var(--sjs-strek); }
+  .sjs__tekst--full { inline-size: 100%; }
+  .sjs__tekst--lang { inline-size: 84%; }
+  .sjs__tekst--kort { inline-size: 58%; }
+  .sjs__blokk--bunn { block-size: 14px; flex: none; }
+
+  /* «Så langt er lest». Standardtilstanden er HELE flaten slørt – det er
+     sluttbildet, og degraderingen skal gå mot synlig. */
+  .sjs__lest {
+    position: absolute;
+    inset: 0;
+    background: rgb(200 242 74 / 0.07);
+    pointer-events: none;
+  }
+  .sjs__linje {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 0;
+    block-size: 2px;
+    background: var(--sjs-lime);
+    box-shadow: 0 0 22px 6px rgb(200 242 74 / 0.3);
+    /* Uten animasjon står linja nede, der skanningen sluttet. */
+    transform: translateY(192px);
+  }
+
+  .sjs__logg { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+  .sjs__loggrad {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 20px;
+  }
+  .sjs__dot { flex: none; width: 7px; height: 7px; border-radius: 50%; }
+  .sjs__dot--ok { background: var(--sjs-ok); }
+  .sjs__dot--warn { background: var(--sjs-warn); }
+  .sjs__dot--fail { background: var(--sjs-fail); }
+  .sjs__dot--neutral { background: var(--sjs-dempet); }
+  .sjs__feltnavn { color: var(--sjs-blekk); }
+  .sjs__verdi { color: var(--sjs-dempet); }
+  .sjs__verdi--warn { color: var(--sjs-warn); }
+  .sjs__verdi--fail { color: var(--sjs-fail); }
+  .sjs__verdi--ok { color: var(--sjs-ok); }
+  .sjs__hjemmel {
+    padding: 0 6px;
+    border: var(--hairline) solid var(--sjs-kant);
+    border-radius: var(--radius-pill);
+    font-size: 12px;
+    line-height: 18px;
+    color: var(--sjs-dempet);
+  }
+
+  .sjs__headere {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+    margin: var(--space-4) 0 0;
+    padding-block-start: var(--space-3);
+    border-block-start: var(--hairline) solid var(--sjs-kant);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 18px;
+  }
+  .sjs__headeremerke { letter-spacing: 0.08em; text-transform: uppercase; color: var(--sjs-dempet); }
+  .sjs__header {
+    padding: 0 6px;
+    border: var(--hairline) solid var(--sjs-kant);
+    border-radius: var(--radius-sm);
+    background: var(--sjs-indre);
+    color: var(--sjs-dempet);
+  }
+
+  /* ============================================================== akt 3 ==== */
+
+  .sjs__dom { list-style: none; margin: 0; padding: 0; display: grid; }
+  .sjs__domrad {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-1) var(--space-3);
+    align-items: center;
+    padding-block: var(--space-2);
+    border-block-end: var(--hairline) solid var(--sjs-kant);
+  }
+  .sjs__domrad:last-child { border-block-end: 0; }
+  .sjs__domnavn { grid-column: 1; grid-row: 1; font-size: 14px; line-height: 20px; font-weight: 600; }
+  .sjs__domverdi {
+    grid-column: 1;
+    grid-row: 2;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--sjs-dempet);
+    font-variant-numeric: tabular-nums;
+  }
+  .sjs__badge {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    justify-self: end;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: 24px;
+    padding: 0 var(--space-2);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .sjs__badge svg { width: 14px; height: 14px; flex: none; }
+  .sjs__badge--ok { background: #0d2b24; color: var(--sjs-ok); }
+  .sjs__badge--warn { background: #2d2208; color: var(--sjs-warn); }
+  .sjs__badge--fail { background: #331312; color: var(--sjs-fail); }
+  .sjs__badge--neutral { background: #13161b; color: var(--sjs-dempet); }
+
+  .sjs__sum { margin-block-start: var(--space-4); display: grid; gap: var(--space-3); }
+  .sjs__sumtall { margin: 0; display: flex; align-items: baseline; gap: var(--space-2); font-family: var(--font-mono); }
+  .sjs__tall {
+    font-size: 44px;
+    line-height: 44px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--sjs-fail);
+    font-variant-numeric: tabular-nums;
+  }
+  .sjs__av { font-size: 14px; line-height: 20px; color: var(--sjs-dempet); }
+
+  /* Skalaen gjør tallet til en avstand: 30 der medianen står, 90 der vi står.
+     Nøklene under bærer begge tallene som ekte tekst, så streken aldri er
+     eneste bærer av mening. */
+  .sjs__skala { position: relative; block-size: 17px; }
+  .sjs__spor {
+    position: absolute;
+    inset-block-start: 7px;
+    inset-inline: 0;
+    block-size: 3px;
+    border-radius: var(--radius-pill);
+    background: #23282f;
+  }
+  .sjs__fyll {
+    position: absolute;
+    inset-block-start: 7px;
+    inset-inline-start: 0;
+    inline-size: var(--andel);
+    block-size: 3px;
+    border-radius: var(--radius-pill);
+    background: var(--sjs-fail);
+    transform-origin: left center;
+  }
+  .sjs__egen {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: var(--andel);
+    margin-inline-start: -1px;
+    inline-size: 2px;
+    block-size: 17px;
+    background: var(--sjs-ok);
+  }
+  .sjs__nokler {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 18px;
+    color: var(--sjs-dempet);
+  }
+  .sjs__nokkel { display: inline-flex; align-items: center; gap: var(--space-2); }
+
+  /* Figurteksten står UTENFOR panelet, på sidens egen flate, og følger temaet. */
+  .sjs__under { margin: 0; color: var(--ink-muted); max-width: 64ch; }
+  .sjs__mono { font-family: var(--font-mono); }
+
+  @media (min-width: 561px) {
+    .sjs__akt { padding: var(--space-5); }
+    .sjs__skann { grid-template-columns: 124px minmax(0, 1fr); gap: var(--space-5); }
+    .sjs__domrad { grid-template-columns: minmax(0, 1fr) auto auto; }
+    .sjs__domverdi { grid-column: 2; grid-row: 1; justify-self: end; }
+    .sjs__badge { grid-column: 3; grid-row: 1; min-inline-size: 7.5rem; }
+  }
+
+  /* To spalter: lest til venstre, dom til høyre. Hårlinjen mellom dem erstatter
+     den vannrette, ellers står det to streker om samme skille. */
+  @media (min-width: 880px) {
+    .sjs__spalter { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .sjs__akt--tre { border-block-start: 0; border-inline-start: var(--hairline) solid var(--sjs-kant); }
+    .sjs__loggrad { font-size: 14px; }
+  }
+
+  /* ========================================================= bevegelsen ====
+
+     ALT under står i (prefers-reduced-motion: no-preference) og krever
+     [data-kjor]. Ingen regel her skjuler noe permanent: utgangstilstandene bor i
+     @keyframes, og `animation-fill-mode: both` holder sluttbildet. Fjernes
+     attributtet, eller kjører ikke animasjonen, står sekvensen ferdig.
+
+     Langformer, aldri `animation:`-stenografi. lightningcss slår stenografien
+     sammen på måter som har drept scroll-tidslinjer på denne siden før, og
+     husregelen er derfor langform overalt. */
+  @media (prefers-reduced-motion: no-preference) {
+    /* AKT 1, 0,5–2,4 s: adressen skriver seg selv. «dinbedrift.no» er 13 tegn,
+       derfor 13 steg og 14ch som sluttbredde (ett tegn slakk, så ingenting
+       klippes om fonten faller tilbake på en annen monospace). Endres
+       plassholderen, må begge tallene følge. */
+    .sjs__panel[data-kjor] .sjs__ord {
+      animation-name: sjs-skriv;
+      animation-duration: 1.6s;
+      animation-delay: 0.5s;
+      animation-timing-function: steps(13, end);
+      animation-fill-mode: both;
+    }
+    /* Markøren blinker BARE i akt 1, fire ganger, og slutter. En evig blink
+       ville gjort panelet til noe som aldri står helt stille. */
+    .sjs__panel[data-kjor] .sjs__caret {
+      animation-name: sjs-blink;
+      animation-duration: 0.7s;
+      animation-delay: 0.3s;
+      animation-iteration-count: 4;
+      animation-timing-function: steps(1, end);
+      animation-fill-mode: none;
+    }
+    .sjs__panel[data-kjor] .sjs__knapp {
+      animation-name: sjs-trykk;
+      animation-duration: 0.5s;
+      animation-delay: 2.3s;
+      animation-timing-function: ease-out;
+      animation-fill-mode: both;
+    }
+
+    /* AKT 2, 2,9–7,4 s: linja går ÉN gang ovenfra og ned, sløret følger etter,
+       og funnene felles i takt med at linja passerer. */
+    .sjs__panel[data-kjor] .sjs__linje {
+      animation-name: sjs-skann;
+      animation-duration: 4.5s;
+      animation-delay: 2.9s;
+      animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      animation-fill-mode: both;
+    }
+    .sjs__panel[data-kjor] .sjs__lest {
+      animation-name: sjs-lest;
+      animation-duration: 4.5s;
+      animation-delay: 2.9s;
+      animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      animation-fill-mode: both;
+    }
+    .sjs__panel[data-kjor] .sjs__loggrad .sjs__sen {
+      animation-name: sjs-funn;
+      animation-duration: 0.4s;
+      animation-delay: calc(3.3s + var(--i) * 0.8s);
+      animation-timing-function: ease-out;
+      animation-fill-mode: both;
+    }
+
+    /* AKT 3, 7,7–10,1 s: dommen felles rad for rad, så lander tallet og
+       skalaen vokser til der medianen står. */
+    .sjs__panel[data-kjor] .sjs__domrad .sjs__sen {
+      animation-name: sjs-funn;
+      animation-duration: 0.4s;
+      animation-delay: calc(7.7s + var(--i) * 0.3s);
+      animation-timing-function: ease-out;
+      animation-fill-mode: both;
+    }
+    .sjs__panel[data-kjor] .sjs__sumtall {
+      animation-name: sjs-land;
+      animation-duration: 0.55s;
+      animation-delay: 9.3s;
+      animation-timing-function: cubic-bezier(0.2, 0.9, 0.2, 1);
+      animation-fill-mode: both;
+    }
+    .sjs__panel[data-kjor] .sjs__fyll {
+      animation-name: sjs-vokse;
+      animation-duration: 0.8s;
+      animation-delay: 9.5s;
+      animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      animation-fill-mode: both;
+    }
+    .sjs__panel[data-kjor] .sjs__egen {
+      animation-name: sjs-funn;
+      animation-duration: 0.45s;
+      animation-delay: 10.1s;
+      animation-timing-function: ease-out;
+      animation-fill-mode: both;
+    }
+  }
+
+  @keyframes sjs-funn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes sjs-skriv {
+    from { max-inline-size: 0ch; }
+    to { max-inline-size: 14ch; }
+  }
+  @keyframes sjs-blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+  @keyframes sjs-trykk {
+    0% { transform: none; }
+    35% { transform: scale(0.96); filter: brightness(0.82); }
+    100% { transform: none; }
+  }
+  @keyframes sjs-skann {
+    from { transform: translateY(0); }
+    to { transform: translateY(192px); }
+  }
+  @keyframes sjs-lest {
+    from { clip-path: inset(0 0 100% 0); }
+    to { clip-path: inset(0 0 0 0); }
+  }
+  @keyframes sjs-land {
+    from { opacity: 0; transform: scale(0.82); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes sjs-vokse {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+</style>
+
+<script>
+  /**
+   * Én omstart, og bare til den som ikke så sekvensen.
+   *
+   * CSS-en starter sekvensen på innlasting helt uten JavaScript – det er poenget
+   * med `data-kjor` i HTML-en. Dette skriptet gjør én ting: var panelet IKKE
+   * synlig da siden lastet, får det én omstart første gang det kommer i syne.
+   * Den som scroller ned etter 20 sekunder skal ikke møte et ferdig sluttbilde.
+   *
+   * SVIKTER DETTE, SVIKTER DET MOT SYNLIG. Panelet har alltid kjørt én gang fra
+   * CSS, så sluttbildet står der uansett. Ingenting her skjuler noe.
+   */
+  const paneler = document.querySelectorAll<HTMLElement>("[data-sjekk-sekvens] [data-kjor]");
+  if (paneler.length && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    for (const panel of paneler) {
+      const boks = panel.getBoundingClientRect();
+      if (boks.top < innerHeight * 0.85 && boks.bottom > 0) continue;
+
+      const io = new IntersectionObserver(
+        (poster) => {
+          for (const p of poster) {
+            if (!p.isIntersecting) continue;
+            io.disconnect();
+            // Starter animasjonene på nytt: fjern attributtet, tving en
+            // omberegning, sett det tilbake. Uten reflow-linja i midten ser
+            // nettleseren bare sluttverdien og gjør ingenting.
+            panel.removeAttribute("data-kjor");
+            void panel.offsetWidth;
+            panel.setAttribute("data-kjor", "");
+          }
+        },
+        { threshold: 0.3 },
+      );
+      io.observe(panel);
+    }
+  }
+</script>

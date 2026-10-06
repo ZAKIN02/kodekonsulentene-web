@@ -1,0 +1,160 @@
+{
+ "navn": "verktoy",
+ "url": "https://kodekonsulentene.no/verktoy/",
+ "viewport": "1440x900",
+ "hoyde": 4548,
+ "aksentBruk": 8,
+ "aksentTreff": [
+  "a.skip",
+  "a.",
+  "a.kk-btn",
+  "span.nr",
+  "span.kk-eyebrow-n",
+  "span.kk-eyebrow-n",
+  "span.kk-eyebrow-n",
+  "a.kk-btn"
+ ],
+ "blodning": 2,
+ "blodningEkte": 2,
+ "objekter": 5,
+ "transform": 16,
+ "animasjoner": [
+  "avslor-inn",
+  "scene-strek",
+  "avslor-ord",
+  ""
+ ],
+ "unikeSkriftstorrelser": 13,
+ "videoer": [
+  {
+   "src": "",
+   "w": 1054,
+   "h": 593,
+   "opasitet": 0,
+   "mix": "normal",
+   "filter": "none",
+   "autoplay": false,
+   "loop": false,
+   "paused": true,
+   "readyState": 0,
+   "varighet": null,
+   "posisjon": 0,
+   "preload": "none",
+   "poster": true
+  }
+ ],
+ "seksjoner": [
+  {
+   "tag": "section",
+   "klasse": "scene scene--lav",
+   "topp": 80,
+   "h": 1291,
+   "tittel": "Verktøy du kan kjøre selv"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene",
+   "topp": 1371,
+   "h": 985,
+   "tittel": "Sjekken som kjører"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene",
+   "topp": 2356,
+   "h": 718,
+   "tittel": "Motoren er åpen kildekode"
+  },
+  {
+   "tag": "section",
+   "klasse": "section",
+   "topp": 3074,
+   "h": 1108,
+   "tittel": "Snakk med den som koder"
+  }
+ ],
+ "stopp": [
+  {
+   "i": 0,
+   "y": 0,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Verktøy du kan kjøre selv"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 1,
+   "y": 608,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Verktøy du kan kjøre selv",
+    "Sjekken som kjører"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 2,
+   "y": 1216,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Verktøy du kan kjøre selv",
+    "Sjekken som kjører"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 3,
+   "y": 1824,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Sjekken som kjører",
+    "Motoren er åpen kildekode"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 4,
+   "y": 2432,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Motoren er åpen kildekode",
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 5,
+   "y": 3040,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 6,
+   "y": 3648,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  }
+ ],
+ "konsollfeil": []
+}

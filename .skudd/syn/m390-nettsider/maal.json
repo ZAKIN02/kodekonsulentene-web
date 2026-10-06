@@ -1,0 +1,252 @@
+{
+ "navn": "m390-nettsider",
+ "url": "https://kodekonsulentene.no/nettsider/",
+ "viewport": "390x844",
+ "hoyde": 7564,
+ "aksentBruk": 23,
+ "aksentTreff": [
+  "a.skip",
+  "a.",
+  "span.nr",
+  "span.ord",
+  "span.mono-label",
+  "span.mono-label",
+  "span.mono-label",
+  "span.mono-label",
+  "a.kk-btn",
+  "span.kk-eyebrow-n",
+  "span.kk-eyebrow-n",
+  "span.kk-ps",
+  "span.kk-ps",
+  "span.kk-ps",
+  "span.kk-eyebrow-n",
+  "span.kk-step-n",
+  "span.kk-step-n",
+  "span.kk-step-n",
+  "span.kk-step-n",
+  "span.kk-eyebrow-n"
+ ],
+ "blodning": 3,
+ "blodningEkte": 0,
+ "objekter": 10,
+ "transform": 40,
+ "animasjoner": [
+  "avslor-inn",
+  "snitt-tones-inn",
+  "snitt-tegnes",
+  "scene-strek",
+  "avslor-ord",
+  "avslor-dybde",
+  "",
+  "steg-strek",
+  "steg-nr"
+ ],
+ "unikeSkriftstorrelser": 12,
+ "videoer": [
+  {
+   "src": "",
+   "w": 340,
+   "h": 191,
+   "opasitet": 0,
+   "mix": "normal",
+   "filter": "none",
+   "autoplay": false,
+   "loop": false,
+   "paused": true,
+   "readyState": 0,
+   "varighet": null,
+   "posisjon": 0,
+   "preload": "none",
+   "poster": true
+  },
+  {
+   "src": "",
+   "w": 390,
+   "h": 1026,
+   "opasitet": 0.35,
+   "mix": "normal",
+   "filter": "none",
+   "autoplay": false,
+   "loop": false,
+   "paused": true,
+   "readyState": 0,
+   "varighet": null,
+   "posisjon": 0,
+   "preload": "none",
+   "poster": true
+  }
+ ],
+ "seksjoner": [
+  {
+   "tag": "section",
+   "klasse": "scene scene--lav",
+   "topp": 166,
+   "h": 1059,
+   "tittel": "En nettside som faktisk blir funnet"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene",
+   "topp": 1225,
+   "h": 1647,
+   "tittel": "Fire krav vi setter selv"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene flate--varm",
+   "topp": 2872,
+   "h": 990,
+   "tittel": "Hva det er bygget av"
+  },
+  {
+   "tag": "div",
+   "klasse": "scenefilm-ramme",
+   "topp": 3862,
+   "h": 1026,
+   "tittel": "Fra samtale til lansering"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene",
+   "topp": 4888,
+   "h": 464,
+   "tittel": "14 900 kr eller 29 900 kr"
+  },
+  {
+   "tag": "section",
+   "klasse": "section",
+   "topp": 5352,
+   "h": 1486,
+   "tittel": "Snakk med den som koder"
+  }
+ ],
+ "stopp": [
+  {
+   "i": 0,
+   "y": 0,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "En nettside som faktisk blir funnet"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 1,
+   "y": 672,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "En nettside som faktisk blir funnet",
+    "Fire krav vi setter selv"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 2,
+   "y": 1344,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Fire krav vi setter selv"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 3,
+   "y": 2016,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Fire krav vi setter selv"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 4,
+   "y": 2688,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Fire krav vi setter selv",
+    "Hva det er bygget av"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 5,
+   "y": 3360,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Hva det er bygget av",
+    "Fra samtale til lansering"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 6,
+   "y": 4032,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Fra samtale til lansering"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 7,
+   "y": 4704,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Fra samtale til lansering",
+    "14 900 kr eller 29 900 kr",
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 8,
+   "y": 5376,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 9,
+   "y": 6048,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 10,
+   "y": 6720,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  }
+ ],
+ "konsollfeil": []
+}

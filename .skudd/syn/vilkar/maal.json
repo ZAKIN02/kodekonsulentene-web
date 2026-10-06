@@ -1,0 +1,97 @@
+{
+ "navn": "vilkar",
+ "url": "https://kodekonsulentene.no/vilkar/",
+ "viewport": "1440x900",
+ "hoyde": 3978,
+ "aksentBruk": 3,
+ "aksentTreff": [
+  "a.skip",
+  "a.kk-btn",
+  "span.kk-eyebrow-n"
+ ],
+ "blodning": 0,
+ "blodningEkte": 0,
+ "objekter": 0,
+ "transform": 0,
+ "animasjoner": [],
+ "unikeSkriftstorrelser": 9,
+ "videoer": [],
+ "seksjoner": [
+  {
+   "tag": "section",
+   "klasse": "section",
+   "topp": 80,
+   "h": 3532,
+   "tittel": "Salgsvilkår"
+  }
+ ],
+ "stopp": [
+  {
+   "i": 0,
+   "y": 0,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Salgsvilkår"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 1,
+   "y": 616,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Salgsvilkår"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 2,
+   "y": 1231,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Salgsvilkår"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 3,
+   "y": 1847,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Salgsvilkår"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 4,
+   "y": 2462,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Salgsvilkår"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 5,
+   "y": 3078,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Salgsvilkår"
+   ],
+   "videoerSpiller": 0
+  }
+ ],
+ "konsollfeil": []
+}

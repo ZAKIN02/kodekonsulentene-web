@@ -1,0 +1,75 @@
+{
+ "navn": "personvern",
+ "url": "https://kodekonsulentene.no/personvern/",
+ "viewport": "1440x900",
+ "hoyde": 2799,
+ "aksentBruk": 3,
+ "aksentTreff": [
+  "a.skip",
+  "a.kk-btn",
+  "span.kk-eyebrow-n"
+ ],
+ "blodning": 0,
+ "blodningEkte": 0,
+ "objekter": 0,
+ "transform": 0,
+ "animasjoner": [],
+ "unikeSkriftstorrelser": 9,
+ "videoer": [],
+ "seksjoner": [
+  {
+   "tag": "section",
+   "klasse": "section",
+   "topp": 80,
+   "h": 2353,
+   "tittel": "Personvernerklæring"
+  }
+ ],
+ "stopp": [
+  {
+   "i": 0,
+   "y": 0,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Personvernerklæring"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 1,
+   "y": 633,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Personvernerklæring"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 2,
+   "y": 1266,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Personvernerklæring"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 3,
+   "y": 1899,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Personvernerklæring"
+   ],
+   "videoerSpiller": 0
+  }
+ ],
+ "konsollfeil": []
+}

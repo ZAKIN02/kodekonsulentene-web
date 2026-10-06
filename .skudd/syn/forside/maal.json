@@ -1,0 +1,324 @@
+{
+ "navn": "forside",
+ "url": "https://kodekonsulentene.no/",
+ "viewport": "1440x900",
+ "hoyde": 10155,
+ "aksentBruk": 38,
+ "aksentTreff": [
+  "a.skip",
+  "a.kk-btn",
+  "em.",
+  "a.kk-btn",
+  "span.kk-prompt",
+  "button.kk-btn",
+  "span.hero__live-prikk",
+  "span.kk-ps",
+  "span.kk-cursor",
+  "span.nokkeltall__verdi",
+  "span.kk-eyebrow-n",
+  "span.kk-eyebrow-n",
+  "span.kk-eyebrow-n",
+  "path.[object",
+  "span.kk-eyebrow-n",
+  "span.kk-prompt",
+  "button.kk-btn",
+  "span.kk-eyebrow-n",
+  "span.kk-step-n",
+  "span.kk-step-n"
+ ],
+ "blodning": 3,
+ "blodningEkte": 3,
+ "objekter": 17,
+ "transform": 76,
+ "animasjoner": [
+  "hero-puls",
+  "kk-blink",
+  "avslor-inn",
+  "",
+  "avslor-ord",
+  "rett-seg-opp",
+  "scene-strek",
+  "flyt-tegnes",
+  "flyt-tones-inn",
+  "steg-strek",
+  "steg-nr",
+  "mega-ord"
+ ],
+ "unikeSkriftstorrelser": 16,
+ "videoer": [
+  {
+   "src": "hist2-apne-1280.mp4",
+   "w": 1440,
+   "h": 792,
+   "opasitet": 0.85,
+   "mix": "normal",
+   "filter": "none",
+   "autoplay": false,
+   "loop": false,
+   "paused": true,
+   "readyState": 4,
+   "varighet": 10.8,
+   "posisjon": 0,
+   "preload": "auto",
+   "poster": true
+  },
+  {
+   "src": "",
+   "w": 1438,
+   "h": 808,
+   "opasitet": 0,
+   "mix": "normal",
+   "filter": "none",
+   "autoplay": false,
+   "loop": true,
+   "paused": true,
+   "readyState": 0,
+   "varighet": null,
+   "posisjon": 0,
+   "preload": "none",
+   "poster": true
+  }
+ ],
+ "seksjoner": [
+  {
+   "tag": "section",
+   "klasse": "hero",
+   "topp": 80,
+   "h": 702,
+   "tittel": "Nettsider og systemer som jobber for bedriften din"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene scene--lav bevisrad flate flate--motsatt",
+   "topp": 782,
+   "h": 311,
+   "tittel": "var e=document.querySelectorAll(`[data-nokkeltall-te"
+  },
+  {
+   "tag": "div",
+   "klasse": "scenefilm-ramme",
+   "topp": 1093,
+   "h": 792,
+   "tittel": "Tre ting vi gjør"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene scene--lav",
+   "topp": 1885,
+   "h": 1195,
+   "tittel": "Hva vi bygger"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene scene--bred scene--lav flate flate--motsatt",
+   "topp": 3080,
+   "h": 1024,
+   "tittel": "Sjekk nettsiden din gratis"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene scene--bred",
+   "topp": 4104,
+   "h": 1437,
+   "tittel": "Fire steg, kjente tider"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene scene--bred flate flate--aksent",
+   "topp": 5541,
+   "h": 1414,
+   "tittel": "Prisene står her"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene",
+   "topp": 6956,
+   "h": 880,
+   "tittel": "Ingen mellomledd"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene scene--bred scene--lav",
+   "topp": 7836,
+   "h": 845,
+   "tittel": "Det folk spør om først"
+  },
+  {
+   "tag": "section",
+   "klasse": "section",
+   "topp": 8681,
+   "h": 1108,
+   "tittel": "Snakk med den som koder"
+  }
+ ],
+ "stopp": [
+  {
+   "i": 0,
+   "y": 0,
+   "snitt": 0.0153,
+   "andelEndret": 0.01,
+   "byteAvvik": 160,
+   "seksjoner": [
+    "Nettsider og systemer som jobber for bedrift",
+    "scene scene--lav bevisrad flate flate--motsa"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 1,
+   "y": 712,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "scene scene--lav bevisrad flate flate--motsa",
+    "Tre ting vi gjør"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 2,
+   "y": 1424,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Tre ting vi gjør",
+    "Hva vi bygger"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 3,
+   "y": 2136,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Hva vi bygger"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 4,
+   "y": 2848,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Hva vi bygger",
+    "Sjekk nettsiden din gratis",
+    "slep__panel slep__panel--for",
+    "slep__panel slep__panel--etter"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 5,
+   "y": 3560,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Sjekk nettsiden din gratis",
+    "slep__panel slep__panel--for",
+    "slep__panel slep__panel--etter",
+    "Fire steg, kjente tider"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 6,
+   "y": 4272,
+   "snitt": 2.1093,
+   "andelEndret": 4.67,
+   "byteAvvik": 444,
+   "seksjoner": [
+    "Fire steg, kjente tider"
+   ],
+   "videoerSpiller": 1
+  },
+  {
+   "i": 7,
+   "y": 4983,
+   "snitt": 3.3724,
+   "andelEndret": 6.02,
+   "byteAvvik": 204,
+   "seksjoner": [
+    "Fire steg, kjente tider",
+    "Prisene står her"
+   ],
+   "videoerSpiller": 1
+  },
+  {
+   "i": 8,
+   "y": 5695,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Prisene står her"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 9,
+   "y": 6407,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Prisene står her",
+    "Ingen mellomledd"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 10,
+   "y": 7119,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Ingen mellomledd",
+    "Det folk spør om først"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 11,
+   "y": 7831,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Det folk spør om først"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 12,
+   "y": 8543,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Det folk spør om først",
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 13,
+   "y": 9255,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  }
+ ],
+ "konsollfeil": []
+}

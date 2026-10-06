@@ -1,0 +1,150 @@
+{
+ "navn": "caser",
+ "url": "https://kodekonsulentene.no/caser/",
+ "viewport": "1440x900",
+ "hoyde": 5130,
+ "aksentBruk": 8,
+ "aksentTreff": [
+  "a.skip",
+  "a.kk-btn",
+  "span.nr",
+  "span.ord",
+  "span.kk-eyebrow-n",
+  "span.nr",
+  "span.kk-eyebrow-n",
+  "a.kk-btn"
+ ],
+ "blodning": 10,
+ "blodningEkte": 0,
+ "objekter": 5,
+ "transform": 3,
+ "animasjoner": [
+  "avslor-skjev",
+  "",
+  "avslor-inn"
+ ],
+ "unikeSkriftstorrelser": 14,
+ "videoer": [
+  {
+   "src": "lev-caser-1280.mp4",
+   "w": 1061,
+   "h": 613,
+   "opasitet": 0.396,
+   "mix": "normal",
+   "filter": "none",
+   "autoplay": false,
+   "loop": true,
+   "paused": false,
+   "readyState": 4,
+   "varighet": 8,
+   "posisjon": 3.1,
+   "preload": "none",
+   "poster": true
+  }
+ ],
+ "seksjoner": [
+  {
+   "tag": "section",
+   "klasse": "scene scene--lav",
+   "topp": 80,
+   "h": 1645,
+   "tittel": "Problem, løsning, resultat"
+  },
+  {
+   "tag": "section",
+   "klasse": "horisont",
+   "topp": 1725,
+   "h": 2007,
+   "tittel": "Derfor er listen kort"
+  },
+  {
+   "tag": "section",
+   "klasse": "section",
+   "topp": 3732,
+   "h": 1032,
+   "tittel": "Vil du bli den neste?"
+  }
+ ],
+ "stopp": [
+  {
+   "i": 0,
+   "y": 0,
+   "snitt": 0.0582,
+   "andelEndret": 0.03,
+   "byteAvvik": 187,
+   "seksjoner": [
+    "Problem, løsning, resultat"
+   ],
+   "videoerSpiller": 1
+  },
+  {
+   "i": 1,
+   "y": 705,
+   "snitt": 0.4126,
+   "andelEndret": 0.64,
+   "byteAvvik": 389,
+   "seksjoner": [
+    "Problem, løsning, resultat"
+   ],
+   "videoerSpiller": 1
+  },
+  {
+   "i": 2,
+   "y": 1410,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Problem, løsning, resultat",
+    "Derfor er listen kort"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 3,
+   "y": 2115,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Derfor er listen kort"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 4,
+   "y": 2820,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Derfor er listen kort"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 5,
+   "y": 3525,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Derfor er listen kort",
+    "Vil du bli den neste?"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 6,
+   "y": 4230,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Vil du bli den neste?"
+   ],
+   "videoerSpiller": 0
+  }
+ ],
+ "konsollfeil": []
+}

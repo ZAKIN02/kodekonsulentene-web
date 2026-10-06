@@ -28,8 +28,17 @@ const { poster = bevis, navn = "Målte tall for denne siden", class: cls } = Ast
 ---
 <ul class:list={["nokkeltall", cls]} aria-label={navn}>
   {poster.map((p, i) => (
-    <li class:list={["nokkeltall__post", p.accent && "nokkeltall__post--aksent"]}>
-      <span class="nokkeltall__verdi" data-nokkeltall-tell style={`--rad:${i}`}>{p.value}</span>
+    <li class:list={["nokkeltall__post", p.accent && "nokkeltall__post--aksent"]} style={`--rad:${i}`}>
+      <span class="nokkeltall__verdi" data-nokkeltall-tell>{p.value}</span>
+      {/*
+        MÅLESTREKEN. Den er ikke en understreking – den er hvor langt målingen er
+        kommet. Full strek = tallet over er endelig. Derfor står den FULL som
+        standardtilstand: uten JavaScript, ved redusert bevegelse og hvis noe som
+        helst feiler, er målingen ferdig og streken hel.
+
+        `aria-hidden`: den sier det samme som tallet, bare i en annen form.
+      */}
+      <span class="nokkeltall__spor" aria-hidden="true"></span>
       <span class="nokkeltall__merke">{p.label}</span>
     </li>
   ))}
@@ -88,14 +97,55 @@ const { poster = bevis, navn = "Målte tall for denne siden", class: cls } = Ast
     .nokkeltall { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .nokkeltall__post:nth-child(even) { border-inline-start: var(--hairline) solid var(--line); padding-inline-start: var(--space-5); }
   }
+
+  /* ----------------------------------------------------- målestreken ----
+   *
+   * Hvorfor den finnes
+   * ------------------
+   * Opptellingen alene sier «et tall endrer seg». Den sier ikke om det er
+   * underveis eller ferdig, og den sier ingenting mens du ser på et tall som
+   * tilfeldigvis har stått stille i et halvt sekund. Streken er fremdriften:
+   * den fylles i NØYAKTIG samme kurve og samme tid som sifrene teller, så
+   * lengden er hvor langt målingen er kommet. Når den er hel, er tallet
+   * endelig. Det er samme språk som hårlinjen i åpningen bruker, med vilje –
+   * to steder som sier «dette måles nå» på samme måte leses som ett system.
+   *
+   * LÅST SAMMEN MED SKRIPTET. VARIGHET og TRAPP under må være de samme to
+   * tallene som i <script>. Står de ulikt, er streken ikke lenger fremdriften
+   * til noe – den er pynt, og da er vi tilbake der vi startet.
+   *
+   * Standardtilstanden er HEL strek. Uten JavaScript, ved redusert bevegelse,
+   * og hvis observeren aldri fyrer, er målingen ferdig og streken full.
+   * Degraderingen går mot synlig.
+   */
+  .nokkeltall__spor {
+    display: block;
+    block-size: var(--hairline);
+    background: var(--line-strong);
+    transform-origin: left center;
+    transform: none;
+  }
+  /* Aksentfeltet får aksentens tekstfarge, samme par som tallet over. */
+  .nokkeltall__post--aksent .nokkeltall__spor { background: var(--accent-text); }
+
+  .nokkeltall__post[data-maaler] .nokkeltall__spor {
+    animation-name: nokkeltall-maaler;
+    animation-duration: 900ms;
+    /* Ease-out-cubic i CSS-form. Skriptet regner 1 - (1 - t)^3. Samme kurve. */
+    animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+    animation-fill-mode: both;
+    animation-delay: calc(var(--rad, 0) * 220ms);
+  }
+  @keyframes nokkeltall-maaler {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
   }
 
-  /**
-   * Opptellingen trappes 80 ms per rad. Uten trappen starter og stopper alle fire
-   * samtidig, og seksjonen leses fortsatt som et stillbilde.
-   */
   @media (prefers-reduced-motion: reduce) {
-    .nokkeltall__verdi { --tell-av: 1; }
+    .nokkeltall__post[data-maaler] .nokkeltall__spor {
+      animation: none !important;
+      transform: none !important;
+    }
   }
 </style>
 
@@ -116,7 +166,20 @@ const { poster = bevis, navn = "Målte tall for denne siden", class: cls } = Ast
   const tall = document.querySelectorAll<HTMLElement>("[data-nokkeltall-tell]");
   if (tall.length && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
     const VARIGHET = 900;
-    const TRAPP = 80;
+    /**
+     * 220 ms, ikke 80.
+     *
+     * MÅLT: med 80 ms var fire tall ferdige innenfor 1,14 sekund, og i et opptak
+     * av forsiden kunne vi ikke skille dem fra hverandre – de startet og stoppet
+     * praktisk talt samtidig, og raden leses da som ett blink, ikke som fire
+     * målinger. 220 ms gjør rekkefølgen lesbar: feltene måles ETTER HVERANDRE,
+     * venstre mot høyre, i den rekkefølgen en skanning faktisk går. Rekkefølgen
+     * er informasjon, ikke pynt.
+     *
+     * MÅ være samme tall som `animation-delay`-faktoren i <style>, ellers er
+     * målestreken ikke lenger fremdriften til opptellingen.
+     */
+    const TRAPP = 220;
 
     const io = new IntersectionObserver(
       (poster) => {
@@ -131,11 +194,20 @@ const { poster = bevis, navn = "Målte tall for denne siden", class: cls } = Ast
           const [, foer, raa, etter] = m;
           const maal = Number(raa.replace(",", "."));
           const desimaler = raa.includes(",") ? 1 : 0;
-          const forsinkelse = Number(el.style.getPropertyValue("--rad") || 0) * TRAPP;
+          // `--rad` står på <li>, ikke på tallet. Egendefinerte egenskaper arves,
+          // så getComputedStyle finner den – og da kan både tallet, streken og
+          // forsinkelsen lese ETT tall fra ETT sted.
+          const rad = Number(getComputedStyle(el).getPropertyValue("--rad") || 0);
+          const forsinkelse = rad * TRAPP;
 
           // Bredden låses til sluttverdien før tellingen, ellers vokser cellen
           // mens sifrene skifter og hele raden rykker sidelengs.
           el.style.minInlineSize = `${el.getBoundingClientRect().width}px`;
+
+          // Målestreken starter i SAMME setning som opptellingen, så de to kan
+          // ikke komme ut av fase. Den egne forsinkelsen ligger i CSS-en og
+          // leser samme `--rad`.
+          el.closest(".nokkeltall__post")?.setAttribute("data-maaler", "");
 
           const start = performance.now() + forsinkelse;
           const steg = (naa: number) => {
@@ -153,6 +225,55 @@ const { poster = bevis, navn = "Målte tall for denne siden", class: cls } = Ast
       },
       { threshold: 0.5 },
     );
-    for (const t of tall) io.observe(t);
+
+    /**
+     * ÅPNINGEN LÅ OVER HELE BEVEGELSEN. Målt på forsiden, i headless Chrome, med
+     * en prøve hver 150. ms fra DOMContentLoaded:
+     *
+     *     162 ms   overlegg opasitet 1,00   tallene: 2/6 | 0 | 0,0 s | 0 t
+     *     467 ms   overlegg opasitet 1,00   tallene: 5/6 | 0 | 0,1 s | 13 t
+     *     920 ms   overlegg opasitet 1,00   tallene: 6/6 | 0 | 0,1 s | 24 t   ← ferdig
+     *    1071 ms   overlegg opasitet 1,00
+     *    1525 ms   overlegg visibility: hidden                                ← synlig
+     *
+     * Opptellingen var altså ferdig 605 ms FØR overlegget begynte å slippe, og
+     * 1,4 sekund før brukeren kunne se den. Den ene bevegelsen på forsiden som
+     * faktisk bærer informasjon spilte for et ugjennomsiktig lag, hver gang.
+     * Etter det sto siden i praksis stille: 45–173 endrede piksler per 200 ms,
+     * som er markøren i terminalen.
+     *
+     * Rettingen venter på at overlegget er ute. Vi leser IKKE Åpningens 1500 ms
+     * – det ville vært to steder som eier samme tall – men hører på
+     * `animationend` fra flaten selv. Nettet under er en tidsavbrudd: kommer
+     * hendelsen aldri (bakgrunnsfane, animasjon avbrutt, flaten fjernet), teller
+     * vi likevel. Å feile mot «tell» er riktig vei; tallene står som ferdig tekst
+     * uansett.
+     */
+    const start = () => { for (const t of tall) io.observe(t); };
+    const flate = document.documentElement.dataset.apning
+      ? document.querySelector("[data-apning-flate]")
+      : null;
+
+    if (flate) {
+      let gjort = false;
+      const naa = () => { if (!gjort) { gjort = true; start(); } };
+      /**
+       * `e.target === flate` ER PÅKREVD, og det kostet en måling å finne ut.
+       *
+       * `animationend` BOBLER. Åpningen har fire animasjoner inni seg – merket
+       * på 200 ms, de tre radene på 300, hårlinjen på 1150 – og alle fire
+       * melder opp til flaten. Første versjon lyttet med `{ once: true }` uten
+       * å se på målet, og startet derfor på radens animationend ved ~350 ms.
+       * Målt: opptellingen begynte på 314 ms, med overlegget fortsatt på
+       * opasitet 1,00. Altså nøyaktig den feilen rettingen skulle fjerne, bare
+       * med en ny årsak. Bare flaten selv kjører `apning-bort`.
+       */
+      flate.addEventListener("animationend", (e) => {
+        if (e.target === flate) naa();
+      });
+      setTimeout(naa, 2200);
+    } else {
+      start();
+    }
   }
 </script>

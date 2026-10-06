@@ -1,0 +1,174 @@
+{
+ "navn": "verktoy-priskalkulator",
+ "url": "https://kodekonsulentene.no/verktoy/priskalkulator/",
+ "viewport": "1440x900",
+ "hoyde": 5794,
+ "aksentBruk": 12,
+ "aksentTreff": [
+  "a.skip",
+  "a.",
+  "a.kk-btn",
+  "span.nr",
+  "label.row",
+  "span.",
+  "span.kk-eyebrow-n",
+  "a.kk-btn",
+  "span.kk-eyebrow-n",
+  "span.kk-eyebrow-n",
+  "span.kk-eyebrow-n",
+  "a.kk-btn"
+ ],
+ "blodning": 2,
+ "blodningEkte": 2,
+ "objekter": 7,
+ "transform": 18,
+ "animasjoner": [
+  "scene-strek",
+  "avslor-inn",
+  "avslor-ord",
+  ""
+ ],
+ "unikeSkriftstorrelser": 13,
+ "videoer": [
+  {
+   "src": "",
+   "w": 1054,
+   "h": 593,
+   "opasitet": 0,
+   "mix": "normal",
+   "filter": "none",
+   "autoplay": false,
+   "loop": false,
+   "paused": true,
+   "readyState": 0,
+   "varighet": null,
+   "posisjon": 0,
+   "preload": "none",
+   "poster": true
+  }
+ ],
+ "seksjoner": [
+  {
+   "tag": "section",
+   "klasse": "scene scene--lav",
+   "topp": 80,
+   "h": 1230,
+   "tittel": "Hva koster det?"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene",
+   "topp": 1310,
+   "h": 2136,
+   "tittel": "Dette ligger bak tallene"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene",
+   "topp": 3446,
+   "h": 950,
+   "tittel": "Hva andre tar"
+  },
+  {
+   "tag": "section",
+   "klasse": "section",
+   "topp": 4396,
+   "h": 1032,
+   "tittel": "Vil du ha fast pris?"
+  }
+ ],
+ "stopp": [
+  {
+   "i": 0,
+   "y": 0,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Hva koster det?"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 1,
+   "y": 699,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Hva koster det?",
+    "Dette ligger bak tallene"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 2,
+   "y": 1398,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Dette ligger bak tallene"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 3,
+   "y": 2097,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Dette ligger bak tallene"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 4,
+   "y": 2797,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Dette ligger bak tallene",
+    "Hva andre tar"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 5,
+   "y": 3496,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Hva andre tar"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 6,
+   "y": 4195,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Hva andre tar",
+    "Vil du ha fast pris?"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 7,
+   "y": 4894,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Vil du ha fast pris?"
+   ],
+   "videoerSpiller": 0
+  }
+ ],
+ "konsollfeil": []
+}

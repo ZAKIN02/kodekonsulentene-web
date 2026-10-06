@@ -1,0 +1,193 @@
+{
+ "navn": "priser",
+ "url": "https://kodekonsulentene.no/priser/",
+ "viewport": "1440x900",
+ "hoyde": 5318,
+ "aksentBruk": 14,
+ "aksentTreff": [
+  "a.skip",
+  "a.",
+  "a.kk-btn",
+  "span.nr",
+  "span.ord",
+  "span.kk-flag",
+  "a.kk-btn",
+  "span.kk-eyebrow-n",
+  "span.kk-eyebrow-n",
+  "span.kk-eyebrow-n",
+  "span.kk-eyebrow-n",
+  "a.kk-btn",
+  "span.kk-eyebrow-n",
+  "a.kk-btn"
+ ],
+ "blodning": 5,
+ "blodningEkte": 5,
+ "objekter": 5,
+ "transform": 35,
+ "animasjoner": [
+  "avslor-dybde",
+  "scene-strek",
+  "avslor-inn",
+  "avslor-ord",
+  ""
+ ],
+ "unikeSkriftstorrelser": 13,
+ "videoer": [
+  {
+   "src": "",
+   "w": 1440,
+   "h": 495,
+   "opasitet": 0.35,
+   "mix": "normal",
+   "filter": "none",
+   "autoplay": false,
+   "loop": false,
+   "paused": true,
+   "readyState": 0,
+   "varighet": null,
+   "posisjon": 0,
+   "preload": "none",
+   "poster": true
+  }
+ ],
+ "seksjoner": [
+  {
+   "tag": "section",
+   "klasse": "scene scene--lav",
+   "topp": 80,
+   "h": 960,
+   "tittel": "Prisene står her"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene flate--varm",
+   "topp": 1040,
+   "h": 860,
+   "tittel": "Drift, abonnement og timer"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene",
+   "topp": 1900,
+   "h": 865,
+   "tittel": "Hvorfor ikke 499 kr i måneden"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene",
+   "topp": 2765,
+   "h": 584,
+   "tittel": "Om pris og binding"
+  },
+  {
+   "tag": "div",
+   "klasse": "scenefilm-ramme",
+   "topp": 3349,
+   "h": 495,
+   "tittel": "Vet du ikke hva du trenger?"
+  },
+  {
+   "tag": "section",
+   "klasse": "section",
+   "topp": 3844,
+   "h": 1108,
+   "tittel": "Snakk med den som koder"
+  }
+ ],
+ "stopp": [
+  {
+   "i": 0,
+   "y": 0,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Prisene står her"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 1,
+   "y": 631,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Prisene står her",
+    "Drift, abonnement og timer"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 2,
+   "y": 1262,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Drift, abonnement og timer",
+    "Hvorfor ikke 499 kr i måneden"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 3,
+   "y": 1893,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Hvorfor ikke 499 kr i måneden"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 4,
+   "y": 2525,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Hvorfor ikke 499 kr i måneden",
+    "Om pris og binding"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 5,
+   "y": 3156,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Om pris og binding",
+    "Vet du ikke hva du trenger?",
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 6,
+   "y": 3787,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 7,
+   "y": 4418,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  }
+ ],
+ "konsollfeil": []
+}

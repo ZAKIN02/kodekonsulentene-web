@@ -28,8 +28,34 @@ interface Props {
    *  - «dybde»   er ikke en inngang i det hele tatt, men kontinuerlig parallakse
    *              så lenge elementet overlapper vinduet. To elementer med ulik
    *              `dybde` drar fra hverandre, og DET er det som leses som rom.
+   *
+   * De to siste er de eneste som BÆRER INFORMASJON. Alle de fem over er
+   * utbyttbare: bytt innholdet, og gesten passer like godt. Disse to kan brukes
+   * feil, og det er beviset på at de sier noe:
+   *
+   *  - «rekke»   barna lander ETT OM GANGEN, i dokumentrekkefølge, lest av én
+   *              felles klokke. Budskapet er at rekkefølgen betyr noe. Feil på
+   *              innhold uten rekkefølge.
+   *  - «spor»    punktet lander, innholdet kommer med det, og DERETTER tegner
+   *              veien seg nedover mot neste punkt. Budskapet er at dette er et
+   *              sted på en vei. Feil på noe frittstående.
    */
-  fra?: "opp" | "venstre" | "skjev" | "naer" | "dybde";
+  fra?: "opp" | "venstre" | "skjev" | "naer" | "dybde" | "rekke" | "spor";
+  /**
+   * Spiller på TID i stedet for på scroll.
+   *
+   * For innhold som står over folden. En scroll-drevet gest der er ferdig
+   * allerede i første frame og er dermed ingen gest – målt mot referansene sto
+   * siden vår på 153 pikselavvik i ro mot jeton.com sine 485.
+   *
+   * Bonus: tidsdrevne animasjoner virker i EKTE Firefox, som ikke har view().
+   * Dette er den eneste gesten i vokabularet som er identisk i alle nettlesere.
+   *
+   * Gyldig med `fra="opp"`, `"rekke"` og `"spor"`. `straks` overstyrer
+   * `animation-name`, så på `skjev`/`naer`/`dybde` ville den stille spist gesten;
+   * derfor sier vi fra i stedet for å la den gjøre noe halvveis.
+   */
+  straks?: boolean;
   /** Utslag i piksler for `fra="dybde"`. Negativt gir motsatt retning. */
   dybde?: number;
   /** Vinkel for `fra="skjev"`. Over ~4 grader leses det som en feil. */
@@ -42,6 +68,7 @@ interface Props {
 const {
   trinn = 0,
   fra = "opp",
+  straks = false,
   dybde,
   skjev,
   utbrudd = false,
@@ -50,6 +77,23 @@ const {
 } = Astro.props;
 const Tag = as;
 
+/**
+ * `straks` bytter tidslinje OG `animation-name`. På `skjev`, `naer` og `dybde`
+ * ville den derfor spist selve gesten uten at noe feiler synlig – akkurat den
+ * feilklassen som har truffet dette vokabularet før (navnet sto riktig, mens
+ * tidslinjen var «auto», og bevegelsen forsvant uten en lyd). Vi sier fra i
+ * byggeloggen og lar gesten stå, i stedet for å levere noe halvveis.
+ */
+const STRAKS_OK = ["opp", "rekke", "spor"] as const;
+const straksGjelder =
+  straks && (STRAKS_OK as readonly string[]).includes(fra);
+if (straks && !straksGjelder) {
+  console.warn(
+    `[Avslor] straks er ikke støttet med fra="${fra}". ` +
+      `Gyldige: ${STRAKS_OK.join(", ")}. Gesten står, straks ignoreres.`,
+  );
+}
+
 const stil = [
   `--trinn:${trinn}`,
   typeof dybde === "number" ? `--dybde:${dybde}px` : null,
@@ -57,9 +101,16 @@ const stil = [
 ].filter(Boolean).join(";");
 ---
 <Tag
-  class:list={["avslor", `avslor--${fra}`, utbrudd && "avslor--utbrudd", cls]}
+  class:list={[
+    "avslor",
+    `avslor--${fra}`,
+    straksGjelder && "avslor--straks",
+    utbrudd && "avslor--utbrudd",
+    cls,
+  ]}
   style={stil}
   data-avslor
+  data-straks={straksGjelder ? "" : undefined}
 >
   <slot />
 </Tag>
@@ -72,12 +123,21 @@ const stil = [
    *
    * Rekkefølgen er viktig: vi legger på js-avslor FØR vi merker elementene, slik
    * at ingenting rekker å blinke synlig og så bli skjult.
+   *
+   * `:not([data-straks])` er med vilje: `straks`-gestene er TIDSDREVNE og virker
+   * i Firefox helt på egen hånd, uten denne reserven. Lot vi dem bli merket
+   * `data-vent` også, kjørte to mekanismer på samme element – CSS-animasjonen og
+   * en IntersectionObserver som setter opasitet 0 – og det er to kilder til
+   * samme sannhet. Elementet endte synlig uansett, men av to grunner, og da vet
+   * ingen hvilken som faktisk bar bevegelsen.
    */
   const stoetter = CSS.supports("animation-timeline: view()");
   const rolig = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   if (!stoetter && !rolig) {
-    const mål = document.querySelectorAll<HTMLElement>("[data-avslor], [data-stortekst]");
+    const mål = document.querySelectorAll<HTMLElement>(
+      "[data-avslor]:not([data-straks]), [data-stortekst]",
+    );
     if (mål.length) {
       document.documentElement.classList.add("js-avslor");
       for (const el of mål) el.dataset.vent = "";

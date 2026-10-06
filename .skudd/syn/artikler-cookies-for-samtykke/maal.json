@@ -1,0 +1,121 @@
+{
+ "navn": "artikler-cookies-for-samtykke",
+ "url": "https://kodekonsulentene.no/artikler/cookies-for-samtykke/",
+ "viewport": "1440x900",
+ "hoyde": 4549,
+ "aksentBruk": 7,
+ "aksentTreff": [
+  "a.skip",
+  "a.kk-btn",
+  "span.kk-eyebrow-n",
+  "span.kk-ps",
+  "a.kk-btn",
+  "span.kk-eyebrow-n",
+  "a.kk-btn"
+ ],
+ "blodning": 0,
+ "blodningEkte": 0,
+ "objekter": 4,
+ "transform": 0,
+ "animasjoner": [],
+ "unikeSkriftstorrelser": 9,
+ "videoer": [],
+ "seksjoner": [
+  {
+   "tag": "section",
+   "klasse": "section",
+   "topp": 80,
+   "h": 3091,
+   "tittel": "Cookies før samtykke"
+  },
+  {
+   "tag": "section",
+   "klasse": "section",
+   "topp": 3171,
+   "h": 1012,
+   "tittel": "Snakk med den som koder"
+  }
+ ],
+ "stopp": [
+  {
+   "i": 0,
+   "y": 0,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Cookies før samtykke"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 1,
+   "y": 608,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Cookies før samtykke"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 2,
+   "y": 1216,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Cookies før samtykke"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 3,
+   "y": 1825,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Cookies før samtykke"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 4,
+   "y": 2433,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Cookies før samtykke",
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 5,
+   "y": 3041,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Cookies før samtykke",
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 6,
+   "y": 3649,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  }
+ ],
+ "konsollfeil": []
+}

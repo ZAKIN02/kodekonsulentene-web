@@ -1,0 +1,195 @@
+{
+ "navn": "om",
+ "url": "https://kodekonsulentene.no/om/",
+ "viewport": "1440x900",
+ "hoyde": 5283,
+ "aksentBruk": 15,
+ "aksentTreff": [
+  "a.skip",
+  "a.",
+  "a.kk-btn",
+  "span.nr",
+  "span.ord",
+  "span.kk-eyebrow-n",
+  "li.stabel__plate",
+  "span.stabel__nr",
+  "span.stabel__nr",
+  "span.stabel__nr",
+  "span.stabel__nr",
+  "span.kk-eyebrow-n",
+  "span.kk-stat",
+  "span.kk-eyebrow-n",
+  "a.kk-btn"
+ ],
+ "blodning": 3,
+ "blodningEkte": 3,
+ "objekter": 11,
+ "transform": 25,
+ "animasjoner": [
+  "scene-strek",
+  "avslor-inn",
+  "avslor-ord",
+  "avslor-naer",
+  "",
+  "pekerkort-inn"
+ ],
+ "unikeSkriftstorrelser": 14,
+ "videoer": [
+  {
+   "src": "",
+   "w": 970,
+   "h": 545,
+   "opasitet": 0,
+   "mix": "normal",
+   "filter": "none",
+   "autoplay": false,
+   "loop": false,
+   "paused": true,
+   "readyState": 0,
+   "varighet": null,
+   "posisjon": 0,
+   "preload": "none",
+   "poster": true
+  },
+  {
+   "src": "",
+   "w": 1054,
+   "h": 593,
+   "opasitet": 0,
+   "mix": "normal",
+   "filter": "none",
+   "autoplay": false,
+   "loop": false,
+   "paused": true,
+   "readyState": 0,
+   "varighet": null,
+   "posisjon": 0,
+   "preload": "none",
+   "poster": true
+  }
+ ],
+ "seksjoner": [
+  {
+   "tag": "section",
+   "klasse": "scene scene--lav",
+   "topp": 80,
+   "h": 589,
+   "tittel": "Du snakker med den som koder"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene",
+   "topp": 669,
+   "h": 2222,
+   "tittel": "Hvorfor det er bygget slik"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene",
+   "topp": 2891,
+   "h": 804,
+   "tittel": "Hva vi ikke gjør"
+  },
+  {
+   "tag": "section",
+   "klasse": "section",
+   "topp": 3809,
+   "h": 1108,
+   "tittel": "Snakk med den som koder"
+  }
+ ],
+ "stopp": [
+  {
+   "i": 0,
+   "y": 0,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Du snakker med den som koder",
+    "Hvorfor det er bygget slik"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 1,
+   "y": 626,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Hvorfor det er bygget slik"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 2,
+   "y": 1252,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Hvorfor det er bygget slik"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 3,
+   "y": 1878,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Hvorfor det er bygget slik"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 4,
+   "y": 2505,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Hvorfor det er bygget slik",
+    "Hva vi ikke gjør"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 5,
+   "y": 3131,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Hva vi ikke gjør",
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 6,
+   "y": 3757,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 7,
+   "y": 4383,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  }
+ ],
+ "konsollfeil": []
+}

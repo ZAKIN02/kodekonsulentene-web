@@ -1,0 +1,111 @@
+{
+ "navn": "kontakt",
+ "url": "https://kodekonsulentene.no/kontakt/",
+ "viewport": "1440x900",
+ "hoyde": 2939,
+ "aksentBruk": 9,
+ "aksentTreff": [
+  "a.skip",
+  "a.kk-btn",
+  "span.nr",
+  "a.kk-btn",
+  "span.kk-ps",
+  "span.kk-ps",
+  "span.kk-ps",
+  "button.kk-btn",
+  "span.kk-eyebrow-n"
+ ],
+ "blodning": 1,
+ "blodningEkte": 1,
+ "objekter": 5,
+ "transform": 8,
+ "animasjoner": [
+  "avslor-inn",
+  "",
+  "scene-strek",
+  "avslor-ord"
+ ],
+ "unikeSkriftstorrelser": 11,
+ "videoer": [
+  {
+   "src": "skjema-1280.mp4",
+   "w": 1054,
+   "h": 593,
+   "opasitet": 0.456,
+   "mix": "normal",
+   "filter": "none",
+   "autoplay": false,
+   "loop": false,
+   "paused": true,
+   "readyState": 4,
+   "varighet": 6,
+   "posisjon": 0.9,
+   "preload": "auto",
+   "poster": true
+  }
+ ],
+ "seksjoner": [
+  {
+   "tag": "section",
+   "klasse": "scene scene--lav",
+   "topp": 80,
+   "h": 1998,
+   "tittel": "Snakk med den som koder"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene",
+   "topp": 2078,
+   "h": 495,
+   "tittel": "Kjør sjekken først"
+  }
+ ],
+ "stopp": [
+  {
+   "i": 0,
+   "y": 0,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 1,
+   "y": 680,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 2,
+   "y": 1359,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Snakk med den som koder",
+    "Kjør sjekken først"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 3,
+   "y": 2039,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Kjør sjekken først"
+   ],
+   "videoerSpiller": 0
+  }
+ ],
+ "konsollfeil": []
+}

@@ -1,0 +1,56 @@
+{
+ "navn": "terminal",
+ "url": "https://kodekonsulentene.no/terminal/",
+ "viewport": "1440x900",
+ "hoyde": 1487,
+ "aksentBruk": 4,
+ "aksentTreff": [
+  "a.skip",
+  "a.kk-btn",
+  "span.kk-eyebrow-n",
+  "span.kk-ps"
+ ],
+ "blodning": 0,
+ "blodningEkte": 0,
+ "objekter": 0,
+ "transform": 0,
+ "animasjoner": [
+  "kk-blink"
+ ],
+ "unikeSkriftstorrelser": 8,
+ "videoer": [],
+ "seksjoner": [
+  {
+   "tag": "section",
+   "klasse": "section",
+   "topp": 80,
+   "h": 1041,
+   "tittel": "Trykk ~ hvor som helst"
+  }
+ ],
+ "stopp": [
+  {
+   "i": 0,
+   "y": 0,
+   "snitt": 0.0143,
+   "andelEndret": 0.01,
+   "byteAvvik": 79,
+   "seksjoner": [
+    "Trykk ~ hvor som helst"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 1,
+   "y": 587,
+   "snitt": 0.007,
+   "andelEndret": 0,
+   "byteAvvik": 261,
+   "seksjoner": [
+    "Trykk ~ hvor som helst"
+   ],
+   "videoerSpiller": 0
+  }
+ ],
+ "konsollfeil": []
+}

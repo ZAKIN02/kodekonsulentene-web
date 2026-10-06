@@ -108,12 +108,39 @@ flyttes ikke av ett klipp.
 
 ```bash
 set -a; . ~/.config/kodekonsulentene/higgsfield.env; set +a
-node scripts/scene.mjs stor-sveip --fil assets/prompter/stor.json --kun-bilder   # rammer først
-./.skudd/stor-ark.sh stor-sveip                                                  # se på paret
-python3 .skudd/stor-maal.py .skudd/stor/stor-sveip-*.png                         # mål
-node scripts/scene.mjs stor-sveip --fil assets/prompter/stor.json                # så 4K
+node scripts/scene.mjs stor-sveip --fil assets/prompter/stor.json --kun-bilder   # 1 rammer først
+./.skudd/stor-ark.sh stor-sveip                                                  # 2 se på paret
+python3 .skudd/stor-maal.py .skudd/stor/stor-sveip-*.png                         # 3 mål rammene
+node scripts/scene.mjs stor-sveip --fil assets/prompter/stor.json                # 4 så 4K
+python3 .skudd/klipp-maal.py public/scener/stor-sveip-1920.mp4                   # 5 MÅL KLIPPET
 ```
 
 Rekkefølgen er ikke valgfri. Fire agenter har stoppet en morf ved å se på rammeparet
 før klippet ble bestilt, og denne runden stoppet en femte – en scene uten bevegelse i
 det hele tatt.
+
+## Ledd 5 er nytt, og det er grunnen til at `stor-sveip` ikke holder likevel
+
+**Et verifisert rammepar garanterer ikke bevegelse i klippet.** `stor-sveip` har et
+godt par – identisk panelgeometri, lime 7,1 % → 11,6 % – og Kling leverte likevel nær
+stillbilde. Målt med `.skudd/klipp-maal.py`:
+
+| | `stor-sveip` | til sammenligning |
+|---|---|---|
+| total endring (0–255) | **14,69** | `priser` 49,70 |
+| ledd, nabo-rammer | **10,25 · 1,84 · 1,38 · 1,22** | |
+| toppunkt på tidslinjen | **12 %** | prosjektregelen sier ~50 % |
+
+78 % av all endring ligger i første fjerdedel. Sett på filmstripen er rammene 2 til 6
+praktisk talt like: lysveggen blir litt bredere én gang, og så står den.
+
+Årsaken er funnet, og den ligger i prompten, ikke i modellen: `stor.json` er den
+**eneste** promptfila med setningen *«one single continuous movement at constant speed
+that completes around the middle of the clip»*. Den var ment å treffe 50 %-regelen.
+Kling leser den som «vær ferdig til midten». Se `docs/akt.md` for hele researchen og
+for de seks andre punktene der promptene våre går mot leverandørens egen veiledning.
+
+Måleskriptet rapporterer også **kameradrift** via fasekorrelasjon. Det er nødvendig:
+`nettsider` måler 48 av 255 og ser dermed livlig ut, men driften er 181 piksler –
+motivet står stille, det er kameraet som vandrer, og `_bevegelse` forbyr nettopp det.
+Av tolv ferdige klipp har **ingen** tydelig bevegelse uten samtidig kameradrift.

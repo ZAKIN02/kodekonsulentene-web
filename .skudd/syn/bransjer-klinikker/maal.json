@@ -1,0 +1,193 @@
+{
+ "navn": "bransjer-klinikker",
+ "url": "https://kodekonsulentene.no/bransjer/klinikker/",
+ "viewport": "1440x900",
+ "hoyde": 5056,
+ "aksentBruk": 21,
+ "aksentTreff": [
+  "a.skip",
+  "a.kk-btn",
+  "span.nr",
+  "span.ord",
+  "a.kk-btn",
+  "span.kk-eyebrow-n",
+  "span.kk-ps",
+  "span.kk-ps",
+  "span.kk-ps",
+  "path.[object",
+  "span.kk-eyebrow-n",
+  "span.kk-step-n",
+  "span.kk-step-n",
+  "span.kk-step-n",
+  "span.kk-step-n",
+  "span.kk-eyebrow-n",
+  "span.kk-eyebrow-n",
+  "span.kk-prompt",
+  "button.kk-btn",
+  "span.kk-eyebrow-n"
+ ],
+ "blodning": 5,
+ "blodningEkte": 5,
+ "objekter": 10,
+ "transform": 33,
+ "animasjoner": [
+  "avslor-inn",
+  "",
+  "avslor-ord",
+  "flyt-tegnes",
+  "flyt-tones-inn",
+  "scene-strek",
+  "steg-strek",
+  "steg-nr",
+  "pekerkort-inn"
+ ],
+ "unikeSkriftstorrelser": 13,
+ "videoer": [
+  {
+   "src": "lev2-klinikk-1280.mp4",
+   "w": 1440,
+   "h": 964,
+   "opasitet": 0.85,
+   "mix": "normal",
+   "filter": "none",
+   "autoplay": false,
+   "loop": false,
+   "paused": true,
+   "readyState": 4,
+   "varighet": 8,
+   "posisjon": 1.1,
+   "preload": "auto",
+   "poster": true
+  }
+ ],
+ "seksjoner": [
+  {
+   "tag": "section",
+   "klasse": "scene scene--lav",
+   "topp": 80,
+   "h": 573,
+   "tittel": "Timer som bestilles mens dere er stengt"
+  },
+  {
+   "tag": "div",
+   "klasse": "scenefilm-ramme",
+   "topp": 653,
+   "h": 964,
+   "tittel": "Tre tall dere kjenner igjen"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene",
+   "topp": 1617,
+   "h": 893,
+   "tittel": "Fra bestilling til oppgjør"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene",
+   "topp": 2510,
+   "h": 570,
+   "tittel": "Medlemmer, ikke bare timer"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene",
+   "topp": 3080,
+   "h": 502,
+   "tittel": "Sjekk den siden dere har"
+  },
+  {
+   "tag": "section",
+   "klasse": "section",
+   "topp": 3582,
+   "h": 1108,
+   "tittel": "Ta en prat før dere bytter system"
+  }
+ ],
+ "stopp": [
+  {
+   "i": 0,
+   "y": 0,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Timer som bestilles mens dere er stengt",
+    "Tre tall dere kjenner igjen"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 1,
+   "y": 693,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Tre tall dere kjenner igjen"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 2,
+   "y": 1385,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Tre tall dere kjenner igjen",
+    "Fra bestilling til oppgjør"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 3,
+   "y": 2078,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Fra bestilling til oppgjør",
+    "Medlemmer, ikke bare timer"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 4,
+   "y": 2771,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Medlemmer, ikke bare timer",
+    "Sjekk den siden dere har",
+    "Ta en prat før dere bytter system"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 5,
+   "y": 3463,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Sjekk den siden dere har",
+    "Ta en prat før dere bytter system"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 6,
+   "y": 4156,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Ta en prat før dere bytter system"
+   ],
+   "videoerSpiller": 0
+  }
+ ],
+ "konsollfeil": []
+}

@@ -1,0 +1,108 @@
+{
+ "navn": "artikler-35-wcag-krav",
+ "url": "https://kodekonsulentene.no/artikler/35-wcag-krav/",
+ "viewport": "1440x900",
+ "hoyde": 4412,
+ "aksentBruk": 6,
+ "aksentTreff": [
+  "a.skip",
+  "a.kk-btn",
+  "span.kk-eyebrow-n",
+  "a.kk-btn",
+  "span.kk-eyebrow-n",
+  "a.kk-btn"
+ ],
+ "blodning": 0,
+ "blodningEkte": 0,
+ "objekter": 4,
+ "transform": 0,
+ "animasjoner": [],
+ "unikeSkriftstorrelser": 9,
+ "videoer": [],
+ "seksjoner": [
+  {
+   "tag": "section",
+   "klasse": "section",
+   "topp": 80,
+   "h": 2954,
+   "tittel": "De 35 WCAG-kravene"
+  },
+  {
+   "tag": "section",
+   "klasse": "section",
+   "topp": 3034,
+   "h": 1012,
+   "tittel": "Snakk med den som koder"
+  }
+ ],
+ "stopp": [
+  {
+   "i": 0,
+   "y": 0,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "De 35 WCAG-kravene"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 1,
+   "y": 702,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "De 35 WCAG-kravene"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 2,
+   "y": 1405,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "De 35 WCAG-kravene"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 3,
+   "y": 2107,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "De 35 WCAG-kravene"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 4,
+   "y": 2810,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "De 35 WCAG-kravene",
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 5,
+   "y": 3512,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  }
+ ],
+ "konsollfeil": []
+}

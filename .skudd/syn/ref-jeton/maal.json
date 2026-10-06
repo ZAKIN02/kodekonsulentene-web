@@ -1,0 +1,339 @@
+{
+ "navn": "ref-jeton",
+ "url": "https://www.jeton.com/",
+ "viewport": "1440x900",
+ "hoyde": 12473,
+ "aksentBruk": 0,
+ "aksentTreff": [],
+ "blodning": 56,
+ "blodningEkte": 30,
+ "objekter": 62,
+ "transform": 133,
+ "animasjoner": [
+  "coin-loop-neutral"
+ ],
+ "unikeSkriftstorrelser": 10,
+ "videoer": [
+  {
+   "src": "2024-08-08T10-52-53.656Z-jeton-homepage-mobile2.mp4#t=0.01",
+   "w": 1584,
+   "h": 990,
+   "opasitet": 1,
+   "mix": "normal",
+   "filter": "none",
+   "autoplay": false,
+   "loop": true,
+   "paused": false,
+   "readyState": 4,
+   "varighet": 13.3,
+   "posisjon": 4.3,
+   "preload": "metadata",
+   "poster": false
+  },
+  {
+   "src": "2024-08-07T15-59-55.780Z-jeton-3dapp-mobile.mp4#t=0.01",
+   "w": 1440,
+   "h": 1249,
+   "opasitet": 1,
+   "mix": "normal",
+   "filter": "none",
+   "autoplay": false,
+   "loop": true,
+   "paused": true,
+   "readyState": 4,
+   "varighet": 10,
+   "posisjon": 0,
+   "preload": "metadata",
+   "poster": false
+  },
+  {
+   "src": "2024-10-16T16-25-50.395Z-jeton-card-mobile.mp4#t=0.01",
+   "w": 762,
+   "h": 498,
+   "opasitet": 1,
+   "mix": "normal",
+   "filter": "none",
+   "autoplay": false,
+   "loop": true,
+   "paused": true,
+   "readyState": 4,
+   "varighet": 6.7,
+   "posisjon": 0,
+   "preload": "metadata",
+   "poster": false
+  }
+ ],
+ "seksjoner": [
+  {
+   "tag": "section",
+   "klasse": "_hero-introduction",
+   "topp": 900,
+   "h": 3113,
+   "tittel": "Unify your finances"
+  },
+  {
+   "tag": "ul",
+   "klasse": "taglines flex flex-col items-center title-2 no-select",
+   "topp": 2340,
+   "h": 1673,
+   "tittel": "Add"
+  },
+  {
+   "tag": "section",
+   "klasse": "_jeton-walkthrough w-full background-orange",
+   "topp": 4013,
+   "h": 900,
+   "tittel": "All currenciesOne AppMove your money across Europe S"
+  },
+  {
+   "tag": "section",
+   "klasse": "_mobile-app-hero flex flex-col",
+   "topp": 4913,
+   "h": 1249,
+   "tittel": "All your finances, in one app."
+  },
+  {
+   "tag": "section",
+   "klasse": "_jeton-card-overview my-180-64",
+   "topp": 6319,
+   "h": 1151,
+   "tittel": "Contactless payments? Sure. Spending limits? Check. "
+  },
+  {
+   "tag": "section",
+   "klasse": "_currency-exchange-calculator flex flex-col items-center col",
+   "topp": 7470,
+   "h": 1091,
+   "tittel": "Convert fiat cash easily."
+  },
+  {
+   "tag": "section",
+   "klasse": "_client-testimonials relative pb-120-64",
+   "topp": 8561,
+   "h": 1098,
+   "tittel": "Hear it from our clients"
+  },
+  {
+   "tag": "section",
+   "klasse": "_extra-bold-hero grid-stack",
+   "topp": 9658,
+   "h": 870,
+   "tittel": "1 million users, plus you."
+  },
+  {
+   "tag": "form",
+   "klasse": "_form flex flex-col gap-10",
+   "topp": 114,
+   "h": 778,
+   "tittel": "Full NameEmail address+351Phone numberYour messageSe"
+  }
+ ],
+ "stopp": [
+  {
+   "i": 0,
+   "y": 0,
+   "snitt": 4.1314,
+   "andelEndret": 23.88,
+   "byteAvvik": 276,
+   "seksjoner": [],
+   "videoerSpiller": 1
+  },
+  {
+   "i": 1,
+   "y": 681,
+   "snitt": 3.111,
+   "andelEndret": 11.43,
+   "byteAvvik": 138,
+   "seksjoner": [
+    "Unify your finances"
+   ],
+   "videoerSpiller": 1
+  },
+  {
+   "i": 2,
+   "y": 1362,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Unify your finances"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 3,
+   "y": 2042,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Unify your finances"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 4,
+   "y": 2723,
+   "snitt": 0.385,
+   "andelEndret": 0.38,
+   "byteAvvik": 103,
+   "seksjoner": [
+    "Unify your finances"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 5,
+   "y": 3404,
+   "snitt": 0.0068,
+   "andelEndret": 0.02,
+   "byteAvvik": 21,
+   "seksjoner": [
+    "Unify your finances",
+    "SECTION",
+    "_jeton-walkthrough w-full background-orange"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 6,
+   "y": 4085,
+   "snitt": 7.332,
+   "andelEndret": 9.37,
+   "byteAvvik": 128,
+   "seksjoner": [
+    "_jeton-walkthrough w-full background-orange"
+   ],
+   "videoerSpiller": 1
+  },
+  {
+   "i": 7,
+   "y": 4765,
+   "snitt": 0.8962,
+   "andelEndret": 0.97,
+   "byteAvvik": 109,
+   "seksjoner": [
+    "_jeton-walkthrough w-full background-orange"
+   ],
+   "videoerSpiller": 1
+  },
+  {
+   "i": 8,
+   "y": 5446,
+   "snitt": 1.3545,
+   "andelEndret": 5.84,
+   "byteAvvik": 308,
+   "seksjoner": [
+    "All your finances, in one app."
+   ],
+   "videoerSpiller": 1
+  },
+  {
+   "i": 9,
+   "y": 6127,
+   "snitt": 1.2465,
+   "andelEndret": 7.06,
+   "byteAvvik": 166,
+   "seksjoner": [
+    "Contactless payments? Sure. Spending limits?"
+   ],
+   "videoerSpiller": 2
+  },
+  {
+   "i": 10,
+   "y": 6808,
+   "snitt": 1.1951,
+   "andelEndret": 5.3,
+   "byteAvvik": 149,
+   "seksjoner": [
+    "Contactless payments? Sure. Spending limits?",
+    "Convert fiat cash easily."
+   ],
+   "videoerSpiller": 1
+  },
+  {
+   "i": 11,
+   "y": 7488,
+   "snitt": 2.903,
+   "andelEndret": 6.37,
+   "byteAvvik": 116,
+   "seksjoner": [
+    "Convert fiat cash easily."
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 12,
+   "y": 8169,
+   "snitt": 0.0121,
+   "andelEndret": 0.06,
+   "byteAvvik": 610,
+   "seksjoner": [
+    "Convert fiat cash easily.",
+    "Hear it from our clients"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 13,
+   "y": 8850,
+   "snitt": 0.3655,
+   "andelEndret": 0.37,
+   "byteAvvik": 633,
+   "seksjoner": [
+    "Hear it from our clients",
+    "1 million users, plus you."
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 14,
+   "y": 9531,
+   "snitt": 0.9134,
+   "andelEndret": 0.61,
+   "byteAvvik": 132,
+   "seksjoner": [
+    "Hear it from our clients",
+    "1 million users, plus you."
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 15,
+   "y": 10211,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "1 million users, plus you."
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 16,
+   "y": 10892,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 17,
+   "y": 11573,
+   "snitt": 0.8576,
+   "andelEndret": 0.59,
+   "byteAvvik": 342,
+   "seksjoner": [],
+   "videoerSpiller": 0
+  }
+ ],
+ "konsollfeil": [
+  "Loading the script 'https://cloud.umami.is/script.js' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-eval' 'unsafe-inline' widget-mediator.zop",
+  "Loading the image 'https://jeton.com/apple-touch-icon.png' violates the following Content Security Policy directive: \"img-src 'self' data: cdn.sanity.io *.facebook.com *.googletagm",
+  "[primitives/Media] Unable to infer asset type.\nNo 'sources' key found for 'video' type, or 'url' key for 'image type.",
+  "Connecting to 'https://ad.doubleclick.net/ccm/s/collect?auid=1093951181.1791298266&gtm=45He6a21v9192357601za200zd9192357601xeaxf1&fmt=8' violates the following Content Security Pol",
+  "Fetch API cannot load https://ad.doubleclick.net/ccm/s/collect?auid=1093951181.1791298266&gtm=45He6a21v9192357601za200zd9192357601xeaxf1&fmt=8. Refused to connect because it violat",
+  "Loading the image 'https://ad.doubleclick.net/ccm/s/collect?auid=1093951181.1791298266&gtm=45He6a21v9192357601za200zd9192357601xeaxf1&fmt=3' violates the following Content Security"
+ ]
+}

@@ -1,0 +1,251 @@
+{
+ "navn": "apper-og-ai",
+ "url": "https://kodekonsulentene.no/apper-og-ai/",
+ "viewport": "1440x900",
+ "hoyde": 8454,
+ "aksentBruk": 15,
+ "aksentTreff": [
+  "a.skip",
+  "a.",
+  "a.kk-btn",
+  "span.nr",
+  "span.ord",
+  "a.kk-btn",
+  "span.kk-eyebrow-n",
+  "path.[object",
+  "span.kk-eyebrow-n",
+  "span.nr",
+  "span.kk-eyebrow-n",
+  "span.kk-eyebrow-n",
+  "span.kk-ps",
+  "span.kk-eyebrow-n",
+  "a.kk-btn"
+ ],
+ "blodning": 14,
+ "blodningEkte": 4,
+ "objekter": 8,
+ "transform": 45,
+ "animasjoner": [
+  "",
+  "avslor-ord",
+  "flyt-tegnes",
+  "flyt-tones-inn",
+  "scene-strek",
+  "avslor-inn",
+  "pekerkort-inn",
+  "mega-ord"
+ ],
+ "unikeSkriftstorrelser": 16,
+ "videoer": [
+  {
+   "src": "apper-1920.mp4",
+   "w": 1440,
+   "h": 879,
+   "opasitet": 0.85,
+   "mix": "normal",
+   "filter": "none",
+   "autoplay": false,
+   "loop": false,
+   "paused": true,
+   "readyState": 4,
+   "varighet": 8,
+   "posisjon": 0.1,
+   "preload": "auto",
+   "poster": true
+  }
+ ],
+ "seksjoner": [
+  {
+   "tag": "section",
+   "klasse": "scene scene--lav",
+   "topp": 80,
+   "h": 804,
+   "tittel": "Få leverandører tar både nettside og app"
+  },
+  {
+   "tag": "div",
+   "klasse": "scenefilm-ramme",
+   "topp": 884,
+   "h": 879,
+   "tittel": "To flater, én kobling"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene",
+   "topp": 1763,
+   "h": 1140,
+   "tittel": "Tre ting en app løser som en nettside ikke gjør"
+  },
+  {
+   "tag": "section",
+   "klasse": "horisont",
+   "topp": 2903,
+   "h": 2007,
+   "tittel": "Fire steg, ingen overraskelser"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene scene--lav",
+   "topp": 4910,
+   "h": 816,
+   "tittel": "AI som gjør en jobb, ikke AI som pynt"
+  },
+  {
+   "tag": "section",
+   "klasse": "scene",
+   "topp": 5726,
+   "h": 1254,
+   "tittel": "Ett lag som gjør én ting"
+  },
+  {
+   "tag": "section",
+   "klasse": "section",
+   "topp": 6980,
+   "h": 1108,
+   "tittel": "Snakk med den som koder"
+  }
+ ],
+ "stopp": [
+  {
+   "i": 0,
+   "y": 0,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Få leverandører tar både nettside og app"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 1,
+   "y": 687,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Få leverandører tar både nettside og app",
+    "To flater, én kobling"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 2,
+   "y": 1373,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "To flater, én kobling",
+    "Tre ting en app løser som en nettside ikke g"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 3,
+   "y": 2060,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Tre ting en app løser som en nettside ikke g"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 4,
+   "y": 2747,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Tre ting en app løser som en nettside ikke g",
+    "Fire steg, ingen overraskelser"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 5,
+   "y": 3434,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Fire steg, ingen overraskelser"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 6,
+   "y": 4120,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Fire steg, ingen overraskelser",
+    "AI som gjør en jobb, ikke AI som pynt"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 7,
+   "y": 4807,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Fire steg, ingen overraskelser",
+    "AI som gjør en jobb, ikke AI som pynt"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 8,
+   "y": 5494,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "AI som gjør en jobb, ikke AI som pynt",
+    "Ett lag som gjør én ting"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 9,
+   "y": 6181,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Ett lag som gjør én ting",
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 10,
+   "y": 6867,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Ett lag som gjør én ting",
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  },
+  {
+   "i": 11,
+   "y": 7554,
+   "snitt": 0,
+   "andelEndret": 0,
+   "byteAvvik": 0,
+   "seksjoner": [
+    "Snakk med den som koder"
+   ],
+   "videoerSpiller": 0
+  }
+ ],
+ "konsollfeil": []
+}

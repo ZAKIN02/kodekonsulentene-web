@@ -1,0 +1,137 @@
+---
+/**
+ * Laboratorium for bevegelse som BÆRER noe.
+ *
+ * /lab/bevegelse viser de fem inngangsgestene – opp, venstre, skjev, naer,
+ * dybde. Alle fem er utbyttbare: bytt innholdet, og gesten passer like godt.
+ * Denne siden viser de tre tilleggene som IKKE er utbyttbare, og som derfor kan
+ * brukes feil:
+ *
+ *   rekke   – rekkefølgen betyr noe
+ *   spor    – dette er et sted på en vei
+ *   straks  – spiller på tid, ikke på scroll, fordi innholdet står over folden
+ *
+ * Og den viser målestreken i Nokkeltall: en strek som er fremdriften til
+ * opptellingen, ikke en understreking.
+ *
+ * `noindex`, lenkes ikke fra navigasjonen. Filteret i astro.config holder
+ * /lab/* ute av sitemap.
+ */
+import Base from "../../layouts/Base.astro";
+import Section from "../../components/Section.astro";
+import Avslor from "../../components/Avslor.astro";
+import Nokkeltall from "../../components/Nokkeltall.astro";
+import { prosess } from "../../data/prosess";
+/* scener.css bærer grunngesten, som står her som kontroll. */
+import "../../styles/scener.css";
+import "../../styles/interaksjon.css";
+
+const steg = prosess.slice(0, 4);
+---
+
+<Base
+  tittel="Lab: mening"
+  beskrivelse="Bevegelser der selve bevegelsen bærer informasjon: rekke, spor, straks og målestreken."
+  noindex
+>
+  {/*
+    DENNE SEKSJONEN STÅR OVER FOLDEN, og det er hele poenget med `straks`.
+    En scroll-drevet gest her ville vært ferdig i første frame.
+  */}
+  <Section
+    nivaa={1}
+    n={1}
+    eyebrow="Lab · straks + rekke"
+    tittel="Mening"
+    ingress="Tre bevegelser der rekkefølgen, veien eller tiden er budskapet. Sekvensen rett under spiller av seg selv, over folden, uten at du scroller – det er forskjellen vi målte mot referansene. Last siden på nytt for å se den igjen."
+  >
+    <Avslor fra="rekke" straks class="sekvens">
+      <p class="ledd"><span class="ledd__nr">01</span> Du sender adressen</p>
+      <p class="ledd"><span class="ledd__nr">02</span> Sjekken kjører i terminalen</p>
+      <p class="ledd"><span class="ledd__nr">03</span> Rapporten lander i innboksen</p>
+      <p class="ledd"><span class="ledd__nr">04</span> Du vet hva som må fikses</p>
+    </Avslor>
+  </Section>
+
+  <Section n={2} eyebrow="Målestreken" tittel="Streken er fremdriften" ingress="Tallene teller opp til sine ekte verdier mens hårlinjen under fylles i samme kurve og samme tid. Full strek betyr at tallet er endelig. Fire felt, 220 ms mellom hvert, i den rekkefølgen en skanning går.">
+    <Nokkeltall navn="Målte tall, demonstrert med målestrek" />
+  </Section>
+
+  <Section n={3} eyebrow="Rekke" tittel="Rekkefølgen er budskapet" ingress="Scroll-drevet versjon. Leddene lander ETT OM GANGEN, lest av én felles klokke på forelderen. Med view() på hvert barn ville hver forsinkelse blitt regnet i barnets egen inngangsfase – og da starter alle samtidig.">
+    <div class="hoy">
+      <Avslor fra="rekke" class="sekvens">
+        <p class="ledd"><span class="ledd__nr">01</span> Først dette</p>
+        <p class="ledd"><span class="ledd__nr">02</span> Så dette, fordi det bygger på det over</p>
+        <p class="ledd"><span class="ledd__nr">03</span> Så dette</p>
+        <p class="ledd"><span class="ledd__nr">04</span> Og til slutt dette</p>
+        <p class="ledd"><span class="ledd__nr">05</span> Femte ledd, for å se trappen holde</p>
+      </Avslor>
+    </div>
+  </Section>
+
+  <Section n={4} eyebrow="Spor" tittel="Et sted på en vei" ingress="Punktet lander, innholdet kommer med det, og DERETTER tegner veien seg nedover mot neste punkt. Scroll sakte: du ser ankomst – vei – ankomst – vei. Veien videre finnes ikke før du har vært her.">
+    <div class="hoy stabel">
+      {steg.map((s, i) => (
+        <Avslor fra="spor" trinn={i}>
+          <p class="mono-label">Steg {i + 1} — {s.time}</p>
+          <p class="body-lg">{s.title}</p>
+          <p>{s.text}</p>
+        </Avslor>
+      ))}
+    </div>
+  </Section>
+
+  <Section n={5} eyebrow="Kontroll" tittel="Fire tilstander, alle synlige" ingress="Degraderingen går mot synlig, aldri mot skjult.">
+    <ul class="kontroll">
+      <li><strong>Normalt</strong> – scroll-drevet i Chrome og Safari, tidsdrevet der `straks` står.</li>
+      <li><strong>prefers-reduced-motion</strong> – alt står ferdig. Blokken ligger i interaksjon.css, som Avslor importerer selv, så den gjelder uansett om siden henter scener.css.</li>
+      <li><strong>Uten JavaScript</strong> – `rekke`, `spor` og `straks` er ren CSS og virker. Målestreken står hel, fordi hel strek er standardtilstanden.</li>
+      <li><strong>Ekte Firefox</strong> – ingen view(). `straks` virker fullt ut, fordi den er tidsdrevet. `rekke` og `spor` står ferdig, med punktet og veien tegnet.</li>
+    </ul>
+  </Section>
+</Base>
+
+<style>
+  .sekvens {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .ledd {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-4);
+    margin: 0;
+    padding-block: var(--space-4);
+    border-block-end: var(--hairline) solid var(--line);
+    font-size: 18px;
+    line-height: 26px;
+    color: var(--ink);
+  }
+  .ledd__nr {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--accent-text);
+  }
+  /* Høy nok til at inngangsfasen rekker å kjøre ferdig. Uten dette er sekvensen
+     over før elementet er inne i vinduet, og trappen kan ikke måles. */
+  .hoy {
+    min-height: 110svh;
+    display: grid;
+    align-content: center;
+  }
+  .stabel {
+    gap: var(--space-7);
+    align-content: start;
+    padding-block: var(--space-7);
+  }
+  .stabel :global(.avslor--spor > p) { margin: 0 0 var(--space-2); }
+  .kontroll {
+    margin: 0;
+    padding-left: 1.2em;
+    display: grid;
+    gap: var(--space-3);
+    color: var(--ink-muted);
+    max-width: 68ch;
+  }
+  .kontroll strong { color: var(--ink); }
+</style>

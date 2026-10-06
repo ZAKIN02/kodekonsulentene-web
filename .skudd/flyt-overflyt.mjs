@@ -2,7 +2,7 @@
  *  ikke, så en for lang detaljlinje sklir stille inn under naboen. */
 import { chromium } from "playwright";
 const b = await chromium.launch();
-for (const bredde of [1440, 1200, 1000, 901]) {
+for (const bredde of [1440, 1200, 1100, 1024, 1000]) {
   const ctx = await b.newContext({ viewport: { width: bredde, height: 900 }, reducedMotion: "reduce" });
   const p = await ctx.newPage();
   await p.goto(process.argv[2], { waitUntil: "networkidle" });
@@ -11,7 +11,7 @@ for (const bredde of [1440, 1200, 1000, 901]) {
     if (!svg || getComputedStyle(svg).display === "none") return { skjult: true };
     const bokser = [...document.querySelectorAll(".flyt__boks")].map((e) => e.getBBox());
     const verst = [];
-    for (const sel of [".flyt__navn", ".flyt__detalj"]) {
+    for (const sel of [".flyt__navn", ".flyt__detalj", ".flyt__kvitt"]) {
       [...document.querySelectorAll(sel)].forEach((t, i) => {
         const tb = t.getBBox(), bb = bokser[i];
         const over = Math.max(bb.x - tb.x, (tb.x + tb.width) - (bb.x + bb.width));
@@ -29,7 +29,7 @@ const p = await ctx.newPage();
 await p.goto(process.argv[2], { waitUntil: "networkidle" });
 const m = await p.evaluate(() => {
   const svg = document.querySelector(".flyt__svg"), li = document.querySelector(".flyt__liste");
-  return { svgSkjult: getComputedStyle(svg).display === "none", listeSynlig: getComputedStyle(li).position === "static", punkter: li.children.length, drag: document.documentElement.scrollWidth - document.documentElement.clientWidth };
+  return { svgSkjult: getComputedStyle(svg).display === "none", listeSynlig: li.getBoundingClientRect().height > 40, punkter: li.children.length, drag: document.documentElement.scrollWidth - document.documentElement.clientWidth };
 });
 console.log(`   390px  figur skjult: ${m.svgSkjult}  liste synlig: ${m.listeSynlig}  ${m.punkter} punkter  sidelengs drag: ${m.drag}px`);
 await b.close();

@@ -37,7 +37,14 @@ interface Props {
   /** Nummerert etikett over tittelen. */
   merke?: string;
   n?: number;
-  /** Hvor mange skjermhøyder seksjonen strekker seg over. Flere = roligere. */
+  /**
+   * Tak for hvor mange skjermhøyder seksjonen får strekke seg over.
+   *
+   * Den faktiske høyden settes av skriptet ut fra hvor langt sporet VIRKELIG
+   * har å reise. Fast høyde var feilen: med fire kort på 1440 px er vannrett
+   * vei 632 px, men seksjonen krevde 1800 px scroll – du dro to skjermhøyder
+   * for å flytte kortene under halvannen kortbredde. Nå er forholdet 1:1.
+   */
   hoyde?: number;
   class?: string;
 }
@@ -72,8 +79,10 @@ const nr = typeof n === "number" ? String(n).padStart(2, "0") : null;
       {poster.map((p, i) => (
         <article class="horisont__kort">
           <span class="horisont__nr">{p.nr ?? String(i + 1).padStart(2, "0")}</span>
-          <h3 class="horisont__tittel">{p.tittel}</h3>
-          <p class="horisont__tekst">{p.tekst}</p>
+          <div class="horisont__brod">
+            <h3 class="horisont__tittel">{p.tittel}</h3>
+            <p class="horisont__tekst">{p.tekst}</p>
+          </div>
         </article>
       ))}
     </div>
@@ -86,6 +95,75 @@ const nr = typeof n === "number" ? String(n).padStart(2, "0") : null;
   </div>
 </section>
 
+<style>
+  /* Disse reglene ligger her og ikke i typo.css fordi de gjelder elementer
+     DENNE komponenten tegner. Astro gir dem komponentens scope-id, så de har
+     høyere spesifisitet enn basisreglene og vinner uten !important.
+
+     Motsatt vei virker ikke: en side kan ikke style komponentens elementer med
+     en scoped <style>, fordi elementene aldri får sidens scope-id. Den fellen
+     gjorde maskeoverstyringen i SceneFilm til død CSS i ukevis. */
+
+  /* Kortet fylte 198 px av et festet vindu på 900. Resten var tomrom – målt
+     som 192-244 px sammenhengende dødt bånd på fire sider. Nå bærer kortet
+     flaten det står i: tallet øverst, teksten mot foten. */
+  .horisont__kort {
+    width: min(82vw, 460px);
+    min-height: min(34svh, 290px);
+    padding: var(--space-6);
+    align-content: space-between;
+    gap: var(--space-6);
+  }
+
+  /* Tallet som grafikk, ikke som etikett.
+     Første forsøk ga kortet 400 px og skjøv tre små elementer fra topp til bunn.
+     Målingen ble bedre – elementFromPoint traff jo kortflaten – men skjermbildet
+     viste at tomrommet bare hadde flyttet INN i kortet. Et stort tall fyller
+     flaten med noe som faktisk betyr noe, og det er samme grep som Nokkeltall
+     bruker: typografi i stedet for pynt. */
+  .horisont__nr {
+    font-size: clamp(44px, 4.4vw, 76px);
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    color: var(--line-strong);
+    font-weight: 500;
+  }
+  .horisont__brod {
+    display: grid;
+    gap: var(--space-3);
+  }
+  .horisont__tittel {
+    font-size: clamp(26px, 2.4vw, 38px);
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+  .horisont__tekst {
+    font-size: clamp(16px, 1.05vw, 18px);
+    line-height: 1.55;
+    max-width: 34ch;
+  }
+
+  @media (max-width: 720px) {
+    .horisont__kort {
+      width: min(86vw, 360px);
+      min-height: min(32svh, 250px);
+      padding: var(--space-5);
+    }
+    .horisont__nr { font-size: 40px; }
+  }
+
+  /* Redusert bevegelse stabler kortene som en vanlig liste. Da er en minste-
+     høyde på 400 px bare luft mellom avsnitt, så den slås av. */
+  @media (prefers-reduced-motion: reduce) {
+    .horisont__kort {
+      min-height: 0;
+      align-content: start;
+      gap: var(--space-3);
+    }
+    .horisont__nr { font-size: 12px; line-height: 16px; letter-spacing: 0.08em; }
+  }
+</style>
+
 <script>
   for (const rot of document.querySelectorAll<HTMLElement>("[data-horisont]")) {
     const spor = rot.querySelector<HTMLElement>("[data-horisont-spor]");
@@ -94,6 +172,8 @@ const nr = typeof n === "number" ? String(n).padStart(2, "0") : null;
 
     const rolig = matchMedia("(prefers-reduced-motion: reduce)");
     let egenStyring = false;
+    // Propen kommer inn som «300svh» og leses som et tak i skjermhøyder.
+    const taket = Number.parseFloat(rot.style.getPropertyValue("--hoyde")) / 100 || 3;
 
     // Fremdriftslinjen følger sporet uansett hvem som flyttet det.
     const tegnLinje = () => {
@@ -124,10 +204,39 @@ const nr = typeof n === "number" ? String(n).padStart(2, "0") : null;
       spor.scrollLeft = andel * maks;
     };
 
+    /**
+     * Høyden følger hvor langt sporet faktisk har å reise – ikke et fast tall.
+     *
+     * Før: `hoyde={3}` ga 2700 px seksjon uansett innhold. Med fire kort på
+     * 1440 px er vannrett vei bare 632 px, så man dro 1800 px vertikalt for å
+     * flytte kortene 632 px sidelengs. Det er den direkte årsaken til de døde
+     * strekkene som ble målt på /caser, /handbok og /status.
+     *
+     * Nå er forholdet 1:1 – ett piksel scroll gir ett piksel sideveis – med
+     * propen som tak. Da står den klebrige lengden i forhold til hva som skjer.
+     */
+    const settHoyde = () => {
+      const reise = spor.scrollWidth - spor.clientWidth;
+      if (reise <= 0) return 0;
+      const tak = taket * window.innerHeight;
+      // Litt pusterom i hver ende, så første og siste kort rekker å stå stille.
+      const strekk = Math.min(tak, reise + window.innerHeight * 0.35);
+      rot.style.setProperty("--hoyde", `${Math.round(window.innerHeight + strekk)}px`);
+      return strekk;
+    };
+
     const pa = () => {
       if (rolig.matches) {
         delete rot.dataset.fest;
+        rot.style.removeProperty("--hoyde");
         spor.scrollLeft = 0;
+        return;
+      }
+      // En festet seksjon uten noe å reise på er ren dødflate: alt får plass
+      // allerede, og brukeren drar en skjermhøyde for ingenting.
+      if (settHoyde() <= 0) {
+        delete rot.dataset.fest;
+        rot.style.removeProperty("--hoyde");
         return;
       }
       // Festing settes først her: uten JavaScript skal seksjonen aldri bli
@@ -142,6 +251,7 @@ const nr = typeof n === "number" ? String(n).padStart(2, "0") : null;
     addEventListener("scroll", () => {
       if (!planlagt) { planlagt = true; requestAnimationFrame(synk); }
     }, { passive: true });
-    addEventListener("resize", () => { synk(); tegnLinje(); }, { passive: true });
+    // Høyden avhenger av sporets bredde, som endrer seg med vindusbredden.
+    addEventListener("resize", () => { pa(); }, { passive: true });
   }
 </script>

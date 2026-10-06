@@ -43,7 +43,13 @@ Nøkkelen lages på https://console.higgsfield.ai og skal aldri committes.`);
 }
 const NEGATIV = "text, letters, numbers, logos, watermark, people, hands, faces, glossy plastic, neon glow, purple, blue gradient, blur, bokeh, lens flare, sparkles, hologram, floating screens";
 
-config({ credentials: NOKKEL });
+/**
+ * maxPollTime må heves. SDK-ens standard er 300 000 ms, og Kling 3.0 4K bruker
+ * lengre tid enn fem minutter – klienten kastet TimeoutError mens jobben trolig
+ * fullførte hos leverandøren. Rammene var da ferdige og betalt for, men klippet
+ * gikk tapt fordi ingen ventet på det. Gjelder scripts/scene.mjs like mye.
+ */
+config({ credentials: NOKKEL, maxPollTime: 1_800_000 });
 
 const CDN = "https://d3u0tzju9qaucj.cloudfront.net/cc1083fc-6d60-417e-b73b-c64ca48db4c7";
 

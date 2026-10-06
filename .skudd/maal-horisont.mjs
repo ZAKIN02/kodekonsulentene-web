@@ -7,6 +7,62 @@
  */
 import { chromium } from "playwright";
 
+/**
+ * `node .skudd/maal-horisont.mjs <base> <side> --kontroll` kjører de harde
+ * kravene: uten JavaScript, med redusert bevegelse, piltaster, og at vannrett
+ * scroll aldri lager sidelengs drag på siden.
+ */
+if (process.argv.includes("--kontroll")) {
+  const base = process.argv[2], side = process.argv[3];
+  const b = await chromium.launch();
+  const ut = {};
+
+  const c1 = await b.newContext({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } });
+  const p1 = await c1.newPage();
+  await p1.goto(base + side, { waitUntil: "load" });
+  ut.utenJS = await p1.evaluate(() => {
+    const s = document.querySelector("[data-horisont]"), sp = s.querySelector("[data-horisont-spor]");
+    return { fest: s.hasAttribute("data-fest"), hoyde: Math.round(s.getBoundingClientRect().height),
+             kort: sp.children.length, kanDras: sp.scrollWidth > sp.clientWidth,
+             alleTitlerSynlige: [...sp.querySelectorAll(".horisont__tittel")].every((e) => e.getBoundingClientRect().height > 0) };
+  });
+  await c1.close();
+
+  const c2 = await b.newContext({ reducedMotion: "reduce", viewport: { width: 1440, height: 900 } });
+  const p2 = await c2.newPage();
+  await p2.goto(base + side, { waitUntil: "networkidle" });
+  await p2.waitForTimeout(300);
+  ut.redusert = await p2.evaluate(() => {
+    const s = document.querySelector("[data-horisont]"), sp = s.querySelector("[data-horisont-spor]");
+    return { fest: s.hasAttribute("data-fest"),
+             festPosisjon: getComputedStyle(s.querySelector(".horisont__fest")).position,
+             retning: getComputedStyle(sp).flexDirection,
+             kortHoyde: Math.round(sp.children[0].getBoundingClientRect().height),
+             alleSynlige: [...sp.children].every((e) => +getComputedStyle(e).opacity > 0.9) };
+  });
+  await c2.close();
+
+  for (const [navn, vp] of [["skrivebord", { width: 1440, height: 900 }], ["mobil", { width: 390, height: 844 }]]) {
+    const c = await b.newContext({ viewport: vp });
+    const p = await c.newPage();
+    await p.goto(base + side, { waitUntil: "networkidle" });
+    await p.waitForTimeout(300);
+    await p.evaluate(() => document.querySelector("[data-horisont-spor]").focus());
+    const f = await p.evaluate(() => document.querySelector("[data-horisont-spor]").scrollLeft);
+    for (let i = 0; i < 6; i++) await p.keyboard.press("ArrowRight");
+    await p.waitForTimeout(300);
+    const e = await p.evaluate(() => document.querySelector("[data-horisont-spor]").scrollLeft);
+    ut[navn] = {
+      pilFlyttet: e - f,
+      sidelengsDrag: await p.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
+    };
+    await c.close();
+  }
+  console.log(JSON.stringify(ut, null, 1));
+  await b.close();
+  process.exit(0);
+}
+
 const [base, side, breddeArg] = process.argv.slice(2);
 const bredde = Number(breddeArg || 1440);
 const hoyde = bredde < 700 ? 844 : 900;

@@ -42,6 +42,10 @@ const TYPER = {
   ".jpg": "image/jpeg",
   ".webp": "image/webp",
   ".avif": "image/avif",
+  // Scroll-historien spiller MP4. Uten riktig MIME-type sender vi
+  // application/octet-stream, og nettleseren nekter å spille av videoen.
+  ".mp4": "video/mp4",
+  ".webm": "video/webm",
   ".ico": "image/x-icon",
   ".woff2": "font/woff2",
   ".webmanifest": "application/manifest+json",

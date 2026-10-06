@@ -53,3 +53,27 @@ describe("bygget HTML består vår egen sjekk", { skip: filer.length === 0 ? "di
     }
   });
 });
+
+describe("statiske filer har riktig MIME-type", () => {
+  // Feil MIME-type på video gir «application/octet-stream», og da spiller
+  // nettleseren ingenting. Fanget først i produksjon på /historie.
+  test("server.mjs kjenner typene for filene vi faktisk leverer", async () => {
+    const kode = readFileSync("server.mjs", "utf8");
+    for (const ext of [".mp4", ".avif", ".svg", ".css", ".js", ".woff2", ".xml", ".txt"]) {
+      assert.match(kode, new RegExp(`"\\${ext}"\\s*:`), `server.mjs mangler MIME-type for ${ext}`);
+    }
+  });
+
+  test("hver mediefil i public/ har en kjent filtype", () => {
+    if (!existsSync("public")) return;
+    const kjente = new Set([".mp4", ".webm", ".avif", ".png", ".jpg", ".svg", ".webp", ".ico", ".woff2", ".txt", ".json", ".xml", ".js", ".md"]);
+    const gaa = (d: string): string[] =>
+      readdirSync(d, { withFileTypes: true }).flatMap((e) =>
+        e.isDirectory() ? gaa(join(d, e.name)) : [join(d, e.name)],
+      );
+    for (const f of gaa("public")) {
+      const ext = f.slice(f.lastIndexOf("."));
+      assert.ok(kjente.has(ext), `${f} har en filtype serveren ikke kjenner: ${ext}`);
+    }
+  });
+});

@@ -10,11 +10,18 @@
  * AVIF først, WebP som reserve. Begge er bygget fra samme kilde, så nettleseren
  * velger selv uten at vi trenger å vite hva den støtter.
  */
-import bilder from "../data/bilder.json";
+// Alle manifester slås sammen. Ett per promptsett, så parallelle bildeagenter
+// ikke overskriver hverandre. import.meta.glob er ivrig her, så oppslaget er
+// synkront og dimensjonene finnes ved bygg.
+const moduler = import.meta.glob<Record<string, unknown>>("../data/bilder*.json", { eager: true });
+const bilder = Object.values(moduler).reduce<Record<string, any>>(
+  (samlet, m) => Object.assign(samlet, (m as { default?: unknown }).default ?? m),
+  {},
+);
 
 interface Props {
-  /** Nøkkel i src/data/bilder.json: «nart», «tre» eller «rekke». */
-  id: keyof typeof bilder;
+  /** Nøkkel i et av src/data/bilder*.json. */
+  id: string;
   /** Overstyrer alt-teksten fra manifestet. Tom streng gjør bildet dekorativt. */
   alt?: string;
   /** Hvor bred flaten er i oppsettet, til sizes. */

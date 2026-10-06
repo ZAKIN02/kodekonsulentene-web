@@ -48,6 +48,13 @@ const schema = {
     </Avslor>
   </Scene>
 
+  <div class="scenefilm-ramme">
+    <SceneFilm
+      smal="/scener/nettsider-1280.mp4"
+      bred="/scener/nettsider-1920.mp4"
+      plakat="/scener/nettsider-poster.avif"
+      tekst="venstre"
+    />
   <Scene n={2} eyebrow="Hva du får" tittel="Fire krav vi setter selv">
     <Avslor>
     <div class="grid-2">
@@ -86,6 +93,7 @@ const schema = {
     </div>
     </Avslor>
   </Scene>
+  </div>
 
   <Scene n={3} eyebrow="Teknisk" tittel="Hva det er bygget av" ingress="Du trenger ikke å bry deg om dette. Det står her fordi noen spør, og fordi du skal kunne ta det med deg til en annen utvikler.">
     <Avslor>
@@ -116,17 +124,9 @@ const schema = {
     </Avslor>
   </Scene>
 
-  <div class="scenefilm-ramme">
-    <SceneFilm
-      smal="/scener/nettsider-1280.mp4"
-      bred="/scener/nettsider-1920.mp4"
-      plakat="/scener/nettsider-poster.avif"
-      tekst="venstre"
-    />
   <Scene n={4} eyebrow="Prosess" tittel="Fra samtale til lansering">
     <ProcessSteps steps={prosess} />
   </Scene>
-  </div>
 
   <Scene n={5} eyebrow="Pris" tittel="14 900 kr eller 29 900 kr" ingress="Start-pakken er for deg som trenger å finnes og bli ringt. Bedrift er for deg som skal rangere lokalt og endre teksten selv. Begge eks. mva.">
     <Button variant="primary" href="/priser">Se hele prislisten</Button>
@@ -160,8 +160,8 @@ const schema = {
      (5,11:1), fordi ingen av dem ble brukt. Med is:global flyttet tallet seg. */
   @media (min-width: 1200px) {
     .scenefilm-ramme .scenefilm--venstre {
-      -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 62%, rgb(0 0 0 / 0.25) 72%, #000 86%);
-      mask-image: linear-gradient(90deg, transparent 0%, transparent 62%, rgb(0 0 0 / 0.25) 72%, #000 86%);
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 80%, rgb(0 0 0 / 0.25) 88%, #000 96%);
+      mask-image: linear-gradient(90deg, transparent 0%, transparent 80%, rgb(0 0 0 / 0.25) 88%, #000 96%);
     }
   }
 </style>

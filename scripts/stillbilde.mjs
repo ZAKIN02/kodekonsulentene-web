@@ -31,7 +31,12 @@ const NOKKEL = process.env.HF_CREDENTIALS
       ? `${process.env.HIGGSFIELD_API_KEY}:${process.env.HIGGSFIELD_API_SECRET}`
       : null);
 
-const DEF = JSON.parse(readFileSync("assets/prompter/bilder.json", "utf8"));
+// --fil velger promptsett. Uten flagget var stien hardkodet, og parallelle
+// bildeagenter måtte kopiere hele skriptet for å bruke sine egne prompter.
+const filFlagg = process.argv.indexOf("--fil");
+const PROMPTFIL = filFlagg > -1 ? process.argv[filFlagg + 1] : "assets/prompter/bilder.json";
+const OMRADE = PROMPTFIL.replace(/.*\//, "").replace(/\.json$/, "");
+const DEF = JSON.parse(readFileSync(PROMPTFIL, "utf8"));
 const STIL = readFileSync("assets/prompter/stilkort.txt", "utf8").trim();
 const args = process.argv.slice(2);
 
@@ -132,7 +137,9 @@ for (const bredde of BREDDER) {
 }
 
 // Manifest komponenten leser. Dimensjonene her er MÅLT, ikke antatt.
-const manifestSti = "src/data/bilder.json";
+// Ett manifest per promptsett. Da kan flere agenter generere samtidig uten å
+// overskrive hverandres nøkler – det skjedde, og ble meldt fra om.
+const manifestSti = `src/data/bilder-${OMRADE}.json`;
 const manifest = existsSync(manifestSti) ? JSON.parse(readFileSync(manifestSti, "utf8")) : {};
 const storst = varianter.filter((v) => v.format === "avif").sort((a, b) => b.bredde - a.bredde)[0];
 manifest[id] = {

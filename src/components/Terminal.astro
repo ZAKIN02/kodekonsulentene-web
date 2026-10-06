@@ -2,20 +2,60 @@
 // Terminalblokk – alltid mørk, i begge temaer. Dette er den ene flaten som ikke bytter tema.
 // Den eneste komponenten der tekst får «skrive seg selv», fordi det *er* innholdet.
 export interface TerminalLine { type?: "cmd" | "out" | "ok" | "warn" | "fail"; text: string; prompt?: string }
-interface Props { title?: string; label?: string; lines: TerminalLine[]; cursor?: boolean; class?: string }
-const { title = "~/kodekonsulentene", label, lines, cursor = false, class: cls } = Astro.props;
+interface Props {
+  title?: string;
+  label?: string;
+  lines: TerminalLine[];
+  cursor?: boolean;
+  /** Skriver linjene inn én etter én når blokken kommer i syne. Krever JS; uten JS står alt ferdig. */
+  skriv?: boolean;
+  class?: string;
+}
+const { title = "~/kodekonsulentene", label, lines, cursor = false, skriv = false, class: cls } = Astro.props;
 const cl = { cmd: "kk-cmd", out: "kk-out", ok: "kk-ok", warn: "kk-warn", fail: "kk-fail" } as const;
 ---
-<div class:list={["kk-term", cls]} role="img" aria-label={label ?? `Terminalutsnitt: ${lines.map((l) => l.text).join(". ")}`}>
+<div
+  class:list={["kk-term", cls]}
+  role="img"
+  aria-label={label ?? `Terminalutsnitt: ${lines.map((l) => l.text).join(". ")}`}
+  data-skriv={skriv ? "" : undefined}
+>
   <div class="kk-term-bar">
     <span class="kk-dot" aria-hidden="true"></span>
     <span>{title}</span>
   </div>
   <pre aria-hidden="true">{lines.map((l, i) => (
-    <Fragment>
-      {l.type === "cmd" && <span class="kk-ps">{l.prompt ?? "$"} </span>}
-      <span class={cl[l.type ?? "out"]}>{l.text}</span>
-      {i < lines.length - 1 && "\n"}
-    </Fragment>
-  ))}{cursor && <Fragment>{"\n"}<span class="kk-cursor"></span></Fragment>}</pre>
+    <span class="kk-term-linje">{l.type === "cmd" && <span class="kk-ps">{l.prompt ?? "$"} </span>}<span class={cl[l.type ?? "out"]}>{l.text}</span>{i < lines.length - 1 ? "\n" : ""}</span>
+  ))}{cursor && <span class="kk-cursor"></span>}</pre>
 </div>
+
+<style>
+  /* Uten JS, og med redusert bevegelse, står alle linjene ferdig skrevet. */
+  .kk-term[data-skriv][data-gaar] .kk-term-linje { visibility: hidden; }
+  .kk-term[data-skriv][data-gaar] .kk-term-linje[data-synlig] { visibility: visible; }
+</style>
+
+<script>
+  // Linjene skrives inn én etter én når blokken kommer i syne – én gang.
+  // Brandboken tillater dette bare her: i terminalen ER teksten innholdet.
+  const blokker = document.querySelectorAll<HTMLElement>(".kk-term[data-skriv]");
+  if (blokker.length && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const io = new IntersectionObserver((poster) => {
+      for (const p of poster) {
+        if (!p.isIntersecting) continue;
+        const blokk = p.target as HTMLElement;
+        io.unobserve(blokk);
+        const linjer = [...blokk.querySelectorAll<HTMLElement>(".kk-term-linje")];
+        blokk.dataset.gaar = "";
+        linjer.forEach((linje, i) => {
+          setTimeout(() => {
+            linje.dataset.synlig = "";
+            // Siste linje: la markøren bli stående.
+            if (i === linjer.length - 1) delete blokk.dataset.gaar;
+          }, i * 110);
+        });
+      }
+    }, { threshold: 0.35 });
+    blokker.forEach((b) => io.observe(b));
+  }
+</script>

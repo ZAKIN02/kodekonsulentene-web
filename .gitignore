@@ -6,3 +6,6 @@ dist/
 !.env.example
 .DS_Store
 *.log
+
+# Lokale skjermbilde- og måleskript, ikke en del av leveransen.
+.skudd/

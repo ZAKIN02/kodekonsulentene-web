@@ -7,8 +7,41 @@ const { items, label = "Bevis", class: cls } = Astro.props;
 <ul class:list={["kk-proof", cls]} aria-label={label}>
   {items.map((it) => (
     <li>
-      <span class:list={["kk-stat", it.accent && "is-accent"]}>{it.value}</span>
+      <span class:list={["kk-stat", it.accent && "is-accent"]} data-tell>{it.value}</span>
       <span class="kk-label">{it.label}</span>
     </li>
   ))}
 </ul>
+
+<script>
+  // Tallene teller opp én gang når stripen kommer i syne – 400 ms, ease-out.
+  // Brandboken tillater nøyaktig dette og ikke mer. Verdiene er tekst i HTML-en,
+  // så uten JS står de ferdig; vi animerer bare sifrene vi kan tolke.
+  const tall = document.querySelectorAll<HTMLElement>("[data-tell]");
+  if (tall.length && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const io = new IntersectionObserver((poster) => {
+      for (const p of poster) {
+        if (!p.isIntersecting) continue;
+        const el = p.target as HTMLElement;
+        io.unobserve(el);
+        const ferdig = el.textContent ?? "";
+        const m = /^(\D*)(\d+(?:[.,]\d+)?)(.*)$/s.exec(ferdig);
+        if (!m) continue;
+        const [, foer, raa, etter] = m;
+        const maal = Number(raa.replace(",", "."));
+        const desimaler = raa.includes(",") ? 1 : 0;
+        const start = performance.now();
+        const steg = (naa: number) => {
+          const t = Math.min(1, (naa - start) / 400);
+          const e = 1 - Math.pow(1 - t, 3);
+          const v = (maal * e).toFixed(desimaler).replace(".", ",");
+          el.textContent = foer + v + etter;
+          if (t < 1) requestAnimationFrame(steg);
+          else el.textContent = ferdig;
+        };
+        requestAnimationFrame(steg);
+      }
+    }, { threshold: 0.6 });
+    tall.forEach((t) => io.observe(t));
+  }
+</script>

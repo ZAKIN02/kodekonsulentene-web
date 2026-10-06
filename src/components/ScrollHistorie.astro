@@ -66,6 +66,7 @@ import { bookUrl } from "../data/firma";
 
   /* Uten JS, med redusert bevegelse eller Save-Data står dette som en vanlig
      artikkel: plakaten øverst, så scenene under hverandre. */
+  .hist__media { max-width: 1120px; margin-inline: auto; padding-inline: var(--space-5); }
   .hist__media video {
     display: block;
     width: 100%;
@@ -81,6 +82,12 @@ import { bookUrl } from "../data/firma";
 
   /* Aktiv modus: mediet festes, scenene glir over. Settes bare av skriptet. */
   .hist[data-aktiv] .hist__media {
+    /* Mediet bryter ut av enhver maksbredde. En exploded view som ligger i en
+       1120 px boks med grå marger rundt, ser ut som et skjermbilde – ikke som en scene. */
+    max-width: none;
+    padding-inline: 0;
+    width: 100vw;
+    margin-inline: calc(50% - 50vw);
     position: sticky;
     top: 0;
     height: 100svh;
@@ -96,6 +103,8 @@ import { bookUrl } from "../data/firma";
     border-radius: 0;
   }
   .hist[data-aktiv] .hist__scener {
+    width: 100vw;
+    margin-inline: calc(50% - 50vw);
     position: relative;
     z-index: 1;
     margin-top: -100svh;
@@ -103,10 +112,18 @@ import { bookUrl } from "../data/firma";
     gap: 0;
   }
   .hist[data-aktiv] .hist__scene {
-    min-height: 100svh;
+    /* 130svh gir hver scene luft nok til å eie skjermen alene. Med 100svh møtes
+       to scener i kanten og konkurrerer om oppmerksomheten. */
+    min-height: 130svh;
     display: flex;
     align-items: center;
     padding-inline: var(--space-5);
+  }
+  @media (min-width: 861px) {
+    .hist[data-aktiv] .hist__scene {
+      padding-inline: max(var(--space-6), calc((100vw - 1120px) / 2));
+    }
+    .hist[data-aktiv] .hist__kort { max-width: 34rem; }
   }
   .hist[data-aktiv] .hist__kort {
     background: color-mix(in srgb, var(--bg) 82%, transparent);

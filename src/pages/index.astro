@@ -5,6 +5,7 @@ import Eyebrow from "../components/Eyebrow.astro";
 import Button from "../components/Button.astro";
 import UrlCheck from "../components/UrlCheck.astro";
 import ProofStrip from "../components/ProofStrip.astro";
+import HistorieTeaser from "../components/HistorieTeaser.astro";
 import ServiceCard from "../components/ServiceCard.astro";
 import Terminal from "../components/Terminal.astro";
 import CheckReport from "../components/CheckReport.astro";
@@ -71,6 +72,7 @@ const eksempelRapport = [
       <Terminal
         lines={heroTerminal}
         cursor
+        skriv
         label="Terminalutsnitt som viser en nettsidesjekk: ytelse 54 av 100, tre cookies før samtykke, to av seks sikkerhetsheadere, organisasjonsnummer ikke funnet."
       />
     </div>
@@ -79,6 +81,11 @@ const eksempelRapport = [
   <!-- 02 Bevis -->
   <div class="wrap">
     <ProofStrip items={bevis} label="Målbare påstander om denne siden og dette foretaket" />
+  </div>
+
+  <!-- 02b Se innsiden -->
+  <div class="wrap">
+    <HistorieTeaser />
   </div>
 
   <!-- 03 Tjenester -->
@@ -122,7 +129,6 @@ const eksempelRapport = [
       ))}
     </div>
     <div class="row" style="margin-top: var(--space-5)">
-      <Button variant="ghost" href="/historie">Se hva som ligger inne i en side</Button>
       <span class="small faint">
         Konseptarbeid er alltid merket «Konsept, ikke oppdrag». <a class="kk-link" href="/caser">Alle caser</a>.
       </span>

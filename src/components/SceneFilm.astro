@@ -38,13 +38,26 @@ interface Props {
    */
   maske?: number;
   plakat: string;
+  /**
+   * Løkke i full styrke, uten maske og uten scroll-spoling.
+   *
+   * Målt mot kundens referanser: siden vår beveger seg BARE når du scroller.
+   * jeton.com har tre ganger vårt pikselavvik når siden står helt stille, fordi
+   * video går i løkke uavhengig av brukeren. Og vi viser ni klipp på 42 %
+   * opasitet bak tekst – vi betaler megabyte uten å få effekten.
+   *
+   * `loope` gir klippet en egen flate: full opasitet, ingen maske, ingen tekst
+   * oppå. Det koster at klippet spiller av seg selv, så bruk det ÉN gang per side
+   * og aldri over folden på en lang side.
+   */
+  loope?: boolean;
   /** Hvilken side teksten står på. Masken åpner motsatt side. */
   tekst?: "venstre" | "hoyre";
   class?: string;
 }
-const { smal, bred, stor, plakat, tekst = "venstre", maske = 46, vend = false, class: cls } = Astro.props;
+const { smal, bred, stor, plakat, tekst = "venstre", maske = 46, vend = false, loope = false, class: cls } = Astro.props;
 ---
-<div class:list={["scenefilm", `scenefilm--${tekst}`, cls]} style={`--maske: ${maske}%`} data-vend={vend ? "" : undefined} data-scenefilm aria-hidden="true">
+<div class:list={["scenefilm", `scenefilm--${tekst}`, loope && "scenefilm--loope", cls]} style={`--maske: ${maske}%`} data-vend={vend ? "" : undefined} data-loope={loope ? "" : undefined} data-scenefilm aria-hidden="true">
   <video data-scenefilm-video muted playsinline preload="none" poster={plakat} width="1920" height="1080">
     <source data-smal={smal} data-bred={bred} data-stor={stor} type="video/mp4" />
   </video>
@@ -52,6 +65,16 @@ const { smal, bred, stor, plakat, tekst = "venstre", maske = 46, vend = false, c
 
 <style>
   .scenefilm { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; opacity: 0.85; }
+  /* Løkkeflaten har ingen maske og ingen demping – klippet ER innholdet her. */
+  .scenefilm--loope { position: relative; opacity: 1; aspect-ratio: 16 / 9; border-radius: var(--radius-md); border: var(--hairline) solid var(--line); }
+  .scenefilm--loope.scenefilm--venstre,
+  .scenefilm--loope.scenefilm--hoyre { -webkit-mask-image: none; mask-image: none; }
+  @media (prefers-reduced-motion: reduce) {
+    /* Plakaten står i stedet. Et klipp som spiller av seg selv er nøyaktig det
+       en bruker som har bedt om mindre bevegelse ikke vil ha. */
+    .scenefilm--loope video { display: none; }
+    .scenefilm--loope { background: center / cover no-repeat var(--plakat); }
+  }
   .scenefilm video { width: 100%; height: 100%; object-fit: cover; display: block; }
   .scenefilm[data-vend] video { transform: scaleX(-1); }
   .scenefilm--venstre {

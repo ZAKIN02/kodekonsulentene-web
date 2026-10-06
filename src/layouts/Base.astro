@@ -17,9 +17,12 @@ interface Props {
   noindex?: boolean;
   /** Ekstra JSON-LD utover LocalBusiness, f.eks. Service eller FAQPage. */
   schema?: Record<string, unknown>[];
+  /** Filnavn i /og/ uten endelse. Faller tilbake på forsidekortet. */
+  ogBilde?: string;
 }
 // Uferdig side skal aldri indekseres, uansett hva siden selv ber om.
-const { tittel, beskrivelse, noindex = erUferdig, schema = [] } = Astro.props;
+const { tittel, beskrivelse, noindex = erUferdig, schema = [], ogBilde = "forside" } = Astro.props;
+const ogUrl = new URL(`/og/${ogBilde}.png`, Astro.site ?? firma.url).href;
 const fullTittel = tittel === firma.navn ? `${firma.navn} – ${firma.tagline}` : `${tittel} – ${firma.navn}`;
 const kanonisk = new URL(Astro.url.pathname, Astro.site ?? firma.url).href;
 
@@ -55,10 +58,19 @@ const localBusiness = {
     <meta property="og:title" content={fullTittel} />
     <meta property="og:description" content={beskrivelse} />
     <meta property="og:url" content={kanonisk} />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={tittel} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogUrl} />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/logo/kk-app-icon-1024.png" />
+    {/* 180x180, ikke 1024. apple-touch-icon pekte på en fil beregnet for App Store –
+        flere hundre kilobyte der det skulle vært tre. */}
+    <link rel="apple-touch-icon" href="/logo/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#0b0d10" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
 

@@ -37,7 +37,15 @@ body > * { position: relative; z-index: 1; }
   .heading { font-size: 24px; line-height: 30px; }
 }
 
-h1, h2, h3, h4 { margin: 0; font-weight: inherit; }
+h1, h2, h3, h4 {
+  margin: 0;
+  font-weight: inherit;
+  /* Fordeler ordene jevnt over linjene i stedet for å la siste linje bli en stump.
+     Målt på lab-siden: 431/354/338 px mot 489/451/182 uten. Et løst ord er synlig
+     på lang avstand i display-skala. Nettlesere uten støtte bryter som før. */
+  text-wrap: balance;
+}
+.body-lg, .body, p { text-wrap: pretty; }
 p { margin: 0; }
 img, svg { display: block; max-width: 100%; }
 

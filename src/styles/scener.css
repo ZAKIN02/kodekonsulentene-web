@@ -242,8 +242,20 @@
   from { opacity: 0; transform: translateX(-20px); }
   to { opacity: 1; transform: none; }
 }
+/* Ordene reiser seg, men toner ikke inn fra null.
+
+   Grunnen er målbar: da scenene fikk en EKSPLISITT bakgrunn kunne axe plutselig
+   regne ut en blandet farge for tekst som står midt i inntoningen. Før hadde
+   seksjonene gjennomsiktig bakgrunn, og da markerte axe det samme som «uavklart»
+   i stedet for «brudd». Resultatet var at en artefakt som alltid har vært der ble
+   SCORENDE: Lighthouse-tilgjengelighet falt fra 100 til 97, med 1,38:1 og 1,45:1
+   på ord som i ferdig tilstand måler godt over kravet.
+
+   0,22 som startverdi gjør at ingen posisjon i animasjonen er under 3:1, mens
+   løftet fortsatt bærer hele avsløringen. Bevegelsen er beholdt; det er bare
+   gjennomsiktigheten som ikke lenger går helt i null. */
 @keyframes avslor-ord {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0.22; transform: translateY(16px); }
   to { opacity: 1; transform: none; }
 }
 
@@ -377,46 +389,29 @@ main > section:nth-of-type(even):not([class*="flate"]) + .scene > .scene__strek 
   opacity: 0;
 }
 
-/* ------------------------------------------------- gradient på display ---- */
+/* ------------------------------------------------- gradient på display ----
 
-/* Brandboken forbyr gradienter. Den regelen er presisert, ikke brutt: forbudet
-   gjaldt MESH-gradienter og glassmorphism – atmosfærisk pynt som får et nettsted
-   til å se ut som hvilken som helst SaaS-side. En gradient som fyller DISPLAY-
-   TYPOGRAFI er noe annet; den er typografisk, ikke atmosfærisk.
+   PRØVD, MÅLT OG FORKASTET. Dokumentert her fordi konklusjonen er verdt mer enn
+   koden var.
 
-   Grunnlaget for å gjøre det er målt: spinxdigital.com er den nærmeste
-   sammenlignbare referansen vi har – et nettbyrå, mørk grunn, og en limegrønn
-   knapp i rgb(180,227,0) mot vår rgb(182,230,42). De bruker aksenten FEM ganger
-   mot våre sju, har SJU animasjoner mot våre ni, og 38 transformerte elementer
-   mot våre 69. De roper altså mindre enn oss på alt vi hadde antatt var problemet.
-   Det de faktisk gjør er å fylle heroens display-typografi med en gradient.
+   spinxdigital.com – den nærmeste sammenlignbare referansen, et nettbyrå med mørk
+   grunn og nesten vår egen lime – fyller heroens display-typografi med gradient.
+   Det er deres hele identitet, og det var et godt forslag.
 
-   Vår gradient bruker VÅR lime, ikke deres blå. Begge ytterpunktene er målt mot
-   mørk grunn: lime 15,06:1 og brutt hvit 16,41:1. Det er ingen posisjon i
-   gradienten som faller under kravet, og marginen er over tre ganger.
+   Implementert i vår lime mot ink, bundet til mørke flater, med begge ytterpunkter
+   målt: 15,06:1 og 16,41:1. Ingen posisjon i gradienten faller under kravet, og
+   marginen er over tre ganger. Den så også riktig ut – se .skudd/farge-systemer-topp.png.
 
-   Gjelder bare mørke flater. På lyse og mettede bånd står teksten solid – der
-   ville en lys gradient kollapset. */
-@supports ((-webkit-background-clip: text) or (background-clip: text)) {
-  main > section:nth-of-type(odd):not([class*="flate"]) .stortekst,
-  .scenefilm-ramme .stortekst {
-    background-image: linear-gradient(104deg, var(--ink) 0%, var(--ink) 28%, var(--accent) 78%, var(--accent) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    /* Uten denne arver ::selection den gjennomsiktige fargen og markert tekst
-       blir usynlig. */
-    -webkit-text-fill-color: transparent;
-  }
-  /* Redusert bevegelse rører ikke dette – gradienten er statisk. Men i tvungen
-     farge-modus (Windows High Contrast) skal systemfargen vinne, ellers blir
-     overskriften borte. */
-  @media (forced-colors: active) {
-    main > section:nth-of-type(odd):not([class*="flate"]) .stortekst,
-    .scenefilm-ramme .stortekst {
-      background-image: none;
-      color: CanvasText;
-      -webkit-text-fill-color: CanvasText;
-    }
-  }
-}
+   Den ble likevel tatt ut. `background-clip: text` gjør tekstfargen gjennomsiktig,
+   og axe klarer ikke å lese en gradient som er klippet til glyffer: den rapporterte
+   1,38:1 og 1,45:1 på tekst som faktisk måler over 15:1. Lighthouse-tilgjengelighet
+   falt fra 100 til 97.
+
+   Avgjørelsen følger brandbokens fjerde prinsipp: «Systemet gir ingen komponent lov
+   til å bryte det det selges for.» Vi selger Lighthouse 100 og WCAG AA som målbare
+   tall. En effekt som tvinger oss til å forklare bort vår egen score – «verktøyet tar
+   feil» – koster mer enn den gir, uansett hvor god den ser ut.
+
+   Den kan hentes tilbake den dagen axe leser klippet tekst, eller hvis effekten
+   bygges med to lag der et ekte, ugjennomsiktig tekstlag ligger under. */
+

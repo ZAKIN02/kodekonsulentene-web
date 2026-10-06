@@ -1,0 +1,86 @@
+---
+/**
+ * Lyssveip over et maskinert rutenett.
+ *
+ * Motivet kom fra Higgsfield, og grunnbildet var sterkt: 41,7 % mettet lime i
+ * midtre tredel, mot den gamle regelen om under 3 % som hårtynne linjer. Men
+ * KLIPPET sto nesten stille – målt endring mellom nabo-rammer 5,13 → 1,56 → 1,29
+ * → 0,89 av 255, og lime vokste fra 11,1 % til 11,6 % over åtte sekunder.
+ *
+ * Et verifisert rammepar garanterer altså ikke bevegelse i klippet. Så motivet er
+ * bygget her i stedet: null kilobyte, helt jevn bevegelse, og den går UTEN at
+ * brukeren scroller. Det siste er poenget – målt mot referansene beveget siden
+ * vår seg bare når noen gjorde noe.
+ */
+interface Props {
+  /** Sekunder per sveip. Under ~6 blir det masete. */
+  takt?: number;
+  class?: string;
+}
+const { takt = 9, class: cls } = Astro.props;
+---
+<div class:list={["sveip", cls]} style={`--takt: ${takt}s`} aria-hidden="true">
+  <div class="sveip__rutenett"></div>
+  <div class="sveip__lys"></div>
+</div>
+
+<style>
+  .sveip {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border: var(--hairline) solid var(--line);
+    border-radius: var(--radius-md);
+    /* Fast moerk flate i BEGGE temaer, som terminalen. Motivet ER lys som avdekker
+       struktur i moerke – paa en lys flate forsvinner hele poenget. Terminalen laerte
+       oss dessuten at fargene paa en fast flate ikke kan vaere temavariabler: da ble
+       moerk tekst malt paa moerk flate i lyst tema, helt ned i 2,96:1. */
+    background: #060708;
+    isolation: isolate;
+  }
+  /* Rutenettet er hårlinjer, ikke en tekstur. Det er merkevaren tegnet i CSS. */
+  .sveip__rutenett {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(to right, #2a2f36 var(--hairline), transparent var(--hairline)),
+      linear-gradient(to bottom, #2a2f36 var(--hairline), transparent var(--hairline));
+    background-size: 7.5% 12.5%;
+    opacity: 0.9;
+    /* Rutenettet AVDEKKES av lyset i stedet for aa ligge der hele tiden. Det er
+       poenget i motivet: utsiden er blank, og lyset viser hva som ligger under.
+       Samme takt og samme kurve som baandet, saa de foelger hverandre eksakt. */
+    clip-path: inset(0 100% 0 0);
+    animation-name: sveip-avdekk;
+    animation-duration: var(--takt);
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+  }
+  @keyframes sveip-avdekk {
+    from { clip-path: inset(0 100% 0 0); }
+    to { clip-path: inset(0 0 0 0); }
+  }
+  .sveip__lys {
+    position: absolute;
+    inset-block: 0;
+    inline-size: 14%;
+    background: #b6e62a;
+    box-shadow: 0 0 110px 40px rgb(182 230 42 / 0.38);
+    animation-name: sveip-gaa;
+    animation-duration: var(--takt);
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+  }
+  @keyframes sveip-gaa {
+    from { transform: translateX(-20%); }
+    to { transform: translateX(650%); }
+  }
+  /* Står stille, men motivet er fortsatt der – degraderingen går mot synlig. */
+  @media (prefers-reduced-motion: reduce) {
+    .sveip__lys { animation-name: none; transform: translateX(300%); }
+    /* Rutenettet staar halvt avdekket – motivet er fortsatt lesbart uten bevegelse. */
+    .sveip__rutenett { animation-name: none; clip-path: inset(0 45% 0 0); }
+  }
+</style>

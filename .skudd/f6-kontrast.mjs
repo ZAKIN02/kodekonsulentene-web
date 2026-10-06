@@ -13,7 +13,7 @@ for (const tema of ["dark", "light"]) {
     let verst = { k: 99, t: "" };
     for (let y = 0; y < h - 400; y += 700) {
       await p.evaluate((v) => scrollTo({ top: v, behavior: "instant" }), y);
-      await p.waitForTimeout(260);
+      await p.waitForTimeout(1100);
       const r = await p.evaluate(() => {
         const lum = (R, G, B) => { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
           return 0.2126 * f(R) + 0.7152 * f(G) + 0.0722 * f(B); };
@@ -24,7 +24,12 @@ for (const tema of ["dark", "light"]) {
           if (q.top < 0 || q.bottom > innerHeight || q.width < 8 || q.height < 8) continue;
           const cs = getComputedStyle(el);
           if (cs.visibility === "hidden" || +cs.opacity < 0.95) continue;
-          const fg = cs.color.match(/\d+/g).map(Number);
+          // Alfa paa TEKSTEN maa leses, ikke bare paa bakgrunnen. Ord som scroll-
+          // avsloeres starter paa rgba(0,0,0,0); kaster jeg alfaen, leser jeg dem som
+          // SVART tekst og melder 1,08:1 paa en overskrift som i ro er rgb(233,236,239).
+          // Umalt tekst er ikke en kontrastfeil – den er ikke malt ennaa.
+          const fg = cs.color.match(/[\d.]+/g).map(Number);
+          if (fg.length > 3 && fg[3] < 0.95) continue;
           // Start paa elementet SELV. Hoppet jeg over det, fant jeg forelderens
           // gjennomsiktige bakgrunn og meldte 1,00:1 paa en limegroenn knapp med
           // nesten svart tekst – altsaa rundt 14:1. Maalefeil, ikke sidefeil.

@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import Sveip from "../components/Sveip.astro";
 import Snitt from "../components/Snitt.astro";
 import { snitt } from "../data/flyter";
 import Demo from "../components/Demo.astro";
@@ -72,6 +73,18 @@ const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
           bryter minst ett av. Du får svaret i klartekst, ikke i utviklersjargong.
         </p>
       </Avslor>
+
+    <Avslor trinn={2}>
+      {/* Motivet kom fra Higgsfield, men KLIPPET sto nesten stille – 8,29 av 255 i
+          total endring, mot 18,6 for klippene vi kaller tydelige. Et verifisert
+          rammepar garanterer altså ikke bevegelse. Bygget i CSS i stedet: null
+          kilobyte, og det beveger seg UTEN at brukeren scroller – som var hele
+          forskjellen mot referansene. */}
+      <Sveip />
+      <p class="small muted" style="margin-top: var(--space-3)">
+        Sjekken sveiper over siden din og viser hva som ligger under overflaten.
+      </p>
+    </Avslor>
 
     <Avslor trinn={2}>
       {/* Tegning med ekte navn, hentet ordrett fra siden. Brandboken rangerer

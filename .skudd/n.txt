@@ -1,9 +1,0 @@
-KodeKonsulentene – terminalmodus. help for kommandoer, Esc for å lukke.
-Du fant den. nordlys er låst opp.
-$ nordlys
-  ▁▂▃▄▅▆▇█▇▆▅▄▃▂▁
-  ▁▂▃▅▇█▇▅▃▂▁▂▃▄▅
-  ▃▅▇█▇▆▄▃▂▁▂▄▆▇█
-Oslo, en gang i blant. Resten av året bygger vi nettsider.
-
-help nevner nordlys: false

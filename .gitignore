@@ -10,8 +10,13 @@ dist/
 # Lokale skjermbilde- og måleskript, ikke en del av leveransen.
 
 # Skjermbilder er lokale; skriptene beholdes.
-.skudd/*.png
 
 # Playwright
 playwright-report/
 test-results/
+
+# Maalemappa. Her ligger kontaktark, opptak og mellomfiler fra agentene – blant annet
+# OPPTAK AV ANDRES NETTSTEDER, som ikke har noe i et offentlig repo aa gjoere.
+# Den ble sporet ved et uhell gjennom brede `git add`: 789,6 MB og 1771 mediefiler.
+# Hele mappa er bevisst utenfor, ikke bare enkelte filtyper paa toppnivaa.
+.skudd/

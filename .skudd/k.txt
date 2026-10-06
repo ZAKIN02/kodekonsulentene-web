@@ -1,3 +1,0 @@
-aktivt element før: BODY
-terminal åpen: true
-aktivt element etter: INPUT.kkterm__in

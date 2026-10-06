@@ -20,12 +20,19 @@ import zlib from "node:zlib";
 import { promisify } from "node:util";
 
 import { handler as astro } from "./dist/server/entry.mjs";
-import { SIKKERHETSHEADERE } from "./sikkerhet.mjs";
+import { inlineSkriptHasher, lagSikkerhetsheadere } from "./sikkerhet.mjs";
 
 const brotli = promisify(zlib.brotliCompress);
 const gzip = promisify(zlib.gzip);
 
 const ROT = path.join(path.dirname(fileURLToPath(import.meta.url)), "dist", "client");
+
+/**
+ * CSP-en må kjenne hashen til hvert inline-skript Astro la i HTML-en. Regnes ut
+ * én gang ved oppstart fra det ferdige bygget – ikke per forespørsel.
+ */
+const HEADERE = lagSikkerhetsheadere(inlineSkriptHasher(ROT));
+
 const PORT = Number(process.env.PORT ?? 8080);
 const HOST = process.env.HOST ?? "0.0.0.0";
 
@@ -59,7 +66,7 @@ const hurtigbuffer = new Map();
 const MAKS_BUFFER = 512 * 1024;
 
 function settHeadere(res) {
-  for (const [navn, verdi] of Object.entries(SIKKERHETSHEADERE)) res.setHeader(navn, verdi);
+  for (const [navn, verdi] of Object.entries(HEADERE)) res.setHeader(navn, verdi);
 }
 
 function trygg(urlSti) {

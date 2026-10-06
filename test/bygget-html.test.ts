@@ -77,3 +77,33 @@ describe("statiske filer har riktig MIME-type", () => {
     }
   });
 });
+
+describe("CSP blokkerer ikke vår egen JavaScript", () => {
+  /**
+   * Dette hullet kostet oss scroll-historien og temabryteren i produksjon, uten at
+   * en eneste test ble rød. Astro legger små moduler inline i HTML-en, CSP-en vår
+   * har ingen 'unsafe-inline', og et skript som stoppes av CSP feiler helt stille:
+   * siden laster, alt ser riktig ut, ingenting virker.
+   */
+  test("hvert inline-skript i bygget har hashen sin i script-src", async () => {
+    if (filer.length === 0) return;
+    const { inlineSkriptHasher, lagSikkerhetsheadere } = await import("../sikkerhet.mjs");
+    const { createHash } = await import("node:crypto");
+
+    const csp = lagSikkerhetsheadere(inlineSkriptHasher(DIST))["content-security-policy"] as string;
+    const skriptSrc = /script-src ([^;]*)/.exec(csp)?.[1] ?? "";
+    assert.doesNotMatch(skriptSrc, /'unsafe-inline'/, "script-src skal ikke slakkes til unsafe-inline");
+
+    for (const f of filer) {
+      const html = readFileSync(f, "utf8");
+      for (const m of html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)) {
+        if (!m[1].trim()) continue;
+        const hash = `'sha256-${createHash("sha256").update(m[1], "utf8").digest("base64")}'`;
+        assert.ok(
+          skriptSrc.includes(hash),
+          `${f}: et inline-skript mangler hash i CSP og blir blokkert i nettleseren.\n  ${m[1].trim().slice(0, 90)}…`,
+        );
+      }
+    }
+  });
+});

@@ -99,11 +99,34 @@ a:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
 .row { display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; }
 
 /* ---- Topplinje ---- */
+/* Topplinja er klebrig og 166 px hoey paa mobil. Uten scroll-padding-top parkerer
+   ethvert programmatisk hopp – ankerlenker, fokus, scrollIntoView – innholdet UNDER
+   den. En agent traff dette live: et simulert trykk landet paa menyen og navigerte
+   til feil side. Verdien bor her fordi hoeyden bor her; en komponent som satte sin
+   egen scroll-margin ville bare gjettet paa hvor hoey topplinja er. */
+html { scroll-padding-top: calc(var(--topplinje-hoyde, 80px) + var(--space-3)); }
 .topbar { border-bottom: var(--hairline) solid var(--line); background: var(--bg); }
 .topbar__inner { display: flex; align-items: center; gap: var(--space-5); min-height: 64px; }
 .topbar__logo { display: inline-flex; align-items: center; margin-right: auto; }
 .topbar__logo img { height: 22px; width: auto; }
+/* Menyen er en vannrett scroller paa mobil: 519 px innhold i 316 px. Tre toppsider
+   faller utenfor, og «Sikkerhet» sto avkuttet som «Sikkerl» paa hver eneste skjerm –
+   uten at noe antydet at den kunne dras. Tonet kant i enden er den enkleste aapenbare
+   hinten, og den forsvinner naar brukeren har scrollet helt ut. */
 .topbar nav { display: flex; gap: var(--space-5); }
+@media (max-width: 640px) {
+  /* Topplinja er 166 px her, mot 80 paa skrivebord. Verdien maa foelge med, ellers
+     parkerer ankerhopp innholdet under den. */
+  :root { --topplinje-hoyde: 166px; }
+  .topbar nav {
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-inline-end: var(--space-4);
+    mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+  }
+  .topbar nav::-webkit-scrollbar { display: none; }
+  .topbar nav a { flex: 0 0 auto; }
+}
 .topbar nav a {
   font-size: 14px; line-height: 20px; color: var(--ink-muted); text-decoration: none;
   padding-block: var(--space-2);

@@ -1,0 +1,642 @@
+---
+/**
+ * Lovbruddet, spilt av som en sekvens.
+ *
+ * HVORFOR DEN FINNES
+ * Eieren har tre ganger sagt at materialet mangler mening: «animasjonene gir
+ * ingen mening for oss». Brandbokens prøve er å dekke over teksten og spørre om
+ * en rørlegger skjønner hva bildet handler om. En video av abstrakte former gjør
+ * ikke det. To klokker som går side om side, der den ene fyller seg med cookies
+ * før noen har trykket på noe, gjør det.
+ *
+ * HVA DEN VISER
+ * Ekomloven § 3-15 (LOV-2024-12-13-76, «Bruk av informasjonskapsler mv.», i kraft
+ * 1. januar 2025) forbyr å lagre eller skaffe seg tilgang til opplysninger i
+ * sluttbrukerens kommunikasjonsutstyr uten samtykke, og samtykket skal oppfylle
+ * kravene i personvernforordningen. Verifisert mot Lovdata 6. oktober 2026:
+ * https://lovdata.no/lov/2024-12-13-76/§3-15
+ *
+ * Venstre spor er en REKONSTRUKSJON av et typisk forløp, ikke en måling av en
+ * navngitt side. Domenet er oppdiktet og ligger på .example, som IANA har
+ * reservert og som ingen kan registrere (RFC 2606). docs/metode-skanning.md er
+ * bindende: vi publiserer aldri navn på en side som kommer dårlig ut.
+ *
+ * Cookienavn, sporernavn og kategorier er hentet fra vårt eget sporerregister,
+ * services/skanner/sporere.mjs, som har kilde og dato per oppføring. Feltnavnene
+ * i radene er de skanneren faktisk returnerer: `navn`, `forstepart`,
+ * `levetidDager`, `sporer`, `vert`, `antallKall`. Se services/skanner/skann.mjs,
+ * funksjonen skannCookies().
+ *
+ * Høyre spor er ikke rekonstruert. Det er vår egen måling, lest fra
+ * src/data/maalinger.json, skrevet av .skudd/maaling-egen.mjs mot produksjon.
+ *
+ * NULL KILOBYTE
+ * Ingen video, ingen bibliotek, ingen SVG-sprite. Bevegelsen er CSS-keyframes på
+ * opacity og translate, og nåla som sveiper bruker container-enheten `cqw` slik
+ * at ingenting må måles i JavaScript.
+ *
+ * DEGRADERING – LES DENNE FØR DU ENDRER NOE
+ * Utgangstilstanden i CSS er FERDIG FORTALT: alle rader synlige, begge dommene
+ * satt. Animasjonen ligger inne i `@media (prefers-reduced-motion: no-preference)`
+ * og SKJULER før den viser. Da er det umulig at noe blir stående usynlig uten at
+ * det feiler et sted – uten JavaScript, ved redusert bevegelse, i en nettleser
+ * uten `cqw`, i et fullPage-skjermbilde: poenget står der, lesbart.
+ *
+ * FASTE FARGER, IKKE TOKENS
+ * Flaten er mørk i begge temaer, akkurat som `Terminal`. Vi har brent oss før:
+ * terminalfarger som leste `var(--fail)` snudde med temaet og havnet på 2,96:1 på
+ * en flate som var mørk uansett. Derfor har komponenten sitt eget lille sett med
+ * FASTE verdier under. De er målt mot #0a0c0f og står i kommentaren ved hver.
+ *
+ * WCAG 2.2.2 (Pause, Stopp, Skjul): hele sekvensen er ferdig på 4,75 s og spilles
+ * én gang. Under fem sekunder, så det kreves ingen pauseknapp. Knappen «Spill
+ * sekvensen igjen» er brukerstyrt og vises bare når JavaScript kjører.
+ */
+import maalinger from "../data/maalinger.json";
+
+interface Props {
+  class?: string;
+}
+const { class: cls } = Astro.props;
+
+const { andelProsent: andel, utvalg, oss } = maalinger;
+
+const norskDato = (iso: string) =>
+  new Intl.DateTimeFormat("nb-NO", { day: "numeric", month: "long", year: "numeric" })
+    .format(new Date(`${iso}T12:00:00Z`));
+
+/**
+ * Tidspunktene er forløpet, ikke en måling: de sier «rett etter hverandre, før
+ * noen rakk å gjøre noe». Rekkefølgen er den rekkefølgen tingene faktisk skjer i
+ * – dokumentet lastes, taggen kjører, cookien settes, kallet går ut.
+ */
+const brudd = [
+  { tid: "0,31", navn: "_ga", felt: "førstepart · 730 dager", sporer: "Google Analytics" },
+  { tid: "0,74", navn: "_gid", felt: "førstepart · 1 dag", sporer: "Google Analytics" },
+  { tid: "1,18", navn: "_fbp", felt: "førstepart · 90 dager", sporer: "Meta Pixel" },
+  { tid: "1,62", navn: "connect.facebook.net", felt: "tredjepart · 3 kall", sporer: "Meta Pixel" },
+];
+
+/** Samme klokkeslett, vår egen side. Ingenting skjer – og det er hele poenget. */
+const riktig = [
+  { tid: "0,31", navn: "ingen cookie satt", felt: "cookies: 0" },
+  { tid: "0,74", navn: "ingen lagring", felt: "localStorage: 0" },
+  { tid: "1,18", navn: "ingen sporer", felt: "sporere: 0" },
+  { tid: "1,62", navn: "ingen tredjepart", felt: "ukjenteTredjeparter: 0" },
+];
+---
+<figure class:list={["samtykke", cls]} data-samtykke>
+  <div class="samtykke__spor">
+    {/* ---------------------------------------------------- spor 1: bruddet -- */}
+    <section class="samtykke__panel samtykke__panel--brudd" aria-labelledby="sam-brudd-tittel">
+      <header class="samtykke__topp">
+        <p class="samtykke__vert" id="sam-brudd-tittel">
+          <span class="samtykke__prikk samtykke__prikk--brudd" aria-hidden="true"></span>
+          rorleggervakta.example
+        </p>
+        <p class="samtykke__hint">oppdiktet domene</p>
+      </header>
+
+      <div class="samtykke__akse" aria-hidden="true">
+        <span class="samtykke__spenn">
+          <span class="samtykke__fyll samtykke__fyll--brudd"></span>
+        </span>
+        <span class="samtykke__merker">
+          <span>0 s</span><span>0,5</span><span>1,0</span><span>1,5</span><span>2,0</span>
+        </span>
+      </div>
+
+      <div class="samtykke__logg">
+        <span class="samtykke__naal samtykke__naal--brudd" aria-hidden="true"></span>
+        <ol class="samtykke__rader">
+          {brudd.map((r, i) => (
+            <li class="samtykke__rad" style={`--i:${i}`}>
+              <span class="samtykke__tid">{r.tid} s</span>
+              <span class="samtykke__ikon" aria-hidden="true">
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="8" cy="8" r="6.25" /><path d="M5.8 5.8l4.4 4.4M10.2 5.8l-4.4 4.4" stroke-linecap="round" />
+                </svg>
+              </span>
+              <span class="samtykke__navn">{r.navn}</span>
+              <span class="samtykke__felt">{r.felt}</span>
+              <span class="samtykke__sporer">{r.sporer}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      {/* Banneret er kulissen som ALDRI blir rørt. Det er bildet av lovbruddet:
+          alt over er allerede lagret mens dette fortsatt står og venter. */}
+      <div class="samtykke__banner">
+        <p class="samtykke__banner-tekst">Vi bruker informasjonskapsler</p>
+        <p class="samtykke__banner-knapper" aria-hidden="true">
+          <span class="samtykke__knapp">Avvis</span>
+          <span class="samtykke__knapp samtykke__knapp--fyll">Godta alle</span>
+        </p>
+        <p class="samtykke__uberort">uberørt · 0 klikk</p>
+      </div>
+
+      <p class="samtykke__dom samtykke__dom--brudd">
+        <span class="samtykke__dom-tall">3 cookies · 2 sporere</span>
+        <span class="samtykke__dom-ord">lagret før noen klikket · ekomloven § 3-15</span>
+      </p>
+    </section>
+
+    {/* --------------------------------------------------- spor 2: riktig --- */}
+    <section class="samtykke__panel samtykke__panel--ok" aria-labelledby="sam-ok-tittel">
+      <header class="samtykke__topp">
+        <p class="samtykke__vert" id="sam-ok-tittel">
+          <span class="samtykke__prikk samtykke__prikk--ok" aria-hidden="true"></span>
+          {oss.url}
+        </p>
+        <p class="samtykke__hint">målt {norskDato(oss.maalt)}</p>
+      </header>
+
+      <div class="samtykke__akse" aria-hidden="true">
+        <span class="samtykke__spenn">
+          <span class="samtykke__fyll samtykke__fyll--ok"></span>
+        </span>
+        <span class="samtykke__merker">
+          <span>0 s</span><span>0,5</span><span>1,0</span><span>1,5</span><span>2,0</span>
+        </span>
+      </div>
+
+      <div class="samtykke__logg">
+        <span class="samtykke__naal samtykke__naal--ok" aria-hidden="true"></span>
+        <ol class="samtykke__rader">
+          {riktig.map((r, i) => (
+            <li class="samtykke__rad samtykke__rad--ok" style={`--i:${i}`}>
+              <span class="samtykke__tid">{r.tid} s</span>
+              <span class="samtykke__ikon" aria-hidden="true">
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M3.4 8.4l3 3 6.2-7" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+              <span class="samtykke__navn">{r.navn}</span>
+              <span class="samtykke__felt">{r.felt}</span>
+              {/* Tom, men ikke borte: kolonnen holder radene i de to sporene på
+                  nøyaktig samme rutenett, slik at øyet kan sammenligne linje for
+                  linje. Et «—» her ble lest som en verdi og forvirret mer enn det
+                  forklarte. */}
+              <span class="samtykke__sporer"></span>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <div class="samtykke__banner samtykke__banner--tom">
+        <p class="samtykke__banner-tekst">Ingen banner</p>
+        <p class="samtykke__uberort samtykke__uberort--ok">ingenting å samtykke til</p>
+      </div>
+
+      <p class="samtykke__dom samtykke__dom--ok">
+        <span class="samtykke__dom-tall">{oss.cookiesForSamtykke} cookies · 0 sporere</span>
+        <span class="samtykke__dom-ord">ingenting lagret · ingen banner nødvendig</span>
+      </p>
+    </section>
+  </div>
+
+  <figcaption class="samtykke__fot">
+    <p class="small">
+      Ekomloven § 3-15 krever samtykke <em>før</em> noe lagres på utstyret ditt, ikke etterpå.
+      Venstre side er en rekonstruksjon av et typisk forløp på et oppdiktet domene –
+      vi publiserer ikke navn på sider som kommer dårlig ut. Høyre side er vår egen
+      forside, målt {norskDato(oss.maalt)}. Av {utvalg.svarte} tilfeldig trukne
+      småbedriftssider vi skannet samme dag, lagret {andel.settercookiesForSamtykke} %
+      minst én cookie før noen hadde sagt ja.
+    </p>
+    <p class="samtykke__om">
+      <button type="button" class="samtykke__spill" data-samtykke-spill hidden>Spill sekvensen igjen</button>
+    </p>
+  </figcaption>
+</figure>
+
+<style>
+  /* ------------------------------------------------------- faste farger ----
+     Flaten er mørk i BEGGE temaer. Leser den temavariabler, snur statusfargene
+     med temaet og havner på en mørk rød mot en nesten-svart grunn – det var
+     2,96:1 sist. Derfor står disse fast. Målt mot #0a0c0f (grunnen i panelet):
+
+       --sam-tekst   #e9ecef  17,10:1
+       --sam-dempet  #9aa4ae   7,86:1
+       --sam-brudd   #ff8d84   9,00:1
+       --sam-ok      #5fe3c0  11,74:1
+       --sam-aksent  #c8f24a  14,50:1
+
+     Tallene er kontrollert med .skudd-skript mot malt piksel, ikke regnet ut i
+     hodet. Endrer du en verdi her, mål på nytt. */
+  .samtykke {
+    --sam-bunn: #0a0c0f;
+    --sam-flate: #14181e;
+    --sam-linje: #272e37;
+    --sam-tekst: #e9ecef;
+    --sam-dempet: #9aa4ae;
+    --sam-brudd: #ff8d84;
+    --sam-brudd-bunn: #2a1210;
+    --sam-ok: #5fe3c0;
+    --sam-ok-bunn: #0d2b24;
+    --sam-aksent: #c8f24a;
+
+    margin: 0;
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .samtykke__spor {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+
+  .samtykke__panel {
+    /* minmax(0, 1fr) over holder kolonnen i tømme; min-width her holder BARNA
+       i tømme. Rutenettbarn har min-width: auto, og det var nøyaktig feilen som
+       klippet «7 900 kr» til «7 900 kı» på denne sida. */
+    min-width: 0;
+    container-type: inline-size;
+    position: relative;
+    display: grid;
+    gap: 7px;
+    padding: var(--space-3) var(--space-4) var(--space-4);
+    background: var(--sam-bunn);
+    border: var(--hairline) solid var(--sam-linje);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .samtykke__topp {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin: 0;
+  }
+  .samtykke__vert {
+    min-width: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--sam-tekst);
+    overflow-wrap: anywhere;
+  }
+  .samtykke__hint {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 16px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--sam-dempet);
+  }
+  .samtykke__prikk {
+    flex: none;
+    width: 7px;
+    height: 7px;
+    border-radius: var(--radius-pill);
+  }
+  .samtykke__prikk--brudd { background: var(--sam-brudd); }
+  .samtykke__prikk--ok { background: var(--sam-ok); }
+
+  /* ------------------------------------------------------------- aksen ---- */
+  .samtykke__akse { display: grid; gap: 3px; }
+  .samtykke__spenn {
+    position: relative;
+    display: block;
+    height: 2px;
+    background: var(--sam-linje);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+  }
+  .samtykke__fyll {
+    position: absolute;
+    inset: 0;
+    transform-origin: left center;
+    border-radius: inherit;
+  }
+  .samtykke__fyll--brudd { background: var(--sam-brudd); }
+  .samtykke__fyll--ok { background: var(--sam-ok); }
+
+  .samtykke__merker {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 14px;
+    color: var(--sam-dempet);
+  }
+
+  /* ------------------------------------------------------------ loggen ---- */
+  .samtykke__logg { position: relative; }
+  .samtykke__naal {
+    position: absolute;
+    inset-block: -4px;
+    inset-inline-start: 0;
+    width: 1px;
+    /* Dekorasjon. Ingen mening ligger her, og den er usynlig til animasjonen
+       slår den på – derfor er det ufarlig at den aldri vises uten bevegelse. */
+    opacity: 0;
+  }
+  .samtykke__naal--brudd { background: var(--sam-brudd); }
+  .samtykke__naal--ok { background: var(--sam-ok); }
+
+  .samtykke__rader {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 3px;
+  }
+  /* Raden har FEM barn: tid, ikon, navn, felt, sporer. Plasseringen er EKSPLISITT
+     i begge oppsettene, aldri overlatt til automatisk plassering.
+
+     Hvorfor: med `auto auto minmax(0,1fr) auto` og automatisk plassering klemte de
+     to nowrap-kolonnene navnekolonnen til clientWidth 0 ved 320 px – fire
+     cookienavn ble malt som ingenting, og det er samme familie av feil som klippet
+     «7 900 kr» til «7 900 kı» på denne sida: et rutenettbarn med min-width: auto
+     som taper plassforhandlingen. Målt ved 320, 360, 390 og 430 px. */
+  .samtykke__rad {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr);
+    align-items: center;
+    gap: 2px var(--space-2);
+    padding: 3px var(--space-2);
+    background: var(--sam-brudd-bunn);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 17px;
+    color: var(--sam-tekst);
+  }
+  .samtykke__rad--ok { background: var(--sam-ok-bunn); }
+
+  /* TRE OPPSETT, ETT PER BREDDE. Plasseringen er EKSPLISITT i alle tre, aldri
+     overlatt til automatisk plassering – det var den som klemte navnekolonnen til
+     clientWidth 0 ved 320 px, slik at fire cookienavn ble malt som ingenting.
+
+       under 300 px i panelet : tre linjer  (tid·ikon·navn / felt / sporer)
+       300–419 px             : to linjer   (tid·ikon·navn / felt · sporer)
+       420 px og opp          : én linje
+
+     Grensene er målt, ikke valgt: ved 320 px skjerm er panelet 240 px innvendig,
+     og toliniersoppsettet ga feltkolonnen 37 px – «førstepart · 730 dager» brakk
+     da midt i ordet til «før / ste / part». Målt ved 320, 360, 390, 430 og 1440 px. */
+  .samtykke__tid { grid-area: 1 / 1; color: var(--sam-dempet); font-variant-numeric: tabular-nums; }
+  .samtykke__ikon { grid-area: 1 / 2; display: flex; color: var(--sam-brudd); }
+  .samtykke__rad--ok .samtykke__ikon { color: var(--sam-ok); }
+  /* Navnet får brekke, men aldri avkortes. Ellipse gjorde «ingen tredjepart» til
+     «ingen …», og navnet ER meningen i raden. */
+  .samtykke__navn {
+    grid-area: 1 / 3;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    color: var(--sam-tekst);
+  }
+  .samtykke__felt { grid-area: 2 / 3; min-width: 0; color: var(--sam-dempet); }
+  .samtykke__sporer { grid-area: 3 / 3; min-width: 0; color: var(--sam-brudd); }
+  .samtykke__rad--ok .samtykke__sporer { color: var(--sam-dempet); }
+
+  @container (min-width: 300px) {
+    .samtykke__rad { grid-template-columns: auto auto minmax(0, 1fr) auto; }
+    /* Navnet strekker seg over BEGGE kolonnene på linje én. Uten `/ -1` fikk det
+       bare 1fr-sporet, 107 px ved 390 px skjerm, og «connect.facebook.net» brakk
+       til «connect.facebook.ne / t». */
+    .samtykke__navn { grid-area: 1 / 3 / 2 / -1; }
+    .samtykke__felt { grid-area: 2 / 3; }
+    .samtykke__sporer { grid-area: 2 / 4; text-align: right; }
+  }
+
+  @container (min-width: 420px) {
+    .samtykke__rad { grid-template-columns: auto auto minmax(0, 1fr) auto auto; }
+    .samtykke__navn { grid-area: 1 / 3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .samtykke__felt { grid-area: 1 / 4; white-space: nowrap; }
+    .samtykke__sporer { grid-area: 1 / 5; white-space: nowrap; }
+  }
+
+  /* ----------------------------------------------------------- banneret --- */
+  .samtykke__banner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--sam-flate);
+    border: var(--hairline) solid var(--sam-linje);
+    border-radius: var(--radius-sm);
+  }
+  .samtykke__banner-tekst {
+    margin: 0;
+    font-size: 12px;
+    line-height: 18px;
+    color: var(--sam-tekst);
+  }
+  .samtykke__banner-knapper { margin: 0; display: flex; gap: var(--space-2); }
+  .samtykke__knapp {
+    padding: 1px var(--space-2);
+    border: var(--hairline) solid var(--sam-linje);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 17px;
+    color: var(--sam-dempet);
+  }
+  .samtykke__knapp--fyll {
+    background: var(--sam-flate);
+    border-color: var(--sam-dempet);
+    color: var(--sam-tekst);
+  }
+  .samtykke__uberort {
+    margin: 0 0 0 auto;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 17px;
+    letter-spacing: 0.04em;
+    color: var(--sam-brudd);
+  }
+  .samtykke__uberort--ok { color: var(--sam-ok); }
+  .samtykke__banner--tom .samtykke__banner-tekst { color: var(--sam-dempet); }
+
+  /* ------------------------------------------------------------- dommen --- */
+  .samtykke__dom {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 18px;
+  }
+  .samtykke__dom-tall {
+    padding: 0 var(--space-2);
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .samtykke__dom--brudd .samtykke__dom-tall { background: var(--sam-brudd-bunn); color: var(--sam-brudd); }
+  .samtykke__dom--ok .samtykke__dom-tall { background: var(--sam-ok-bunn); color: var(--sam-ok); }
+  .samtykke__dom-ord { color: var(--sam-dempet); }
+
+  /* --------------------------------------------------------------- fot ---- */
+  .samtykke__fot { display: grid; gap: var(--space-3); color: var(--ink-muted); }
+  .samtykke__fot p { margin: 0; max-width: 72ch; }
+  .samtykke__fot em { font-style: normal; color: var(--ink); font-weight: 600; }
+  .samtykke__om { display: flex; }
+  .samtykke__spill {
+    min-height: 32px;
+    padding: 0 var(--space-3);
+    background: transparent;
+    border: var(--hairline) solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: border-color 120ms ease;
+  }
+  .samtykke__spill:hover { border-color: var(--accent-text); }
+  .samtykke__spill:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: 2px; }
+
+  @media (max-width: 860px) {
+    .samtykke__spor { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  /* ====================================================== bevegelsen ======
+     Alt over er sluttbildet. Alt under skjuler og spiller det fram igjen, og
+     bare der brukeren ikke har bedt om ro. Rekkefølgen er med vilje: da finnes
+     det ingen tilstand der noe blir stående usynlig.
+
+     Langformer, aldri `animation:`-stenografien. lightningcss slår
+     stenografi + animation-timeline sammen til noe ugyldig, og både Chromium og
+     Firefox forkaster da tidslinjen uten å si fra. Her brukes ikke
+     animation-timeline, men regelen holdes for at neste endring ikke skal falle
+     i den fella.
+
+     Tidsplanen, i sekunder:
+       0,15–2,60  spor 1: fyllet vokser, nåla sveiper
+       0,45       _ga
+       0,80       _gid
+       1,20       _fbp
+       1,62       connect.facebook.net
+       2,05       «uberørt · 0 klikk»
+       2,45       dommen: 3 cookies · 2 sporere
+       2,85–4,35  spor 2: fyllet vokser, nåla sveiper
+       3,05–3,95  de fire «ingenting skjedde»-radene
+       4,35       dommen: 0 cookies · 0 sporere
+     Slutt 4,75 s. Under WCAG 2.2.2 sin femsekundersgrense, så sekvensen trenger
+     ingen pauseknapp. */
+  @media (prefers-reduced-motion: no-preference) {
+    .samtykke__fyll {
+      scale: 0 1;
+      animation-name: sam-fyll;
+      animation-duration: 2.45s;
+      animation-timing-function: linear;
+      animation-fill-mode: forwards;
+    }
+    .samtykke__fyll--brudd { animation-delay: 0.15s; }
+    .samtykke__fyll--ok { animation-delay: 2.85s; animation-duration: 1.5s; }
+
+    .samtykke__naal {
+      animation-name: sam-naal;
+      animation-duration: 2.45s;
+      animation-timing-function: linear;
+      animation-fill-mode: forwards;
+    }
+    .samtykke__naal--brudd { animation-delay: 0.15s; }
+    .samtykke__naal--ok { animation-delay: 2.85s; animation-duration: 1.5s; }
+
+    .samtykke__rad {
+      opacity: 0;
+      animation-name: sam-rad;
+      animation-duration: 380ms;
+      animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+      animation-fill-mode: forwards;
+      animation-delay: calc(0.45s + var(--i) * 0.39s);
+    }
+    .samtykke__rad--ok { animation-delay: calc(3.05s + var(--i) * 0.3s); }
+
+    .samtykke__uberort {
+      opacity: 0;
+      animation-name: sam-rad;
+      animation-duration: 420ms;
+      animation-timing-function: ease-out;
+      animation-fill-mode: forwards;
+      animation-delay: 2.05s;
+    }
+    .samtykke__uberort--ok { animation-delay: 4.05s; }
+
+    .samtykke__dom-tall {
+      opacity: 0;
+      animation-name: sam-dom;
+      animation-duration: 460ms;
+      animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+      animation-fill-mode: forwards;
+    }
+    .samtykke__dom--brudd .samtykke__dom-tall { animation-delay: 2.45s; }
+    .samtykke__dom--ok .samtykke__dom-tall { animation-delay: 4.35s; }
+
+    .samtykke__dom-ord {
+      opacity: 0;
+      animation-name: sam-rad;
+      animation-duration: 300ms;
+      animation-timing-function: ease-out;
+      animation-fill-mode: forwards;
+    }
+    .samtykke__dom--brudd .samtykke__dom-ord { animation-delay: 2.6s; }
+    .samtykke__dom--ok .samtykke__dom-ord { animation-delay: 4.5s; }
+  }
+
+  @keyframes sam-fyll {
+    from { scale: 0 1; }
+    to { scale: 1 1; }
+  }
+  @keyframes sam-naal {
+    from { opacity: 0.9; translate: 0; }
+    92% { opacity: 0.9; }
+    to { opacity: 0; translate: 100cqw; }
+  }
+  @keyframes sam-rad {
+    from { opacity: 0; translate: 0 6px; }
+    to { opacity: 1; translate: 0; }
+  }
+  @keyframes sam-dom {
+    from { opacity: 0; scale: 0.9; }
+    to { opacity: 1; scale: 1; }
+  }
+</style>
+
+<script>
+  /**
+   * Eneste JavaScript i komponenten: en knapp som spiller sekvensen om igjen.
+   *
+   * Den er `hidden` i markupen og avsløres her, slik at ingen får en knapp som
+   * ikke gjør noe. Uten JavaScript spilles sekvensen fortsatt én gang av seg
+   * selv – den er ren CSS – og ender i det ferdige bildet.
+   *
+   * `getAnimations({ subtree: true })` lar oss spole tilbake uten
+   * reflow-trikset med `style.animation = "none"`, og uten å røre markup.
+   */
+  const rot = document.querySelector<HTMLElement>("[data-samtykke]");
+  const knapp = document.querySelector<HTMLButtonElement>("[data-samtykke-spill]");
+
+  if (rot && knapp && typeof rot.getAnimations === "function") {
+    const rolig = matchMedia("(prefers-reduced-motion: reduce)");
+    const vis = () => { knapp.hidden = rolig.matches; };
+    vis();
+    rolig.addEventListener("change", vis);
+
+    knapp.addEventListener("click", () => {
+      const spor = rot.getAnimations({ subtree: true });
+      for (const a of spor) {
+        a.cancel();
+        a.play();
+      }
+    });
+  }
+</script>

@@ -5,6 +5,7 @@ import Demo from "../components/Demo.astro";
 import Scene from "../components/Scene.astro";
 import Mega from "../components/Mega.astro";
 import Avslor from "../components/Avslor.astro";
+import SamtykkeSekvens from "../components/SamtykkeSekvens.astro";
 import SceneFilm from "../components/SceneFilm.astro";
 import Button from "../components/Button.astro";
 import Terminal from "../components/Terminal.astro";
@@ -51,9 +52,18 @@ const tiltak = [
   <Scene lav>
     <Mega som="h1" merke="Sikkerhet" n={1} tekst="Siden vår består sin egen sjekk" aksent="sjekk" />
     <Avslor trinn={1}>
-      <p class="scene__ingress body-lg">Det er lett å selge sikkerhet. Det er vanskeligere å bevise det. Derfor kjører vi den samme sjekken på vår egen side og viser resultatet her – også raden vi ikke består.</p>
+      <p class="scene__ingress body-lg">Det er lett å selge sikkerhet. Det er vanskeligere å bevise det. Her er lovbruddet de fleste norske nettsider gjør, spilt av i sanntid – og den samme sjekken kjørt på vår egen side.</p>
     </Avslor>
 
+    {/* Sekvensen står OVER folden, med vilje. Målt på /sikkerhet: ingressen slutter
+       på 601 px ved 1440x900 og 491 px ved 390x844, så sekvensen begynner å spille
+       i synsfeltet uten at noen scroller. Det er den målte forskjellen mot
+       jeton.com, osmo.supply og spinxdigital.com: der beveger noe seg med én gang.
+
+       Den ligger IKKE i en <Avslor>. Scroll-avdekking på noe som allerede er synlig
+       ved innlasting gir et element som står halvt gjennomsiktig til brukeren
+       scroller – det er feilen is:global-regelen nederst på sida finnes for. */}
+    <SamtykkeSekvens />
   </Scene>
 
   {/* Bekjennelsen staar paa varm flate, ikke paa samme moerke som resten.
@@ -152,8 +162,20 @@ const tiltak = [
       <p class="muted">Registrert foretaksnavn og organisasjonsnummer skal stå på nettsiden. Er du mva-registrert, skal «MVA» stå etter nummeret.</p>
       <h3>Kontaktinformasjon (ehandelsloven § 8)</h3>
       <p class="muted">Geografisk adresse, e-postadresse og et nummer kunden kan nå deg på. Et kontaktskjema alene er ikke nok.</p>
+      {/* Hjemmelen er kontrollert mot Lovdata 6. oktober 2026: ekomloven er
+          LOV-2024-12-13-76, og § 3-15 heter «Bruk av informasjonskapsler mv.».
+          Den gamle § 2-7b i ekomloven av 2003 er opphevet. Ikke skriv om dette
+          uten å slå det opp på nytt. */}
       <h3>Cookie-samtykke (ekomloven § 3-15)</h3>
-      <p class="muted">Fra 1. januar 2025 må samtykke oppfylle GDPR-kravene: ingen forhåndsavkryssing, «avvis» like lett tilgjengelig som «godta», og ingen sporing før samtykke er gitt. Den enkleste måten å overholde dette er å ikke sette cookies i det hele tatt.</p>
+      <p class="muted">
+        <a class="kk-link" href="https://lovdata.no/lov/2024-12-13-76/§3-15" rel="nofollow">Ekomloven § 3-15</a>,
+        «Bruk av informasjonskapsler mv.», forbyr å lagre eller skaffe seg tilgang til opplysninger
+        i utstyret til den som besøker siden uten at vedkommende har samtykket. Fra 1. januar 2025
+        må samtykket oppfylle kravene i personvernforordningen: ingen forhåndsavkryssing, «avvis»
+        like lett tilgjengelig som «godta», og ingenting lagret før samtykke er gitt. Unntaket gjelder
+        det som er strengt nødvendig for å levere tjenesten. Den enkleste måten å overholde dette på
+        er å ikke sette cookies i det hele tatt.
+      </p>
       <h3>Universell utforming</h3>
       <p class="muted">Private virksomheter skal oppfylle 35 krav i WCAG 2.0 nivå A og AA. Offentlig sektor har 48 krav i WCAG 2.1. Vi bygger etter WCAG 2.2 AA, som dekker begge.</p>
       <p class="small faint">Dette er ikke juridisk rådgivning. Få standardvilkår og personvernerklæring kvalitetssikret av advokat før du bruker dem i avtaler.</p>

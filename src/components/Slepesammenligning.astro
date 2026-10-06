@@ -1,6 +1,6 @@
 ---
 /**
- * Slepesammenligning – dra skillelinjen og gi den ene siden mer plass.
+ * Slepesammenligning – to målinger, én flate, og en skillelinje du flytter.
  *
  * MERK hvorfor dette er et DELT PANEL og ikke en klassisk «wipe»:
  * en wipe klipper det øverste laget i en loddrett kant. Det fungerer for
@@ -14,6 +14,48 @@
  * Et delt panel kan ikke lyve: hver side viser alltid sitt eget, komplette
  * innhold. Draingen bytter bare plass mellom dem.
  *
+ * ── HVORFOR DEN BLE SKREVET OM (6. oktober 2026) ──────────────────────────
+ *
+ * Eieren meldte «fungerer ikke», og sju bredder, piltaster, musedrag og
+ * berøring mot produksjon sa alle at den virket. Den gjorde det også – på
+ * skrivebord. Målt på 390 px i headless Chrome med ekte berøringskontekst var
+ * bildet et annet:
+ *
+ *   · Komponenten var 755 px høy i et 844 px visningsbilde med ~110 px fast
+ *     topplinje. Du så ALDRI begge panelene samtidig.
+ *   · Etikettene «En side vi sjekket» og «Denne siden» er 12 px mono øverst i
+ *     hvert panel. De rullet opp under topplinjen før tallene kom i syne.
+ *   · Det som faktisk sto på skjermen var to nesten like tabeller etter
+ *     hverandre, med samme fire radnavn. Det ser ikke ut som en
+ *     sammenligning. Det ser ut som innhold som er dublert ved et uhell.
+ *   · Spak, skillelinje og hint var alle `display: none` under 640 px. Du
+ *     kunne trykke hvor som helst – ingenting skjedde.
+ *
+ * «Fungerer ikke» var altså ikke en feil i skriptet. Det var en komponent som
+ * på den viktigste bredden hverken gjorde noe eller fortalte hva den var.
+ *
+ * Tre endringer:
+ *
+ *   1. AKSEN FØLGER LAYOUTEN. Over 640 px står panelene ved siden av
+ *      hverandre og skillelinjen er loddrett. Under 640 px står de over
+ *      hverandre og skillelinjen er VANNRETT – samme `--p`, samme spak, samme
+ *      historie, bare snudd. Flaten har fast høyde på smal skjerm, så begge
+ *      sidene er på skjermen samtidig.
+ *   2. SPAKEN VISES OVERALT. Overflatedraing er fortsatt av på smal skjerm:
+ *      loddrett draing krever `touch-action: none`, og da mister fingeren
+ *      rullingen. I stedet er et TRYKK på et panel nok til å gi det plassen.
+ *      Det er et klikkmål, ikke en gest, så det kolliderer ikke med rulling.
+ *   3. SUMMEN FLYTTER SEG. På smal skjerm klippes panelet nedenfra, og da må
+ *      tallet stå ØVERST ved siden av etiketten – ellers er et sammenklemt
+ *      panel innholdsløst. På bred skjerm klippes det fra høyre, og da
+ *      overlever tallet nederst til venstre. Samme DOM, to rutenett.
+ *
+ * Og den demonstrerer seg selv: når flaten kommer inn i synsfeltet sveiper
+ * skillelinjen ÉN gang – helt over til den sjekkede siden, helt over til vår,
+ * og så til ro litt forbi midten. Én gang, aldri i løkke, aldri med
+ * `prefers-reduced-motion: reduce`, og den avbrytes i samme øyeblikk brukeren
+ * rører noe.
+ *
  * Begge kolonnene er målt med vår egen sjekk 6. oktober 2026. Den sjekkede
  * siden er ikke navngitt – docs/metode-skanning.md sier vi aldri publiserer
  * navn på sider som kommer dårlig ut.
@@ -26,6 +68,7 @@ const { id = "sammenlign", class: cls } = Astro.props;
 
 const sider = [
   {
+    nokkel: "for",
     merke: "En side vi sjekket",
     sum: "50",
     rader: [
@@ -36,6 +79,7 @@ const sider = [
     ],
   },
   {
+    nokkel: "etter",
     merke: "Denne siden",
     sum: "90",
     rader: [
@@ -53,10 +97,11 @@ import "../styles/interaksjon.css";
 ---
 <figure class:list={["slep", cls]} data-slep>
   <div class="slep__flate" data-slep-flate>
-    {sider.map((s, i) => (
-      <section class={`slep__panel slep__panel--${i === 0 ? "for" : "etter"}`}>
+    {sider.map((s) => (
+      <div class={`slep__panel slep__panel--${s.nokkel}`} data-slep-panel={s.nokkel}>
         <div class="slep__innhold">
           <p class="slep__merke mono-label">{s.merke}</p>
+          <p class="slep__sum mono-stat">{s.sum}<span class="slep__av">/100</span></p>
           <dl class="slep__rader">
             {s.rader.map((r) => (
               <div class="slep__rad">
@@ -65,14 +110,17 @@ import "../styles/interaksjon.css";
               </div>
             ))}
           </dl>
-          <p class="slep__sum mono-stat">{s.sum}<span class="slep__av">/100</span></p>
         </div>
-      </section>
+      </div>
     ))}
-    <span class="slep__linje" aria-hidden="true"></span>
+    <span class="slep__linje" aria-hidden="true"><span class="slep__knott"></span></span>
   </div>
 
   <div class="slep__kontroll">
+    {/* Fortelleren. Står synlig og sier hva du ser på akkurat nå – det er
+        denne linjen som gjør sveipen til en historie og ikke bare bevegelse.
+        Teksten under er den nøytrale utgangsteksten; skriptet overtar. */}
+    <p class="slep__forteller" data-slep-forteller>To målinger, samme sjekk.</p>
     <label class="visually-hidden" for={`${id}-spak`}>Fordeling mellom de to sidene</label>
     <input
       class="spak"
@@ -83,9 +131,12 @@ import "../styles/interaksjon.css";
       value="50"
       step="1"
       data-slep-spak
-      aria-describedby={`${id}-status`}
     />
-    <p class="interaksjon-hint">Dra skillelinjen, eller bruk piltastene.</p>
+    {/* To hint, ett per bredde. CSS velger, ikke JavaScript – da står riktig
+        tekst i HTML-en og `display: none` holder den andre ute av
+        tilgjengelighetstreet. */}
+    <p class="interaksjon-hint slep__hint slep__hint--bred">Dra skillelinjen, eller bruk piltastene.</p>
+    <p class="interaksjon-hint slep__hint slep__hint--smal">Trykk på en side for å se hele den, eller dra spaken.</p>
   </div>
 
   <figcaption class="small faint">
@@ -93,18 +144,27 @@ import "../styles/interaksjon.css";
     er ikke navngitt – vi publiserer ikke navn på sider som kommer dårlig ut.
   </figcaption>
 
-  <p class="visually-hidden" id={`${id}-status`} aria-live="polite" data-slep-status>
-    De to sidene deler bredden likt.
+  {/* Rolig status: oppdateres bare når noe har SATT SEG – ikke for hver piksel
+      under draingen. Spaken melder seg selv gjennom aria-valuetext, så denne
+      finnes for peker og trykk, der fokus aldri flytter seg. */}
+  <p class="visually-hidden" id={`${id}-status`} role="status" aria-live="polite" data-slep-status>
+    De to sidene deler flaten likt.
   </p>
 </figure>
 
 <style>
-  .slep { margin: 0; display: grid; gap: var(--space-4); }
+  .slep {
+    margin: 0;
+    display: grid;
+    gap: var(--space-4);
+    /* Hvor langt det sammenklemte panelet kan presses. Settes per akse. */
+    --slep-grense: 0.12;
+  }
 
   .slep__flate {
     position: relative;
     display: grid;
-    /* --p er 0–1. Venstre panel får andelen, høyre får resten. */
+    /* --p er 0–1. Første panel får andelen, det andre får resten. */
     grid-template-columns: calc(var(--p, 0.5) * 100%) 1fr;
     border: var(--hairline) solid var(--line);
     border-radius: var(--radius-md);
@@ -114,27 +174,46 @@ import "../styles/interaksjon.css";
   }
   .slep[data-drar] .slep__flate { cursor: grabbing; }
 
+  /* Mykt bytte når brukeren TRYKKER et panel eller hopper med spaken. Av under
+     draing og under sveipen, der skriptet setter --p for hver frame og en
+     overgang bare ville ligge etter. */
+  .slep:not([data-drar]):not([data-sveiper]) .slep__flate {
+    transition: grid-template-columns 420ms cubic-bezier(0.2, 0, 0, 1),
+                grid-template-rows 420ms cubic-bezier(0.2, 0, 0, 1);
+  }
+  .slep:not([data-drar]):not([data-sveiper]) .slep__linje {
+    transition: left 420ms cubic-bezier(0.2, 0, 0, 1),
+                top 420ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
   .slep__panel {
     /* min-width: 0 lar sporet bli smalere enn innholdet, og overflow klipper
        det. Uten den ville rutenettet nekte å krympe og draingen stoppe. */
     min-width: 0;
+    min-height: 0;
     overflow: hidden;
   }
   .slep__panel--for { background: var(--bg-sunken); }
   .slep__panel--etter { background: var(--bg-raised); }
 
   /* Innholdet beholder sin bredde og klippes, i stedet for å flyte om til en
-     uleselig smal spalte mens man drar. */
+     uleselig smal spalte mens man drar.
+
+     Rutenettet er navngitt fordi de to aksene trenger hver sin plassering av
+     summen: klippes det fra høyre, overlever et tall nederst til venstre;
+     klippes det nedenfra, må tallet opp i topplinjen. Samme DOM. */
   .slep__innhold {
     display: grid;
+    grid-template-areas: "merke" "rader" "sum";
     gap: var(--space-4);
     align-content: start;
     padding: var(--space-5);
     min-width: 290px;
   }
+  .slep__merke { grid-area: merke; color: var(--ink-faint); white-space: nowrap; }
+  .slep__rader { grid-area: rader; margin: 0; display: grid; gap: 0; }
+  .slep__sum { grid-area: sum; margin: 0; color: var(--ink); }
 
-  .slep__merke { color: var(--ink-faint); white-space: nowrap; }
-  .slep__rader { margin: 0; display: grid; gap: 0; }
   .slep__rad {
     display: flex;
     justify-content: space-between;
@@ -151,13 +230,33 @@ import "../styles/interaksjon.css";
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
-  .slep__verdi--ok { color: var(--ok); }
-  .slep__verdi--warn { color: var(--warn); }
-  .slep__verdi--fail { color: var(--fail); }
+  .slep__verdi--ok { color: var(--slep-ok, var(--ok)); }
+  .slep__verdi--warn { color: var(--slep-warn, var(--warn)); }
+  .slep__verdi--fail { color: var(--slep-fail, var(--fail)); }
 
-  .slep__sum { margin: 0; color: var(--ink); }
+  /* Målt, ikke antatt: i lyst tema er --ok (#0b7a6b) 4,42:1 mot det senkede
+     panelets #e9ecef. Under 4,5 – og «0» under «Cookies før samtykke» er
+     nettopp en --ok-verdi som står på den flaten.
+
+     Rettingen er temauavhengig med vilje, ikke låst til [data-theme="light"].
+     Den blander statusfargen 12 % mot --ink, og --ink peker ALLTID bort fra
+     bakgrunnen: nesten svart i lyst tema, nesten hvitt i mørkt. Et steg mot
+     --ink kan derfor bare øke kontrasten, uansett tema – også i .flate--varm
+     og i det mørke paletten forsiden låser seg til. Et [data-theme]-vilkår
+     ville vært en gjetning om hvilken palett som gjelder; dette er sant
+     uansett. Ingen hardkodet farge: begge leddene er tokens. */
+  .slep {
+    --slep-ok: color-mix(in srgb, var(--ok) 88%, var(--ink));
+    --slep-warn: color-mix(in srgb, var(--warn) 88%, var(--ink));
+    --slep-fail: color-mix(in srgb, var(--fail) 88%, var(--ink));
+  }
+
   .slep__av { font-size: 14px; color: var(--ink-faint); }
 
+  /* --accent-text, ikke --accent. Skillelinjen og knotten er bærende
+     betjeningselementer og må klare WCAG 1.4.11 sine 3:1. Lime #b6e62a mot det
+     lyse temaets #f5f6f7 er 1,6:1 – usynlig. --accent-text er den samme limen i
+     mørkt tema og en dyp grønn (#3d6600) i lyst, der den ligger over 8:1. */
   .slep__linje {
     position: absolute;
     top: 0;
@@ -165,73 +264,169 @@ import "../styles/interaksjon.css";
     left: calc(var(--p, 0.5) * 100%);
     width: var(--focus-width);
     translate: calc(var(--focus-width) / -2) 0;
-    background: var(--accent);
+    background: var(--accent-text);
     pointer-events: none;
   }
-  .slep__linje::after {
-    content: "";
+  .slep__knott {
     position: absolute;
     top: 50%;
     left: 50%;
+    display: grid;
+    place-items: center;
     width: 30px;
     height: 30px;
     translate: -50% -50%;
-    border: var(--focus-width) solid var(--accent);
+    border: var(--focus-width) solid var(--accent-text);
     border-radius: var(--radius-pill);
     background: var(--bg);
   }
+  /* To vinkler som peker hver sin vei: affordansen «dette kan flyttes». */
+  .slep__knott::before,
+  .slep__knott::after {
+    content: "";
+    grid-area: 1 / 1;
+    width: 5px;
+    height: 5px;
+    border-top: 2px solid var(--accent-text);
+    border-right: 2px solid var(--accent-text);
+  }
+  .slep__knott::before { rotate: -135deg; translate: -4px 0; }
+  .slep__knott::after { rotate: 45deg; translate: 4px 0; }
+
+  /* Ett enkelt pust når sveipen har satt seg, så blikket finner håndtaket.
+     To slag, ikke en løkke. */
+  .slep[data-puls] .slep__knott { animation: slep-puls 900ms ease-out 2; }
+  @keyframes slep-puls {
+    0%, 100% { box-shadow: 0 0 0 0 transparent; }
+    40% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--accent-text) 22%, transparent); }
+  }
 
   .slep__kontroll { display: grid; gap: var(--space-2); }
+  .slep__forteller {
+    margin: 0;
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 20px;
+    /* Fast høyde: teksten bytter mens man drar, og uten dette ville en linje
+       som brytes til to flytte alt under seg. */
+    min-height: 20px;
+  }
+  .slep__hint--smal { display: none; }
 
-  /* Uten JavaScript: to like brede spalter, ingen skillelinje, ingen kontroll. */
-  .slep:not([data-klar]) .slep__flate { grid-template-columns: 1fr 1fr; cursor: default; }
+  /* Uten JavaScript: to like store felt, hele innholdet synlig, ingen
+     skillelinje og ingen kontroll som ikke gjør noe. */
+  .slep:not([data-klar]) .slep__flate {
+    grid-template-columns: 1fr 1fr;
+    height: auto;
+    cursor: default;
+  }
   .slep:not([data-klar]) .slep__linje,
   .slep:not([data-klar]) .slep__kontroll { display: none; }
 
   @media (max-width: 640px) {
-    /* På smal skjerm blir et delt panel for trangt til å lese. Da står sidene
-       under hverandre, og draingen gir ingen mening – derfor skjules den. */
-    .slep__flate { grid-template-columns: 1fr !important; cursor: default; }
+    /* Et delt panel på 390 px blir for trangt til å lese, så panelene stables.
+       Men da må skillelinjen snu med dem: aksen er LODDRETT her. Flaten får
+       fast høyde slik at begge sidene er på skjermen samtidig – det var nettopp
+       det som manglet da den leste som to dublerte tabeller. */
+    .slep { --slep-grense: 0.2; }
+    .slep__flate {
+      grid-template-columns: 1fr;
+      grid-template-rows: calc(var(--p, 0.5) * 100%) 1fr;
+      height: 460px;
+      cursor: default;
+    }
     .slep__panel--etter { border-top: var(--hairline) solid var(--line); }
-    .slep__linje, .slep__kontroll { display: none; }
-    .slep__innhold { min-width: 0; }
+    .slep__innhold {
+      grid-template-areas: "merke sum" "rader rader";
+      grid-template-columns: 1fr auto;
+      align-items: baseline;
+      gap: var(--space-3) var(--space-4);
+      padding: var(--space-4) var(--space-5);
+      min-width: 0;
+    }
+    .slep__sum { justify-self: end; }
     .slep__rad dt { white-space: normal; }
+
+    .slep__linje {
+      top: calc(var(--p, 0.5) * 100%);
+      bottom: auto;
+      left: 0;
+      right: 0;
+      width: auto;
+      height: var(--focus-width);
+      translate: 0 calc(var(--focus-width) / -2);
+    }
+    .slep__knott { rotate: 90deg; }
+
+    .slep__hint--bred { display: none; }
+    .slep__hint--smal { display: block; }
+
+    .slep:not([data-klar]) .slep__flate {
+      grid-template-rows: auto auto;
+      height: auto;
+    }
   }
 </style>
 
 <script>
+  type Akse = "x" | "y";
+
   for (const rot of document.querySelectorAll<HTMLElement>("[data-slep]")) {
     const flate = rot.querySelector<HTMLElement>("[data-slep-flate]")!;
     const spak = rot.querySelector<HTMLInputElement>("[data-slep-spak]")!;
     const status = rot.querySelector<HTMLElement>("[data-slep-status]")!;
+    const forteller = rot.querySelector<HTMLElement>("[data-slep-forteller]")!;
     rot.dataset.klar = "true";
 
-    // Under 640 px er panelene stablet og draingen er slått av i CSS.
+    // Under 640 px er panelene stablet, skillelinjen er vannrett og
+    // overflatedraingen er av – se kommentaren øverst.
     const smal = () => window.matchMedia("(max-width: 640px)").matches;
+    const akse = (): Akse => (smal() ? "y" : "x");
+
+    // Teksten hentes fra DOM-en, ikke skrives om her. Da finnes tallene bare
+    // ett sted, og fortelleren kan ikke komme i utakt med tabellen.
+    const les = (nokkel: string, velger: string) =>
+      rot.querySelector<HTMLElement>(`[data-slep-panel="${nokkel}"] ${velger}`)
+        ?.textContent?.trim() ?? "";
+    const merkeFor = les("for", ".slep__merke");
+    const merkeEtter = les("etter", ".slep__merke");
+    const sumFor = les("for", ".slep__sum").replace("/100", "");
+    const sumEtter = les("etter", ".slep__sum").replace("/100", "");
+
+    // Grensen holder begge sidene i live. Et panel på null er ikke en
+    // sammenligning. På smal skjerm må den være romsligere, ellers blir det
+    // klemte panelet lavere enn sin egen topplinje.
+    const grense = () => (smal() ? 0.2 : 0.12);
 
     let p = 0.5;
+    const fortell = (v: number) =>
+      v > 0.65
+        ? `Slik så det ut: ${merkeFor} fikk ${sumFor} av 100.`
+        : v < 0.35
+          ? `Slik ble det: ${merkeEtter} fikk ${sumEtter} av 100.`
+          : `${sumFor} mot ${sumEtter} av 100.`;
+
     const sett = (ny: number) => {
-      // Begrenses så begge sider alltid viser noe. Et panel på null bredde er
-      // ikke en sammenligning.
-      p = Math.min(0.88, Math.max(0.12, ny));
+      const g = grense();
+      p = Math.min(1 - g, Math.max(g, ny));
       rot.style.setProperty("--p", p.toFixed(3));
       spak.value = String(Math.round(p * 100));
-      status.textContent =
-        p < 0.2
-          ? "Nesten all plass til denne siden: 6 av 6 sikkerhetsheadere, ingen feil, org.nr. bekreftet."
-          : p > 0.8
-            ? "Nesten all plass til den sjekkede siden: 3 av 6 sikkerhetsheadere, 1 feil, org.nr. mangler."
-            : `Den sjekkede siden har ${Math.round(p * 100)} prosent av bredden.`;
+      spak.setAttribute("aria-valuetext", fortell(p));
+      forteller.textContent = fortell(p);
     };
+    // Meldes bare når noe har satt seg, ikke for hver piksel under draingen.
+    const meld = () => { status.textContent = fortell(p); };
     sett(0.5);
 
+    // ── draing ───────────────────────────────────────────────────────────────
     let drar = false;
     const fraPeker = (e: PointerEvent) => {
       const r = flate.getBoundingClientRect();
-      sett((e.clientX - r.left) / r.width);
+      sett(akse() === "y" ? (e.clientY - r.top) / r.height : (e.clientX - r.left) / r.width);
     };
     flate.addEventListener("pointerdown", (e) => {
-      if (smal()) return;
+      if (smal()) return;   // loddrett draing ville kostet rullingen
+      stoppSveip();
       drar = true;
       rot.dataset.drar = "";
       flate.setPointerCapture(e.pointerId);
@@ -243,10 +438,107 @@ import "../styles/interaksjon.css";
       drar = false;
       delete rot.dataset.drar;
       flate.releasePointerCapture?.(e.pointerId);
+      meld();
     };
     flate.addEventListener("pointerup", slipp);
     flate.addEventListener("pointercancel", slipp);
 
-    spak.addEventListener("input", () => sett(Number(spak.value) / 100));
+    // ── trykk et panel for å gi det plassen ─────────────────────────────────
+    // Dette er mobilsvaret på «fungerer ikke»: et klikkmål, ikke en gest, så
+    // det tar ikke rullingen fra fingeren. Spaken er fortsatt den
+    // tilgjengelige inngangen – dette er en snarvei, ikke eneste vei inn.
+    for (const panel of rot.querySelectorAll<HTMLElement>("[data-slep-panel]")) {
+      panel.addEventListener("click", () => {
+        if (!smal() || drar) return;
+        stoppSveip();
+        const aapen = panel.dataset.slepPanel === "for";
+        const g = grense();
+        // Allerede åpen? Trykk igjen stiller tilbake til delt.
+        const maal = aapen
+          ? (p > 0.6 ? 0.5 : 1 - g)
+          : (p < 0.4 ? 0.5 : g);
+        sett(maal);
+        meld();
+      });
+    }
+
+    spak.addEventListener("input", () => { stoppSveip(); sett(Number(spak.value) / 100); });
+    spak.addEventListener("change", meld);
+
+    // ── sveipen: komponenten demonstrerer seg selv, én gang ─────────────────
+    //
+    // Historien i tre slag: helt over til den sjekkede siden («slik så det
+    // ut»), helt over til vår («slik ble det»), og til ro litt forbi midten –
+    // ikke på midten, for en strek midt i flaten leser som en kant i layouten,
+    // mens en strek som står litt skjevt leser som en POSISJON noen har satt,
+    // og som altså kan flyttes.
+    let sveip = 0;
+    const stoppSveip = () => {
+      if (!sveip) return;
+      cancelAnimationFrame(sveip);
+      sveip = 0;
+      delete rot.dataset.sveiper;
+    };
+
+    const mykt = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+    const kjorSveip = () => {
+      const g = grense();
+      // [til, varighet, pause etter]
+      const slag: Array<[number, number, number]> = [
+        [1 - g, 760, 620],
+        [g, 980, 620],
+        [0.42, 620, 0],
+      ];
+      let i = 0;
+      let fra = p;
+      let start = 0;
+      let hvile = 0;
+
+      rot.dataset.sveiper = "";
+      const steg = (na: number) => {
+        if (!start) start = na;
+        const [til, varighet, pause] = slag[i];
+        const t = Math.min(1, (na - start - hvile) / varighet);
+        sett(fra + (til - fra) * mykt(t));
+        if (t < 1) { sveip = requestAnimationFrame(steg); return; }
+        if (na - start - hvile < varighet + pause) { sveip = requestAnimationFrame(steg); return; }
+        i += 1;
+        if (i >= slag.length) {
+          sveip = 0;
+          delete rot.dataset.sveiper;
+          meld();
+          // Ett pust på håndtaket, så blikket finner det. Attributtet blir
+          // stående; animasjonen har to slag og stopper selv.
+          rot.dataset.puls = "";
+          return;
+        }
+        fra = p; start = na; hvile = 0;
+        sveip = requestAnimationFrame(steg);
+      };
+      sveip = requestAnimationFrame(steg);
+    };
+
+    // Bytter aksen (rotert telefon, endret vindu), kan p ligge utenfor den nye
+    // grensen – 0,12 er lovlig vannrett, men for trangt loddrett. Sett den om
+    // igjen gjennom samme vei inn, så klemmer den seg selv på plass.
+    const bredde = window.matchMedia("(max-width: 640px)");
+    bredde.addEventListener("change", () => { stoppSveip(); sett(p); meld(); });
+
+    const stille = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (!stille.matches && "IntersectionObserver" in window) {
+      const vakt = new IntersectionObserver(
+        (poster) => {
+          for (const post of poster) {
+            if (!post.isIntersecting) continue;
+            vakt.disconnect();           // én gang, aldri i løkke
+            if (stille.matches) return;  // slått på mens siden sto åpen
+            kjorSveip();
+          }
+        },
+        { threshold: 0.55 },
+      );
+      vakt.observe(flate);
+    }
   }
 </script>

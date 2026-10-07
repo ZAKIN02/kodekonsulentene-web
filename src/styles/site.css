@@ -994,3 +994,8 @@ ul.sjs__logg { grid-template-columns: minmax(0, 1fr); }
    nullstiller sin egen marg. Maalt til ett treff – regelen er ikke bredere enn
    funnet den retter. */
 .avslor.avslor > :is(p, ul, ol) + figure { margin-block-start: var(--luft-blokk); }
+
+/* En <dl class="kv"> som er direkte barn i et rutenett startet 16 px under naboen,
+   fordi nettleserens egen 1em-marg paa dl aldri ble nullstilt. Det ga skjeve rader paa
+   /nettsider og /status. En linje her i stedet for en lapp per side. */
+.kv { margin: 0; }

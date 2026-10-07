@@ -526,33 +526,41 @@ const heroTerminal = [
   /* ------------------------------------------------- bryt rutenettet ---- */
   /*
     Forsiden sto helt oppreist paa rutenett innenfor margene. Kortene fikk derfor
-    samme vekt og leste som en liste. Her gjoeres to ting, og de er bevisst
-    forskjellige:
+    samme vekt og leste som en liste.
 
-    1) FORSKYVNINGEN er permanent og krever ingen JavaScript, ingen scroll og
-       ingen animasjon. Den bryter rutenettet i det sekundet siden males – ogsaa
-       i Firefox, ogsaa ved redusert bevegelse, ogsaa med JS slaatt av.
-    2) VRIDNINGEN er bevegelse: kortene kommer inn skjeve og retter seg opp mens
-       du scroller. Faller den bort, staar kortene rett – degraderingen gaar mot
-       «synlig og rett», aldri mot «skjult eller skjevt».
+    Raden ble broetet paa TO maater samtidig: en permanent loddrett forskyvning
+    (margin) OG en vridning som kjoerer paa scroll. Forskyvningen er fjernet.
+    Eieren har meldt den fire ganger – «legg de paa en linje» – og maalingen gir
+    ham rett: 48 px mellom kort 2 og naboene er ikke dybde, det er en rad som
+    ikke staar i linje. Vridningen staar igjen, og den ALENE bryter rutenettet:
+    den leses som papir som ligger oppa hverandre, ikke som et rutenett i uorden.
+
+    Degraderingen gaar fortsatt mot «synlig og rett»: faller animasjonen bort –
+    Firefox, redusert bevegelse, JS av – staar kortene rett og i linje.
 
     Transformen ligger paa KORTET inni, ikke paa .avslor-wrapperen. Avslor eier
     allerede sin egen animasjon paa opacity; en animation-name her ville erstattet
     den og slaatt av inntoningen.
   */
   @media (min-width: 861px) {
-    .tjenester-rad > :nth-child(1) { margin-block-start: 0; }
-    .tjenester-rad > :nth-child(2) { margin-block-start: var(--space-7); }
-    /* Kort 1 og 3 staar paa SAMME linje. De laa foer paa 0 og minus space-5, altsaa
-       forskjoevet loddrett i forhold til hverandre – det leste som at raden ikke var
-       i linje. Bare kort 2 er forskjoevet, og det er nok til aa bryte rutenettet. */
-    .tjenester-rad > :nth-child(3) { margin-block-start: 0; }
-    /* Kortene sto forskjoevet loddrett: kort 2 laa en hel space-6 hoeyere enn 1 og 3.
-       Eieren meldte det to ganger – «legg de paa en linje». Rangeringen trenger ikke
-       vaere loddrett; det anbefalte kortet skiller seg ut paa merkelapp, lys flate og
-       invertert knapp. Alle tre deler naa oeverste kant. */
-    .priser-rad > :nth-child(2) { margin-block-start: 0; }
+    /* Alle kort i begge rader deler oeverste kant. Rangeringen i prisraden
+       trenger ikke vaere loddrett; det anbefalte kortet skiller seg ut paa
+       merkelapp, lys flate og invertert knapp. */
+    .tjenester-rad > *,
+    .priser-rad > * { margin-block-start: 0; }
   }
+
+  /* Bunnene sto like skjevt som toppene, og av en annen grunn: .avslor er en
+     vanlig blokk, saa kortet inni fikk SIN EGEN hoeyde i stedet for radens.
+     Maalt paa 1440: tjenestekortene 288/316/288 px i celler paa 364, prisekortene
+     496/464/464 – altsaa 76 og 32 px sprik i underkant.
+
+     display:grid gjoer kortet til et rutenettsbarn, og et rutenettsbarn strekkes
+     til cellen som standard. .kk-svc og .kk-price har begge en 1fr-rad midt i
+     malen nettopp for aa ta imot den plassen, saa knappen og lenken havner i
+     bunnen slik komponenten alltid var tegnet for. Ingen hoeyde settes her. */
+  .tjenester-rad > .avslor,
+  .priser-rad > .avslor { display: grid; }
 
   @media (prefers-reduced-motion: no-preference) {
     @supports (animation-timeline: view()) {
@@ -568,15 +576,20 @@ const heroTerminal = [
         animation-timeline: view();
         animation-range: entry 25% cover 30%;
       }
-      .tjenester-rad > :nth-child(1) .kk-svc { --vri: -2.2deg; --dybde: 54px; }
-      .tjenester-rad > :nth-child(2) .kk-svc { --vri: 1.6deg;  --dybde: 30px; }
-      .tjenester-rad > :nth-child(3) .kk-svc { --vri: -1.1deg; --dybde: 70px; }
+      /* Lik --dybde paa alle kort i samme rad. Ulike verdier (54/30/70) ga ulik
+         fart gjennom det samme omraadet, og mens man scrollet laa kortene opptil
+         40 px fra hverandre i overkant selv om de staar likt i ro. Prisraden ble
+         utliknet til 44 foerst; tjenesteraden foelger den naa.
+
+         Bare VINKELEN varierer. Den skiller kortene fra hverandre uten aa roere
+         linjen de deler. */
+      .tjenester-rad > :nth-child(1) .kk-svc { --vri: -2.2deg; --dybde: 44px; }
+      .tjenester-rad > :nth-child(2) .kk-svc { --vri: 1.6deg;  --dybde: 44px; }
+      .tjenester-rad > :nth-child(3) .kk-svc { --vri: -1.1deg; --dybde: 44px; }
       .priser-rad > :nth-child(1) .kk-price { --vri: -1.4deg; --dybde: 44px; }
       .priser-rad > :nth-child(2) .kk-price { --vri: 0.9deg;  --dybde: 44px; }
       .priser-rad > :nth-child(3) .kk-price { --vri: -0.7deg; --dybde: 44px; }
 
-      /* Ulik --dybde gir ulik fart gjennom samme omraade. Det er dybde: det som
-         skal ligge «lenger bak» flytter seg lengre og lander senere. */
       @keyframes rett-seg-opp {
         from { transform: translateY(var(--dybde, 40px)) rotate(var(--vri, -1.5deg)); }
         to   { transform: none; }

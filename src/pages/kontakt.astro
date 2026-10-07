@@ -1,7 +1,5 @@
 ---
 import Base from "../layouts/Base.astro";
-import Demo from "../components/Demo.astro";
-import opptak from "../data/opptak.json";
 import Scene from "../components/Scene.astro";
 import Mega from "../components/Mega.astro";
 import Avslor from "../components/Avslor.astro";
@@ -42,18 +40,17 @@ const feilmelding =
       <p class="scene__ingress body-lg">20 minutter på telefon, ingen presentasjon. Du får et prisspenn og en ærlig vurdering av om du trenger det du tror du trenger.</p>
     </Avslor>
 
-    <Avslor trinn={2}>
-      {/* Ekte opptak av vaar egen side i drift. Brandboken rangerer dette oeverst:
-          det BEVISER paastanden i stedet for aa illustrere den. */}
-      <Demo
-        smal={opptak.skjema.smal}
-        bred={opptak.skjema.bred}
-        stor={opptak.skjema.stor}
-        plakat={opptak.skjema.plakat}
-        tekst={opptak.skjema.tekst}
-        kilde={opptak.skjema.kilde}
-      />
-    </Avslor>
+      {/* Opptaket av skjemaet er FJERNET herfra. Det er et ekte opptak av vaar egen
+          side i drift, altsaa brandbokens oeverste rang – men paa DENNE sida staar det
+          ekte skjemaet rett under. En film av et skjema slaar ikke et skjema du kan
+          bruke med en gang.
+
+          Det kostet 994 kB og laa SYNLIG paa foerste skjerm (651 px ned i et 844 px
+          vindu), saa lat lasting hjalp ikke. Foerstelast gikk fra 1100 til under 200 kB
+          paa skrivebord og fra 410 til under 110 paa mobil. Taket er 400.
+
+          Filene staar igjen i public/opptak/ – de er ekte og kan passe et sted der vi
+          OMTALER skjemaet uten aa ha det. */}
 
     {sendt && (
       <div class="card kvittering" style="border-color: var(--ok)">

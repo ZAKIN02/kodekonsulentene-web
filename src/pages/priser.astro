@@ -139,6 +139,21 @@ const prisFaq = faq.filter((f) => /binding|endre|koster|eier/i.test(f.q));
   <ContactBlock n={6} />
 </Base>
 <style is:global>
+  /* Toppene sto i linje, bunnene gjorde det ikke. .avslor er en vanlig blokk, saa
+     prisekortet inni fikk SIN EGEN hoeyde i stedet for radens: maalt 536/484/484 px
+     i celler paa 536 – «Start» stakk 52 px lenger ned enn de to andre.
+
+     display:grid gjoer kortet til et rutenettsbarn, og et rutenettsbarn strekkes
+     til cellen. .kk-price har allerede `grid-template-rows: auto auto 1fr auto` –
+     den 1fr-raden er laget for aa ta imot plassen, saa knappen havner i bunnen slik
+     komponenten var tegnet. Ingen hoeyde settes her.
+
+     is:global er IKKE valgfritt: .avslor kommer fra Avslor.astro og baerer DEN
+     komponentens scope-id, mens .priskort-rad baerer sidens. En vanlig <style>
+     ville krevd sidens id paa begge og matchet ingenting – stille. */
+  .priskort-rad.grid-3 > .avslor { display: grid; }
+</style>
+<style is:global>
   /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
      ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
      brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.

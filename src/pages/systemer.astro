@@ -106,13 +106,21 @@ const schema = tjeneste({
       andreplassen i brandbokens rangering, og den slår et nedtonet motiv i kanten. */}
   <Scene n={3} eyebrow="Integrasjoner" tittel="Det vi kobler oftest" id="integrasjoner">
     {/* Rutenettet brytes her. Seks like kort i to rette kolonner leses som en
-        tabell; litt helning og ulik dybde leses som ting som ligger oppa hverandre.
+        tabell; litt helning leses som ting som ligger oppa hverandre.
         Vinkelen kommer fra indeksen, saa den er stabil mellom bygg.
 
         trinn var k % 3 – stilt for et tre-kolonners rutenett, mens .grid-2 har to.
         Med trappen levende kom rad to inn hoeyre-foer-venstre.
 
-        Vinkelen og dybden kommer fra Avslors eget vokabular, ikke fra egen CSS her.
+        `dybde` sto her og vekslet 14 / -10 per kort. Den var DOED: `--dybde` leses
+        bare av keyframes for fra="dybde", og gesten her er "skjev". Maalt 0 px
+        forskjell med og uten. Den er fjernet, ikke fordi den gjorde skade, men
+        fordi en verdi som ser ut til aa virke er verre enn ingen: bytter noen
+        gesten til "dybde" senere, spretter raden 24 px ut av linje uten at noen
+        har roert tallet. Vil man ha dybde her, maa begge kortene i en rad ha
+        SAMME verdi – ellers slutter raden aa dele oeverste kant.
+
+        Vinkelen kommer fra Avslors eget vokabular, ikke fra egen CSS her.
         En egen regel ville dessuten vaert doed: kortene baerer Avslors scope-id. */}
     <div class="grid-2 kobling-rutenett">
       {integrasjoner.map((i, k) => (
@@ -120,7 +128,6 @@ const schema = tjeneste({
           trinn={k % 2}
           fra="skjev"
           skjev={[-1.4, 1.1, -0.8, 1.5, -1.2, 0.7][k] ?? 0}
-          dybde={k % 2 === 0 ? 14 : -10}
           as="div"
           class="card"
         >

@@ -108,7 +108,9 @@ const budsjett = [
     <Avslor>
       <Nokkeltall poster={budsjettTall} navn="Ytelsesbudsjettets fire viktigste grenser" />
     </Avslor>
-    <div class="grid-2">
+    {/* `budsjett-rad` finnes bare for aa kunne naa <dl class="kv"> uten aa skrive
+        en regel som gjelder hele nettstedet. Se <style> nederst. */}
+    <div class="grid-2 budsjett-rad">
       <dl class="kv">
         {budsjett.map(([k, v]) => (
           <div><dt>{k}</dt><dd class="nowrap">{v}</dd></div>
@@ -145,6 +147,17 @@ const budsjett = [
     <Button variant="ghost" href="/vilkar">Hva du kan holde oss til</Button>
   </Scene>
 </Base>
+<style>
+  /* <dl> har 1em marg i nettleserens egen stilmal, og .kv i site.css nullstiller
+     den ikke. I rutenettet her startet noekkellista 16 px under terminalpanelet
+     ved siden av – maalt 1529,5 mot 1513,5 paa 1440 px. To bokser side om side
+     som ikke deler oeverste kant.
+
+     Scoped med vilje: baade .budsjett-rad og .kv staar i denne fila. Den riktige
+     kuren er `.kv { margin: 0 }` i site.css, som eies av en annen agent akkurat
+     naa; det staar i rapporten. */
+  .budsjett-rad > .kv { margin-block: 0; }
+</style>
 <style is:global>
   /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
      ved innlasting betyr at teksten blir stående halvt gjennomsiktig til

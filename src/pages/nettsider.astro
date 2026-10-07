@@ -99,10 +99,17 @@ const schema = tjeneste({
     hoyde={64}
   />
   <Scene n={3} eyebrow="Hva du får" tittel="Fire krav vi setter selv">
-    {/* Karakteren paa denne sida er LAG – det er det snittegningen over viser, og
-        det er det vi selger. De fire kravene ligger derfor i ulik dybde og drar fra
-        hverandre mens du scroller, i stedet for aa staa som fire like ruter.
-        Vekslende fortegn gir to plan, ikke en skraaning. */}
+    {/* Karakteren paa denne sida er LAG, og kortene ligger derfor i et eget plan
+        som vandrer mens du scroller. Men de ligger i SAMME plan.
+
+        Foer sto de paa 18 / -14 / 12 / -20. Vekslende fortegn var ment som to
+        plan; i praksis var det to kort SIDE OM SIDE som dro 32 px fra hverandre
+        i overkant mens man scrollet – maalt paa 1440, 1024 og 390. En rad som
+        ikke deler oeverste kant leses ikke som dybde, den leses som en feil.
+
+        Samme fortegn og samme utslag paa alle fire: hele rutenettet er ETT lag
+        som flytter seg mot teksten rundt. Det er dybden siden skal ha, og den
+        koster ingen linjer. Verdien 18 er den samme som prisekortene fikk. */}
     <div class="grid-2">
       <Avslor trinn={0} fra="dybde" dybde={18} as="div" class="card">
         <h3 class="heading">Rask på mobil</h3>
@@ -112,7 +119,7 @@ const schema = tjeneste({
           sjekke at vi holder det vi selger.
         </p>
       </Avslor>
-      <Avslor trinn={1} fra="dybde" dybde={-14} as="div" class="card">
+      <Avslor trinn={1} fra="dybde" dybde={18} as="div" class="card">
         <h3 class="heading">Funnet lokalt</h3>
         <p class="muted">
           Google Bedriftsprofil satt opp riktig, samme navn, adresse og telefon overalt, og
@@ -120,7 +127,7 @@ const schema = tjeneste({
           ChatGPT kan sitere deg.
         </p>
       </Avslor>
-      <Avslor trinn={2} fra="dybde" dybde={12} as="div" class="card">
+      <Avslor trinn={2} fra="dybde" dybde={18} as="div" class="card">
         <h3 class="heading">Lovlig fra dag én</h3>
         <p class="muted">
           Org.nr. og foretaksnavn på siden, adresse og kontaktinfo etter ehandelsloven § 8,
@@ -128,7 +135,7 @@ const schema = tjeneste({
           virksomheter må oppfylle.
         </p>
       </Avslor>
-      <Avslor trinn={3} fra="dybde" dybde={-20} as="div" class="card">
+      <Avslor trinn={3} fra="dybde" dybde={18} as="div" class="card">
         <h3 class="heading">Uten cookie-banner</h3>
         <p class="muted">
           Vi bruker cookieløs analyse. Da er det ingenting å samtykke til, og du slipper
@@ -156,7 +163,9 @@ const schema = tjeneste({
 
   <Scene n={4} class="flate--varm" eyebrow="Teknisk" tittel="Hva det er bygget av" ingress="Du trenger ikke å bry deg om dette. Det står her fordi noen spør, og fordi du skal kunne ta det med deg til en annen utvikler.">
     <Avslor>
-    <div class="grid-2">
+    {/* `teknisk-rad` finnes bare for aa kunne naa <dl class="kv"> under uten aa
+        skrive en regel som gjelder hele nettstedet. Se <style> nederst. */}
+    <div class="grid-2 teknisk-rad">
       <Terminal
         skriv
         title="~/din-side"
@@ -200,6 +209,17 @@ const schema = tjeneste({
 
   <ContactBlock n={7} />
 </Base>
+<style>
+  /* <dl> har 1em marg i nettleserens egen stilmal, og .kv i site.css nullstiller
+     den ikke. I et rutenett med to spalter betyr det at lista starter 16 px under
+     naboen sin – maalt her og paa /status: terminalpanelet oeverst paa 1513,5 og
+     noekkellista paa 1529,5. To bokser side om side som ikke deler oeverste kant.
+
+     Dette er en SCOPED regel med vilje: baade .teknisk-rad og .kv staar i denne
+     fila, saa scopingen naar begge. Den riktige kuren er `.kv { margin: 0 }` i
+     site.css, som eies av en annen agent akkurat naa; det staar i rapporten. */
+  .teknisk-rad > .kv { margin-block: 0; }
+</style>
 <style is:global>
   /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
      ved innlasting betyr at teksten blir stående halvt gjennomsiktig til

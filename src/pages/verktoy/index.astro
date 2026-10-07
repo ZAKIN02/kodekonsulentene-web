@@ -84,7 +84,9 @@ const verktoy = [
     */}
     <h2 class="visually-hidden">Verktøyene du kan kjøre nå</h2>
 
-    <div class="grid-3">
+    {/* `verktoy-rad` finnes bare for aa kunne naa .avslor-wrapperne under uten aa
+        skrive en regel som gjelder hvert .grid-3 paa nettstedet. Se <style>. */}
+    <div class="grid-3 verktoy-rad">
       {verktoy.map((v, k) => (
         <Avslor trinn={k % 3}>
         <ServiceCard
@@ -136,6 +138,20 @@ const verktoy = [
 
   <ContactBlock n={3} />
 </Base>
+<style is:global>
+  /* Toppene sto i linje, bunnene gjorde det ikke. .avslor er en vanlig blokk, saa
+     tjenestekortet inni fikk SIN EGEN hoeyde i stedet for radens: maalt 288/288/310
+     i rad en og 262/288 i rad to – 22 og 26 px sprik i underkant.
+
+     display:grid gjoer kortet til et rutenettsbarn, og et rutenettsbarn strekkes
+     til cellen. .kk-svc har allerede `grid-template-rows: auto 1fr auto`, saa
+     «Kjoer den»-lenken havner i bunnen slik komponenten var tegnet.
+
+     is:global er IKKE valgfritt: .avslor kommer fra Avslor.astro og baerer DEN
+     komponentens scope-id, mens .verktoy-rad baerer sidens. En vanlig <style>
+     ville krevd sidens id paa begge og matchet ingenting – stille. */
+  .verktoy-rad > .avslor { display: grid; }
+</style>
 <style is:global>
   /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
      ved innlasting betyr at teksten blir stående halvt gjennomsiktig til

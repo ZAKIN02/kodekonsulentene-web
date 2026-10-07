@@ -345,3 +345,18 @@ summary { min-height: 24px; }
   .kk-report-foot { flex-wrap: wrap; align-items: start; row-gap: var(--space-3); }
   .kk-report-head .kk-url { max-width: 100%; }
 }
+
+/* Rapporttabellen var 773 px i en 340 px spalte: «Verdi» (x 375-542) og «Hva det
+   betyr» (x 542-798) laa HELT utenfor skjermen – 433 px skjult, uten fade eller hint.
+   En telefonbruker saa «Bestaatt»-merker og blankt felt; tallene 133 ms, 6/6 og 0
+   fantes ikke for ham.
+   Under 720 px blir hver rad et kort i stedet: etiketten fra kolonnehodet staar foran
+   verdien, saa ingenting er avhengig av vannrett scroll. */
+@media (max-width: 720px) {
+  .kk-report, .kk-report tbody, .kk-report tr, .kk-report td { display: block; width: 100%; }
+  .kk-report thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .kk-report tr { padding-block: var(--space-3); border-bottom: var(--hairline) solid var(--line); }
+  .kk-report td { display: flex; gap: var(--space-3); justify-content: space-between; padding: var(--space-1) 0; border: 0; }
+  .kk-report td::before { content: attr(data-kol); color: var(--ink-muted); flex: 0 0 auto; }
+  .kk-report td:first-child { font-weight: 700; }
+}

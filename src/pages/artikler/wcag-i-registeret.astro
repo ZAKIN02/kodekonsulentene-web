@@ -1,0 +1,338 @@
+---
+/**
+ * HVORFOR ARTIKKELEN FINNES.
+ *
+ * `docs/research-2026.md` konkluderer at vi ligger foran forbildene på teknikk og
+ * bak dem på innhold: hos prisvinneren var juryens høyeste karakter Innhold 8,20,
+ * og tekstforfatteren ble kreditert som medforfatter av prisen. Forslag 15 på
+ * rangeringen er det eneste forslaget som gir oss et INNHOLD ingen annen norsk
+ * leverandør har: Uu-tilsynets åpne datasett over alle tilgjengelighetserklæringer.
+ *
+ * ARTIKKELENS ENE IDÉ, som kan fortelles i én setning: registeret rangerer hvilke
+ * WCAG-krav norske virksomheter selv oppgir at de bryter, og av de tolv øverste
+ * kan vår egen skanner finne fire. Alt annet på siden støtter den setningen.
+ *
+ * ALLE TALL ER REGNET UT AV `src/data/uu-register.json`, som er skrevet av
+ * `scripts/uuregister.mjs` fra kilden med dato. Ingen tall er skrevet inn i denne
+ * filen. Det er med vilje: en artikkel med hardkodede tall blir usann i det
+ * datasettet oppdateres, og da har vi gjort nøyaktig det vi anklager andre for.
+ *
+ * DE FIRE PRESISJONENE SOM MÅ FØLGE TALLENE, og som alle står i brødteksten:
+ *   1. Registeret dekker OFFENTLIGE virksomheter, som har erklæringsplikt.
+ *   2. Tallene er SELVRAPPORTERTE, ikke målt av oss.
+ *   3. Offentlig sektor er bundet av 48 krav etter WCAG 2.1; private av 35 etter
+ *      WCAG 2.0. De to listene er ikke de samme.
+ *   4. «Ikke relevant» er holdt utenfor nevneren, og det står hvorfor.
+ * Uten disse fire er tallet en falsk generalisering – samme feil som en falsk
+ * «Bestått» i nettsidesjekken.
+ */
+import Base from "../../layouts/Base.astro";
+import Section from "../../components/Section.astro";
+import Button from "../../components/Button.astro";
+import ContactBlock from "../../components/ContactBlock.astro";
+import Nokkeltall from "../../components/Nokkeltall.astro";
+import Registerstolper from "../../components/Registerstolper.astro";
+import Tusjstrek from "../../components/Tusjstrek.astro";
+import { finnArtikkel } from "../../data/artikler";
+import { artikkel } from "../../data/schema";
+import { WCAG_NAVN } from "../../data/wcag";
+import { KRAVNAVN, dekningIToppen, maskinsjekkbareKrav, type Kravrad } from "../../lib/uuregister";
+import registeret from "../../data/uu-register.json";
+import maalinger from "../../data/maalinger.json";
+
+const a = finnArtikkel("wcag-i-registeret");
+
+const rader = registeret.kravRader as Kravrad[];
+
+/** Utledet av skannerens egen regelliste, ikke skrevet inn. Se src/lib/uuregister.ts. */
+const maskin = maskinsjekkbareKrav(WCAG_NAVN);
+
+/** Tolv rader er så mange som kan leses uten å rulle på en vanlig skjerm, og nok
+ *  til at de fire maskinsjekkbare ikke ligger samlet i toppen. */
+const TOPP = 12;
+const d = dekningIToppen(rader, maskin, TOPP);
+
+const tall = (n: number) => n.toLocaleString("nb-NO");
+const prosent = (n: number) =>
+  n.toLocaleString("nb-NO", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+const norskDato = (iso: string) =>
+  new Date(iso).toLocaleDateString("nb-NO", { day: "numeric", month: "long", year: "numeric" });
+
+/** Lyd- og videokravene (retningslinje 1.2) blant de TOPP øverste. Tallet er
+ *  utledet: en håndskrevet «tre av fire» sto her først og var usann – datasettet
+ *  gir to av de fire øverste, ikke tre. */
+const video = rader.slice(0, TOPP).filter((r) => r.krav.startsWith("1.2"));
+
+/** Små tall skrives med bokstaver i brødtekst, slik resten av nettstedet gjør. */
+const TALLORD = ["null", "ett", "to", "tre", "fire", "fem", "seks", "sju", "åtte", "ni", "ti"];
+const tallord = (n: number) => TALLORD[n] ?? String(n);
+
+const toppKrav = rader[0];
+const toppNavn = KRAVNAVN[toppKrav.krav];
+
+/** Kontrast og alt-tekst: de to kravene som ligger høyt i BEGGE listene. */
+const kontrast = rader.find((r) => r.krav === "1.4.3")!;
+const altTekst = rader.find((r) => r.krav === "1.1.1")!;
+
+const nokkeltall = [
+  { value: `${prosent(registeret.andelMedBrudd)} %`, label: "av erklæringene rapporterer minst ett WCAG-brudd", accent: true },
+  { value: tall(registeret.erklaeringer), label: "erklæringer i registeret" },
+  { value: String(registeret.brudd.median), label: "brudd i medianløsningen" },
+  { value: `${d.dekket.length} av ${TOPP}`, label: "av de oftest brutte kravene en maskin kan måle" },
+];
+
+/**
+ * FAQ-en svarer på spørsmål folk faktisk skriver inn, og hvert svar har en kilde
+ * eller et tall. Ingen av svarene lover noe – de tre første er fakta om
+ * registeret, det fjerde er grensen for hva verktøy kan.
+ */
+const schema = [
+  artikkel(a),
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "Hvor mange norske løsninger bryter WCAG?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `Av ${tall(registeret.erklaeringer)} tilgjengelighetserklæringer i Uu-tilsynets register rapporterer ${prosent(registeret.andelMedBrudd)} prosent minst ett brudd på WCAG. Medianen er ${registeret.brudd.median} brudd per løsning, snittet ${registeret.brudd.snitt.toLocaleString("nb-NO")}. Tallene er selvrapportert av virksomhetene selv, og registeret dekker offentlige virksomheter, som har erklæringsplikt.`,
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Hvilket WCAG-krav brytes oftest i Norge?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `${toppKrav.krav} ${toppNavn.navn}. ${prosent(toppKrav.andel)} prosent av de ${tall(toppKrav.vurdert)} erklæringene som vurderte kravet som relevant, oppgir at de bryter det. Deretter følger 1.1.1 Ikke-tekstlig innhold og 1.3.1 Informasjon og relasjoner.`,
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Må private bedrifter ha tilgjengelighetserklæring?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Nei. Erklæringsplikten gjelder offentlige virksomheter. Private kan publisere en frivillig. Kravene i WCAG gjelder likevel for private: 35 suksesskriterier på nivå A og AA i WCAG 2.0.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Kan et verktøy finne alle WCAG-feil?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `Nei. Av de ${TOPP} kravene som oftest rapporteres brutt i registeret, har vår egen skanner en regel for ${d.dekket.length}. De øvrige krever at et menneske prøver løsningen – eller at noen produserer innhold som ikke finnes, som synstolking av video.`,
+        },
+      },
+    ],
+  },
+];
+---
+<Base
+  tittel={a.tittel}
+  beskrivelse={a.beskrivelse}
+  schema={schema}
+  artikkel={{ publisert: a.publisert, oppdatert: a.oppdatert }}
+  ogBilde="sjekk"
+>
+  <Section
+    nivaa={1}
+    n={1}
+    eyebrow="Artikkel"
+    tittel="WCAG-kravene som brytes oftest"
+    ingress={a.beskrivelse}
+  >
+    <div class="prose">
+      <p class="small faint">
+        Publisert {norskDato(a.publisert)}. Tallene er hentet fra kilden{" "}
+        {norskDato(registeret.hentet)} og regnet ut på nytt av oss. Dette er ikke
+        juridisk rådgivning.
+      </p>
+
+      <p>
+        Uu-tilsynet publiserer alle ferdigstilte tilgjengelighetserklæringer som åpne
+        data, med resultatet for hvert enkelt WCAG-krav. Vi har hentet hele settet –{" "}
+        {tall(registeret.erklaeringer)} erklæringer fra {tall(registeret.virksomheter)}{" "}
+        virksomheter – og regnet ut hvilke krav som faktisk står oppført som brutt.
+      </p>
+      <p>
+        {/* `staar`: dette avsnittet ligger over folden på en 700 px høy skjerm –
+            målt til y = 652. Uten propen står streken halvtegnet ved innlasting. */}
+        <Tusjstrek staar>{prosent(registeret.andelMedBrudd)} prosent rapporterer minst ett brudd.</Tusjstrek>{" "}
+        Medianløsningen har {registeret.brudd.median}, snittet er{" "}
+        {registeret.brudd.snitt.toLocaleString("nb-NO")}, og den dårligste i registeret
+        har {registeret.brudd.maks}.
+      </p>
+    </div>
+
+    <div style="margin-top: var(--space-6)">
+      <Nokkeltall poster={nokkeltall} navn="Fire tall fra tilgjengelighetsregisteret" />
+    </div>
+
+    <div class="prose" style="margin-top: var(--space-7)">
+      <h2>Først: hvem det er som har svart</h2>
+      <p>
+        Dette er den viktigste setningen i artikkelen, og den går mot oss selv:{" "}
+        <strong class="body-strong">registeret dekker offentlige virksomheter, og tallene er
+        selvrapporterte.</strong>{" "}
+        Offentlig sektor har plikt til å publisere en tilgjengelighetserklæring. Det er
+        virksomheten selv som krysser av for hvert krav – ingen har målt det for dem, og
+        ingen har målt det for oss.
+      </p>
+      <p>
+        Derfor kan tallet ikke leses som «norske bedrifter». Det kan leses som noe
+        kanskje mer interessant: hva virksomheter som har satt seg ned og gått gjennom
+        48 krav punkt for punkt, selv kommer fram til. Det er en strengere øvelse enn
+        en skanning, og den gir svar en maskin ikke kan gi.
+      </p>
+      <p>
+        Det er også grunn til å tro at tallene er <em>for lave</em>, ikke for høye. En
+        virksomhet som fyller ut sin egen erklæring har ingen interesse av å oppgi flere
+        brudd enn den må, og {tall(registeret.status["I samsvar"] ?? 0)} erklæringer sier
+        at løsningen er i fullt samsvar med alle krav. Vi har aldri sett en nettside som
+        oppfyller 48 krav.
+      </p>
+
+      <h2>De {TOPP} kravene som oftest står som brutt</h2>
+      <p>
+        Prosenten er regnet av de erklæringene som faktisk vurderte kravet – altså
+        «bryter» delt på «bryter pluss oppfyller».{" "}
+        <strong class="body-strong">«Ikke relevant» er holdt utenfor.</strong>{" "}
+        Det må det være: {tall(toppKrav.ikkjeRelevant)} erklæringer oppgir at{" "}
+        {toppKrav.krav} ikke gjelder dem, fordi løsningen ikke har video i det hele
+        tatt. Hadde de ligget i nevneren, ville kravet som faktisk topper listen
+        framstått som et lite problem.
+      </p>
+    </div>
+
+    <div style="margin-top: var(--space-6)">
+      <Registerstolper
+        rader={rader.slice(0, TOPP)}
+        maskinsjekkbare={maskin}
+        tittel={`De ${TOPP} kravene med høyest andel rapporterte brudd`}
+        bunntekst={`Kilde: Uu-tilsynets datasett «Erklæringar med resultat», hentet ${norskDato(registeret.hentet)}. Alle ${tall(registeret.erklaeringer)} erklæringer er med. Kravnummeret lenker til tilsynets egen side for kravet, så hver rad kan kontrolleres hos kilden. Kolonnen «Målbar maskinelt» sier om vår egen skanner har en regel for kravet – ikke om kravet er oppfylt.`}
+      />
+    </div>
+
+    <div class="prose" style="margin-top: var(--space-7)">
+      <h2>Lista er ikke den samme som en skannerapport</h2>
+      <p>
+        Her er funnet som gjorde at vi skrev denne artikkelen. Vår egen skanner har en
+        regel for <Tusjstrek>{d.dekket.length} av de {TOPP} kravene over</Tusjstrek>:{" "}
+        {d.dekket.join(", ")}. De øvrige {d.udekket.length} kan ingen maskin avgjøre.
+      </p>
+      <p>
+        Det tallet er ikke skrevet inn i denne teksten. Det regnes ut av regellista til
+        skanneren hver gang siden bygges. Legger vi til en regel, går tallet opp av seg
+        selv – og vi kan ikke komme til å påstå en dekning vi ikke har.
+      </p>
+      <p>
+        Grunnen til at det betyr noe: et gratis tilgjengelighetsverktøy som sier «0 feil»
+        har sjekket en tredjedel av problemet. Det er ikke en innvending mot verktøy –
+        vi driver et selv – men mot rapporten som ikke sier hva den <em>ikke</em> har
+        sett. Den gir deg en trygghet du kan bli ansvarlig for.
+      </p>
+
+      <h3>De to som ligger høyt i begge lister</h3>
+      <p>
+        {altTekst.krav} {KRAVNAVN[altTekst.krav].navn} og {kontrast.krav}{" "}
+        {KRAVNAVN[kontrast.krav].navn} er de to kravene som både en maskin finner og
+        mennesker rapporterer: {prosent(altTekst.andel)} prosent og{" "}
+        {prosent(kontrast.andel)} prosent i registeret. I vår egen skanning av{" "}
+        {maalinger.utvalg.svarte} norske småbedriftssider var de også de to vanligste.
+        To helt ulike metoder, to helt ulike utvalg, samme to krav på toppen.
+      </p>
+      <p>
+        Praktisk betyr det at manglende alt-tekst og for svak kontrast er de to feilene
+        det er mest sannsynlig at du har, og de to som er billigst å rette. Alt-tekst er
+        arbeidet med å skrive dem. Kontrast er ofte noen fargevariabler – med mindre
+        fargene er skrevet inn på hvert enkelt element, og da er det en ombygging.
+      </p>
+
+      <h3>Kravet på toppen er det maskinen aldri kan hjelpe med</h3>
+      <p>
+        {toppKrav.krav} {toppNavn.navn} er nummer én, med {prosent(toppKrav.andel)}{" "}
+        prosent. Synstolking er en egen lydspor-beskrivelse av det som skjer i bildet,
+        for den som ikke ser det. Det er ikke en kodefeil. Det er innhold som ikke
+        finnes, og som må produseres og betales for.
+      </p>
+      <p>
+        Og det er ikke det eneste videokravet i toppen: {tallord(video.length)} av de{" "}
+        {TOPP} kravene over handler om lyd og video ({video.map((r) => r.krav).join(", ")}).
+        Video er den dyreste tilgjengelighetsgjelden som finnes, og den er lett å ta på
+        seg uten å vite at man gjør det.{" "}
+        <Tusjstrek tone="varsel">Legger du en video på nettsiden, har du påtatt deg teksting.</Tusjstrek>
+      </p>
+
+      <h2>Hva gjelder for deg, hvis du er privat</h2>
+      <p>
+        Registeret måler 48 krav, fordi offentlig sektor siden 1. februar 2023 har fulgt
+        WCAG 2.1 på nivå A og AA. Private virksomheter som retter seg mot allmennheten er
+        bundet av <strong class="body-strong">35 suksesskriterier i WCAG 2.0</strong>, og
+        har ingen erklæringsplikt. De to listene overlapper mye, men de er ikke de samme –
+        kolonnen med A og AA i tabellen over viser hvilket nivå hvert krav ligger på.
+      </p>
+      <p>
+        To ting vi ikke kommer til å skrive, fordi de ikke er sanne i Norge i dag:
+        at WCAG 2.2 er et lovkrav, og at EUs tilgjengelighetsdirektiv er det. WCAG 2.2 er
+        ikke norsk rett, og direktivet er verken innlemmet i EØS-avtalen eller i norsk
+        rett. Uu-tilsynet sier selv at det er vanskelig å si når det skjer.
+      </p>
+      <p>
+        Det betyr ikke at du bør bygge etter 2.0. Bygger du etter 2.1 nå, slipper du å
+        gjøre jobben to ganger – og de 13 ekstra kriteriene handler mest om mobilvisning,
+        orientering og innhold som kan forstørres, altså ting du vil ha uansett.
+      </p>
+
+      <h2>Hvordan vi regnet</h2>
+      <p>
+        Hele settet er hentet, ikke et utvalg: {tall(registeret.erklaeringer)} erklæringer,
+        som er nøyaktig det antallet API-et selv oppgir. Erklæringene er datert mellom{" "}
+        {norskDato(registeret.periode.foerste)} og {norskDato(registeret.periode.siste)}.
+      </p>
+      <ul>
+        <li>
+          <strong class="body-strong">Nevneren.</strong> Andelen per krav er «bryter» delt
+          på «bryter pluss oppfyller». «Ikke relevant» er ikke en vurdering og er holdt
+          utenfor. Begge tallene står i tabellen, så du kan regne etter.
+        </li>
+        <li>
+          <strong class="body-strong">Egenkontroll.</strong> Kilden oppgir både en sum av
+          brudd per erklæring og et resultat per krav. Vi sjekket at de stemmer med
+          hverandre for hver enkelt erklæring. De stemmer for{" "}
+          {tall(registeret.integritet.stemmer)} av {tall(registeret.integritet.kontrollert)}.
+          Hadde det vært avvik, ville de stått her.
+        </li>
+        <li>
+          <strong class="body-strong">Øyeblikksbilde, ikke live.</strong> Tallene er frosset
+          på hentedatoen og ligger som en fil i kildekoden vår. Siden bygger uten å spørre
+          noen, og tallet du leser er tallet vi faktisk så.
+        </li>
+        <li>
+          <strong class="body-strong">Våre egne tall til sammenligning</strong> kommer fra en
+          skanning av {maalinger.utvalg.svarte} norske småbedriftssider{" "}
+          {norskDato(maalinger.maalt)}. Det er en maskinmåling av et lite utvalg, ikke et
+          register – og forbeholdene står i artikkelen om de 35 kravene.
+        </li>
+      </ul>
+      <p class="small faint">
+        Datasettet er publisert som åpne data av Tilsynet for universell utforming av ikt.
+        Vi har ikke funnet en lisenstekst oppgitt for settet – tilsynets egen side kaller
+        det åpne data og tilbyr et nedlastingsskript, og{" "}
+        <code>/dataset/metadata</code>-endepunktet svarer med en feil. Det vi publiserer er
+        vår egen aggregering, med kilde og dato, og funnet er ført i lisensloggen vår.
+      </p>
+    </div>
+
+    <div class="row" style="margin-top: var(--space-6); gap: var(--space-4); flex-wrap: wrap">
+      <Button variant="primary" href={a.verktoy!.href}>{a.verktoy!.tekst}</Button>
+      <Button variant="ghost" href="/artikler/35-wcag-krav">De 35 kravene som gjelder private</Button>
+    </div>
+  </Section>
+
+  <ContactBlock
+    tittel="Vil du vite hvilke av disse du har?"
+    ingress="Sjekken kjører en ekte nettleser mot siden din og rapporterer det som kan måles – og sier tydelig fra om det den ikke har sjekket."
+  />
+</Base>

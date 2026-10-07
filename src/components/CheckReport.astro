@@ -18,10 +18,10 @@ const { url, date, rows, footer, class: cls } = Astro.props;
     <tbody>
       {rows.map((r) => (
         <tr>
-          <td class="kk-name">{r.name}</td>
-          <td><StatusBadge status={r.status} /></td>
-          <td class="kk-value">{r.value}</td>
-          <td class="kk-note">{r.note}</td>
+          <td class="kk-name" data-kol="Sjekk">{r.name}</td>
+          <td data-kol="Status"><StatusBadge status={r.status} /></td>
+          <td class="kk-value" data-kol="Verdi">{r.value}</td>
+          <td class="kk-note" data-kol="Hva det betyr">{r.note}</td>
         </tr>
       ))}
     </tbody>

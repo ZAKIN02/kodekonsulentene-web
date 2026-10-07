@@ -71,7 +71,11 @@ const { smal, bred, stor, plakat, tekst, tittel, hoyde = 72, class: cls } = Astr
     object-fit: cover;
     display: block;
   }
-  .storflate figcaption { max-inline-size: 62ch; }
+  /* Bildeteksten laa paa 0 px fra kanten mens tittelen rett over hadde 24 – to
+     marger i samme blokk, den ene null, saa «E»-en traff skjermkanten.
+     Rammen bloer ut til vindusbredde med vilje; teksten skal ikke. */
+  .storflate figcaption { max-inline-size: 62ch; padding-inline: var(--space-5); }
+  @media (min-width: 720px) { .storflate figcaption { padding-inline: 0; } }
   /* Staar i venstre tredel, der klippet er malt moerkt med vilje. Fast farge, ikke
      temavariabel: flaten er moerk i begge temaer. */
   .storflate__tittel {

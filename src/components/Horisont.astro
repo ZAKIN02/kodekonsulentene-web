@@ -172,6 +172,31 @@ const nr = typeof n === "number" ? String(n).padStart(2, "0") : null;
       color: var(--ink-faint);
     }
   }
+
+  /* Paa telefon drives sporet av sidescrollen, og det lander naesten aldri paa en
+     kortkant: maalt scrollLeft 0 -> 149 av ren loddrett scrolling, med to HALVE kort
+     side om side og bokstaver kuttet paa begge kanter – «...kningen slaar ut»,
+     «...fikat og ytelse sjekkes». Sporet er 1462 px i et vindu paa 390.
+     Under 720 px arver vi derfor den loddrette stabelen fra redusert bevegelse, som
+     allerede er bygget og lesbar. */
+  @media (max-width: 720px) {
+    .horisont__kort {
+      min-height: 0;
+      align-content: start;
+      gap: var(--space-3);
+    }
+    /* Fargen MÅ byttes sammen med størrelsen. Som 76 px grafikk er --line-strong
+       riktig – det er en strekfarge, og stor tekst krever 3:1. Som 12 px er tallet
+       en etikett, og da gjelder 4,5:1. --line-strong måler 3,09:1 og stryker.
+       Dette traff bare brukere med redusert bevegelse, og var derfor usynlig i
+       alle målinger som ikke satte det flagget. */
+    .horisont__nr {
+      font-size: 12px;
+      line-height: 16px;
+      letter-spacing: 0.08em;
+      color: var(--ink-faint);
+    }
+  }
 </style>
 
 <script>

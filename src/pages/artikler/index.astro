@@ -36,6 +36,22 @@ const schema = [artikkelOversikt(sortert)];
  */
 const norskDato = (iso: string) =>
   new Date(iso).toLocaleDateString("nb-NO", { day: "numeric", month: "long", year: "numeric" });
+
+/**
+ * Antallet skrives med bokstaver, som ellers på nettstedet – men det REGNES UT.
+ * Her sto «Tre artikler …» og «Alle tre er kontrollert …» som løpende tekst,
+ * og i det den fjerde artikkelen ble lagt til i `artikler.ts`, sto det tre over
+ * fire kort. En oversiktsside som teller feil er en dårlig anbefaling for et
+ * firma som selger at det teller riktig.
+ */
+const TALLORD = ["ingen", "Én", "To", "Tre", "Fire", "Fem", "Seks", "Sju", "Åtte", "Ni", "Ti"];
+const antall = TALLORD[sortert.length] ?? String(sortert.length);
+
+/** Eldste kontrolldato i settet – den som avgjør hvor ferskt det SVAKESTE leddet er. */
+const eldstKontrollert = sortert.reduce(
+  (eldst, a) => (a.oppdatert < eldst ? a.oppdatert : eldst),
+  sortert[0].oppdatert,
+);
 ---
 
 <Base
@@ -48,7 +64,7 @@ const norskDato = (iso: string) =>
     n={1}
     eyebrow="Artikler"
     tittel="Hva loven krever av nettsiden din"
-    ingress="Tre artikler om kravene vi oftest ser brutt. Hver av dem oppgir paragrafen, hva den sier, og hvilket verktøy som avgjør om din egen side er i orden."
+    ingress={`${antall} artikler om kravene vi oftest ser brutt. Hver av dem oppgir paragrafen, hva den sier, og hvilket verktøy som avgjør om din egen side er i orden.`}
   >
     <div class="grid-3">
       {
@@ -69,8 +85,12 @@ const norskDato = (iso: string) =>
         {/* Datoene står her fordi de står i artiklene og i markupen. En
             oversikt som skjuler hvor gammelt innholdet er, er mindre nyttig enn
             ingen oversikt – særlig når innholdet er juridisk. */}
-        Alle tre er kontrollert mot kilden {norskDato(sortert[0].oppdatert)}. Dette er
-        ikke juridisk rådgivning.
+        {/* Den ELDSTE kontrolldatoen, ikke den nyeste. `sortert[0]` er den sist
+            publiserte, og den sa at alt var kontrollert i dag selv om den eldste
+            artikkelen var et år gammel. På juridisk innhold er det den gale
+            halvdelen å oppgi. */}
+        Alle {sortert.length} er kontrollert mot kilden {norskDato(eldstKontrollert)} eller
+        senere. Dette er ikke juridisk rådgivning.
       </p>
     </div>
   </Section>

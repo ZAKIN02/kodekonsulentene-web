@@ -67,7 +67,8 @@ config({
 /**
  * Basisbildet er ankeret: begge redigeringene gjøres ut fra DET, slik at kamera,
  * lys og materialer holder seg like mellom start og slutt. En scene oppgir enten
- * `basis` (en ferdig opplastet fil) eller `basisPrompt` (vi lager den her).
+ * `basis` (en ferdig opplastet fil), `basisFil` (en lokal png vi laster opp,
+ * se lastOppBasis under) eller `basisPrompt` (vi lager den her).
  *
  * Et nytt motiv kan ikke gjenbruke et gammelt basisbilde – `_bevar` beskriver
  * objektet som skal stå stille, og det objektet må finnes i bildet.
@@ -100,6 +101,83 @@ async function lagBasis(prompt) {
   writeFileSync(hurtig, url);
   console.log("ok");
   return url;
+}
+
+/**
+ * `basisFil` / `startFil` / `sluttFil`: LOKALE png-er lastes opp og brukes
+ * direkte som henholdsvis basisbilde, startramme og sluttramme.
+ *
+ * Hvorfor dette finnes: noen scener har en geometri som Qwen ikke klarer å
+ * komponere, og som ikke er et promptproblem. «skjelett» skal ha fire plater
+ * svevende KLAR av panelet. Da må panelhøyde + platehøyde få plass i rammen
+ * (`_felle11`), og Qwen tegnet panelet 50–52 % av bildehøyden i fem forsøk på
+ * rad uansett hvordan plasseringen ble formulert. Med 432 px luft over et panel
+ * og en plate på 513 px løser modellen trangboddheten ved å KRYMPE og DREIE
+ * platen – og Kling interpolerer deretter trofast mellom to rammer som ikke er
+ * enige om verken vinkel eller størrelse. Det er hele forklaringen på at platene
+ * «vipper mens de faller».
+ *
+ * Komposisjonen er derfor flyttet ut av prompten og inn i ffmpeg, der den er
+ * eksakt og gratis: samme basisbilde, skalert og plassert slik at luften over
+ * panelet er større enn en plate. `fillborders=…:mode=smear` forlenger
+ * bakgrunnens egen gradient ut i det nye lerretet, så det finnes ingen synlig
+ * kant – en flat farge ga en synlig boks fordi studiobakgrunnen er 8 i toppen
+ * og 17 ved gulvet, ikke konstant.
+ *
+ * Opplastingen går gjennom leverandørens egen presignerte opplasting:
+ * `POST /files/generate-upload-url` gir en engangs-URL, og selve fila PUT-es
+ * dit. API-nøkkelen sendes ALDRI til lagringen – bare til det ene kallet som
+ * henter lenken. Dette er en gratis forespørsel; ingen generering, ingen kreditt.
+ *
+ * SDK-ens egne opplastinger er ikke brukt, fordi ingen av dem virker med denne
+ * nøkkelen: `agents.media.upload` svarer 403 «Agent API is not enabled for your
+ * account», og v1-klientens `uploadImage` svarer 403 fordi den sender
+ * `hf-api-key`/`hf-secret` i stedet for V2-headeren `Authorization: Key …`.
+ * Samme sti med V2-headeren svarer 200. Begge feilene kom før noe ble generert.
+ *
+ * `startFil` og `sluttFil` går lenger: da er selve NØKKELRAMMENE bygget
+ * utenfor modellen og lastet opp ferdige. Det er siste utvei, og det skal stå i
+ * scenens logg hvorfor. For «skjelett» var grunnen at Qwen komponerer om
+ * loddrett ved HVER redigering – den trekker motivet mot midten selv når
+ * instruksjonen sier «change only one thing» og plasseringen er låst eksplisitt.
+ * Da blir luften over panelet mindre enn en plate, og enten platen eller
+ * armaturen må krympe. Fire runder prompting kom nær, men hver gang med en
+ * byttehandel. Rammene bygges derfor av modellens EGNE piksler
+ * (`.skudd/skjelett-bygg-rammer.py`): den svevende platen ER den sittende
+ * platen, flyttet. Da er «samme vinkel og størrelse» en konstruksjon og ikke
+ * et håp – målt avvik 0,000 av 255.
+ *
+ * URL-en mellomlagres som alle de andre leddene, så en ny kjøring koster
+ * ingenting. Merk at lagringen merker fila `retention=temporary`; filene
+ * ligger derfor lokalt som kilde, og URL-en er bare en kvittering.
+ */
+async function lastOppFil(merke, fil) {
+  const hurtig = `.skudd/scene-tmp/${id}-${merke}.url`;
+  if (existsSync(hurtig)) {
+    console.log(`  ${merke} … gjenbrukt (opplastet)`);
+    return readFileSync(hurtig, "utf8").trim();
+  }
+  if (!existsSync(fil)) throw new Error(`${merke}: fila finnes ikke: ${fil}`);
+  process.stdout.write(`  ${merke} (laster opp ${fil}) … `);
+  const [nid, nhem] = NOKKEL.split(":");
+  const lenke = await fetch("https://api.higgsfield.ai/files/generate-upload-url", {
+    method: "POST",
+    headers: { Authorization: `Key ${nid}:${nhem}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ content_type: "image/png" }),
+  });
+  if (!lenke.ok) throw new Error(`opplastingslenke feilet: ${lenke.status}`);
+  const { upload_url, public_url, upload_headers } = await lenke.json();
+  const put = await fetch(upload_url, {
+    method: "PUT",
+    headers: upload_headers ?? { "Content-Type": "image/png" },
+    body: readFileSync(fil),
+  });
+  if (!put.ok) throw new Error(`opplasting feilet: ${put.status}`);
+  if (!public_url) throw new Error("basisopplasting: tomt svar");
+  mkdirSync(".skudd/scene-tmp", { recursive: true });
+  writeFileSync(hurtig, public_url);
+  console.log("ok");
+  return public_url;
 }
 
 const CDN = "https://d3u0tzju9qaucj.cloudfront.net/cc1083fc-6d60-417e-b73b-c64ca48db4c7";
@@ -182,8 +260,12 @@ async function film(start, slutt) {
 const hent = (url, fil) => { sh("curl", ["-sS", "--max-time", "300", "-o", fil, url]); return fil; };
 
 console.log(`Bygger scenen «${id}»`);
-basisUrl = scene.basis ? `${CDN}/${scene.basis}.png` : await lagBasis(scene.basisPrompt);
-const startUrl = await rediger("startbilde", scene.start);
+basisUrl = scene.basisFil
+  ? await lastOppFil("basis", scene.basisFil)
+  : scene.basis ? `${CDN}/${scene.basis}.png` : scene.startFil ? null : await lagBasis(scene.basisPrompt);
+const startUrl = scene.startFil
+  ? await lastOppFil("startbilde", scene.startFil)
+  : await rediger("startbilde", scene.start);
 /**
  * Sluttbildet redigeres fra STARTBILDET, ikke fra basisbildet.
  *
@@ -209,11 +291,16 @@ const startUrl = await rediger("startbilde", scene.start);
  * som to redigeringer etter hverandre, hver med én endring, der hver arver
  * geometrien fra den forrige. En streng oppfører seg som før.
  */
-const sluttLedd = Array.isArray(scene.slutt) ? scene.slutt : [scene.slutt];
-let sluttUrl = startUrl;
-for (const [i, ledd] of sluttLedd.entries()) {
-  const merke = i === sluttLedd.length - 1 ? "sluttbilde" : `mellombilde${i + 1}`;
-  sluttUrl = await rediger(merke, ledd, sluttUrl);
+let sluttUrl;
+if (scene.sluttFil) {
+  sluttUrl = await lastOppFil("sluttbilde", scene.sluttFil);
+} else {
+  const sluttLedd = Array.isArray(scene.slutt) ? scene.slutt : [scene.slutt];
+  sluttUrl = startUrl;
+  for (const [i, ledd] of sluttLedd.entries()) {
+    const merke = i === sluttLedd.length - 1 ? "sluttbilde" : `mellombilde${i + 1}`;
+    sluttUrl = await rediger(merke, ledd, sluttUrl);
+  }
 }
 
 if (args.includes("--kun-bilder")) {

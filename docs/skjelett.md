@@ -5,8 +5,11 @@ til ferdig flate. Den er bygget etter funnene i [`docs/akt.md`](akt.md), og den
 la til to funn til som ikke står der fra før. Begge står under
 «[Det som faktisk avgjorde det](#det-som-faktisk-avgjorde-det)».
 
-Filene er bygget og **ikke koblet inn noe sted**. Det er en redaksjonell
-avgjørelse, ikke en teknisk.
+> **Dette dokumentet beskriver RUNDE 1, som er erstattet.** Runde 1 ble levert
+> med de beste målingene vi hadde, men platene vippet mens de falt. Årsaken,
+> rettingen og tallene står i «[Runde 2](#runde-2--vippingen-er-borte)» nederst
+> og som regel 8 i [`docs/akt.md`](akt.md#regel-8-regn-plassen-i-piksler-før-du-bestiller).
+> Avsnittene under står uendret fordi de er kjeden som ledet fram til funnet.
 
 ## Hva klippet viser
 
@@ -207,6 +210,119 @@ alternativet er ingenting. Den skal ikke fortrenge et skjermopptak eller et
 diagram med ekte navn. Og hvis vippingen plager eieren når han ser den stor,
 er det den ene feilen som er verdt en ny bestilling – alt annet ved klippet
 holder.
+
+## Runde 2 – vippingen er borte
+
+Oppdraget var én ting: nøkkelrammene skal vise platene i **samme vinkel og
+størrelse i luften som i feltet**. Alt annet i scenen skulle stå.
+
+### Årsaken, målt – og det var aldri Kling
+
+Runde 1-rammeparet var **geometrisk umulig inne i bilderammen**:
+
+| | runde 1 |
+|---|---|
+| panelhøyde | 574 px av 1152 = **49,8 %** |
+| luft over panelet | **432 px** |
+| platehøyde | **513 px** |
+| plass til overs | **−81 px** |
+
+En plan plate kunne altså ikke sveve klar av panelet. Qwen løste trangboddheten
+slik den alltid gjør – stille: platene ble 12–34 % smalere og 11–32 % lavere enn
+feltet de kom fra, dreid opptil 45,7 % (målt som forskjell mellom venstre og
+høyre kanthøyde), og den bare armaturen krympet **25,4 % i høyde**. Kling
+interpolerte deretter trofast mellom to rammer som ikke var enige om verken
+vinkel eller størrelse. Det er hele forklaringen på vippingen.
+
+Runde 1-rapporten målte armaturens *bredde* (1,3 %, omtalt som en bagatell) og
+så aldri høyden. Samme feil som `bolt`. **Kontroller alle dimensjoner.**
+
+### Fire rammekjeder ble bygget og forkastet gratis
+
+| forsøk | hva som skjedde |
+|---|---|
+| 1 | nytt basisPrompt med plassering i prosa → panel 52,5 %, og `slutt` tegnet fire NYE plater mens de fire opprinnelige ble stående. Åtte plater. |
+| 2 | grunnbildet komponert om med ffmpeg til 38,8 % → rekken ble perfekt face-on, men platene 28 % lavere enn feltet |
+| 3 | lengre prompt for å låse størrelsen → `Generation took too long to complete` ved 3 853 tegn |
+| 4 | kortere `bevar` + smal luftspalte → platene innenfor 1,8 %, tre av fire face-on, men armaturen krympet 27,6 % |
+
+Fellesnevneren: **Qwen komponerer om loddrett ved hver redigering.** Den trakk
+panelet 182 px opp igjen rett etter at ffmpeg hadde gitt det 643 px luft, selv
+med plasseringen eksplisitt låst i samme setning. Fem forsøk, fem omkomposisjoner.
+
+### Rammene er derfor bygget av modellens egne piksler
+
+`.skudd/skjelett-bygg-rammer.py`:
+
+- armaturen er **samme ramme** i begge nøkkelbildene, piksel for piksel
+- den svevende platen **er** den sittende platen, klippet ut og flyttet opp
+- de tomme feltene er et ekte tomt felt fra modellens eget sluttbilde, innsatt
+  14 px så sluttbildets lyse ribbekanter ikke følger med
+- lima er Qwens egne lime-piksler, maskert og lagt på – ellers skifter hele
+  skjelettet lysstyrke med 24 av 255 når lima tennes (runde 1 sin svakhet nr. 5)
+
+| kontroll | resultat |
+|---|---|
+| plate-i-luft mot plate-i-felt | **0,000 av 255, maks 0,0** |
+| ribbepiksler, start mot slutt | **identiske** |
+| venstre tredel, snitt / verste piksel | **20,1:1 / 19,3:1** i begge rammer |
+| lime i venstre tredel | **0,000 %** i begge rammer |
+| rammene Kling faktisk fikk | lastet ned igjen, avvik **0,0000** |
+
+`scripts/scene.mjs` tar nå `basisFil`, `startFil` og `sluttFil` for å laste opp
+ferdige rammer, gjennom leverandørens presignerte opplasting.
+
+### Klippet, målt
+
+Én videobestilling. Master: ekte 3840×2160, 24 fps, 8,04 s.
+
+| | runde 1 | runde 2 |
+|---|---|---|
+| sum (5 rammer) | 62,80 | **41,93** |
+| toppunkt (5 rammer) | 38 % | **62 %** |
+| sum (9 rammer) | 85,07 | 53,59 |
+| toppunkt (9 rammer) | 44 % | 56 % |
+| ledd (5 rammer) | – | 9,96 · 12,01 · 18,37 · 1,58 |
+| kameradrift | 535 px rapportert, 0 reell | **0,0 px rapportert** |
+| platene vipper | **ja, opptil 45,7 %** | **nei, 0,000 avvik** |
+| armaturen krymper | **ja, −25,4 %** | **nei, samme piksler** |
+
+Den lavere summen er riktig vei: mye av runde 1 sin «bevegelse» var platene som
+skiftet størrelse og vinkel, og det er nettopp det som er borte. Og
+drift-kolonnens falske positiv forsvant av seg selv da motivet sluttet å
+dominere rammen som én stor masse – det bekrefter forklaringen i `_felle10`.
+
+**Ikke trimmet.** Siste ledd er 1,58 og altså nesten dødt, men ved 8,0 s ligger
+toppunktet på 62 %, og en trimming ville skjøvet det ut av 35–65 %. Motsatt av
+`floke`, der halen var død *og* toppunktet lå for tidlig.
+
+### Hva filmstripen viser
+
+Ni rammer, `.skudd/skjelett/stripe-levert.png`, sett på:
+
+Et tomt skjelett med fire plater svevende i én rett rekke over seg. Venstre
+plate daler ned i sitt felt, så den andre, så de to siste. Til slutt står det én
+hel flate der det var en ramme, og en hårfin limekontur tenner rundt den.
+Subjekt, verb, resultat. Platene er flate og like store i hver eneste ramme.
+
+### Hva som fortsatt ikke er perfekt
+
+1. **~1,5 sekund står stille** mellom siste landing og at lima tenner. Målt som
+   siste ledd 1,58. Ikke trimmet, av grunnen over.
+2. **Fyllrekkefølgen er 1, 2, så 3 og 4 nesten samtidig.** «Ett om gangen»
+   kollapser delvis på slutten. Bedre enn runde 1, som fylte 1-2-4-3.
+3. **Det tomme skjelettet leser lysere enn det fylte panelet.** Jeg har målt at
+   det er de *identiske* pikslene i begge rammene – det er en kontrastillusjon
+   mot de svarte hullene, ikke en materialendring – men øyet registrerer den
+   likevel.
+4. **Nøkkelrammene er bygget, ikke generert som ett bilde hver.** Det er siste
+   utvei, og det står her fordi det skal stå her. Alle piksler er modellens
+   egne; ingenting er tegnet for hånd.
+
+Og uendret fra runde 1: dette er en metafor, ikke informasjon. Den sier ikke
+*nettside*. Brandboken rangerer opptak over diagram over ingenting, og
+`/nettsider` har allerede `KodeBygg`, `lagstabel`-opptaket og en snittegning med
+ekte lagnavn til 0 kB.
 
 ## Rutinen for denne scenen
 

@@ -189,6 +189,122 @@ Den slår ikke et opptak, og den skal ikke fortrenge ett.
 Filene er bygget, loggført i `assets/lisenser/akt-tetting.md`, og **ikke koblet
 inn noe sted**. Den koblingen er en redaksjonell avgjørelse, ikke en teknisk.
 
+## Regel 8: regn plassen i PIKSLER før du bestiller
+
+*Lagt til etter runde 2 av `skjelett`, 7. oktober. Dette er den dyreste
+lærdommen på listen, og den er ren aritmetikk.*
+
+**Regelen:** før en scene bestilles skal det regnes ut, i piksler på de faktiske
+rammene, at motivet som skal bevege seg faktisk får plass der det skal ende opp.
+For et objekt som skal løfte seg klar av noe:
+
+```
+panelhøyde + objekthøyde + luftspalte  ≤  bildehøyden
+```
+
+Går regnestykket ikke opp, er rammeparet umulig, og **modellen vil løse
+trangboddheten ved å krympe og dreie objektet.** Den sier det ikke fra seg; den
+gjør det stille, og Kling interpolerer deretter trofast mellom to rammer som
+ikke er enige. Det ser ut som at videomodellen «rister» eller at platene
+«vipper». Det er ikke videomodellen.
+
+**Tallene som viser det.** `skjelett` runde 1 ble levert med de beste målingene
+vi hadde (sum 62,80, toppunkt 38 %), men platene vippet mens de falt. Målt på
+rammeparet:
+
+| | runde 1 |
+|---|---|
+| panelhøyde i bildet | 574 px av 1152 = **49,8 %** |
+| luft over panelet | **432 px** |
+| platehøyde | **513 px** |
+| plass til overs | **−81 px, altså umulig** |
+| platene i luften, bredde | −12 %, −23 %, −30 %, −34 % mot feltet |
+| platene i luften, høyde | −32 %, −16 %, −18 %, −11 % |
+| dreining (venstre mot høyre kanthøyde) | opptil **45,7 %** |
+| den bare armaturen | **−25,4 %** i høyde, −2,5 % i bredde |
+
+Ingen av disse sto i runde 1-rapporten. Den rapporten målte armaturens
+*bredde* (1,3 % drift, omtalt som en bagatell) og så aldri høyden – nøyaktig
+samme feil som `bolt`, der en høydefeil ble byttet mot en lengdefeil på 7,3 %
+fordi agenten kontrollerte dimensjonen som sviktet sist. **Kontroller alle
+dimensjoner, hver gang.**
+
+### Regel 8b: plasseringen kan ikke bestilles med ord
+
+Qwen komponerer om loddrett ved **hver** redigering – den trekker motivet mot
+midten selv når instruksjonen sier «change only one thing» og plasseringen er
+låst eksplisitt i samme setning. Målt over fem forsøk med ulik ordlyd:
+
+| forsøk | bedt om | levert panelhøyde |
+|---|---|---|
+| runde 1 | «top edge well down in the lower third» | 49,8 % |
+| runde 2 nr. 1 | «one third of the way up … air twice as tall as the panel» | 52,3 % |
+| runde 2 nr. 1b | samme, etter redigering | 52,5 % |
+| runde 2 nr. 2 | grunnbilde komponert i ffmpeg til **38,8 %** | 39,1 % – men flyttet **182 px opp**, så luften falt fra 643 til 461 px |
+| runde 2 nr. 4 | i tillegg eksplisitt posisjonslås i `start` | 39,6 %, luften fortsatt 461 px |
+
+Komposisjonen skal derfor ikke bestilles. Den skal **bygges**, med ffmpeg, og
+det er gratis og eksakt. Fyll det nye lerretet med
+`fillborders=…:mode=smear`, ikke med en flat farge: studiobakgrunnen er
+luminans 8 i toppen og 17 ved gulvet, så en flat padfarge gir en synlig boks.
+
+### Regel 8c: siste utvei er å bygge rammene av modellens egne piksler
+
+Når byttehandelen ikke lar seg forhandle bort – runde 2 endte med plater som
+holdt høyden innenfor 1,8 % *men* en armatur som krympet 27,6 % – er det riktige
+grepet å slutte å be om likhet og i stedet **konstruere** den:
+
+- armaturen er den **samme** rammen i begge nøkkelbildene, piksel for piksel
+- den svevende platen **er** den sittende platen, klippet ut og flyttet opp
+- de tomme feltene er et ekte tomt felt fra modellens eget sluttbilde
+- lima hentes som piksler fra lime-rammen og legges på, så ikke hele skjelettet
+  skifter lysstyrke med 24 av 255 når lima tennes
+
+Målt avvik mellom plate-i-luft og plate-i-felt etter dette: **0,000 av 255,
+maks 0,0.** «Samme vinkel og størrelse» er da en konstruksjon, ikke et håp.
+Skriptet er `.skudd/skjelett-bygg-rammer.py`, og `scripts/scene.mjs` tar nå
+`startFil`/`sluttFil`/`basisFil` for å laste opp ferdige rammer.
+
+Dette er siste utvei og skal stå i scenens logg med begrunnelse. Men det er
+**billigere enn en bestilling til**, og det er den eneste måten vi har klart å
+garantere geometrien på.
+
+### Regel 8d: Qwen-prompten har en annen lengdegrense enn Kling
+
+Videoendepunktet tar 2 500 tegn. **Bilderedigeringen har en praktisk grense
+rundt 3 100–3 300 tegn, og den teller med stilkortet og `bevar`-teksten**, ikke
+bare scenens egen endring. Målt:
+
+| total promptlengde | resultat |
+|---|---|
+| 3 853 tegn | `Generation took too long to complete` |
+| 3 325 tegn (`floke`) | samme feil |
+| 3 135 tegn (`floke`) | gikk gjennom |
+| 3 023 tegn | gikk gjennom, samme kjøring som 3 853 feilet i |
+
+Regn `len(stilkort) + len(bevar) + len(endring)` **før** kjøring. En scene kan
+sette sin egen korte `bevar` når endringsteksten uansett gjentar det som må
+holdes.
+
+### Hva rettingen kostet og ga
+
+Én videobestilling. Fire rammekjeder ble bygget og forkastet gratis før den, og
+den femte ble bygget mekanisk. Resultatet, målt på den snudde masteren:
+
+| | runde 1 | runde 2 |
+|---|---|---|
+| sum (5 rammer) | 62,80 | 41,93 |
+| toppunkt (5 rammer) | 38 % | **62 %** |
+| kameradrift | 535 px rapportert, 0 px reell | **0,0 px rapportert** |
+| platene vipper | **ja, opptil 45,7 %** | **nei, 0,000 avvik** |
+| armaturen krymper | **ja, −25,4 %** | **nei, samme piksler** |
+
+Den lavere summen er riktig vei: mye av runde 1 sin «bevegelse» var platene som
+skiftet størrelse og vinkel, og det er nettopp feilen som er borte. Og legg
+merke til drift-kolonnen: den falske positiven fra `bolt` og runde 1 forsvant
+av seg selv da motivet sluttet å dominere rammen som én stor masse. Det
+bekrefter forklaringen i `_felle5`/`_felle10` – tallet var aldri kameradrift.
+
 ## Rutinen, som nå har et ledd til
 
 ```bash
@@ -196,6 +312,7 @@ set -a; . ~/.config/kodekonsulentene/higgsfield.env; set +a
 node scripts/scene.mjs <id> --fil <fil> --kun-bilder   # 1 rammer først
 ./.skudd/stor-ark.sh <id>                              # 2 se på paret
 python3 .skudd/stor-maal.py .skudd/stor/<id>-*.png     # 3 mål rammene
+#   3b REGN PLASSEN I PIKSLER – se regel 8. Går den ikke opp, bestill ikke.
 node scripts/scene.mjs <id> --fil <fil>                # 4 så 4K
 python3 .skudd/klipp-maal.py public/scener/<id>-1920.mp4   # 5 MÅL KLIPPET
 ```

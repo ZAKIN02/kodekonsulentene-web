@@ -1,0 +1,216 @@
+---
+/**
+ * Tusjstrek: en strek som tegner seg under ETT ord når setningen kommer i syne.
+ *
+ * HVORFOR DEN FINNES. Forslag 17 i `docs/research-2026.md`. Vi har syv
+ * `Avslor`-gester, og alle sju flytter en hel BLOKK. Ingen av dem peker på
+ * poenget i en SETNING. Phamilypharma – siden som vant en Awwwards-utmerkelse med
+ * minst bevegelse av forbildene, og der juryens høyeste karakter var Innhold 8,20 –
+ * har dette som sitt mest kopierbare grep: en `linear-gradient` på hver `<strong>`,
+ * animert fra `background-size: 0`. Null kilobyte, og den markerer meningen.
+ *
+ * DEN ER EN STREK UNDER ORDET, IKKE EN FLATE BAK DET, OG DET ER MÅLT FRAM.
+ * Phamily legger tusjen BAK teksten. Vi prøvde det først og det holder ikke i
+ * vårt fargesystem: aksenten vår er lime, altså en LYS farge, og en limeflate på
+ * en lys flate er usynlig. Målt, aksent mot flaten, over alle tre temaer og begge
+ * flateregistre:
+ *
+ *   alfa 22 %   mørkt 1,74–1,80:1   varm 1,82–1,84:1   LYST 1,08–1,09:1
+ *   alfa 34 %   mørkt 2,61–2,67:1   varm 2,65:1        LYST 1,12–1,14:1
+ *
+ * Lyst tema går ikke over 1,14:1 uansett hvor mye lime vi heller på – `--accent`
+ * der (#b6e62a) ligger nesten på hvitt i luminans. `--accent-soft` er like ille:
+ * 1,02:1 mot `--bg` i lyst tema. En tusj man ikke ser, er ingen tusj.
+ *
+ * Derfor BÆRER STREKEN effekten, og flaten er bare et tillegg:
+ *
+ *   streken   `--accent-text` o.l. – tokenet som er laget for å være lesbart i
+ *             begge temaer. Målt mot begge flater i alle tre temaer, laveste
+ *             verdi 4,84:1 (ok i lyst tema), høyeste 15,06:1. WCAG 1.4.11 krever
+ *             3:1 for meningsbærende ikke-tekstlig innhold; vi ligger over selv
+ *             om streken her er forsterkning og ikke informasjon.
+ *   flaten    aksenten på 22 % alfa. Synlig i mørkt og varmt tema, praktisk talt
+ *             usynlig i lyst – og det er greit, fordi den ikke er alene om jobben.
+ *
+ * TEKSTEN RØRES IKKE. Vi bytter ikke tekstfarge til `--on-accent`, selv om
+ * brandboken sier at tekst på aksentfyll alltid er mørk. Grunnen er
+ * degraderingen: streken TEGNER SEG, så før den kommer er det ingen flate å være
+ * mørk på. Mørk tekst på mørk flate i mørkt tema er usynlig tekst, og
+ * degraderingen vår skal alltid gå mot synlig. Teksten står i `--ink` hele veien,
+ * og med flaten på 22 % holder den 7,30:1 i verste tilfelle (varmt tema, hevet
+ * flate). Målt.
+ *
+ * BAKGRUNNSLAG OG IKKE PSEUDOELEMENTER. Et `::after` med `position: absolute`
+ * dekker bare omskrivningsrektangelet, så et uthevet ord som brytes over to
+ * linjer får streken feil. `background-size` sammen med
+ * `box-decoration-break: clone` følger linjeskiftet. Det er grunnen phamily gjør
+ * det slik, og den er god.
+ *
+ * REDAKSJONELL REGEL, OG DEN ER DEN VIKTIGSTE: ÉN PER SKJERM. Phamily bruker den
+ * på ordspillene – på det de vil at du skal huske. Brukes den tre ganger i samme
+ * avsnitt, er den en understreking, og en understreking som er overalt peker
+ * ingensteds. Komponenten kan ikke håndheve dette; den som skriver siden må.
+ *
+ * SEMANTIKKEN BEHOLDES. Innholdet ligger i en ekte `<strong>`, så en skjermleser
+ * leser det som sterkt uthevet som før. Streken legger ingenting til for dem –
+ * den er for øyet, og den sier det samme som `<strong>` alt sier.
+ *
+ * DEGRADERING, FIRE TILSTANDER:
+ *   normalt                 streken tegner seg fra venstre når ordet kommer i syne
+ *   prefers-reduced-motion  streken står ferdig tegnet
+ *   uten JavaScript         identisk – det finnes ikke JavaScript her
+ *   Firefox uten view()     streken står ferdig tegnet
+ * Standardtilstanden i CSS er FERDIG TEGNET. Alt som skjuler noe ligger inne i
+ * `@supports (animation-timeline: view())`.
+ */
+interface Props {
+  /**
+   * Fargen på streken. `aksent` er standard og den eneste som ikke sier noe om
+   * status. `varsel` og `feil` LESER som en dom – bruk dem bare når ordet
+   * faktisk ER et forbehold eller en feil, ellers farger vi en setning rød uten
+   * å mene det.
+   */
+  tone?: "aksent" | "ok" | "varsel" | "feil";
+  /**
+   * Streken står ferdig tegnet og animeres ikke.
+   *
+   * SKAL settes på alt som kan stå OVER FOLDEN. En strek som tegnes på scroll og
+   * står halvveis ved innlasting leses som en rendringsfeil, ikke som en gest –
+   * målt til 23,7 % på et 700 px vindu før denne propen fantes. Samme regel som
+   * `.scene:first-of-type`-overstyringene i sidefilene, og av samme grunn.
+   */
+  staar?: boolean;
+  class?: string;
+}
+const { tone = "aksent", staar = false, class: cls } = Astro.props;
+---
+
+<strong class:list={["tusj", `tusj--${tone}`, staar && "tusj--staar", cls]}><slot /></strong>
+
+<style>
+  .tusj {
+    /* Settes per tone under. Streken er den som bærer; flaten er tillegget. */
+    --tusj-strek: var(--accent-text);
+    --tusj-flate: var(--accent);
+
+    font-family: var(--font-sans);
+    font-weight: 600;
+    color: var(--ink);
+
+    /* To lag, i malerrekkefølge: streken over flaten.
+       background-position er nederst for streken og toppen for flaten, så de
+       vokser fra samme kant. */
+    background-image:
+      linear-gradient(var(--tusj-strek), var(--tusj-strek)),
+      linear-gradient(
+        color-mix(in srgb, var(--tusj-flate) 22%, transparent),
+        color-mix(in srgb, var(--tusj-flate) 22%, transparent)
+      );
+    background-repeat: no-repeat, no-repeat;
+    /* 0,16em under grunnlinjen: under grunnlinjen, over underlengdene på g og j.
+       Står streken PÅ grunnlinjen, kuttes underlengdene og ordet ser feilsatt ut. */
+    background-position:
+      0 calc(100% - 0.06em),
+      0 0.1em;
+    /* STANDARDTILSTAND: FERDIG. 100 % bredde. Strekens høyde er 0,14em, altså
+       skalert med skriften – en fast px-verdi blir en hårlinje på en display-
+       overskrift og en bjelke på småtekst. */
+    background-size:
+      100% 0.14em,
+      100% calc(100% - 0.24em);
+
+    /* Litt luft til siden, så flaten ikke klemmer bokstavene, og en liten radius
+       i samme familie som resten (--radius-sm er 2px).
+
+       Negativ marg BARE til venstre. Med negativ marg i begge ender spiste flaten
+       mellomrommet etter ordet, og «… minst ett brudd.» og «Medianløsningen …» lå
+       klistret sammen – sett i skjermbilde på 1280 px. Venstre side holdes i flukt
+       med teksten over; høyre side får beholde sitt mellomrom. */
+    padding-inline: 0.12em;
+    margin-inline: -0.12em 0;
+    border-radius: var(--radius-sm);
+
+    /* Følger linjeskiftet. Uten denne får et ord som brytes over to linjer strek
+       bare på den første. */
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  .tusj--ok { --tusj-strek: var(--ok); --tusj-flate: var(--ok); }
+  .tusj--varsel { --tusj-strek: var(--warn); --tusj-flate: var(--warn); }
+  .tusj--feil { --tusj-strek: var(--fail); --tusj-flate: var(--fail); }
+
+  /* ------------------------------------------------------------ den tegner seg ---
+
+     Bare her inne krympes noe. `background-size` går ikke på compositor-tråden,
+     men elementet er ett ord og regelen sier én per skjerm – det er billigere enn
+     et pseudoelement som ikke følger linjeskiftet.
+
+     LANGFORMER MED VILJE: `animation: navn linear both` sammen med
+     `animation-timeline: view()` slås sammen av lightningcss til en ugyldig
+     stenografi som både Chromium og Firefox forkaster uten å si fra. Dekket av en
+     test i test/bygget-html.test.ts. */
+  @supports (animation-timeline: view()) {
+    .tusj {
+      background-size: 0 0.14em, 0 calc(100% - 0.24em);
+      animation-name: tusj-tegnes;
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      /* OMRÅDET ER MÅLT FRAM, OG DET ER EN AVVEINING SOM IKKE HAR EN PEN LØSNING.
+
+         Første forsøk var `entry 55% cover 30%`. Målt på artikkelen: i et 700 px
+         høyt vindu lå den første tusjstreken på y = 652 – altså OVER folden ved
+         innlasting – og sto på 23,7 % bredde. En halvtegnet strek på en setning
+         leseren allerede kan lese, uten at hun har gjort noe.
+
+         Andre forsøk var `entry 25% entry 100%`. Det løste den feilen, og laget
+         en ny: `entry` spenner bare over elementets egen høyde i scroll, og for
+         et ord på 20 px er hele animasjonen over på 20 piksler rulling. Målt på
+         åtte scrollposisjoner fra 820 px under folden og oppover: 100 % på alle
+         åtte. Gesten fantes ikke lenger.
+
+         Vi beholder derfor et område som faktisk LESES som en strek som tegnes –
+         og løser over folden med propen `staar` i stedet, slik resten av huset
+         gjør det (se `.scene:first-of-type`-reglene i sidefilene). Det er ikke
+         mulig å løse begge deler i ett område: et område langt nok til å ses er
+         per definisjon ikke ferdig for et element som står stille over folden. */
+      animation-range: entry 10% cover 22%;
+    }
+  }
+
+  /* `staar`: aldri noen animasjon, aldri noen krympet starttilstand. Ligger
+     utenfor @supports, så den gjelder uansett motor. */
+  .tusj--staar {
+    animation: none !important;
+    background-size: 100% 0.14em, 100% calc(100% - 0.24em) !important;
+  }
+
+  @keyframes tusj-tegnes {
+    from { background-size: 0 0.14em, 0 calc(100% - 0.24em); }
+    to { background-size: 100% 0.14em, 100% calc(100% - 0.24em); }
+  }
+
+  /* Redusert bevegelse: streken STÅR, den mangler ikke. Den globale regelen i
+     site.css slår av animasjonen, men ville latt `background-size: 0` stå igjen
+     fra @supports-blokken – altså ingen strek. Settes tilbake eksplisitt. */
+  @media (prefers-reduced-motion: reduce) {
+    .tusj {
+      animation: none !important;
+      background-size: 100% 0.14em, 100% calc(100% - 0.24em) !important;
+    }
+  }
+
+  /* Tvungne farger: bakgrunnsbilder fjernes av nettleseren, og ordet ville mistet
+     markeringen helt. `<strong>` bærer fortsatt meningen, og understrekingen her
+     er den eneste formen systemet lar oss beholde. */
+  @media (forced-colors: active) {
+    .tusj {
+      background-image: none;
+      text-decoration: underline;
+      text-decoration-thickness: 0.12em;
+      text-underline-offset: 0.16em;
+    }
+  }
+</style>

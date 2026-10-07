@@ -25,6 +25,23 @@ export interface Artikkel {
 
 export const artikler: Artikkel[] = [
   {
+    /**
+     * Den eneste artikkelen her som bygger på et offentlig datasett og ikke på
+     * en paragraf. Tallene regnes ut av `src/data/uu-register.json` ved bygg, så
+     * `oppdatert` skal følge `hentet`-datoen i den filen – ikke datoen teksten
+     * ble redigert. Kjør `node scripts/uuregister.mjs` og oppdater begge.
+     */
+    slug: "wcag-i-registeret",
+    tittel: "WCAG-kravene som brytes oftest",
+    beskrivelse:
+      "9 549 norske tilgjengelighetserklæringer, aggregert på nytt: tre av fire rapporterer selv minst ett WCAG-brudd, og medianen er fire. Her er kravene som topper listen.",
+    loefte:
+      "Du vet hvilke WCAG-krav norske virksomheter selv oppgir at de bryter, og hvor få av dem en maskin kan finne.",
+    publisert: "2026-10-07",
+    oppdatert: "2026-10-07",
+    verktoy: { href: "/verktoy/uu-sjekk", tekst: "Kjør UU-sjekken" },
+  },
+  {
     slug: "cookies-for-samtykke",
     tittel: "Cookies før samtykke",
     beskrivelse:

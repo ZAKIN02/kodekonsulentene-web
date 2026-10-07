@@ -1,0 +1,77 @@
+---
+/**
+ * Utenskript: samme plass på siden sier to ting, avhengig av om JavaScript er på.
+ *
+ * HVORFOR DEN FINNES. Forslag 5 i `docs/research-2026.md`. Én av de fire bindende
+ * degraderingstilstandene våre er «uten JavaScript», og den har til nå bare vært
+ * TESTBAR, ikke FORMBAR. Vi kunne ikke skrive «dette feltet krever JavaScript –
+ * her er telefonnummeret i stedet» uten `<noscript>`-markup, og `<noscript>` kan
+ * ikke stilsettes og kan ikke stå inne i en setning.
+ *
+ * `@media (scripting)` kan. Baseline widely available 2026-06-07 – Chrome 120,
+ * **Firefox 113**, Safari 17 – altså langt under Firefox ESR 140, som er det
+ * egentlige gulvet vårt. Verdiene er `none`, `initial-only` og `enabled`.
+ *
+ * DEN KONKRETE FEILEN DEN RETTER. På `/om` sto bildeteksten under lagstabelen
+ * «Dra i stabelen. De fire lagene er de samme vi leverer i hvert prosjekt.»
+ * `Lagstabel` degraderer helt riktig uten JavaScript – `:not([data-klar])` setter
+ * lagene til 0,7 fra hverandre og skjuler kontrollene – men bildeteksten ble
+ * stående som en INSTRUKS SOM IKKE VIRKER. Det er den billigste typen friksjon
+ * som finnes, og på en side som selger at vi sjekker slike ting hos andre, er den
+ * den dyreste.
+ *
+ * REGELEN, OG DEN ER ABSOLUTT: BEGGE SETNINGENE LIGGER I DOM-EN, OG
+ * STANDARDTILSTANDEN VISER BEGGE.
+ *
+ *   ingen støtte for spørringen   begge vises
+ *   scripting: enabled            bare «med»
+ *   scripting: none               bare «uten»
+ *   scripting: initial-only       begge vises
+ *
+ * Det betyr at teksten må skrives slik at BEGGE SAMMEN også leses greit, for det
+ * er det en gammel nettleser får. Den varianten er litt overflødig, aldri gal.
+ * Spørringen brukes til å FORKLARE og TILBY, aldri til å skjule noe som er
+ * innhold – og det er grunnen til at «uten» ikke er en feilmelding, men en
+ * setning som sier hva du ser i stedet.
+ *
+ * FORBEHOLDET SOM MÅ STÅ. En utvidelse som blokkerer skript på andre måter enn
+ * nettleserens egen innstilling vipper ikke nødvendigvis denne spørringen. Den er
+ * altså en FORBEDRING av tilstanden uten JavaScript, ikke en erstatning for at
+ * innholdet må virke uten. `Lagstabel` virker uten; dette gjør bare at teksten
+ * ved siden av slutter å lyve.
+ *
+ * NULL kB, null JavaScript, ingen cookie, ingen CSP-endring.
+ */
+interface Props {
+  /** Elementet. `p` er standard; `span` når det skal stå inne i en setning. */
+  som?: "p" | "span" | "div";
+  class?: string;
+}
+const { som = "p", class: cls } = Astro.props;
+const Som = som;
+---
+
+<Som class:list={["utenskript", cls]}>
+  {/* Rekkefølgen betyr noe i tilfellet der begge vises: den vanlige setningen
+      først, forbeholdet etter. */}
+  <span class="utenskript__med"><slot name="med" /></span>
+  <span class="utenskript__uten"><slot name="uten" /></span>
+</Som>
+
+<style>
+  /* Mellomrom mellom de to når begge vises. Et `gap` ville krevd flex, og da
+     kan ikke setningene brytes sammen med omkringliggende tekst. */
+  .utenskript__uten { margin-left: 0.3em; }
+
+  /* `display: none` og ikke `visually-hidden`: når JavaScript ER på, er setningen
+     om at det er av ikke bare unødvendig – den er FEIL, og en skjermleser skal
+     ikke lese opp en opplysning som ikke stemmer. Dette er det ene stedet der
+     det å skjule er riktig, fordi det som skjules er usant i den tilstanden. */
+  @media (scripting: enabled) {
+    .utenskript__uten { display: none; }
+  }
+  @media (scripting: none) {
+    .utenskript__med { display: none; }
+    .utenskript__uten { margin-left: 0; }
+  }
+</style>

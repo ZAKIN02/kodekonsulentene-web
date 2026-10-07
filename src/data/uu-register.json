@@ -1,0 +1,421 @@
+{
+  "_": "GENERERT av scripts/uuregister.mjs. Ikke rediger for hånd – kjør skriptet.",
+  "hentet": "2026-10-07",
+  "kilde": "https://data.uutilsynet.no/dataset/alle-erklaeringer",
+  "dokumentasjon": "https://www.uutilsynet.no/innsikt-og-analyse/opne-data-fra-tilgjengelegheitserklaeringane/3076",
+  "ansvarlig": "Tilsynet for universell utforming av ikt",
+  "oppgittAvApi": 9549,
+  "erklaeringer": 9549,
+  "virksomheter": 1326,
+  "nettsteder": 8829,
+  "apper": 720,
+  "status": {
+    "Delvis i samsvar": 7311,
+    "I samsvar": 2216,
+    "Ikkje i samsvar": 22
+  },
+  "medMinstEttBrudd": 7329,
+  "utenBrudd": 2220,
+  "andelMedBrudd": 76.8,
+  "brudd": {
+    "sum": 63346,
+    "snitt": 6.63,
+    "median": 4,
+    "maks": 47
+  },
+  "kravRader": [
+    {
+      "krav": "1.2.5",
+      "brot": 1155,
+      "samsvar": 1229,
+      "ikkjeRelevant": 5094,
+      "vurdert": 2384,
+      "andel": 48.4
+    },
+    {
+      "krav": "1.1.1",
+      "brot": 3858,
+      "samsvar": 5206,
+      "ikkjeRelevant": 485,
+      "vurdert": 9064,
+      "andel": 42.6
+    },
+    {
+      "krav": "1.3.1",
+      "brot": 3586,
+      "samsvar": 5802,
+      "ikkjeRelevant": 161,
+      "vurdert": 9388,
+      "andel": 38.2
+    },
+    {
+      "krav": "1.2.2",
+      "brot": 1245,
+      "samsvar": 2452,
+      "ikkjeRelevant": 5852,
+      "vurdert": 3697,
+      "andel": 33.7
+    },
+    {
+      "krav": "1.4.3",
+      "brot": 3138,
+      "samsvar": 6331,
+      "ikkjeRelevant": 80,
+      "vurdert": 9469,
+      "andel": 33.1
+    },
+    {
+      "krav": "4.1.2",
+      "brot": 2762,
+      "samsvar": 6497,
+      "ikkjeRelevant": 290,
+      "vurdert": 9259,
+      "andel": 29.8
+    },
+    {
+      "krav": "2.4.7",
+      "brot": 2779,
+      "samsvar": 6633,
+      "ikkjeRelevant": 137,
+      "vurdert": 9412,
+      "andel": 29.5
+    },
+    {
+      "krav": "1.2.1",
+      "brot": 908,
+      "samsvar": 2461,
+      "ikkjeRelevant": 6180,
+      "vurdert": 3369,
+      "andel": 27
+    },
+    {
+      "krav": "1.4.11",
+      "brot": 2455,
+      "samsvar": 6653,
+      "ikkjeRelevant": 441,
+      "vurdert": 9108,
+      "andel": 27
+    },
+    {
+      "krav": "2.1.1",
+      "brot": 2530,
+      "samsvar": 6862,
+      "ikkjeRelevant": 157,
+      "vurdert": 9392,
+      "andel": 26.9
+    },
+    {
+      "krav": "4.1.1",
+      "brot": 2479,
+      "samsvar": 6743,
+      "ikkjeRelevant": 327,
+      "vurdert": 9222,
+      "andel": 26.9
+    },
+    {
+      "krav": "1.4.12",
+      "brot": 2352,
+      "samsvar": 6785,
+      "ikkjeRelevant": 412,
+      "vurdert": 9137,
+      "andel": 25.7
+    },
+    {
+      "krav": "2.5.3",
+      "brot": 2236,
+      "samsvar": 6614,
+      "ikkjeRelevant": 699,
+      "vurdert": 8850,
+      "andel": 25.3
+    },
+    {
+      "krav": "4.1.3",
+      "brot": 1912,
+      "samsvar": 6143,
+      "ikkjeRelevant": 1494,
+      "vurdert": 8055,
+      "andel": 23.7
+    },
+    {
+      "krav": "2.4.3",
+      "brot": 2110,
+      "samsvar": 7358,
+      "ikkjeRelevant": 81,
+      "vurdert": 9468,
+      "andel": 22.3
+    },
+    {
+      "krav": "1.4.10",
+      "brot": 1967,
+      "samsvar": 7341,
+      "ikkjeRelevant": 241,
+      "vurdert": 9308,
+      "andel": 21.1
+    },
+    {
+      "krav": "1.3.4",
+      "brot": 1882,
+      "samsvar": 7332,
+      "ikkjeRelevant": 335,
+      "vurdert": 9214,
+      "andel": 20.4
+    },
+    {
+      "krav": "3.1.2",
+      "brot": 1185,
+      "samsvar": 4630,
+      "ikkjeRelevant": 3014,
+      "vurdert": 5815,
+      "andel": 20.4
+    },
+    {
+      "krav": "2.4.1",
+      "brot": 1615,
+      "samsvar": 6484,
+      "ikkjeRelevant": 730,
+      "vurdert": 8099,
+      "andel": 19.9
+    },
+    {
+      "krav": "2.4.4",
+      "brot": 1777,
+      "samsvar": 7590,
+      "ikkjeRelevant": 182,
+      "vurdert": 9367,
+      "andel": 19
+    },
+    {
+      "krav": "1.4.5",
+      "brot": 1343,
+      "samsvar": 5836,
+      "ikkjeRelevant": 2370,
+      "vurdert": 7179,
+      "andel": 18.7
+    },
+    {
+      "krav": "1.4.13",
+      "brot": 1203,
+      "samsvar": 6313,
+      "ikkjeRelevant": 2033,
+      "vurdert": 7516,
+      "andel": 16
+    },
+    {
+      "krav": "2.1.2",
+      "brot": 1436,
+      "samsvar": 7756,
+      "ikkjeRelevant": 357,
+      "vurdert": 9192,
+      "andel": 15.6
+    },
+    {
+      "krav": "3.2.4",
+      "brot": 1338,
+      "samsvar": 7293,
+      "ikkjeRelevant": 198,
+      "vurdert": 8631,
+      "andel": 15.5
+    },
+    {
+      "krav": "1.3.5",
+      "brot": 925,
+      "samsvar": 6099,
+      "ikkjeRelevant": 2525,
+      "vurdert": 7024,
+      "andel": 13.2
+    },
+    {
+      "krav": "1.4.4",
+      "brot": 1166,
+      "samsvar": 8303,
+      "ikkjeRelevant": 80,
+      "vurdert": 9469,
+      "andel": 12.3
+    },
+    {
+      "krav": "3.3.2",
+      "brot": 941,
+      "samsvar": 6797,
+      "ikkjeRelevant": 1811,
+      "vurdert": 7738,
+      "andel": 12.2
+    },
+    {
+      "krav": "2.4.5",
+      "brot": 990,
+      "samsvar": 7244,
+      "ikkjeRelevant": 595,
+      "vurdert": 8234,
+      "andel": 12
+    },
+    {
+      "krav": "2.5.2",
+      "brot": 1035,
+      "samsvar": 7595,
+      "ikkjeRelevant": 919,
+      "vurdert": 8630,
+      "andel": 12
+    },
+    {
+      "krav": "2.2.1",
+      "brot": 367,
+      "samsvar": 2863,
+      "ikkjeRelevant": 6319,
+      "vurdert": 3230,
+      "andel": 11.4
+    },
+    {
+      "krav": "2.4.6",
+      "brot": 1039,
+      "samsvar": 8431,
+      "ikkjeRelevant": 79,
+      "vurdert": 9470,
+      "andel": 11
+    },
+    {
+      "krav": "1.4.1",
+      "brot": 939,
+      "samsvar": 8083,
+      "ikkjeRelevant": 527,
+      "vurdert": 9022,
+      "andel": 10.4
+    },
+    {
+      "krav": "3.3.1",
+      "brot": 797,
+      "samsvar": 6841,
+      "ikkjeRelevant": 1911,
+      "vurdert": 7638,
+      "andel": 10.4
+    },
+    {
+      "krav": "3.3.3",
+      "brot": 760,
+      "samsvar": 6599,
+      "ikkjeRelevant": 2190,
+      "vurdert": 7359,
+      "andel": 10.3
+    },
+    {
+      "krav": "3.1.1",
+      "brot": 887,
+      "samsvar": 8517,
+      "ikkjeRelevant": 145,
+      "vurdert": 9404,
+      "andel": 9.4
+    },
+    {
+      "krav": "2.2.2",
+      "brot": 283,
+      "samsvar": 3038,
+      "ikkjeRelevant": 6228,
+      "vurdert": 3321,
+      "andel": 8.5
+    },
+    {
+      "krav": "1.3.2",
+      "brot": 728,
+      "samsvar": 8707,
+      "ikkjeRelevant": 114,
+      "vurdert": 9435,
+      "andel": 7.7
+    },
+    {
+      "krav": "1.3.3",
+      "brot": 633,
+      "samsvar": 7670,
+      "ikkjeRelevant": 1246,
+      "vurdert": 8303,
+      "andel": 7.6
+    },
+    {
+      "krav": "2.4.2",
+      "brot": 590,
+      "samsvar": 8095,
+      "ikkjeRelevant": 144,
+      "vurdert": 8685,
+      "andel": 6.8
+    },
+    {
+      "krav": "2.1.4",
+      "brot": 219,
+      "samsvar": 3368,
+      "ikkjeRelevant": 5962,
+      "vurdert": 3587,
+      "andel": 6.1
+    },
+    {
+      "krav": "3.3.4",
+      "brot": 265,
+      "samsvar": 4105,
+      "ikkjeRelevant": 5179,
+      "vurdert": 4370,
+      "andel": 6.1
+    },
+    {
+      "krav": "2.5.4",
+      "brot": 173,
+      "samsvar": 2818,
+      "ikkjeRelevant": 6558,
+      "vurdert": 2991,
+      "andel": 5.8
+    },
+    {
+      "krav": "3.2.3",
+      "brot": 462,
+      "samsvar": 8046,
+      "ikkjeRelevant": 321,
+      "vurdert": 8508,
+      "andel": 5.4
+    },
+    {
+      "krav": "3.2.1",
+      "brot": 283,
+      "samsvar": 8932,
+      "ikkjeRelevant": 334,
+      "vurdert": 9215,
+      "andel": 3.1
+    },
+    {
+      "krav": "2.5.1",
+      "brot": 225,
+      "samsvar": 7440,
+      "ikkjeRelevant": 1884,
+      "vurdert": 7665,
+      "andel": 2.9
+    },
+    {
+      "krav": "3.2.2",
+      "brot": 238,
+      "samsvar": 7875,
+      "ikkjeRelevant": 1436,
+      "vurdert": 8113,
+      "andel": 2.9
+    },
+    {
+      "krav": "1.4.2",
+      "brot": 78,
+      "samsvar": 2948,
+      "ikkjeRelevant": 6523,
+      "vurdert": 3026,
+      "andel": 2.6
+    },
+    {
+      "krav": "2.3.1",
+      "brot": 72,
+      "samsvar": 3745,
+      "ikkjeRelevant": 5732,
+      "vurdert": 3817,
+      "andel": 1.9
+    }
+  ],
+  "periode": {
+    "foerste": "2022-10-05",
+    "siste": "2026-10-06"
+  },
+  "integritet": {
+    "kontrollert": 9549,
+    "stemmer": 9549,
+    "avvik": []
+  }
+}

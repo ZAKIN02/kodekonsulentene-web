@@ -1,0 +1,432 @@
+---
+/**
+ * Registerstolper: hvilke WCAG-krav norske offentlige virksomheter selv
+ * rapporterer at de bryter, som en tabell man kan lese og en stolpe man kan se.
+ *
+ * HVORFOR EN TABELL OG IKKE ET DIAGRAM. `docs/research-2026.md` foreslår
+ * charts.css (5,7 kB) nettopp fordi tallene da ligger i en semantisk `<table>` og
+ * er lesbare med CSS av. Vi trenger ikke biblioteket for å følge regelen: stolpen
+ * er én `width` i prosent på et pseudoelement, og prosenten står som TEKST i samme
+ * celle. Slår du av CSS, er dette en tabell. Slår du av JavaScript, skjer
+ * ingenting – det er ikke noe JavaScript. Skrur du på en skjermleser, leses
+ * «Kontrast (minimum), 33,1 prosent, 3 138 av 9 469 vurderte», ikke «bilde».
+ *
+ * STOLPEN BÆRER INGEN INFORMASJON ALENE. Den er forsterkning av et tall som alt
+ * står der. Det er grunnen til at den kan være en flate i `accent-soft` uten at
+ * WCAG 1.4.11 blir et problem: fjern den, og ingenting er borte. Hårlinjen i
+ * `line-strong` finnes for at stolpen skal ha en kant også i tvilsomme
+ * fargeinnstillinger og under tvungne farger.
+ *
+ * KOLONNEN «MÅLBAR MASKINELT» ER POENGET MED FIGUREN. Den kommer fra vår egen
+ * regelliste i `src/data/wcag.ts`, utledet i `maskinsjekkbareKrav()`. Legger noen
+ * til en regel i skanneren, endrer tabellen seg av seg selv. Det er motsatt vei
+ * av hvordan tall vanligvis havner i markedsføring, og det er med vilje: vi kan
+ * ikke komme til å påstå dekning vi ikke har.
+ *
+ * `sibling-index()` ER I BRUK HER, OG DET ER FORSLAG 6 I RESEARCHEN. Forskyvningen
+ * av stolpene regnes ut av CSS fra radens egen plass i tabellen. Alternativet er
+ * en `--i`-variabel skrevet på hvert `<tr>` – som er den kilden til feil
+ * `Avslor`-propen `trinn` er i dag. Baseline newly available 2026-08-18;
+ * Chrome 138, Firefox 154, Safari 26.2. Uten støtte er forskyvningen flat, altså
+ * dagens oppførsel: alle stolpene kommer samtidig. Ingenting blir skjult.
+ *
+ * DEGRADERING, FIRE TILSTANDER:
+ *   normalt                 stolpene vokser ut når tabellen kommer i syne
+ *   prefers-reduced-motion  stolpene står ferdig utvokst
+ *   uten JavaScript         identisk – det finnes ikke JavaScript her
+ *   Firefox uten view()     stolpene står ferdig utvokst
+ * Standardtilstanden i CSS er FULL BREDDE. Alt som krymper en stolpe står inne i
+ * `@supports (animation-timeline: view())`.
+ */
+import type { Kravrad } from "../lib/uuregister";
+import { KRAVNAVN } from "../lib/uuregister";
+
+interface Props {
+  rader: Kravrad[];
+  /** Krav vår egen skanner har en regel for. Utled med maskinsjekkbareKrav(). */
+  maskinsjekkbare: Set<string>;
+  /** Tabellens egen tittel. Blir <caption>, så den leses før radene. */
+  tittel: string;
+  /** Står under tabellen. Her hører kilden og forbeholdet hjemme. */
+  bunntekst?: string;
+  class?: string;
+}
+const { rader, maskinsjekkbare, tittel, bunntekst, class: cls } = Astro.props;
+
+const tall = (n: number) => n.toLocaleString("nb-NO");
+/** Alltid én desimal, alltid komma. «27 %» og «33,1 %» i samme kolonne leses
+ *  som to ulike presisjoner på det som er samme måling. */
+const prosent = (n: number) =>
+  n.toLocaleString("nb-NO", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+/** Skalerer stolpene mot den høyeste i utvalget, ikke mot 100. Med 48 % som
+ *  toppverdi ville alt ligget i venstre halvdel og figuren sagt mindre enn
+ *  tallene. Prosenten i teksten er uendret – det er den som er dataen. */
+const maks = Math.max(...rader.map((r) => r.andel), 1);
+---
+
+<figure class:list={["regstolper", cls]}>
+  {/* Rulleboksen er et EGET element rundt tabellen, ikke `display: block` på
+      <table> selv. Den varianten ble prøvd og målt: en <caption> inne i en
+      blokk-tabell får bredden til første kolonne og brøt til ett ord per linje –
+      «De 12 / kravene / med høyest / andel». Med en wrapper beholder tabellen
+      `display: table`, og hele tabellmodellen – inkludert caption – oppfører seg. */}
+  <div class="regstolper__rulle">
+  <table class="regstolper__tabell">
+    <caption class="regstolper__caption">{tittel}</caption>
+    <thead>
+      <tr>
+        <th scope="col" class="regstolper__th regstolper__th--krav">Krav</th>
+        <th scope="col" class="regstolper__th">Hva kravet heter</th>
+        <th scope="col" class="regstolper__th regstolper__th--tall regstolper__th--verdi">Rapporterer brudd</th>
+        <th scope="col" class="regstolper__th regstolper__th--tall regstolper__th--av">Av vurderte</th>
+        {/* «Målbar maskinelt» og ikke «Vi sjekker det»: skanneren har en regel,
+            og en regel som treffer er ikke det samme som at kravet er oppfylt. */}
+        <th scope="col" class="regstolper__th regstolper__th--sjekk">Målbar maskinelt</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        rader.map((r) => {
+          const n = KRAVNAVN[r.krav];
+          const maskin = maskinsjekkbare.has(r.krav);
+          return (
+            <tr class="regstolper__rad" style={`--andel:${(r.andel / maks) * 100}`}>
+              <th scope="row" class="regstolper__krav">
+                {/* Lenker til tilsynets egen side for nøyaktig dette kravet, så
+                    hver rad kan kontrolleres hos kilden og ikke bare hos oss.
+                    Stien er lest ut av tilsynets sitemap, ikke konstruert av
+                    kravnummeret – slugene deres er ikke gjenskapbare (1.4.10 blir
+                    `1410-dynamisk-tilpasning-reflow-niva-aa/144`). */}
+                <a
+                  class="regstolper__lenke mono"
+                  href={`https://www.uutilsynet.no/wcag-standarden/${n?.sti ?? ""}`}
+                  rel="noopener"
+                >{r.krav}</a>
+                {n && <span class="regstolper__niva mono-label">{n.niva}</span>}
+              </th>
+              <td class="regstolper__navn">{n?.navn ?? "—"}</td>
+              <td class="regstolper__verdi">
+                <span class="regstolper__stolpe" aria-hidden="true"></span>
+                <span class="regstolper__prosent mono">{prosent(r.andel)} %</span>
+              </td>
+              <td class="regstolper__av mono">{tall(r.brot)} av {tall(r.vurdert)}</td>
+              <td class:list={["regstolper__sjekk", maskin && "regstolper__sjekk--ja"]}>
+                {maskin ? "Ja" : "Nei"}
+              </td>
+            </tr>
+          );
+        })
+      }
+    </tbody>
+  </table>
+  </div>
+  {bunntekst && <figcaption class="small faint regstolper__bunn">{bunntekst}</figcaption>}
+</figure>
+
+<style>
+  .regstolper {
+    /* Samme takt som Flyt og Snitt, så tre figurer på nettstedet leses som ett
+       system. Her brukes den bare som forskyvning mellom rader. */
+    --takt: 1.1s;
+    display: grid;
+    gap: var(--space-4);
+    margin: 0;
+  }
+
+  /* Tabellen er bredere enn teksten på små skjermer. Rulling i en egen boks er
+     ærligere enn å krympe tallene til uleselige.
+     tabindex settes IKKE her: en rullbar region får tastaturfokus av nettleseren
+     i Chrome og Firefox når den faktisk ruller, og et tomt tabstopp på hver
+     tabell er støy for tastaturbrukere. */
+  .regstolper__rulle {
+    border: var(--hairline) solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--bg-raised);
+  }
+
+  /* RULLINGEN SLÅS BARE PÅ DER DEN TRENGS, OG DET ER EN MÅLT NØDVENDIGHET, IKKE
+     EN OPTIMALISERING.
+
+     `overflow-x: auto` gjør elementet til en rulleboks i BEGGE akser – CSS
+     tillater ikke `overflow-x: auto` sammen med `overflow-y: visible`; den
+     synlige aksen regnes om til `auto`. Og `animation-timeline: view()` måler mot
+     NÆRMESTE rullende forelder. Stolpene lå altså inne i en boks som aldri ruller
+     loddrett, og tidslinjen deres sto bom stille.
+
+     Målt på artikkelen, fire scrollposisjoner fra 1000 til 2200:
+
+       med `overflow-x: auto`    1.00 ×8, så 0.87 0.64 0.41 0.18 – uendret i alle fire
+       med `overflow: visible`   0.10 … → 1.00 ×5, 0.77 0.53 0.30 … → alle 1.00
+
+     Den første raden er ikke bare «ingen animasjon»: de fire nederste stolpene
+     ble stående på 0,18 og 0,41 for alltid. Det er degradering mot SKJULT, og det
+     er den ene feilen dette huset ikke gjør.
+
+     Derfor: ingen rulleboks der tabellen får plass, og der den ikke får plass
+     står stolpene ferdig vokst i stedet. */
+  @media (max-width: 52rem) {
+    .regstolper__rulle { overflow-x: auto; }
+    /* Samme tilstand som ved redusert bevegelse: ferdig, synlig, i ro. */
+    .regstolper__stolpe {
+      animation: none !important;
+      transform: scaleX(1) !important;
+    }
+  }
+  .regstolper__tabell {
+    width: 100%;
+    /* Under denne bredden blir kravnavnene til én-ords-spalter. Da ruller vi i
+       stedet – teksten skal ikke knekkes for å spare plass. */
+    min-width: 46rem;
+    border-collapse: collapse;
+    /* fixed, ikke auto: med auto fikk navnekolonnen all restbredden og tallene
+       klumpet seg ytterst til høyre med et tomrom på over 200 px i midten. */
+    table-layout: fixed;
+  }
+  .regstolper__tabell > thead { border-bottom: var(--hairline) solid var(--line); }
+
+  .regstolper__caption {
+    font-family: var(--font-display);
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    text-align: left;
+    padding: var(--space-4) var(--space-4) var(--space-3);
+  }
+
+  .regstolper__th {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    /* ink-muted og ikke ink-faint: en kolonneoverskrift er navigasjon, ikke en
+       fotnote. Målt 5,47:1 mørk og 7,37:1 lys mot bg-raised. */
+    color: var(--ink-muted);
+    text-align: left;
+    padding: var(--space-3) var(--space-4);
+    white-space: nowrap;
+  }
+  .regstolper__th--tall,
+  .regstolper__th--sjekk { text-align: right; }
+  /* Faste bredder fordi table-layout er fixed. Navnekolonnen står uten bredde og
+     får resten – den er den eneste som faktisk trenger å puste. */
+  .regstolper__th--krav { width: 7.5rem; }
+  .regstolper__th--verdi { width: 9.5rem; }
+  .regstolper__th--av { width: 9rem; }
+  .regstolper__th--sjekk { width: 7rem; }
+  /* Den ENESTE kolonneoverskriften som får brytes. Med nowrap og 12 px mono med
+     0,08em sperring er «MÅLBAR MASKINELT» ~160 px, og den rant ut av cellen og
+     ut av rulleboksen – målt på 1440 px, der tabellen ellers har god plass.
+     To linjer er riktigere enn en kortere, uklarere overskrift. */
+  .regstolper__th--sjekk { white-space: normal; }
+
+  .regstolper__rad > * {
+    padding: var(--space-3) var(--space-4);
+    border-top: var(--hairline) solid var(--line);
+    vertical-align: baseline;
+  }
+  .regstolper__rad:first-child > * { border-top: 0; }
+
+  .regstolper__krav { text-align: left; white-space: nowrap; font-weight: 400; }
+  /* Trykkmålet er 24×24 px minst. En kravlenke er fjorten tegn mono på 14 px, og
+     linjehøyden alene gir 22 px – de to siste kommer fra padding, og de må
+     ligge i margen slik at radens egen høyde ikke vokser. */
+  .regstolper__lenke {
+    display: inline-block;
+    min-height: 24px;
+    padding-block: 1px;
+    color: var(--link);
+    text-decoration-thickness: var(--hairline);
+    text-underline-offset: 3px;
+  }
+  .regstolper__niva {
+    display: inline-block;
+    margin-left: var(--space-2);
+    color: var(--ink-faint);
+  }
+
+  .regstolper__navn {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--ink);
+    min-width: 18ch;
+  }
+
+  /* Verdicellen er stolpe + tall. Stolpen ligger BAK tallet som eget element og
+     ikke som bakgrunn på cellen, fordi en bakgrunn på en <td> ikke kan animeres
+     i bredde uten å flytte teksten. */
+  .regstolper__verdi {
+    position: relative;
+    text-align: right;
+    white-space: nowrap;
+    min-width: 11ch;
+  }
+  .regstolper__stolpe {
+    position: absolute;
+    inset-block: 4px;
+    /* Starter der cellens padding slutter, og vokser til venstre mot tallet.
+       Høyre kant er fast, så tallet står i ro uansett stolpelengde. */
+    right: var(--space-4);
+    width: calc(var(--andel, 0) * 1%);
+    max-width: calc(100% - var(--space-4) * 2);
+    background: var(--accent-soft);
+    border: var(--hairline) solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    /* Transform origin til høyre: vokser mot venstre, som tallet leses mot. */
+    transform-origin: 100% 50%;
+  }
+  .regstolper__prosent {
+    position: relative;
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .regstolper__av {
+    text-align: right;
+    white-space: nowrap;
+    color: var(--ink-muted);
+  }
+
+  /* «Nei» er flertallet og skal ikke lese som en feil – vi rapporterer vår egen
+     dekning, ikke virksomhetens. Derfor ink-muted på begge, og aksenten bare som
+     et merke på «Ja». Ingen ok/fail-farger: ingen av svarene er en dom. */
+  .regstolper__sjekk {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 22px;
+    text-align: right;
+    white-space: nowrap;
+    color: var(--ink-muted);
+  }
+  /* accent-text og ikke accent: ren aksent som TEKST måler 1,9:1 mot hvit flate i
+     lyst tema. accent-text er den dempede olivenen – 6,78:1 lys, 14,03:1 mørk. */
+  .regstolper__sjekk--ja { color: var(--accent-text); }
+
+  .regstolper__bunn { margin: 0; max-width: 72ch; }
+
+  /* ---------------------------------------------------------- stolpene vokser ---
+
+     Standardtilstanden over er FERDIG UTVOKST. Alt som krymper noe står her inne.
+     Firefox får scroll-drevne animasjoner i 159 eller 160 (Bugzilla 1324602,
+     RESOLVED FIXED, milepæl 159 Branch); til da står stolpene ferdig, og det er
+     den riktige degraderingen.
+
+     LANGFORMER MED VILJE: `animation: navn linear both` sammen med
+     `animation-timeline: view()` slås sammen av lightningcss til en ugyldig
+     stenografi som BÅDE Chromium og Firefox forkaster uten å si fra. Det er
+     dekket av en test i test/bygget-html.test.ts. */
+  @supports (animation-timeline: view()) {
+    .regstolper__stolpe {
+      transform: scaleX(0);
+      animation-name: regstolper-vokser;
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      /* `cover`-basert og ikke `entry`-basert: en stolpe er ~20 px høy, og hele
+         `entry`-fasen for den er 20 piksler rulling – målt, og da sto alle tolv
+         stolpene på 1.00 i hver eneste scrollposisjon. Avveiningen er beskrevet i
+         Tusjstrek.astro. Her er den enkel, fordi tabellen aldri står over folden:
+         den har en overskrift, en ingress og to avsnitt over seg. */
+      animation-range: entry 15% cover 28%;
+    }
+  }
+
+  /* Forskyvning per rad UTEN en indeks i markupen – forslag 6 i researchen.
+     `Avslor` tar i dag en `trinn`-prop (0–5) som må settes for hånd på hvert
+     element. Her regner CSS det ut av radens egen plass i tabellen.
+
+     FORSKYVNINGEN LIGGER I `animation-range`, IKKE I `animation-delay`, OG DET ER
+     MÅLT FRAM. Første forsøk var `animation-delay: calc(sibling-index() * var(--takt) * -0.06)`.
+     Det ser riktig ut og er helt galt: på en scroll-tidslinje er `animation-duration`
+     1 ms, og en forsinkelse på −66 ms er da 66 ganger hele animasjonen. Alle tolv
+     stolpene lå klemt på 1.00 i hver eneste av sju scrollposisjoner – målt. En
+     forsinkelse i sekunder hører til dokumentets tidslinje; på en scroll-tidslinje
+     er det området som er tiden. `Snitt` og `Flyt` gjør det allerede slik, med
+     `--i` i `animation-range`; dette er samme grep uten indeksen i markupen.
+
+     Baseline newly available 2026-08-18: Chrome 138, Firefox 154, Safari 26.2.
+     Uten støtte faller hele blokken ut og alle radene deler området over – altså
+     vokser samtidig. Det er lesbart, og det er dagens oppførsel. Ingenting skjules.
+
+     `@supports`-betingelsen tester `sibling-index()` inne i en `calc()` på en
+     egenskap som alltid finnes, ikke på `animation-range` – en nettleser som ikke
+     kjenner `animation-range` i det hele tatt skal ikke falle inn her. */
+  @supports (animation-timeline: view()) and (margin-top: calc(sibling-index() * 1px)) {
+    .regstolper__stolpe {
+      animation-range:
+        entry calc(15% + sibling-index() * 1.6%)
+        cover calc(28% + sibling-index() * 1.6%);
+    }
+  }
+
+  @keyframes regstolper-vokser {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+
+  /* Redusert bevegelse: stolpene står ferdig. Den globale regelen i site.css
+     treffer `*`, men `!important` her gjør at rekkefølgen mellom arkene ikke
+     avgjør utfallet – og transform må settes tilbake eksplisitt, ellers står en
+     stolpe på scaleX(0), altså usynlig. Degraderingen går mot SYNLIG. */
+  @media (prefers-reduced-motion: reduce) {
+    .regstolper__stolpe {
+      animation: none !important;
+      transform: scaleX(1) !important;
+    }
+  }
+
+  /* Tvungne farger (Windows høykontrast): flater forsvinner, kanter blir igjen.
+     Stolpen ville blitt en usynlig boks. Gir den en kant i systemfargen, så
+     figuren fortsatt har en lengde man ser. */
+  @media (forced-colors: active) {
+    .regstolper__stolpe {
+      background: Canvas;
+      border-color: CanvasText;
+    }
+    .regstolper__sjekk--ja { color: LinkText; }
+  }
+
+  /* Under 640 px: smalere kolonner, slik at KRAV, NAVN og PROSENT får plass i
+     det første skjermbildet. De to siste kolonnene ruller inn.
+
+     TO TING ER PRØVD OG FORKASTET HER, begge målt på 390 px:
+
+     1. Å la kolonnene beholde skrivebordsbreddene og bare rulle. Da lå
+        prosentkolonnen utenfor skjermkanten, og tallet som ER dataen krevde at
+        leseren dro tabellen sidelengs. En stolpe uten tallet sitt er en figur
+        uten data. Nå ligger prosenten på 223 px av 340.
+
+     2. Å skjule «Av vurderte» med det vanlige `visually-hidden`-mønsteret
+        (`position: absolute` + 1 px). Et absoluttplassert element i en tabellcelle
+        uten posisjonert forelder rømmer ut av rulleboksen: `scrollWidth` vokste
+        fra 310 til 344 px, altså 34 px falsk rullebredde på en tabell som ellers
+        passet. Kolonnen blir derfor stående – den er ikke i veien når de tre
+        første får plass. */
+  @media (max-width: 639.98px) {
+    .regstolper__th--krav { width: 5.4rem; }
+    .regstolper__th--verdi { width: 5.4rem; }
+    .regstolper__th--av { width: 6.4rem; }
+    .regstolper__th--sjekk { width: 3.4rem; }
+    /* Regnestykket, og det er grunnen til at tallet er 28 og ikke noe rundt:
+       de fire faste kolonnene er 20,6rem = 330 px. `min-width: 28rem` = 448 px
+       gir navnekolonnen de 118 pikslene den trenger for to ord på en linje – på
+       67 px brøt «Synstolking» midt i ordet og rant inn i prosentkolonnen.
+       Prosenten slutter da på 290 px, altså innenfor rulleboksen også på en
+       360 px skjerm (310 px boks). De to siste kolonnene ruller inn. */
+    .regstolper__tabell { min-width: 28rem; }
+    .regstolper__rad > *,
+    .regstolper__th { padding-inline: var(--space-3); }
+    /* Kolonneoverskriftene må få brytes her. Med nowrap rant «HVA KRAVET HETER»
+       og «RAPPORTERER BRUDD» inn i hverandre i tabellhodet – målt på 390 px,
+       mens radene under satt riktig. Overskriftene er korte nok til at to linjer
+       ikke flytter noe. */
+    .regstolper__th { white-space: normal; }
+    .regstolper__stolpe { right: var(--space-3); max-width: calc(100% - var(--space-3) * 2); }
+    .regstolper__navn { min-width: 0; }
+  }
+</style>

@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import Storflate from "../components/Storflate.astro";
 import Snitt from "../components/Snitt.astro";
 import { snitt } from "../data/flyter";
 import opptak from "../data/opptak.json";
@@ -73,6 +74,30 @@ const schema = tjeneste({
     <KodeBygg />
   </Scene>
 
+
+  {/* Full styrke, kant til kant. Dekker du teksten: et tomt skjelett faar fire plater
+      som daler ned ett felt om gangen, og til slutt staar en hel flate. Det er
+      bokstavelig talt det vi selger.
+
+      Levert paa to bestillinger. Runde 1 ble forkastet fordi platene VIPPET mens de
+      falt. Rotaarsaken var vaar egen, ikke modellens: rammeparet var geometrisk
+      umulig INNE I BILDERAMMEN – panelet tok 574 av 1152 piksler, saa det var 432 px
+      luft igjen mens en plate er 513 px hoey. En flat plate fikk ikke plass til aa
+      sveve fritt, saa bilderedigereren krympet og vred platene for aa faa dem inn.
+      Kling interpolerte deretter trofast mellom to rammer som var uenige om baade
+      vinkel og stoerrelse.
+
+      Klippet er ogsaa bestilt BAKLENGS og snudd: modellen utfoerer «loeft platene ut»
+      paalitelig, men «senk platene ned» feilet i fire varianter. */}
+  <Storflate
+    smal="/scener/skjelett-1280.mp4"
+    bred="/scener/skjelett-1920.mp4"
+    stor="/scener/skjelett-2560.mp4"
+    plakat="/scener/skjelett-poster.avif"
+    tittel="Fra skjelett til ferdig."
+    tekst="En nettside er ikke én ting. Den bygges felt for felt, og først når alt sitter er den noe."
+    hoyde={64}
+  />
   <Scene n={3} eyebrow="Hva du får" tittel="Fire krav vi setter selv">
     {/* Karakteren paa denne sida er LAG – det er det snittegningen over viser, og
         det er det vi selger. De fire kravene ligger derfor i ulik dybde og drar fra

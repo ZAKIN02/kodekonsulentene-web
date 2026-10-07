@@ -110,7 +110,20 @@ const sti = Astro.url.pathname.replace(/\/$/, "") || "/";
     Degraderingen er dagens tilstand: uten JavaScript står menyen på 0, nøyaktig
     som før, og alle lenkene er fortsatt tilgjengelige ved å dra. */}
 <script>
-  const meny = document.querySelector<HTMLElement>(".topbar nav");
+  // MAA vaere `nav[data-meny-rad]`, ikke `.topbar nav`. Da mobilmenyen kom inn,
+  // ble <dialog> lagt FOER raden i markup, og dialogen har sin egen <nav>. Fra den
+  // dagen traff `.topbar nav` dialogens nav i stedet for raden. Den er lukket, saa
+  // scrollWidth og clientWidth er begge 0, `mer` ble aldri sann, og hele
+  // `data-mer`-mekanikken under har staatt doed.
+  //
+  // MAALT I BEGGE MOTORER paa /om, med den gamle velgeren:
+  //   932 px (iPhone Pro Max i landskap): raden er 567 px i en boks paa 436 px.
+  //     Uten `data-mer` staar nav paa `overflow-x: visible`, saa de siste lenkene
+  //     males OPPAA naboene: temaknappen laa over «Priser», og «Book 20 min»
+  //     dekket «Om» helt. To av sju lenker var umulige aa treffe.
+  //   900 og 1000 px: 567 px i 404 / 504 px, og lenken med aria-current laa
+  //     utenfor synsranden – nettopp det merket som skal si hvor du er.
+  const meny = document.querySelector<HTMLElement>(".topbar nav[data-meny-rad]");
   const her = meny?.querySelector<HTMLElement>('[aria-current="page"]');
 
   // `data-mer` sier at menyen er bredere enn plassen sin. Det er den som slår på
@@ -204,6 +217,33 @@ const sti = Astro.url.pathname.replace(/\/$/, "") || "/";
     .menydialog nav a[aria-current="page"] { background: var(--bg-sunken); font-weight: 700; }
     .menydialog > .kk-btn { margin-block-start: var(--space-5); inline-size: 100%; }
   }
+
+  /* BAKGRUNNEN MAA LAASES SELV. Kommentaren over dialogen lovet at «nettleseren
+     selv tar fokusfellen, Escape og bakgrunnen». De to foerste stemmer; den
+     tredje gjoer den ikke. En modal <dialog> gjoer resten av dokumentet inert,
+     men den stopper IKKE rulling av rotelementet.
+     MAALT paa /om med menyen aapen, i begge motorer: «End» rullet siden fra 0 til
+     5488 px bak dialogen. Du lukket menyen og sto et helt annet sted enn du gikk
+     inn fra.
+     HVORFOR `position: fixed` OG IKKE BARE `overflow-y: hidden`. Begge ble maalt,
+     og i denne nettleserparen er de like gode: null visuelt skift naar menyen
+     aapnes, null bakgrunnsrulling bak dialogen, og samme punkt tilbake etterpaa.
+     Valget staar likevel paa den foerste, fordi `overflow: hidden` paa rot er
+     kjent for aa lekke for FINGEREN i Safari paa iOS – og det er nettopp dét
+     tilfellet denne menyen finnes for. Playwrights WebKit kan ikke sende et
+     beroeringsdrag, saa den lekkasjen er den ene tingen her som ikke lar seg
+     etterproeve i maskinen; da velger vi grepet som holder i begge tilfeller.
+     Prisen er at rulleposisjonen maa baeres over selv: `--meny-y` settes av
+     skriptet rett foer attributtet, og skriptet ruller tilbake naar laasen slippes.
+     Regelen staar UTENFOR mediespoerringen fordi dialogen bare kan aapnes av
+     knappen, og knappen finnes bare under 860 px. */
+  html[data-meny-aapen] {
+    position: fixed;
+    inset-inline: 0;
+    top: var(--meny-y, 0);
+    inline-size: 100%;
+    overflow-y: hidden;
+  }
 </style>
 
 <script>
@@ -213,12 +253,30 @@ const sti = Astro.url.pathname.replace(/\/$/, "") || "/";
   if (knapp && dialog && typeof dialog.showModal === "function") {
     knapp.hidden = false;
     const lukk = () => { dialog.close(); };
+    // Rulleposisjonen maa baeres over laasen. Se stilblokken over for maalingene.
+    const rot = document.documentElement;
+    let lagretY = 0;
     knapp.addEventListener("click", () => {
+      lagretY = window.scrollY;
+      rot.style.setProperty("--meny-y", `-${lagretY}px`);
+      rot.setAttribute("data-meny-aapen", "");
       dialog.showModal();
       knapp.setAttribute("aria-expanded", "true");
       dialog.querySelector<HTMLAnchorElement>("nav a")?.focus();
     });
-    dialog.addEventListener("close", () => knapp.setAttribute("aria-expanded", "false"));
+    // `close` og ikke bare den egne lukkeknappen: Escape og bakgrunnstrykket gaar
+    // utenom `lukk()`, og da hadde laasen blitt staaende igjen paa <html> med
+    // siden frosset etter at menyen var borte.
+    dialog.addEventListener("close", () => {
+      rot.removeAttribute("data-meny-aapen");
+      rot.style.removeProperty("--meny-y");
+      // Avlesningen tvinger fram omregningen foer vi ruller. Mens laasen stod var
+      // <html> tatt ut av flyten, og dokumentet var bare én skjerm hoegt; ruller
+      // vi tilbake foer nettleseren har regnet om, klippes maalet til den hoeyden.
+      void rot.offsetHeight;
+      window.scrollTo(0, lagretY);
+      knapp.setAttribute("aria-expanded", "false");
+    });
     dialog.querySelector("[data-meny-lukk]")?.addEventListener("click", lukk);
     // Trykk paa bakgrunnen lukker. Dialogen dekker hele hoeyden, saa vi sammenligner
     // mot dens egen boks i stedet for aa stole paa at target er dialogen selv.

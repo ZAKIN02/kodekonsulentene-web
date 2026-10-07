@@ -429,7 +429,25 @@ export function analyserLovpaalagt(html: string): LovFunn {
     if (erGyldigOrgnr(m[1]!)) { orgnr = m[1]!.replace(/\D/g, ""); break; }
   }
   if (!orgnr) {
-    detaljer.push("Fant ikke organisasjonsnummer. Foretaksnavn og org.nr. skal stå på nettsiden (Altinn / foretaksregisterloven).");
+    // HJEMMELEN STO FEIL, OG DET ER DEN ENE STRENGEN DER DET IKKE GÅR AN.
+    //
+    // Her sto «(Altinn / foretaksregisterloven)». Altinn er en portal, ikke en
+    // hjemmel – ingen plikt følger av Altinn. Og foretaksregisterloven § 10-2
+    // alene er for snevert: den retter seg mot foretak som er registrert i
+    // FORETAKSREGISTERET. Et enkeltpersonforetak som bare står i
+    // Enhetsregisteret treffes ikke, og det er flertallet av dem vi skanner.
+    // For dem er hjemmelen ehandelsloven § 8, som gjelder enhver som tilbyr en
+    // informasjonssamfunnstjeneste.
+    //
+    // Verktøyet kan ikke vite hvilket register siden står i uten å slå opp, så
+    // det navngir begge i stedet for å gjette. Begge er kontrollert mot Lovdata
+    // 7. oktober 2026, se `foretaksregisterloven-10-2` og `ehandelsloven-8` i
+    // src/data/kilder.ts.
+    detaljer.push(
+      "Fant ikke organisasjonsnummer. Foretaksnavn og org.nr. skal stå på nettsiden: " +
+        "foretaksregisterloven § 10-2 for foretak registrert i Foretaksregisteret, " +
+        "ehandelsloven § 8 for alle som tilbyr en tjeneste på nett.",
+    );
   }
 
   const epost = /mailto:/i.test(rent) || /[\w.+-]+@[\w-]+\.[a-z]{2,}/i.test(tekst);

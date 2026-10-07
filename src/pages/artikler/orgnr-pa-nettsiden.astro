@@ -6,7 +6,8 @@ import ContactBlock from "../../components/ContactBlock.astro";
 import Terminal from "../../components/Terminal.astro";
 import { finnArtikkel } from "../../data/artikler";
 import { artikkel } from "../../data/schema";
-import { firma } from "../../data/firma";
+import { firma, orgnrVist } from "../../data/firma";
+import { kilde } from "../../data/kilder";
 import maalinger from "../../data/maalinger.json";
 
 const a = finnArtikkel("orgnr-pa-nettsiden");
@@ -32,7 +33,7 @@ const schema = [
         name: "Må en norsk nettside ha organisasjonsnummer?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Ja. Foretaksregisterloven § 10-2 krever at nettsidene til et registrert foretak inneholder organisasjonsnummeret og foretaksnavnet. Aksjeselskaper må i tillegg oppgi registeret foretaket er registrert i, selskapsform og forretningskontor.",
+          text: "Ja, men hjemmelen avhenger av hvilket register du står i. Foretaksregisterloven § 10-2 krever organisasjonsnummer og foretaksnavn på nettsidene til foretak som er registrert i Foretaksregisteret. Et enkeltpersonforetak som bare står i Enhetsregisteret treffes ikke av § 10-2, men ehandelsloven § 8 krever de samme opplysningene av enhver som tilbyr en informasjonssamfunnstjeneste. Aksjeselskaper må i tillegg oppgi registeret foretaket er registrert i, selskapsform og forretningskontor.",
         },
       },
       {
@@ -66,7 +67,7 @@ const schema = [
     n={1}
     eyebrow="Artikkel"
     tittel="Org.nr. på nettsiden"
-    ingress="Det er ikke en anbefaling. Foretaksregisterloven § 10-2 krever organisasjonsnummer og foretaksnavn på nettsidene dine. To av tre sider vi målte manglet det."
+    ingress="Det er ikke en anbefaling. Står foretaket i Foretaksregisteret, krever foretaksregisterloven § 10-2 organisasjonsnummer og foretaksnavn på nettsidene. Står det bare i Enhetsregisteret, krever ehandelsloven § 8 det samme. To av tre sider vi målte manglet det."
   >
     <div class="prose">
       <p class="small faint">
@@ -80,11 +81,34 @@ const schema = [
       </p>
 
       <h3>Foretaksregisterloven § 10-2</h3>
+      {/*
+        TO FEIL I DETTE AVSNITTET, RETTET 7. OKTOBER 2026.
+
+        1. Lenketeksten var «Paragrafen», men URL-en pekte på HELE loven. Den som
+           klikket for å lese § 10-2 landet i en lov på ti kapitler. Nå går den
+           rett på paragrafen, med henvisningen fra src/data/kilder.ts.
+
+        2. «Det gjelder alle registrerte foretak» var GALT, og det er den feilen
+           som koster mest her: § 10-2 retter seg mot foretak registrert i
+           FORETAKSREGISTERET. Et enkeltpersonforetak som bare står i
+           Enhetsregisteret treffes ikke – vårt eget er ett av dem
+           (`registrertIForetaksregisteret: false`). For dem er hjemmelen
+           ehandelsloven § 8. Forbeholdet står ordrett i kilder.ts under
+           `foretaksregisterloven-10-2`, og det slutter med «Skriv aldri at
+           § 10-2 gjelder alle foretak».
+      */}
       <p>
-        <a class="kk-link" href="https://lovdata.no/lov/1985-06-21-78" rel="nofollow">Paragrafen</a>{" "}
+        <a class="kk-link" href={kilde("foretaksregisterloven-10-2").url} rel="nofollow">Paragrafen</a>{" "}
         sier at foretakets nettsider, brev og forretningsdokumenter skal inneholde{" "}
         <strong class="body-strong">organisasjonsnummeret og foretaksnavnet</strong>.
-        Det gjelder uansett medium, og det gjelder alle registrerte foretak.
+        Det gjelder uansett medium – men det gjelder foretak som er registrert i{" "}
+        <strong class="body-strong">Foretaksregisteret</strong>, ikke alle som har et
+        organisasjonsnummer. Står enkeltpersonforetaket ditt bare i Enhetsregisteret, er
+        det ehandelsloven § 8 under som er hjemmelen for deg. Kravet til hva som skal stå
+        er i praksis det samme.
+      </p>
+      <p class="small faint">
+        Kilde: {kilde("foretaksregisterloven-10-2").henvisning}. Lest {kilde("foretaksregisterloven-10-2").hentet}.
       </p>
       <p>
         Er du aksjeselskap, kommer det mer: du skal også oppgi hvilket register foretaket er
@@ -99,7 +123,7 @@ const schema = [
 
       <h3>Ehandelsloven § 8</h3>
       <p>
-        <a class="kk-link" href="https://lovdata.no/lov/2003-05-23-35/§8" rel="nofollow">Denne</a>{" "}
+        <a class="kk-link" href={kilde("ehandelsloven-8").url} rel="nofollow">Denne</a>{" "}
         gjelder hvis du tilbyr en informasjonssamfunnstjeneste – i praksis nesten enhver
         kommersiell nettside. Den krever at du gir{" "}
         <strong class="body-strong">navn, geografisk adresse, e-postadresse</strong> og annen
@@ -164,12 +188,16 @@ const schema = [
         foretaksnavnloven § 2-2 krever at et enkeltpersonforetak har innehaverens etternavn i
         navnet – derfor står det bare her, aldri i brødteksten.
       </p>
+      {/* `orgnrVist`, ikke `firma.orgnr`. Utsnittet skal vise footeren slik den
+          FAKTISK står nederst på siden, og den grupperer tre og tre. Sto nummeret
+          her i rå form, viste artikkelen om org.nr.-kravet et org.nr. i en annen
+          form enn sidens eget – på den ene siden som ikke tåler det. */}
       <Terminal
         title="footeren på denne siden"
-        label={`Utsnitt av footeren: ${firma.foretaksnavn}, org.nr. ${firma.orgnr}, ${firma.adresse}, ${firma.epost}`}
+        label={`Utsnitt av footeren: ${firma.foretaksnavn}, org.nr. ${orgnrVist}, ${firma.adresse}, ${firma.epost}`}
         lines={[
           { type: "out", text: firma.foretaksnavn },
-          { type: "out", text: `org.nr. ${firma.orgnr}` },
+          { type: "out", text: `org.nr. ${orgnrVist}` },
           { type: "out", text: firma.adresse },
           { type: "out", text: firma.epost },
         ]}

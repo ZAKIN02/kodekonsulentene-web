@@ -10,8 +10,10 @@ import Pekerkort from "../components/Pekerkort.astro";
 import Demo from "../components/Demo.astro";
 import Button from "../components/Button.astro";
 import ContactBlock from "../components/ContactBlock.astro";
+import Utenskript from "../components/Utenskript.astro";
 import { bevis } from "../data/bevis";
 import { firma } from "../data/firma";
+import registeret from "../data/uu-register.json";
 
 const avslag = [
   { tittel: "Design uten utvikling", tekst: "Vi tegner ikke sider andre skal bygge. Da forsvinner ansvaret for at det faktisk virker." },
@@ -55,7 +57,22 @@ import "../styles/scener.css";
           er et problem du ikke oppdager selv – du får det i fanget når noen klager.
           Derfor står sikkerhetsarbeidet i prisen, ikke i tilleggsmenyen.
         </p>
-        <Button variant="ghost" href="/handbok">Les håndboken</Button>
+        {/* Ett tall, fra en kilde som ikke er oss. Avsnittene over er påstander om
+            hvordan vi jobber; dette er den eneste setningen på siden som kan
+            kontrolleres hos tredjepart, og den lenker dit. Tallet hentes fra
+            datafilen, ikke skrevet av – se src/data/uu-register.json. */}
+        <p class="muted">
+          Og det er ikke bare oss som mener det er vanskelig. Av{" "}
+          {registeret.erklaeringer.toLocaleString("nb-NO")} tilgjengelighetserklæringer i
+          Uu-tilsynets åpne register rapporterer{" "}
+          {registeret.andelMedBrudd.toLocaleString("nb-NO", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}{" "}
+          prosent av virksomhetene selv at løsningen deres bryter minst ett WCAG-krav.
+          Vi har regnet om tallene og skrevet opp hvilke krav det gjelder.
+        </p>
+        <div class="row" style="gap: var(--space-4); flex-wrap: wrap">
+          <Button variant="ghost" href="/handbok">Les håndboken</Button>
+          <Button variant="ghost" href="/artikler/wcag-i-registeret">Kravene som brytes oftest</Button>
+        </div>
       </div>
 
       <div class="stack">
@@ -65,9 +82,27 @@ import "../styles/scener.css";
             påstår – at en nettside er lag, og at vi jobber i alle sammen. Vis,
             ikke påstå. */}
         <Lagstabel id="om-lag" />
+        {/* HER STO EN INSTRUKS SOM IKKE ALLTID VIRKER.
+            Bildeteksten sa «Dra i stabelen» uansett. `Lagstabel` degraderer helt
+            riktig uten JavaScript – `:not([data-klar])` setter lagene til 0,7 fra
+            hverandre og skjuler kontrollene – men teksten ved siden ba leseren om
+            å gjøre noe som ikke gikk an. `Utenskript` bruker
+            `@media (scripting: none)` til å si det riktige i begge tilstander.
+            Begge setningene ligger i DOM-en; se komponenten for hvorfor. */}
+        {/* «med»-setningen gjentar IKKE «Dra i stabelen» – `Lagstabel` skriver
+            allerede den hinten selv, rett under spaken, og skjuler den uten
+            JavaScript. To like instrukser under hverandre sto her i et
+            skjermbilde på 1280 px. Denne sier hva figuren ER i stedet. */}
+        <Utenskript class="small faint">
+          <Fragment slot="med">Figuren er fire ekte lag i DOM-en, ikke en video.</Fragment>
+          <Fragment slot="uten">
+            Uten JavaScript står lagene fra hverandre i stedet – hele figuren, bare uten
+            dragingen.
+          </Fragment>
+        </Utenskript>
         <p class="small faint">
-          Dra i stabelen. De fire lagene er de samme vi leverer i hvert prosjekt –
-          du betaler ikke for et byråledd mellom dem.
+          De fire lagene er de samme vi leverer i hvert prosjekt – du betaler ikke for
+          et byråledd mellom dem.
         </p>
       </div>
     </div>

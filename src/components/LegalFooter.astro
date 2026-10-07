@@ -1,7 +1,18 @@
 ---
-// Lovpålagt footer: foretaksnavn og org.nr. (Altinn), adresse, e-post og telefon
-// (ehandelsloven § 8), pluss lenker til personvern, cookies og vilkår.
+// Lovpålagt footer: foretaksnavn, org.nr., adresse, e-post og telefon, pluss
+// lenker til personvern, cookies og vilkår.
 // Komponenten rendrer ikke uten org.nr. – det er med vilje.
+//
+// HJEMMELEN. Her sto «(Altinn)» bak org.nr., og Altinn er en portal, ikke en
+// hjemmel. Plikten følger av to lover, og hvilken som treffer avhenger av
+// registeret foretaket står i:
+//   - foretaksregisterloven (LOV-1985-06-21-78) § 10-2 for foretak registrert
+//     i Foretaksregisteret, og
+//   - ehandelsloven (LOV-2003-05-23-35) § 8 for enhver som tilbyr en
+//     informasjonssamfunnstjeneste – som er hjemmelen for VÅR egen footer, jf.
+//     `registrertIForetaksregisteret: false` i src/data/firma.ts.
+// Begge er kontrollert mot Lovdata 7. oktober 2026 og står i src/data/kilder.ts.
+// Adresse, e-post og telefon følger av ehandelsloven § 8 uansett.
 export interface FooterLink { label: string; href: string }
 interface Props {
   name?: string; legalName?: string; tagline?: string; orgnr: string; vat?: boolean;

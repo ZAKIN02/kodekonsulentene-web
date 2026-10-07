@@ -11,6 +11,7 @@ import Section from "../../components/Section.astro";
 import Lagstabel from "../../components/Lagstabel.astro";
 import Pekerkort from "../../components/Pekerkort.astro";
 import Slepesammenligning from "../../components/Slepesammenligning.astro";
+import Utenskript from "../../components/Utenskript.astro";
 import "../../styles/interaksjon.css";
 import { tjenester } from "../../data/tjenester";
 ---
@@ -27,7 +28,14 @@ import { tjenester } from "../../data/tjenester";
     ingress="Tre komponenter som svarer på deg. Alt som kan gjøres med musa kan gjøres med tastaturet."
   />
 
-  <Section n={2} eyebrow="Lagstabel" tittel="Ta siden fra hverandre" ingress="Dra i stabelen, bruk spaken eller knappen. Lagene er ekte DOM, ikke en video.">
+  {/* Sidens tema ER interaksjon, så den fjerde degraderingstilstanden hører
+      hjemme her som noe man kan SE, ikke bare teste. Slå av JavaScript i
+      nettleseren og les ingressene under: de bytter setning. */}
+  <Section n={2} eyebrow="Lagstabel" tittel="Ta siden fra hverandre">
+    <Utenskript class="body-lg">
+      <Fragment slot="med">Lagene er ekte DOM, ikke en video. Kontrollene under figuren sier hvordan du tar i dem.</Fragment>
+      <Fragment slot="uten">Uten JavaScript ligger lagene fra hverandre og kontrollene er borte. Lagene er fortsatt ekte DOM – det er figuren, uten dragingen.</Fragment>
+    </Utenskript>
     <Lagstabel id="lab-stabel" />
   </Section>
 
@@ -39,7 +47,11 @@ import { tjenester } from "../../data/tjenester";
     </div>
   </Section>
 
-  <Section n={4} eyebrow="Sammenligning" tittel="Dra skillelinjen" ingress="To ekte målinger fra samme verktøy, samme dag.">
+  <Section n={4} eyebrow="Sammenligning" tittel="Dra skillelinjen">
+    <Utenskript class="body-lg">
+      <Fragment slot="med">To ekte målinger fra samme verktøy, samme dag. Dra skillelinjen, eller bruk piltastene.</Fragment>
+      <Fragment slot="uten">To ekte målinger fra samme verktøy, samme dag. Uten JavaScript står skillelinjen fast, og begge målingene er lesbare som tekst.</Fragment>
+    </Utenskript>
     <Slepesammenligning id="lab-slep" />
   </Section>
 

@@ -13,12 +13,37 @@ import Pekerkort from "../../components/Pekerkort.astro";
 import ContactBlock from "../../components/ContactBlock.astro";
 import { bookUrl } from "../../data/firma";
 import { tjeneste } from "../../data/schema";
+import { pakker, prisenhet } from "../../data/priser";
+
+/* «Eks. mva» traff hardest nettopp her: merverdiavgiftsloven § 3-2 unntar
+   helsetjenester fra avgift, og unntaket gir ingen fradragsrett. En klinikk som
+   leser «eks. mva» regner 25 % reell merkostnad – på en pris det ikke engang
+   påløper avgift på. Se src/data/priser.ts og kilden `mval-3-2` i kilder.ts. */
+const systemPris = pakker.find((p) => p.navn === "System")?.pris ?? "";
 
 import "../../styles/scener.css";
 
+/**
+ * TO PÅSTANDER ER FJERNET FRA STEGENE UNDER.
+ *
+ * «De fleste bestillinger kommer utenom åpningstiden» og «Det alene fjerner
+ * mesteparten av de som ikke møter opp» er begge kvantifiserte funn – «de
+ * fleste», «mesteparten» – om hva som skjer hos en klinikk. Vi har ikke målt
+ * noen av dem. Vi har ingen klinikk i drift å måle på: `booking-demo` i
+ * src/data/caser.ts er merket «Ikke et levert oppdrag» og står uten
+ * resultatliste nettopp fordi det ikke finnes tall.
+ *
+ * Et tall uten tallsymbol er fortsatt et tall. «Mesteparten» er en påstand om
+ * en andel, og den er like lite etterprøvbar som «71 %» ville vært – forskjellen
+ * er bare at den ikke ser ut som noe man kan kreve kilde på.
+ *
+ * Begge er erstattet med det systemet GJØR, som vi kan stå inne for uten å måle
+ * noe: døgnåpen bestilling er en egenskap ved løsningen, og forskuddsbetaling er
+ * et virkemiddel mot uteblivelse. Ingen av formuleringene lover en effekt.
+ */
 const steg = [
-  { title: "Kunden booker selv", time: "Døgnet rundt", text: "Ledige timer per behandler og behandlingstype. De fleste bestillinger kommer utenom åpningstiden." },
-  { title: "Betaler ved bestilling", time: "Vipps", text: "Forskuddsbetaling eller depositum. Det alene fjerner mesteparten av de som ikke møter opp." },
+  { title: "Kunden booker selv", time: "Døgnet rundt", text: "Ledige timer per behandler og behandlingstype, også når dere er stengt og ingen kan ta telefonen." },
+  { title: "Betaler ved bestilling", time: "Vipps", text: "Forskuddsbetaling eller depositum, slik at den som bestiller har noe å miste på å ikke møte opp." },
   { title: "Påminnelse går ut", time: "24 t før", text: "SMS med tid, behandler og avbestillingslenke. Avbestiller de, frigis timen automatisk." },
   { title: "Oppgjøret stemmer", time: "Automatisk", text: "Betalingen ligger som ordre i regnskapet. Ingen avstemming av Vipps mot timeboken." },
 ];
@@ -40,7 +65,7 @@ const schema = tjeneste({
 ---
 <Base
   tittel="Nettside og booking for klinikker"
-  beskrivelse="Timebestilling, Vipps-betaling, SMS-påminnelse og medlemsregister for klinikker, treningssentre og kampsportklubber i Oslo. System fra 60 000 kr eks. mva."
+  beskrivelse={`Timebestilling, Vipps-betaling, SMS-påminnelse og medlemsregister for klinikker, treningssentre og kampsportklubber i Oslo. System fra ${systemPris} – ${prisenhet}.`}
   schema={[schema]}
 >
   <Scene lav>

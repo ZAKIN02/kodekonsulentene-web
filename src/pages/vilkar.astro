@@ -2,14 +2,15 @@
 import Base from "../layouts/Base.astro";
 import Section from "../components/Section.astro";
 import Button from "../components/Button.astro";
-import { firma } from "../data/firma";
+import { firma, orgnrVist } from "../data/firma";
+import { mvaSetning } from "../data/priser";
 const oppdatert = "5. oktober 2026";
 ---
 <Base
   tittel="Salgsvilkår for næringsdrivende"
   beskrivelse="Salgsvilkår for oppdrag fra KodeKonsulentene: betaling, revisjoner, eierskap til kode og domene, drift, oppsigelse og ansvar. B2B."
 >
-  <Section nivaa={1} n={1} eyebrow="Vilkår" tittel="Salgsvilkår" ingress={`Sist oppdatert ${oppdatert}. Gjelder oppdrag mellom ${firma.foretaksnavn} og næringsdrivende kunder. Alle priser er eks. mva.`}>
+  <Section nivaa={1} n={1} eyebrow="Vilkår" tittel="Salgsvilkår" ingress={`Sist oppdatert ${oppdatert}. Gjelder oppdrag mellom ${firma.foretaksnavn} og næringsdrivende kunder. ${mvaSetning}`}>
     <div class="card card--sunken" style="border-color: var(--warn); margin-bottom: var(--space-6)">
       <p class="body-strong">Forbehold</p>
       <p class="small muted">
@@ -21,7 +22,10 @@ const oppdatert = "5. oktober 2026";
     <div class="prose">
       <h2>1. Partene og omfang</h2>
       <p class="muted">
-        Vilkårene gjelder mellom {firma.foretaksnavn}, org.nr. {firma.orgnr} («leverandøren»)
+        {/* `orgnrVist`, ikke `firma.orgnr`: dette leses av et menneske. Rått sto
+            det «936374336» her og «936 374 336» i footeren på samme side – samme
+            lovpålagte nummer i to former er nøyaktig slurvet /sjekk flagger. */}
+        Vilkårene gjelder mellom {firma.foretaksnavn}, org.nr. {orgnrVist} («leverandøren»)
         og kunden. Vilkårene gjelder bare næringsdrivende. Omfanget av hvert oppdrag
         framgår av et skriftlig tilbud som kunden har godtatt. Er det motstrid, går tilbudet
         foran disse vilkårene.
@@ -46,7 +50,11 @@ const oppdatert = "5. oktober 2026";
         <li>60 % faktureres ved lansering.</li>
         <li>Betalingsfrist er 14 dager. Ved forsinket betaling påløper forsinkelsesrente etter forsinkelsesrenteloven.</li>
         <li>Løpende avtaler faktureres forskuddsvis per måned eller kvartal.</li>
-        <li>Alle priser er eks. mva.</li>
+        {/* Sto som «Alle priser er eks. mva.» i et dokument som skal kunne legges
+            ved en avtale. Foretaket er ikke mva-registrert, og en vilkårsliste
+            som lover et avgiftstillegg vi ikke kan fakturere er den verste
+            varianten av feilen. `mvaSetning` snur av seg selv. */}
+        <li>{mvaSetning}</li>
       </ul>
 
       <h2>5. Revisjoner og endringer i omfang</h2>

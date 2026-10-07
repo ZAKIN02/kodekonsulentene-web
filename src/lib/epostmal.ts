@@ -18,7 +18,7 @@
 import type { Rapport, Status } from "./sjekk";
 // Eksplisitt .ts: Node 22 sin type-stripping krever endelsen, og Vite godtar
 // den. Da kan malen bygges og ses på med bare node, uten å starte Astro.
-import { firma } from "../data/firma.ts";
+import { firma, orgnrVist } from "../data/firma.ts";
 
 const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 const MONO = "ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace";
@@ -145,7 +145,7 @@ function topp(): string {
 function bunn(ekstra?: string): string {
   return `<tr><td class="kk-pad" style="padding:24px 32px;background:${F.grunn};border-top:1px solid ${F.linje}">
 <p style="margin:0 0 6px;font-family:${SANS};font-size:13px;line-height:19px;color:${F.dempet}">
-<a href="${firma.url}" style="color:${F.blekk};text-decoration:underline">${esc(firma.navn)}</a> · ${esc(firma.foretaksnavn)} · org.nr. ${esc(firma.orgnr)} · ${esc(firma.adresse)}
+<a href="${firma.url}" style="color:${F.blekk};text-decoration:underline">${esc(firma.navn)}</a> · ${esc(firma.foretaksnavn)} · org.nr. ${esc(orgnrVist)} · ${esc(firma.adresse)}
 </p>
 ${ekstra ?? ""}
 </td></tr>`;
@@ -234,7 +234,7 @@ export function rapportTekst(rapport: Rapport): string {
     `Du får denne ene e-posten fordi du ba om en sjekk på ${firma.url.replace("https://", "")}.`,
     "Vi legger deg ikke til i noen liste og sender ingen oppfølging.",
     "",
-    `${firma.navn} · ${firma.foretaksnavn} · org.nr. ${firma.orgnr} · ${firma.adresse}`,
+    `${firma.navn} · ${firma.foretaksnavn} · org.nr. ${orgnrVist} · ${firma.adresse}`,
     firma.url,
   ].join("\n");
 }

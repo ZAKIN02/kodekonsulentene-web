@@ -304,27 +304,34 @@ describe("statusen rapporten setter", () => {
     assert.equal(cookieStatus(tomCookieSkann), "ok");
   });
 
-  test("en kjent sporer gir brudd", () => {
-    assert.equal(
-      cookieStatus({
-        ...tomCookieSkann,
-        sporere: [
-          {
-            id: "google-analytics",
-            navn: "Google Analytics",
-            kategori: "analyse",
-            vert: "www.google-analytics.com",
-            antallKall: 2,
-            typiskeCookies: ["_ga"],
-            kilde: "https://example.com",
-          },
-        ],
-      }),
-      "fail",
-    );
+  // Disse to testene sto før som «en kjent sporer gir brudd» og «tredjeparts-
+  // cookie gir brudd». Begge er borte med vilje.
+  //
+  // Ekomloven § 3-15 gjelder lagring i og tilgang til brukerens kommunikasjonsutstyr.
+  // At nettleseren hentet gtm.js er ikke lagring – det er en HTTP-forespørsel.
+  // Og Google Consent Mode gjør nøyaktig dette: laster skriptet med
+  // analytics_storage «denied» og lagrer ingenting. Målt 7. oktober 2026 fikk
+  // norske nettsteder som lastet Google Tag Manager og satte NULL
+  // sporingscookies likevel «brudd» av den gamle logikken.
+  test("sporer uten samtykkedata gir «vet ikke», aldri brudd", () => {
+    const uten = cookieStatus({
+      ...tomCookieSkann,
+      sporere: [
+        {
+          id: "google-analytics",
+          navn: "Google Analytics",
+          kategori: "analyse",
+          vert: "www.google-analytics.com",
+          antallKall: 2,
+          typiskeCookies: ["_ga"],
+          kilde: "https://example.com",
+        },
+      ],
+    });
+    assert.equal(uten, "neutral", "uten samtykkesignaler mangler nettopp grunnlaget for å dømme");
   });
 
-  test("tredjeparts-cookie gir brudd selv uten kjent sporer", () => {
+  test("tredjeparts-cookie alene gir «bør fikses», ikke brudd", () => {
     assert.equal(
       cookieStatus({
         ...tomCookieSkann,
@@ -332,8 +339,41 @@ describe("statusen rapporten setter", () => {
           { navn: "x", domene: ".ukjent.com", forstepart: false, levetidDager: 30, sikker: true, httpOnly: false, sporer: null },
         ],
       }),
-      "fail",
+      "warn",
     );
+  });
+
+  test("dommen fra skanneren vinner over klientens reservevei", () => {
+    // Formen er den vi faktisk målte på norske nettsteder med riktig oppsett:
+    // Google Tag Manager lastes, standardtilstanden er «denied», null cookies.
+    const medSamtykke = cookieStatus({
+      ...tomCookieSkann,
+      sporere: [
+        {
+          id: "google-tag-manager",
+          navn: "Google Tag Manager",
+          kategori: "taggstyring",
+          vert: "www.googletagmanager.com",
+          antallKall: 3,
+          typiskeCookies: ["_ga"],
+          kilde: "https://example.com",
+        },
+      ],
+      samtykke: {
+        dom: "ok",
+        oppsummering: "Standardtilstanden er «denied» og ingen sporingscookie ble satt.",
+        grunnlag: ["Google Consent Mode har standardtilstand «denied» for ad_storage, analytics_storage."],
+        uavklart: ["Målingen dekker forsiden ved første besøk, uten å klikke."],
+        cookies: { kreverSamtykke: [], tekniske: [], samtykkelager: [], ukjente: [], dokumentertSporing: [] },
+        losninger: [],
+        consentMode: {
+          tilstede: true, standardSatt: true, standardNektet: true,
+          nektet: ["ad_storage", "analytics_storage"], tillattSomKreverSamtykke: [],
+        },
+        tcf: false,
+      },
+    });
+    assert.equal(medSamtykke, "ok", "et korrekt Consent Mode-oppsett skal ikke straffes");
   });
 
   test("bare egne cookies gir «bør fikses», ikke brudd", () => {

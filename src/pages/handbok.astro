@@ -8,7 +8,7 @@ import ContactBlock from "../components/ContactBlock.astro";
 import Flyt from "../components/Flyt.astro";
 import Horisont from "../components/Horisont.astro";
 import { firma } from "../data/firma";
-import { prisvilkaar } from "../data/priser";
+import { prisvilkaar, prisenhet } from "../data/priser";
 import { flyter } from "../data/flyter";
 
 // Rutinene sto som seks kulepunkter midt i en vegg av fjorten overskrifter.
@@ -76,7 +76,7 @@ import "../styles/scener.css";
       <h2>Hva et prosjekt koster og når du betaler</h2>
       <ul class="muted">
         {prisvilkaar.map((v) => <li>{v}</li>)}
-        <li>Timeprisen er {firma.timepris} eks. mva for arbeid utenfor avtalt omfang, alltid avtalt skriftlig først.</li>
+        <li>Timeprisen er {firma.timepris} – {prisenhet} – for arbeid utenfor avtalt omfang, alltid avtalt skriftlig først.</li>
       </ul>
       <p class="muted">
         Fullstendig prisliste står på <a class="kk-link" href="/priser">prissiden</a>,

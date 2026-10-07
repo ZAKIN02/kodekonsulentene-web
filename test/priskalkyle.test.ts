@@ -19,7 +19,7 @@ import {
   TIMER_PER_EKSTRA_SIDE,
   TIMER_APP_FRA,
 } from "../src/lib/priskalkyle.ts";
-import { pakker, loepende } from "../src/data/priser.ts";
+import { pakker, loepende, mvaSetning } from "../src/data/priser.ts";
 
 const valg = (o: Partial<Parameters<typeof beregn>[0]> = {}) =>
   beregn({ sider: 1, cms: false, integrasjoner: [], app: false, ...o });
@@ -147,10 +147,30 @@ describe("alle tillegg samtidig", () => {
 });
 
 describe("forutsetningene vises alltid", () => {
-  test("hvert estimat har forutsetninger, med timepris og mva", () => {
+  /**
+   * TESTEN KREVDE EN STRENG SOM VAR USANN.
+   *
+   * Den sto som `/eks\. mva/` og låste forutsetningen «Alle beløp er eks. mva.»
+   * på plass. Men `firma.mva` er `false` – verifisert mot Enhetsregisteret
+   * (`registrertIMvaregisteret: false`), og et foretak utenfor
+   * Merverdiavgiftsregisteret kan ikke fakturere mva. «Eks. mva» er da ikke et
+   * forbehold, men et tillegg som aldri kommer: leseren ganger med 1,25 og
+   * regner seg fram til en pris vi ikke har lov til å kreve inn.
+   *
+   * Testen er derfor endret, ikke slettet, og den er strengere enn før: den
+   * krever at mva-statusen står der OG at den er den samme som `mvaSetning` i
+   * src/data/priser.ts. Da kan de to ikke komme i utakt, og den dagen vi passerer
+   * 50 000 kr i omsetning og setter `firma.mva = true`, følger kalkulatoren etter
+   * uten at noen må huske denne strengen.
+   */
+  test("hvert estimat har forutsetninger, med timepris og mva-status", () => {
     const e = valg();
     assert.ok(e.forutsetninger.length >= 4);
-    assert.ok(e.forutsetninger.some((f) => /eks\. mva/.test(f)), "mva skal nevnes");
+    assert.ok(
+      e.forutsetninger.includes(mvaSetning),
+      "mva-statusen skal stå i forutsetningene, ordrett som mvaSetning i src/data/priser.ts",
+    );
+    assert.match(mvaSetning, /mva/i, "mvaSetning skal faktisk si noe om mva");
     assert.ok(e.forutsetninger.some((f) => /anslag/.test(f)), "anslagene skal merkes som anslag");
     assert.ok(
       e.forutsetninger.some((f) => f.includes(String(timepris()))),

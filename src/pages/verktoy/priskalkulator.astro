@@ -9,7 +9,7 @@ import opptak from "../../data/opptak.json";
 import ContactBlock from "../../components/ContactBlock.astro";
 import { tillegg, timepris, TIMER_PER_EKSTRA_SIDE, TIMER_APP_FRA } from "../../lib/priskalkyle";
 import { markedspriser, markedTimepris } from "../../data/markedspriser";
-import { prisvilkaar } from "../../data/priser";
+import { prisvilkaar, prisenhet } from "../../data/priser";
 
 import "../../styles/scener.css";
 
@@ -33,6 +33,14 @@ const t = timepris();
  * et lovlig bruddpunkt, og det er nettopp der en lang pris skal dele seg.
  */
 const kr = (n: number) => `${n.toLocaleString("nb-NO").replace(/\s/g, "\u00A0")}\u00A0kr`;
+/**
+ * Vertsnavnet som lenketekst i kildekolonnen, uten \u00ABwww.\u00BB.
+ *
+ * Hele URL-en ville brutt den smale kolonnen, og \u00ABKilde\u00BB som lenketekst sier
+ * ingenting til den som navigerer p\u00E5 lenker. Vertsnavnet sier hvem som oppgir
+ * prisen \u2013 som er n\u00F8yaktig det leseren skal kunne vurdere.
+ */
+const vert = (u: string) => new URL(u).hostname.replace(/^www\./, "");
 /**
  * `WebApplication` fra `verktoy()` i src/data/schema.ts. Siden hadde ingen
  * strukturerte data foer – hjelperen var skrevet og aldri importert av noen.
@@ -123,7 +131,7 @@ const schema = verktoy({
         <h3 class="subheading">Timeanslag</h3>
         <p class="small muted">
           Pakkeprisene er faste. Alt utover dem regnes ut fra timeprisen på{" "}
-          <span class="mono">{kr(t)}</span> eks. mva og anslagene under.{" "}
+          <span class="mono">{kr(t)}</span> – {prisenhet} – og anslagene under.{" "}
           <strong>Dette er våre anslag, ikke målte tall.</strong> Spennet er bredt med vilje:
           en Vipps-integrasjon mot én betaling er noe annet enn mot et abonnement.
         </p>
@@ -179,7 +187,7 @@ const schema = verktoy({
         og det står nå alene. */}
   </Scene>
 
-  <Scene n={3} eyebrow="Markedet" tittel="Hva andre tar" ingress="Tallene under er ikke våre. De er hentet fra leverandørenes egne nettsider, med kilde og dato, slik at du kan etterprøve dem.">
+  <Scene n={3} id="markedet" eyebrow="Markedet" tittel="Hva andre tar" ingress="Tallene under er ikke våre. De er hentet fra leverandørenes egne nettsider, med kilde og dato, slik at du kan etterprøve dem.">
     <Avslor>
     <div class="prose" style="max-width: none">
       <table>
@@ -202,20 +210,46 @@ const schema = verktoy({
                 {m.hoy === null ? `fra ${kr(m.lav ?? 0)}` : m.lav === m.hoy ? kr(m.lav ?? 0) : `${kr(m.lav ?? 0)}–${kr(m.hoy)}`}
                 {m.enhet === "mnd" ? "/mnd" : ""}
               </td>
-              <td class="small faint" data-kol="Kilde">Sist sjekket {m.sistSjekket}</td>
+              {/*
+                KILDEKOLONNEN VISTE BARE EN DATO.
+
+                «Sist sjekket 2026-10-07» forteller at NOEN har kontrollert noe,
+                men ikke hvor. Ingressen over lover at du kan etterprøve tallene;
+                den påstanden var sann i repoet og usann på siden. URL-ene har
+                ligget i `m.kilde` hele tiden – her er de, én lenke per tall, slik
+                at en rad med to endepunkter viser to kilder.
+              */}
+              <td class="small faint" data-kol="Kilde">
+                {m.kilde.map((u, i) => (
+                  <>
+                    {i > 0 && <span aria-hidden="true"> · </span>}
+                    <a class="kk-link" href={u} rel="nofollow">{vert(u)}</a>
+                  </>
+                ))}
+                <br />Lest {m.sistSjekket}
+              </td>
             </tr>
           ))}
           <tr>
             <td data-kol="Leverandør">Timepris i markedet</td>
             <td data-kol="Gjelder">Byråer / frilansere</td>
             <td class="nowrap mono" data-kol="Pris">{kr(markedTimepris.byraaLav)}–{kr(markedTimepris.byraaHoy)}/t · {kr(markedTimepris.frilansLav)}–{kr(markedTimepris.frilansHoy)}/t</td>
-            <td class="small faint" data-kol="Kilde">Sist sjekket {markedTimepris.sistSjekket}</td>
+            <td class="small faint" data-kol="Kilde">
+              {markedTimepris.kilde.map((u, i) => (
+                <>
+                  {i > 0 && <span aria-hidden="true"> · </span>}
+                  <a class="kk-link" href={u} rel="nofollow">{vert(u)}</a>
+                </>
+              ))}
+              <br />Lest {markedTimepris.sistSjekket}
+            </td>
           </tr>
         </tbody>
       </table>
       <p class="small faint">
         Leverandørene har kommersielle interesser og ulike definisjoner av «enkel nettside».
-        Bruk tallene som markedssignal, ikke som fasit. Vår egen timepris er {kr(t)} eks. mva.
+        Bruk tallene som markedssignal, ikke som fasit. Flere av dem er oppgitt eks. mva hos
+        leverandøren; vår egen timepris er {kr(t)}, og det er {prisenhet}.
       </p>
     </div>
     </Avslor>
@@ -310,6 +344,9 @@ const schema = verktoy({
 
 <script>
   import { beregn, formaterKr, type Integrasjon } from "../../lib/priskalkyle.ts";
+  // Enheten under summen hentes, den skrives ikke. Sto «eks. mva» her mens
+  // foretaket ikke er mva-registrert – se src/data/priser.ts.
+  import { prisenhet } from "../../data/priser.ts";
 
   const skjema = document.querySelector<HTMLFormElement>("#kalk")!;
   const svar = document.querySelector<HTMLElement>("#svar")!;
@@ -345,7 +382,7 @@ const schema = verktoy({
       <div class="card">
         <p class="kk-eyebrow"><span class="kk-eyebrow-n" aria-hidden="true">//</span><span>${esc(e.pakke)}-pakken</span></p>
         <p class="mono-stat" data-sum>${sum}</p>
-        <p class="small faint">eks. mva${e.aapentOppe ? " · gulv, ikke tak" : ""}</p>
+        <p class="small faint">${prisenhet}${e.aapentOppe ? " · gulv, ikke tak" : ""}</p>
         <p class="muted">${esc(e.pakkeBegrunnelse)}</p>
         <dl class="kv">${linjer}</dl>
         <dl class="kv">

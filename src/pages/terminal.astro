@@ -64,20 +64,50 @@ const kommandoer = [
           Folk som har spilt mye på åttitallet finner det raskest.
         </p>
       </div>
+      {/*
+        UTSNITTET VISTE ET FREMMED DOMENE MED EN KONKRET SCORE.
+
+        Det sto «dmarc nkom.no … Samlet: 83/100» – en poengsum for en navngitt
+        tredjepart, uten kilde og uten dato, på en side som ikke er en rapport.
+        Sju andre steder på nettstedet lover vi at ingen sider navngis, og selv om
+        regelen i docs/metode-skanning.md er skrevet for masseskanningen, kan ikke
+        nettstedet love én ting og gjøre en annen i et eksempel.
+
+        Utsnittet kjører derfor mot VÅRT EGET domene, der regelen ikke gjelder –
+        samme begrunnelse som på /sikkerhet. Og tallene er ekte: kjørt med
+        hentEpostoppsett() og byggEpostRapport() fra src/lib/dns.ts mot
+        kodekonsulentene.no 7. oktober 2026, som ga
+
+          SPF    ok      ~all · 2/10 oppslag
+          DKIM   nøytral Ikke sjekket (ingen selektor oppgitt)
+          DMARC  warn    p=none
+          totalt 67
+
+        Det er en DÅRLIGERE score enn den som sto der før, og den står med vilje:
+        et eksempel som viser vårt eget svake punkt er et bedre bevis på at
+        verktøyet måler enn et pent tall fra en fremmed side. DMARC-en vår står i
+        overvåkningsmodus, og det er en av de tingene som skal rettes.
+      */}
       <Terminal
         title={`~/${firma.domene}`}
         skriv
         cursor
         lines={[
-          { type: "cmd", text: "dmarc nkom.no" },
-          { type: "out", text: "spf ..... -all · 4/10 oppslag" },
+          { type: "cmd", text: `dmarc ${firma.domene}` },
+          { type: "ok", text: "spf ..... ~all · 2/10 oppslag" },
           { type: "warn", text: "dkim .... Ikke sjekket" },
-          { type: "ok", text: "dmarc ... p=quarantine" },
+          { type: "warn", text: "dmarc ... p=none" },
           { type: "out", text: "" },
-          { type: "out", text: "Ingen brudd, men 1 ikke sjekket. Samlet: 83/100." },
+          { type: "out", text: "Ingen brudd, 1 bør fikses, 1 ikke sjekket. Samlet: 67/100." },
         ]}
-        label="Terminalutsnitt: kommandoen dmarc nkom.no gir SPF minus-all med fire av ti oppslag, DKIM ikke sjekket, DMARC p-lik-quarantine, samlet 83 av 100."
+        label={`Terminalutsnitt: kommandoen dmarc ${firma.domene} gir SPF tilde-all med to av ti oppslag, DKIM ikke sjekket, DMARC p-lik-none, samlet 67 av 100.`}
       />
+      <p class="small faint">
+        Utsnittet er vårt eget domene, kjørt 7. oktober 2026. Kjør{" "}
+        <span class="mono">dmarc {firma.domene}</span> i terminalen over, så får du
+        det samme svaret fra DNS – og ser samtidig at vår egen DMARC står i
+        overvåkningsmodus.
+      </p>
     </div>
   </Section>
 </Base>

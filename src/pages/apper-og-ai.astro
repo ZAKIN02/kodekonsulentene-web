@@ -136,8 +136,44 @@ const schema = tjeneste({
 
   <Scene n={5} eyebrow="AI" lav>
     <Mega som="h2" tekst="AI som gjør en jobb, ikke AI som pynt" aksent="jobb" />
+    {/*
+      «SSB MELDER AT 48 % … MOT TRE AV TI ÅRET FØR» – ETT TALL HOLDT, ETT GJORDE IKKE.
+
+      Kontrollert mot SSBs statistikkbank 7. oktober 2026, tabell 14942 «Bruk av
+      kunstig intelligens-teknologi (prosent), etter næring (SN2025),
+      sysselsette», oppdatert 25. september 2026. Variabelen heter «Brukar ein
+      eller fleire KI-teknologiar». Tallene for 2026, I alt:
+
+        Alle sysselsette ....... 48 %
+        10–19 sysselsette ...... 37 %
+
+      48 % STEMMER. Men:
+
+      1. Henvisningen sa bare «SSB». Det er den samme feilen som nesten veltet
+         SSB-tallene på /bransjer/handverkere: to tabeller dekker samme tema med
+         ulike tall, og den som kontrollerer oss mot feil tabell tror vi lyver.
+         Tabellnummeret står nå på siden.
+
+      2. «Mot tre av ti året før» ER FJERNET. SSB avsluttet tidsserien etter
+         SN2007 i 2025 og startet en ny etter SN2025 i 2026 – de to kan ikke
+         sammenlignes direkte, og SSB sier det selv. En vekstpåstand over det
+         bruddet er ikke noe vi kan vise til en tabell for, så den står ikke her.
+
+      3. FORBEHOLDET SOM MANGLET, OG SOM BETYR MEST FOR DENNE SIDEN: SSB dekker
+         bare foretak med MINST TI SYSSELSATTE. Målgruppen vår – enkeltpersonforetak
+         og de minste bedriftene – er ikke med i tallet i det hele tatt. Vi oppgir
+         derfor også 37 %-tallet for de minste foretakene undersøkelsen dekker,
+         siden det er det nærmeste leseren kommer sin egen situasjon.
+    */}
     <Avslor trinn={1}>
-      <p class="scene__ingress body-lg">SSB melder at 48 % av foretakene med minst ti ansatte brukte KI i 2026, mot tre av ti året før. Det betyr at konkurrentene dine prøver. De fleste prøver på feil sted.</p>
+      <p class="scene__ingress body-lg">SSB målte at 48 % av foretakene med minst ti ansatte brukte KI i 2026. Blant de minste som er med – de med 10–19 ansatte – var det 37 %. Konkurrentene dine prøver. De fleste prøver på feil sted.</p>
+      <p class="small faint">
+        Kilde: <a class="kk-link" href="https://www.ssb.no/statbank/table/14942" rel="nofollow">SSB, tabell 14942 «Bruk av kunstig intelligens-teknologi (prosent), etter næring (SN2025), sysselsette»</a>,
+        2026-tall, oppdatert 25. september 2026, lest 7. oktober 2026. Undersøkelsen dekker bare
+        foretak med minst ti sysselsatte: enkeltpersonforetak og de minste bedriftene – altså
+        flertallet av dem denne siden er skrevet for – er ikke med i tallet. 2026-tallene følger ny
+        næringsstandard (SN2025) og kan ikke sammenlignes direkte med tidligere år.
+      </p>
     </Avslor>
   </Scene>
 

@@ -222,12 +222,21 @@ describe("analyserCookies", () => {
     assert.deepEqual(r.sporere, []);
   });
 
-  test("Google Analytics i HTML gir fail", () => {
+  // Denne testen sto før som «Google Analytics i HTML gir fail». Den gjør ikke
+  // det lenger, og det er med vilje: et skript i markupen er ikke lagring i
+  // kommunikasjonsutstyret, og Google Consent Mode laster nettopp skriptet uten å
+  // lagre noe. Målt 7. oktober 2026 på 24 norske nettsteder: 16 hadde et
+  // verifisert consent-default-kall i nettleseren, bare 3 viste det i HTML-en.
+  // Et «fail» her ville derfor vært en påstand om lovbrudd mot 13 av 16.
+  test("sporingsskript uten spor av samtykke gir warn, aldri fail", () => {
     const html = `<html><head><script src="https://www.googletagmanager.com/gtag/js?id=G-X"></script></head></html>`;
     const r = analyserCookies(h({}), html);
-    assert.equal(r.status, "fail");
+    assert.equal(r.status, "warn", "fra HTML alene kan vi ikke dømme");
     assert.ok(r.sporere.includes("Google Tag Manager") || r.sporere.includes("Google Analytics"));
-    assert.ok(r.detaljer.some((d) => /uten at samtykke/.test(d)));
+    assert.ok(
+      r.uavklart.some((u) => /ingen samtykkeløsning/i.test(u)),
+      "rapporten må si at en dynamisk lastet samtykkeløsning ikke ville blitt sett",
+    );
   });
 
   test("Meta Pixel og Hotjar kjennes igjen", () => {
@@ -236,7 +245,80 @@ describe("analyserCookies", () => {
     const r = analyserCookies(h({}), html);
     assert.ok(r.sporere.includes("Meta Pixel"));
     assert.ok(r.sporere.includes("Hotjar"));
-    assert.equal(r.status, "fail");
+    assert.equal(r.status, "warn");
+  });
+
+  /* ------------------------------------------- samtykkedeteksjonen ---- */
+
+  test("sporing pluss samtykkeløsning i koden gir «kan ikke avgjøres», ikke brudd", () => {
+    // Formen er den samme som hos de norske nettstedene vi målte som faktisk
+    // kjører Cookie Information: CMP-skriptet og gtag-skriptet side om side.
+    const html = `<html><head>
+      <script src="https://policy.app.cookieinformation.com/uc.js"></script>
+      <script src="https://www.googletagmanager.com/gtag/js?id=G-X"></script>
+    </head></html>`;
+    const r = analyserCookies(h({}), html);
+    assert.equal(r.status, "neutral");
+    assert.deepEqual(r.samtykkelosninger, ["Cookie Information"]);
+    assert.ok(r.sporere.length > 0);
+  });
+
+  test("Google Consent Mode med «denied» som standard kjennes igjen", () => {
+    const html = `<html><head><script>
+      gtag('consent', 'default', {
+        ad_storage: 'denied', analytics_storage: 'denied',
+        ad_user_data: 'denied', ad_personalization: 'denied', wait_for_update: 500
+      });
+    </script><script src="https://www.googletagmanager.com/gtm.js?id=GTM-X"></script></head></html>`;
+    const r = analyserCookies(h({}), html);
+    assert.equal(r.consentMode.tilstede, true);
+    assert.equal(r.consentMode.standardNektet, true);
+    assert.equal(r.status, "neutral", "positivt funn, men JavaScript er ikke kjørt – ikke en grønn hake");
+  });
+
+  test("Consent Mode med «granted» som standard er ikke et samtykkespor", () => {
+    const html = `<html><head><script>
+      gtag('consent', 'default', { ad_storage: 'granted', analytics_storage: 'granted' });
+    </script><script src="https://www.googletagmanager.com/gtm.js?id=GTM-X"></script></head></html>`;
+    const r = analyserCookies(h({}), html);
+    assert.equal(r.consentMode.standardNektet, false);
+    assert.equal(r.status, "warn", "sporing er slått på fra start – det er ikke «kan ikke avgjøres»");
+  });
+
+  test("ordet «samtykke» i brødteksten er ikke en samtykkeløsning", () => {
+    // Denne fella gikk vi i selv under utprøvingen: en side som SKRIVER om
+    // samtykke fikk treff på ordet og ble lest som om den hadde en løsning.
+    const html = `<html><body><h1>Slik fungerer samtykke til cookies</h1>
+      <p>Et cookie-banner skal ikke ha forhåndsavkryssing.</p>
+      <script src="https://www.googletagmanager.com/gtag/js?id=G-X"></script></body></html>`;
+    const r = analyserCookies(h({}), html);
+    assert.deepEqual(r.samtykkelosninger, []);
+    assert.equal(r.status, "warn");
+  });
+
+  test("teknisk cookie navngis som teknisk, ukjent som ukjent", () => {
+    const r = analyserCookies(h({ "set-cookie": "ARRAffinity=abc; Path=/" }), "<html></html>");
+    assert.deepEqual(r.tekniske, ["ARRAffinity"]);
+    assert.deepEqual(r.ukjente, []);
+    assert.equal(r.status, "warn", "vi deler ikke ut grønt på en cookie vi ikke har vurdert juridisk");
+
+    const u = analyserCookies(h({ "set-cookie": "noe_vi_ikke_kjenner=1; Path=/" }), "<html></html>");
+    assert.deepEqual(u.ukjente, ["noe_vi_ikke_kjenner"]);
+    assert.ok(u.uavklart.some((x) => /kan ingen maskin avgjøre/i.test(x)));
+  });
+
+  test("rapporten sier aldri at noe bryter loven", () => {
+    for (const html of [
+      `<script src="https://www.googletagmanager.com/gtag/js?id=G-X"></script>`,
+      `<script src="https://connect.facebook.net/en_US/fbevents.js"></script>`,
+      `<html></html>`,
+    ]) {
+      const r = analyserCookies(h({ "set-cookie": "_ga=GA1.1.1; Path=/" }), html);
+      assert.equal(r.status === "fail", false, "HTML-veien skal ikke kunne gi fail");
+      for (const d of [...r.detaljer, ...r.uavklart]) {
+        assert.ok(!/bryter/i.test(d), `påstand om lovbrudd: ${d}`);
+      }
+    }
   });
 
   test("egen cookie uten sporere gir warn, ikke fail", () => {

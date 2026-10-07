@@ -12,6 +12,7 @@ import Demo from "../../components/Demo.astro";
 import opptak from "../../data/opptak.json";
 import ContactBlock from "../../components/ContactBlock.astro";
 import { firma } from "../../data/firma";
+import { prisenhet } from "../../data/priser";
 
 import "../../styles/scener.css";
 
@@ -162,7 +163,7 @@ const schema = verktoy({
         og det står nå alene. */}
   </Scene>
 
-  <Scene n={3} eyebrow="Etterpå" tittel="Vil du at vi ordner det?" ingress="Å sette opp SPF, DKIM og DMARC riktig tar vanligvis en til to timer, og det gjøres én gang. Timeprisen er 950 kr eks. mva.">
+  <Scene n={3} eyebrow="Etterpå" tittel="Vil du at vi ordner det?" ingress={`Å sette opp SPF, DKIM og DMARC riktig tar vanligvis en til to timer, og det gjøres én gang. Timeprisen er ${firma.timepris}, og det er ${prisenhet}.`}>
     <Avslor>
     <div class="row">
       <Button variant="primary" href="/kontakt">Book 20 minutter</Button>

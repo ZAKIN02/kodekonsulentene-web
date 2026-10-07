@@ -104,7 +104,7 @@ function kort({ eyebrow, tittel, beskrivelse, domene }) {
 const SIDER = [
   { sti: "/", fil: "forside", eyebrow: "KodeKonsulentene", tittel: "Nettsider og systemer som jobber for bedriften din", beskrivelse: "Fast pris, levert raskt, og du snakker med utvikleren underveis." },
   { sti: "/sjekk", fil: "sjekk", eyebrow: "Verktøy", tittel: "Sjekk nettsiden din gratis", beskrivelse: "Ytelse, sikkerhetsheadere, cookies før samtykke, WCAG og org.nr." },
-  { sti: "/priser", fil: "priser", eyebrow: "Priser", tittel: "Prisene står her", beskrivelse: "Fordi du skal kunne regne på det før du ringer. Alle priser eks. mva." },
+  { sti: "/priser", fil: "priser", eyebrow: "Priser", tittel: "Prisene står her", beskrivelse: "Fordi du skal kunne regne på det før du ringer. Prisene er endelige." },
   { sti: "/sikkerhet", fil: "sikkerhet", eyebrow: "Sikkerhet", tittel: "Siden vår består sin egen sjekk", beskrivelse: "Sikkerhetsheadere, cookies, universell utforming og lovpålagt informasjon." },
   { sti: "/systemer", fil: "systemer", eyebrow: "Systemer", tittel: "Få systemene du betaler for til å snakke sammen", beskrivelse: "Booking, Vipps, Tripletex, Fiken og BankID – koblet til ett system." },
 ];

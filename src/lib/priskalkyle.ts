@@ -16,7 +16,7 @@
  * overalt der de vises.
  */
 
-import { pakker, loepende } from "../data/priser.ts";
+import { pakker, loepende, mvaSetning } from "../data/priser.ts";
 
 /* ------------------------------------------------------- prislisten ---- */
 
@@ -210,7 +210,13 @@ export function beregn(valg: Valg): Estimat {
   const drift = loepende.find((r) => r.navn === "Drift og vedlikehold");
 
   const forutsetninger = [
-    "Alle beløp er eks. mva.",
+    // Sto som strengen «Alle beløp er eks. mva.» mens `firma.mva` er `false`.
+    // Et foretak utenfor Merverdiavgiftsregisteret KAN ikke fakturere mva, så
+    // setningen lovet et tillegg som aldri kommer – og kalkulatoren er stedet
+    // det koster mest, siden den er bygget for å vise hva noe faktisk ender på.
+    // `mvaSetning` i src/data/priser.ts snur av seg selv den dagen vi blir
+    // registrert; da trenger ingen å lete opp strengen her.
+    mvaSetning,
     `Timeanslagene er våre anslag, ikke målte tall. Timeprisen er ${t.toLocaleString("nb-NO")} kr.`,
     "Pakkeprisene er faste og hentet fra prislisten vår.",
     "40 % faktureres ved oppstart, resten ved lansering.",

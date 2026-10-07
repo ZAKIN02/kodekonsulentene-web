@@ -14,8 +14,21 @@ import Horisont from "../../components/Horisont.astro";
 import ContactBlock from "../../components/ContactBlock.astro";
 import { bookUrl } from "../../data/firma";
 import { tjeneste } from "../../data/schema";
+import { pakker, prisenhet } from "../../data/priser";
+import { kilde } from "../../data/kilder";
 
 import "../../styles/scener.css";
+
+/** SSB-tabellen de to tallene i denne seksjonen står i. Se kommentaren ved bruken. */
+const ssb = kilde("ssb-14933");
+/** «7. oktober 2026» av «2026-10-07». En ISO-dato midt i en setning leses ikke. */
+const norskDato = (iso: string): string =>
+  new Date(`${iso}T00:00:00Z`).toLocaleDateString("nb-NO", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
 
 const steg = [
   { title: "Kunden fyller ut", time: "2 vår", text: "Fire felt og tre bilder fra telefonen. Ikke et kontaktskjema – en befaringsforespørsel." },
@@ -46,7 +59,7 @@ const schema = tjeneste({
 ---
 <Base
   tittel="Nettside for håndverkere i Oslo"
-  beskrivelse="Nettside og befaringssystem for håndverkere: bilder fra kunden, tilbud samme dag, ordre rett i Tripletex eller Fiken. Fast pris fra 14 900 kr eks. mva."
+  beskrivelse={`Nettside og befaringssystem for håndverkere: bilder fra kunden, tilbud samme dag, ordre rett i Tripletex eller Fiken. Fast pris fra ${pakker[0].pris} – ${prisenhet}.`}
   schema={[schema]}
 >
   <Scene lav>
@@ -76,12 +89,28 @@ const schema = tjeneste({
           størrelse ikke har noe å bli funnet på i det hele tatt. For det andre at listen
           for å ligge øverst lokalt er lavere i din bransje enn i de fleste andre.
         </p>
+        {/*
+          HENVISNINGEN SA «SSB», OG DET ER IKKE NOK.
+
+          Tallene 72 % og 86 % er RIKTIGE og er ikke rørt. Det var kilden som
+          sviktet: SSB flyttet 2026-tallene fra tabell 10975 (etter SN2007) til
+          tabell 14933 (etter SN2025), og de to tabellene gir ulike tall for
+          samme næring. En markedsresearch som etterprøvde oss mot den gamle
+          tabellen konkluderte med at 72 ikke fantes – vi så ut som vi løy, med
+          et korrekt tall på siden.
+
+          Henvisningen hentes nå fra `ssb-14933` i src/data/kilder.ts, med
+          tabellnummer, næringsstandard og dato, og forbeholdene står ordrett fra
+          samme oppføring i stedet for å være skrevet om her. test/kilder.test.ts
+          krever at henvisningen bærer både 14933 og SN2025.
+        */}
         <p class="small faint">
-          Kilde: SSB, bruk av IKT i næringslivet. Tallene gjelder foretak med minst ti
-          sysselsatte, så enkeltpersonforetak og de minste bedriftene er ikke med.
-          2026-tallene bruker ny næringsstandard og kan ikke sammenlignes direkte med
-          tidligere år.
+          Kilde: <a class="kk-link" href={ssb.url} rel="nofollow">{ssb.henvisning}</a>.
+          Lest {norskDato(ssb.hentet)}.
         </p>
+        <ul class="small faint" style="margin: 0; padding-left: var(--space-5); display: grid; gap: var(--space-2)">
+          {ssb.forbehold?.slice(0, 2).map((f) => <li>{f}</li>)}
+        </ul>
       </div>
       <Terminal
         skriv

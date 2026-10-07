@@ -16,6 +16,7 @@ import ContactBlock from "../components/ContactBlock.astro";
 import { prosess } from "../data/prosess";
 import { tjeneste } from "../data/schema";
 import { bookUrl } from "../data/firma";
+import { pakker, prisenhet, mvaSetning } from "../data/priser";
 
 import "../styles/scener.css";
 
@@ -39,7 +40,7 @@ const schema = tjeneste({
 ---
 <Base
   tittel="Nettsider til fast pris i Oslo"
-  beskrivelse="Nettside til fast pris i Oslo: Lighthouse 95+, lokal SEO, WCAG 2.2 AA og cookieløs analyse. Start 14 900 kr, Bedrift 29 900 kr eks. mva."
+  beskrivelse={`Nettside til fast pris i Oslo: Lighthouse 95+, lokal SEO, WCAG 2.2 AA og cookieløs analyse. ${pakker[0].navn} ${pakker[0].pris}, ${pakker[1].navn} ${pakker[1].pris} – ${prisenhet}.`}
   schema={[schema]}
 >
   <Scene lav>
@@ -137,10 +138,21 @@ const schema = tjeneste({
       </Avslor>
       <Avslor trinn={3} fra="dybde" dybde={18} as="div" class="card">
         <h3 class="heading">Uten cookie-banner</h3>
+        {/*
+          «BANNERET SOM HALVPARTEN AV BESØKENDE LUKKER UTEN Å LESE» ER FJERNET.
+
+          Det er et kvantifisert funn om folks atferd – halvparten – og vi har
+          ingen kilde til det. Ikke en måling av vår egen, ikke en undersøkelse
+          vi kan vise til. Det lyder sant, og det er nettopp derfor det er farlig:
+          et tall ingen etterprøver er et tall ingen oppdager er oppdiktet.
+
+          Setningen er ikke erstattet med et annet tall. Poenget – at et banner du
+          ikke trenger er et banner du slipper – holder uten, og hjemmelen under
+          er kontrollert mot Lovdata og står i src/data/kilder.ts.
+        */}
         <p class="muted">
           Vi bruker cookieløs analyse. Da er det ingenting å samtykke til, og du slipper
-          banneret som halvparten av besøkende lukker uten å lese. Det er også den
-          enkleste måten å overholde ekomloven § 3-15.
+          banneret helt. Det er også den enkleste måten å overholde ekomloven § 3-15.
         </p>
       </Avslor>
     </div>
@@ -203,7 +215,7 @@ const schema = tjeneste({
   </Scene>
   </div>
 
-  <Scene n={6} eyebrow="Pris" tittel="14 900 kr eller 29 900 kr" ingress="Start-pakken er for deg som trenger å finnes og bli ringt. Bedrift er for deg som skal rangere lokalt og endre teksten selv. Begge eks. mva.">
+  <Scene n={6} eyebrow="Pris" tittel={`${pakker[0].pris} eller ${pakker[1].pris}`} ingress={`Start-pakken er for deg som trenger å finnes og bli ringt. Bedrift er for deg som skal rangere lokalt og endre teksten selv. ${mvaSetning}`}>
     <Button variant="primary" href="/priser">Se hele prislisten</Button>
   </Scene>
 

@@ -13,7 +13,7 @@ import Terminal from "../components/Terminal.astro";
 import UrlCheck from "../components/UrlCheck.astro";
 import CheckReport from "../components/CheckReport.astro";
 import ContactBlock from "../components/ContactBlock.astro";
-import { loepende } from "../data/priser";
+import { loepende, prisenhet } from "../data/priser";
 import maalinger from "../data/maalinger.json";
 
 import "../styles/scener.css";
@@ -57,16 +57,42 @@ const schema = tjeneste({
     "Sikkerhetsheadere, avhengighetsskanning, tilgangsstyring og sikkerhetskopi paa hver leveranse, og lovsjekk av cookie-samtykke, universell utforming, org.nr.-krav og personvernerklaering.",
   sti: "/sikkerhet",
 });
+
+/**
+ * Lovsjekk-prisen i metabeskrivelsen sto skrevet av for hånd («7 900 kr eks.
+ * mva»), med to feil i én streng: tallet var en kopi av prislisten, og «eks.
+ * mva» er usant så lenge foretaket ikke er mva-registrert. Nå hentes begge.
+ */
+const lovsjekkPris = loepende.find((r) => r.navn === "Lovsjekk-pakke")?.pris ?? "";
 ---
 <Base
   tittel="Sikkerhet og lovkrav på nettsider"
-  beskrivelse="Sikkerhetsheadere, avhengighetsskanning, GDPR og universell utforming på hver leveranse. Lovsjekk-pakke til fast pris: 7 900 kr eks. mva."
+  beskrivelse={`Sikkerhetsheadere, avhengighetsskanning, GDPR og universell utforming på hver leveranse. Lovsjekk-pakke til fast pris: ${lovsjekkPris} – ${prisenhet}.`}
   schema={[schema]}
 >
   <Scene lav>
     <Mega som="h1" merke="Sikkerhet" n={1} tekst="Siden vår består sin egen sjekk" aksent="sjekk" />
     <Avslor trinn={1}>
-      <p class="scene__ingress body-lg">Det er lett å selge sikkerhet. Det er vanskeligere å bevise det. Her er lovbruddet de fleste norske nettsider gjør, spilt av i sanntid – og den samme sjekken kjørt på vår egen side.</p>
+      {/*
+        «LOVBRUDDET DE FLESTE NORSKE NETTSIDER GJØR» VAR EN PÅSTAND VI IKKE HAR MÅLT.
+
+        Vi har målt 38 forsider, trukket fra Enhetsregisteret innenfor sju
+        næringskoder, blant foretak med 1–20 ansatte. 79 % av dem satte cookies
+        før samtykke. Det er et funn i ET UTVALG – ikke i «norske nettsider».
+        Utvalget er heller ikke representativt: maalinger.json sier det selv,
+        fordi bare foretak som har registrert hjemmeside i Enhetsregisteret kan
+        trekkes.
+
+        Å gå fra 38 sider til «de fleste norske nettsider» er nøyaktig det
+        sprangeet vi tar andre for. Setningen sier nå hva vi faktisk fant, hvor
+        mange det var, og lenker til tallene.
+      */}
+      <p class="scene__ingress body-lg">
+        Det er lett å selge sikkerhet. Det er vanskeligere å bevise det. Her er bruddet vi fant
+        på {maalinger.andelProsent.settercookiesForSamtykke} % av de {maalinger.utvalg.svarte}{" "}
+        sidene <a class="kk-link" href="/sjekk">vi målte</a>, spilt av i sanntid – og den samme
+        sjekken kjørt på vår egen side.
+      </p>
     </Avslor>
 
     {/* Sekvensen står OVER folden, med vilje. Målt på /sikkerhet: ingressen slutter
@@ -187,8 +213,16 @@ const schema = tjeneste({
   >
     <Avslor>
     <div class="prose">
-      <h3>Org.nr. og foretaksnavn</h3>
-      <p class="muted">Registrert foretaksnavn og organisasjonsnummer skal stå på nettsiden. Er du mva-registrert, skal «MVA» stå etter nummeret.</p>
+      {/* Overskriften navnga ingen hjemmel, mens de tre andre kravene i denne
+          listen gjorde det. Begge lovene står her nå, fordi hvilken som treffer
+          avhenger av registeret – se src/data/kilder.ts. */}
+      <h3>Org.nr. og foretaksnavn (foretaksregisterloven § 10-2 / ehandelsloven § 8)</h3>
+      <p class="muted">
+        Registrert foretaksnavn og organisasjonsnummer skal stå på nettsiden. Står foretaket i
+        Foretaksregisteret, følger kravet av foretaksregisterloven § 10-2; gjør det ikke det,
+        krever ehandelsloven § 8 det samme av alle som tilbyr en tjeneste på nett. Er du
+        mva-registrert, skal «MVA» stå etter nummeret.
+      </p>
       <h3>Kontaktinformasjon (ehandelsloven § 8)</h3>
       <p class="muted">Geografisk adresse, e-postadresse og et nummer kunden kan nå deg på. Et kontaktskjema alene er ikke nok.</p>
       {/* Hjemmelen er kontrollert mot Lovdata 6. oktober 2026: ekomloven er

@@ -9,6 +9,7 @@ import Button from "../components/Button.astro";
 import Faq from "../components/Faq.astro";
 import ContactBlock from "../components/ContactBlock.astro";
 import { pakker, loepende, prisvilkaar, prisenhet, mvaSetning, treAar, MAANEDER } from "../data/priser";
+import { markedspriser, markedTimepris } from "../data/markedspriser";
 import { firma } from "../data/firma";
 import { faq } from "../data/faq";
 import { beregn, formaterKr } from "../lib/priskalkyle";
@@ -58,6 +59,54 @@ const eksempler = [
     gulv: r.aapentOppe,
   };
 });
+
+/**
+ * SAMMENLIGNINGSTABELLEN HENTER TALLENE SINE, DEN SKRIVER DEM IKKE AV.
+ *
+ * Her sto fire tall uten kilde, og ett av dem var målbart galt:
+ *
+ *   «499 kr/mnd» (i overskriften og i abonnementsraden) kom fra klarosites.no,
+ *   et domene som ikke finnes – NXDOMAIN, ingen navnetjener. Raden er for lengst
+ *   ute av markedspriser.ts og erstattet av WebPack 349 kr/mnd, som står på en
+ *   side som svarer. Overskriften og raden hentes derfor fra `markedspriser` nå,
+ *   og kan ikke komme i utakt med registeret igjen.
+ *
+ *   «Wix, Squarespace, Webflow: 150–180 kr/mnd» hadde ingen kilde noe sted.
+ *   Kontrollert 7. oktober 2026: Squarespace priser i NOK (179/249/340/359/490
+ *   per måned), mens Wix og Webflow serverer priser i USD til norske besøkende.
+ *   Det finnes altså ikke ett norsk kronebeløp som dekker de tre, og 150–180 er
+ *   under det laveste av dem. Raden er FJERNET, ikke justert: vi har ikke et
+ *   tall vi kan forsvare for den gruppen.
+ *
+ *   «AI-byggere: fra 250 kr/mnd» hadde heller ingen kilde, og er fjernet.
+ *
+ * Reglen som gjelder videre: en rad i denne tabellen skal enten hente beløpet
+ * fra src/data/markedspriser.ts, som test/kilder.test.ts holder i live, eller
+ * bære kilde og dato synlig i raden selv.
+ */
+const abonnement = markedspriser.find((m) => m.enhet === "mnd");
+if (!abonnement) {
+  throw new Error(
+    "Fant ingen abonnementsrad i markedspriser.ts. Sammenligningstabellen på /priser " +
+      "henter billigste månedspris derfra, og skal ikke falle tilbake på et tall skrevet inn her.",
+  );
+}
+/** «349» / «1 740» – vanlig mellomrom som tusenskiller, som ellers i huset. */
+const nb = (n: number): string => n.toLocaleString("nb-NO").replace(/ | /g, " ");
+const abonnementSpenn = `${nb(abonnement.lav ?? 0)}–${nb(abonnement.hoy ?? 0)} kr/mnd`;
+const etablert = markedspriser.find(
+  (m) => m.leverandor === "Etablerte byråer" && m.enhet === "engang" && m.hoy !== null,
+);
+/** Vår egen inngangspris, lest ut av prislisten og aldri skrevet av. */
+const rimeligstePakke = pakker[0].pris;
+/** «7. oktober 2026» av «2026-10-07». En ISO-dato midt i en setning leses ikke. */
+const norskDato = (iso: string): string =>
+  new Date(`${iso}T00:00:00Z`).toLocaleDateString("nb-NO", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
 ---
 <Base
   tittel="Priser: nettside fra 14 900 kr"
@@ -146,7 +195,17 @@ const eksempler = [
       </dl>
       <ul class="small muted" style="margin: 0; padding-left: var(--space-5); display: grid; gap: var(--space-2)">
         {prisvilkaar.map((v) => <li>{v}</li>)}
-        <li>Timeprisen er {firma.timepris}. Norske byråer tar typisk 900–1 800 kr/t.</li>
+        {/* Tallet 900–1 800 sto her uten kilde. Det ER riktig, men henvisningen lå
+            bare i src/data/markedspriser.ts, der ingen leser den. Nå hentes både
+            beløpene, lenken og datoen derfra, og Innovenas eget forbehold om at
+            dette er veiledende anslag står med – ellers leser det som en måling. */}
+        <li>
+          Timeprisen er {firma.timepris}. Norske byråer tar {nb(markedTimepris.byraaLav)}–{nb(markedTimepris.byraaHoy)} kr/t
+          og frilansere {nb(markedTimepris.frilansLav)}–{nb(markedTimepris.frilansHoy)} kr/t, etter{" "}
+          <a class="kk-link" href={markedTimepris.kilde[0]} rel="nofollow">Innovenas prisartikkel</a>,
+          lest {norskDato(markedTimepris.sistSjekket)}. Innovena oppgir selv at tallene er veiledende anslag og
+          ikke en markedsundersøkelse.
+        </li>
       </ul>
 
       {/*
@@ -186,7 +245,7 @@ const eksempler = [
   <Scene
     n={3}
     eyebrow="Sammenligning"
-    tittel="Hvorfor ikke 499 kr i måneden"
+    tittel={`Hvorfor ikke ${nb(abonnement.lav ?? 0)} kr i måneden`}
     ingress="Fordi du får noe annet. Her er hva pengene faktisk kjøper, slik at du kan ta valget selv."
   >
     <Avslor>
@@ -196,9 +255,24 @@ const eksempler = [
           <tr><th scope="col">Alternativ</th><th scope="col">Pris</th><th scope="col">Hva du får – og ikke får</th></tr>
         </thead>
         <tbody>
-          <tr><td>Wix, Squarespace, Webflow</td><td>150–180 kr/mnd</td><td>Du gjør jobben selv. Engelsk support. Ingen integrasjon mot Tripletex, Fiken eller Vipps.</td></tr>
-          <tr><td>AI-byggere</td><td>fra 250 kr/mnd</td><td>Prototype på et kvarter. Ingen som svarer når den slutter å virke, og ingen sikkerhetsgjennomgang.</td></tr>
-          <tr><td>Abonnementsbyrå</td><td>499–1 740 kr/mnd</td><td>Malbasert side, levert raskt. Lite skreddersøm av systemer, og bindingstid.</td></tr>
+          {/*
+            TO RADER ER FJERNET HERFRA, OG DET ER MED VILJE.
+
+            «Wix, Squarespace, Webflow – 150–180 kr/mnd» og «AI-byggere – fra
+            250 kr/mnd» sto uten kilde noe sted i repoet. Squarespace-tallet lot
+            seg kontrollere og var galt (NOK 179–490/mnd, lest 7. oktober 2026),
+            mens Wix og Webflow priser i USD mot norske besøkende – det finnes
+            ikke ett kronebeløp som dekker de tre. For AI-byggerne fantes ingen
+            leverandør, ingen side og ingen dato.
+
+            Vi fjerner dem i stedet for å gjette nye tall. En sammenligning som
+            mangler et alternativ er svakere enn før; en sammenligning med et
+            oppdiktet tall er verdiløs, og den er dessuten det eneste vi ikke
+            tåler å bli tatt i. Finner noen tallene på leverandørenes egne sider,
+            hører de hjemme i src/data/markedspriser.ts med URL og dato – da
+            kommer radene tilbake av seg selv.
+          */}
+          <tr><td>Abonnementsbyrå</td><td>{abonnementSpenn}</td><td>Malbasert side, levert raskt. Lite skreddersøm av systemer, og bindingstid.</td></tr>
           {/*
             Raden som manglet, og den eneste sammenligningen kjøperen faktisk
             gjør. Tabellen stilte oss opp mot Wix, AI-byggere, abonnementsbyråer
@@ -210,16 +284,35 @@ const eksempler = [
             Skaatun Web 4 900, Oppskalert fra 6 990, Moss Webdesign 7 990,
             HjemmesideHelten 9 990, Godt Likt Media 9 990. Samme forbehold som
             under tabellen gjelder dem.
+
+            De to endepunktene er kontrollert på nytt 7. oktober 2026, og de er
+            de eneste tallene i raden som står på siden. Begge er lenket, slik at
+            leseren kan åpne dem selv – en begrunnelse i en kildekodekommentar er
+            ikke en kilde for den som leser nettsiden. Det høye endepunktet er
+            samtidig HjemmesideHelten-raden i src/data/markedspriser.ts, som
+            test/kilder.test.ts holder i live.
           */}
-          <tr><td>Norsk byrå med pakkepris</td><td>4 900–9 990 kr</td><td>Ferdig oppsett, ofte på mal. Billigst i markedet. Sjekk hva som skjer med siden hvis du slutter å betale, og hvem som eier koden.</td></tr>
-          <tr><td>KodeKonsulentene</td><td>fra 14 900 kr</td><td>Egenutviklet side, integrasjoner mot de systemene du har, sikkerhetsarbeid, og du eier koden.</td></tr>
-          <tr><td>Etablert byrå</td><td>fra 80 000 kr</td><td>Team, prosess og prosjektleder. For dyrt og for tregt for de fleste småbedrifter.</td></tr>
+          <tr>
+            <td>Norsk byrå med pakkepris</td>
+            {/* Ingen linjeskift mellom lenkene og tankestreken: Astro beholder
+                mellomrommet rundt et inline-element, og spennet ble rendret som
+                «4 900 – 9 990 kr». Samme felle som er funnet ni ganger før i
+                dette prosjektet – usynlig i kilden, synlig i bygget. */}
+            <td class="nowrap"><a class="kk-link" href="https://skaatunweb.no/" rel="nofollow">4 900</a>–<a class="kk-link" href="https://www.hjemmesidehelten.no/nettside-bedrift/" rel="nofollow">9 990 kr</a></td>
+            <td>Ferdig oppsett, ofte på mal. Billigst i markedet. Sjekk hva som skjer med siden hvis du slutter å betale, og hvem som eier koden.</td>
+          </tr>
+          {/* Vår egen pris og byråraden sto skrevet av for hånd. Begge hentes nå:
+              vår fra `pakker`, byråets fra markedspriser.ts. CLAUDE.md sier det
+              rett ut – en pris skal aldri skrives av. */}
+          <tr><td>KodeKonsulentene</td><td>fra {rimeligstePakke}</td><td>Egenutviklet side, integrasjoner mot de systemene du har, sikkerhetsarbeid, og du eier koden.</td></tr>
+          <tr><td>Etablert byrå</td><td>fra {nb(etablert?.lav ?? 0)} kr</td><td>Team, prosess og prosjektleder. For dyrt og for tregt for de fleste småbedrifter.</td></tr>
         </tbody>
       </table>
       <p class="small faint">
-        Tallene for andre leverandører er hentet fra deres egne nettsider høsten 2026 og kan ha
-        endret seg. De har kommersielle interesser og ulike definisjoner av «enkel nettside».
-        Bruk dem som markedssignal, ikke som fasit.
+        Tallene for andre leverandører er lest på deres egne nettsider {norskDato(abonnement.sistSjekket)} og kan ha
+        endret seg siden. De har kommersielle interesser og ulike definisjoner av «enkel nettside».
+        Bruk dem som markedssignal, ikke som fasit. Hele oppstillingen med kilde og dato per rad står
+        i <a class="kk-link" href="/verktoy/priskalkulator#markedet">priskalkulatoren</a>.
       </p>
       {/* Pilottilbudet sto bare nederst på /caser, en side som nås fra footeren.
           Ordrett samme setning som der – et tilbud skal lyde likt overalt. */}

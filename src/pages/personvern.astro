@@ -2,7 +2,7 @@
 import Base from "../layouts/Base.astro";
 import Hukommelse from "../components/Hukommelse.astro";
 import Section from "../components/Section.astro";
-import { firma } from "../data/firma";
+import { firma, orgnrVist } from "../data/firma";
 const oppdatert = "5. oktober 2026";
 ---
 <Base
@@ -26,7 +26,7 @@ const oppdatert = "5. oktober 2026";
           sammen med mellomrommet rundt, og limte «Oslo.» og «E-post» sammen da den sto inni. */}
       <h2>Behandlingsansvarlig</h2>
       <p class="muted">
-        {firma.foretaksnavn}, org.nr. {firma.orgnr}, {firma.adresse}.
+        {firma.foretaksnavn}, org.nr. {orgnrVist}, {firma.adresse}.
         E-post <a class="kk-link" href={`mailto:${firma.epost}`}>{firma.epost}</a>{firma.telefon ? `, telefon ${firma.telefon}` : ""}.
       </p>
 

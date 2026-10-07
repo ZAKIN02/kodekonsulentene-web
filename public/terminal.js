@@ -234,7 +234,13 @@
           const bredde = Math.max(...rader.map((x) => x.navn.length));
           rader.forEach((x) =>
             okt.skriv(`${esc(x.navn)}${" ".repeat(bredde - x.navn.length + 2)}${esc(x.pris)}`));
-          okt.skriv("<i>alle priser eks. mva. Hele listen: <u>open priser</u></i>");
+          // Sto «alle priser eks. mva». Foretaket er ikke mva-registrert
+          // (verifisert mot Enhetsregisteret, se src/data/firma.ts), og kan
+          // derfor ikke fakturere mva – «eks. mva» lover et tillegg som aldri
+          // kommer. Fila er statisk og kan ikke importere `mvaSetning` fra
+          // src/data/priser.ts, så ordlyden speiles herfra. Endres `firma.mva`
+          // til true, skal denne linjen rettes i samme omgang.
+          okt.skriv("<i>prisene er endelige – foretaket er ikke mva-registrert. Hele listen: <u>open priser</u></i>");
         } catch {
           venter.remove();
           okt.skriv("<i>klarte ikke å hente prisene. <u>open priser</u></i>");

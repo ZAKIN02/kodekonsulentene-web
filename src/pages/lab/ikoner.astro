@@ -59,7 +59,15 @@ const navn = Object.keys(IKONER) as IkonNavn[];
     <div class="wrap stack">
       <p class="kk-eyebrow"><span class="kk-eyebrow-n">//</span> <span>Diagram</span></p>
       <h2 class="heading">Flyten, håndskrevet</h2>
-      <p class="muted">Tre noder og to piler. mermaid veier 122 MB upakket for dette.</p>
+      {/* Tallet sto uten versjon og uten dato, og et pakkevekttall uten begge
+          deler er verdiløst: neste utgivelse kan være halvparten. Kontrollert
+          7. oktober 2026 mot registry.npmjs.org/mermaid/latest, som oppgir
+          `dist.unpackedSize: 122268705` (122,3 MB) og 1 329 filer for 12.1.0. */}
+      <p class="muted">
+        Tre noder og to piler. mermaid 12.1.0 veier 122 MB upakket for dette
+        (<a class="kk-link" href="https://registry.npmjs.org/mermaid/latest" rel="nofollow">npm-registeret</a>,
+        lest 7. oktober 2026).
+      </p>
       <svg class="flyt" viewBox="0 0 640 120" role="img"
         aria-label="Flyt: kunden booker, betaler med Vipps, og ordren havner i regnskapet.">
         <defs>

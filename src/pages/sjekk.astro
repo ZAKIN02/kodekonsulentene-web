@@ -14,6 +14,11 @@ import Terminal from "../components/Terminal.astro";
 import ContactBlock from "../components/ContactBlock.astro";
 import ForOgEtter from "../components/ForOgEtter.astro";
 import { firma } from "../data/firma";
+import { loepende, prisenhet } from "../data/priser";
+
+/* Prisen sto skrevet av, med «eks. mva» på et foretak som ikke er
+   mva-registrert. Begge deler hentes nå fra prislisten. */
+const lovsjekkPris = loepende.find((r) => r.navn === "Lovsjekk-pakke")?.pris ?? "";
 
 import "../styles/scener.css";
 
@@ -187,7 +192,7 @@ const schema = verktoy({
       Seksjonen taper ingenting på det. Den er fire linjer tekst og to knapper –
       en avslutning, ikke et øyeblikk. Film bak en CTA er dekorasjon, og
       brandboken rangerer «ingenting» over et bilde som ikke forklarer noe. */}
-  <Section n={3} eyebrow="Etterpå" tittel="Vil du at vi fikser det?" ingress="Lovsjekk-pakken er 7 900 kr eks. mva og dekker cookies, universell utforming, lovpålagt informasjon og personvernerklæring på den siden du har i dag. Du trenger ikke ny nettside for det.">
+  <Section n={3} eyebrow="Etterpå" tittel="Vil du at vi fikser det?" ingress={`Lovsjekk-pakken er ${lovsjekkPris} – ${prisenhet} – og dekker cookies, universell utforming, lovpålagt informasjon og personvernerklæring på den siden du har i dag. Du trenger ikke ny nettside for det.`}>
     <div class="row">
       <Button variant="primary" href="/priser">Se hva det koster</Button>
       <Button variant="ghost" href="/sikkerhet">Les om sikkerhetsarbeidet</Button>

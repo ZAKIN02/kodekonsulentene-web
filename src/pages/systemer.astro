@@ -10,13 +10,50 @@ import ContactBlock from "../components/ContactBlock.astro";
 import { bookUrl } from "../data/firma";
 import { flyter } from "../data/flyter";
 import { tjeneste } from "../data/schema";
+import { pakker, prisenhet, mvaSetning } from "../data/priser";
+
+/* Systemprisen sto skrevet av i metabeskrivelsen, med «eks. mva» på et foretak
+   som ikke kan fakturere mva. Hentes nå fra prislisten. */
+const systemPris = pakker.find((p) => p.navn === "System")?.pris ?? "";
 
 import "../styles/scener.css";
 
+/**
+ * TO TREDJEPARTSFAKTA STO HER UTEN KILDE OG UTEN DATO.
+ *
+ * Det er andres priser og andres abonnementsvilkår. De endrer seg uten at vi får
+ * beskjed, og en kunde som planlegger ut fra et gammelt gebyr hos oss, oppdager
+ * det først i sin egen faktura. Begge er derfor slått opp på nytt og merket med
+ * hvor og når – `kilde` vises i teknisk-kolonnen, ikke bare i kildekoden.
+ *
+ * Vipps, kontrollert 7. oktober 2026 på vippsmobilepay.com/nb-NO/pricing:
+ *   «Faste betalinger: 2,99 % + 1 NOK per transaksjon»
+ *   «Betalingslenker: 2,49 % + 1 NOK per transaksjon»
+ * Tallene på siden stemte. De sto bare uten noe å etterprøve dem mot.
+ *
+ * Tripletex, kontrollert 7. oktober 2026 på tripletex.no/priser: her STEMTE det
+ * ikke helt. Prissiden sier at Smart-pakken kan «utvides med integrasjoner», at
+ * «Integrasjoner» er en tilleggstjeneste til 129 kr/mnd, at Pro inneholder
+ * «alt fra Smart + integrasjoner», og at «noen integrasjoner krever
+ * Komplett-pakken». Betegnelsen «API 2.0» står ikke på prissiden i det hele
+ * tatt – den er hentet fra hjelpesidene. Teksten er rettet til det som faktisk
+ * står der, og forbeholdet om Komplett er lagt til, siden det er det som kan
+ * gjøre integrasjonen dyrere enn kunden regnet med.
+ */
 const integrasjoner = [
   { navn: "Booking", verdi: "Timer bestilles og betales døgnet rundt, uten en telefon.", teknisk: "Cal.com eller eget system i Supabase" },
-  { navn: "Vipps", verdi: "Norske kunder betaler med det de allerede har på telefonen.", teknisk: "2,99 % + 1 kr integrert, 2,49 % + 1 kr på betalingslenke" },
-  { navn: "Tripletex / Fiken / PowerOffice", verdi: "Tilbud blir ordre blir faktura – uten at noen skriver tallene inn på nytt.", teknisk: "Tripletex krever Smart-pakke og tillegget «Integrasjoner» (API 2.0)" },
+  {
+    navn: "Vipps",
+    verdi: "Norske kunder betaler med det de allerede har på telefonen.",
+    teknisk: "2,99 % + 1 kr for integrert betaling, 2,49 % + 1 kr på betalingslenke",
+    kilde: { tekst: "vippsmobilepay.com, lest 7. oktober 2026", url: "https://vippsmobilepay.com/nb-NO/pricing" },
+  },
+  {
+    navn: "Tripletex / Fiken / PowerOffice",
+    verdi: "Tilbud blir ordre blir faktura – uten at noen skriver tallene inn på nytt.",
+    teknisk: "Tripletex: «Integrasjoner» er et tillegg på 129 kr/mnd fra Smart-pakken, og noen integrasjoner krever Komplett",
+    kilde: { tekst: "tripletex.no/priser, lest 7. oktober 2026", url: "https://www.tripletex.no/priser/" },
+  },
   { navn: "Skjema til CRM", verdi: "Ingen henvendelse blir liggende i en innboks.", teknisk: "HubSpot, Pipedrive eller egen tabell" },
   { navn: "BankID", verdi: "Avtaler signeres på minutter, juridisk bindende.", teknisk: "Criipto/Idura eller Signicat – ferdig tjeneste til du har volum" },
   { navn: "Kundeportal", verdi: "Kunden ser status, filer og fakturaer selv.", teknisk: "Supabase med radnivå-sikkerhet" },
@@ -36,7 +73,7 @@ const schema = tjeneste({
 ---
 <Base
   tittel="Systemer og integrasjoner"
-  beskrivelse="Booking, Vipps, Tripletex, Fiken, PowerOffice og BankID koblet sammen til ett system, slik at ingen skriver samme tall to ganger. Fra 60 000 kr eks. mva."
+  beskrivelse={`Booking, Vipps, Tripletex, Fiken, PowerOffice og BankID koblet sammen til ett system, slik at ingen skriver samme tall to ganger. Fra ${systemPris} – ${prisenhet}.`}
   schema={[schema]}
 >
   <Scene lav>
@@ -53,16 +90,43 @@ const schema = tjeneste({
 
   <Scene n={2} eyebrow="Typisk" tittel="Hvordan det ser ut i praksis" id="eksempel">
     <div class="grid-2">
+      {/*
+        HER STO ET KUNDEFORLØP SOM IKKE FINNES.
+
+        Teksten var: «En klinikk med fire behandlere brukte to timer i uken på å
+        ringe tilbake om ledige timer, og en halv dag i måneden på å avstemme
+        Vipps mot regnskapet.» Fire behandlere, to timer, en halv dag – tre tall
+        om en navngitt kundetype, i fortid, uten et eneste forbehold.
+
+        Det finnes ingen slik kunde. Den står ikke i src/data/caser.ts, der alle
+        oppdrag ligger, og det nærmeste er `booking-demo`, som der er merket
+        «Ikke et levert oppdrag» og har type «Demo» nettopp for at ingen skal tro
+        noe annet. /caser slår selv fast regelen i klartekst: «Konsept er merket
+        konsept» og «Et anslag presentert som en måling er en løgn med desimaler».
+        Denne siden brøt begge.
+
+        Rettingen er ikke å mykne tallene – da hadde de fortsatt vært oppdiktet.
+        Avsnittet beskriver nå flyten systemet er bygget for, i presens, uten tall
+        vi ikke har målt, og det sier rett ut at det er et eksempel. Kommer det en
+        ekte klinikk med målt tidsbruk, hører den hjemme i caser.ts med tallene
+        sine – og da kan den siteres her.
+      */}
       <div class="stack">
         <p class="body-lg muted">
-          En klinikk med fire behandlere brukte to timer i uken på å ringe tilbake om ledige
-          timer, og en halv dag i måneden på å avstemme Vipps mot regnskapet.
+          Et eksempel, ikke en kunde: en klinikk tar timebestillinger på telefon i
+          åpningstiden, ringer tilbake om ledige timer, og avstemmer Vipps mot regnskapet
+          for hånd etterpå.
         </p>
         <p class="muted">
-          Etter: kunden booker og betaler selv, timen havner i behandlerens kalender,
-          betalingen havner som ordre i Fiken, og påminnelsen går ut på SMS 24 timer før.
-          Ingen taster noe. Det er dette vi mener med «system» – ikke en nettside med
-          et skjema på.
+          Med et system: kunden booker og betaler selv, timen havner i behandlerens
+          kalender, betalingen havner som ordre i Fiken, og påminnelsen går ut på SMS
+          24 timer før. Ingen taster noe. Det er dette vi mener med «system» – ikke en
+          nettside med et skjema på.
+        </p>
+        <p class="small faint">
+          Dette er flyten i demoen vår, ikke et levert oppdrag. Vi har ikke målt tidsbruk
+          hos en klinikk, og setter derfor ingen tall på hva det sparer. Hva vi har levert,
+          og hva som er øvelse, står på <a class="kk-link" href="/caser">caser</a>.
         </p>
         <Button variant="ghost" href="/bransjer/klinikker">Se bransjesiden for klinikker</Button>
       </div>
@@ -134,12 +198,20 @@ const schema = tjeneste({
           <h3 class="subheading">{i.navn}</h3>
           <p class="muted">{i.verdi}</p>
           <p class="mono faint">{i.teknisk}</p>
+          {/* Står det et gebyr eller et abonnementskrav i teknisk-linjen, skal
+              leseren kunne åpne siden det er lest fra. Et tredjepartstall uten
+              lenke og dato er et tall vi ber noen stole på. */}
+          {"kilde" in i && i.kilde && (
+            <p class="small faint">
+              Kilde: <a class="kk-link" href={i.kilde.url} rel="nofollow">{i.kilde.tekst}</a>
+            </p>
+          )}
         </Avslor>
       ))}
     </div>
   </Scene>
 
-  <Scene n={4} class="flate--varm" eyebrow="Pris" tittel="System fra 60 000 kr" ingress="Prisen følger antall integrasjoner og hvor mye som må holdes i orden etterpå. Du får fast pris før vi begynner, og 40 % faktureres ved oppstart. Eks. mva.">
+  <Scene n={4} class="flate--varm" eyebrow="Pris" tittel={`System fra ${systemPris}`} ingress={`Prisen følger antall integrasjoner og hvor mye som må holdes i orden etterpå. Du får fast pris før vi begynner, og 40 % faktureres ved oppstart. ${mvaSetning}`}>
     <div class="row">
       <Button variant="primary" href="/kontakt">Beskriv behovet</Button>
       <Button variant="ghost" href="/priser">Se hele prislisten</Button>

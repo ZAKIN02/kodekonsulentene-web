@@ -20,7 +20,7 @@ leverer.
 For norske småbedrifter som har vokst ut av Wix-siden: nettsider og systemer som
 henger sammen med booking, Vipps og regnskap – sikkert, raskt og til fast pris.
 
-## Priser (alle eks. mva)
+## Priser (endelige – foretaket er ikke mva-registrert)
 
 - Start, 14 900 kr: 1–3 sider, booking eller skjema, grunnleggende SEO, lovsjekk
 - Bedrift, 29 900 kr: 5–8 sider med CMS, lokal SEO, cookieløs analyse, to revisjonsrunder

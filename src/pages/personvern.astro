@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import Hukommelse from "../components/Hukommelse.astro";
 import Section from "../components/Section.astro";
 import { firma } from "../data/firma";
 const oppdatert = "5. oktober 2026";
@@ -133,3 +134,8 @@ const oppdatert = "5. oktober 2026";
     </div>
   </Section>
 </Base>
+  {/* Vi paastaar ikke hva vi lagrer – siden MAALER det i leserens egen
+      nettleser. Udokumenterte noekler havner i en egen rad merket «ikke
+      dokumentert», saa det er en lekkasjetest som gaar hver gang noen
+      aapner sida, ikke et loefte i en tekst. */}
+  <Hukommelse />

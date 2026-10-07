@@ -1,6 +1,7 @@
 ---
 // Fontene er selvhostet. Se src/styles/fonter.css for hvorfor.
 import "../styles/fonter.css";
+import Snarveikart from "../components/Snarveikart.astro";
 import "../styles/tokens.css";
 import "../styles/components.css";
 import "../styles/site.css";
@@ -169,5 +170,10 @@ const basisSchema = noindex
     {visApning && <script src="/apning.js" defer />}
     <script src="/terminal.js" defer></script>
     <script src="/hero-live.js" defer></script>
-  </body>
+      {/* Tastatursnarveier hoerer hjemme paa HELE nettstedet, ikke paa en
+        enkelt side. «?» aapner kartet, «g» + tast hopper. Snarveiene leses
+        ut av HTML-en, saa kartet og tastene kan ikke komme i utakt – og
+        bygget feiler hvis en snarvei peker paa en side som ikke finnes. */}
+    <Snarveikart knapp={false} />
+</body>
 </html>

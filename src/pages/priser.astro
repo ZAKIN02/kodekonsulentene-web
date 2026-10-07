@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import Prisvelger from "../components/Prisvelger.astro";
 import Scene from "../components/Scene.astro";
 import Mega from "../components/Mega.astro";
 import Avslor from "../components/Avslor.astro";
@@ -33,6 +34,12 @@ const prisFaq = faq.filter((f) => /binding|endre|koster|eier/i.test(f.q));
         for de to andre, altsaa opptil 38 px forskjoevet loddrett – det leste som
         at raden ikke var i linje. Det anbefalte kortet skiller seg fortsatt ut
         der det betyr noe: merkelapp, lys flate og invertert knapp. */}
+    {/* Velg, og se konsekvensen i kroner med en gang. Kjernen er ren CSS –
+        :has() og :checked velger pakke uten en linje JavaScript, saa den
+        virker ogsaa uten. Prisene kommer fra samme beregn() som resten av
+        nettstedet, ikke fra en kopi som kan drive. */}
+    <Prisvelger class="priskort-rad" />
+
     <div class="grid-3 priskort-rad">
       {pakker.map((p, k) => (
         <Avslor

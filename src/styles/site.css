@@ -127,7 +127,23 @@ a:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
 .section + .section { padding-top: var(--space-6); }
 @media (min-width: 721px) { .section + .section { padding-top: var(--space-7); } }
 
-.section__head { display: grid; gap: var(--space-3); max-width: 44ch; margin-bottom: var(--space-6); }
+/* ---- Ett spor, og det er aldri bredere enn det som staar rundt det --------
+ *
+ * `minmax(0, 1fr)` og ikke bare `display: grid`. Et rutenett uten
+ * grid-template-columns faar ETT implisitt `auto`-spor, og et auto-spor er
+ * `max-content` bredt. Det krymper ikke under innholdet sitt selv om beholderen
+ * er smalere – det stikker ut. Begrunnelsen staar allerede over `.stack` her i
+ * fila; dette er de samme rutenettene som manglet den.
+ *
+ * Maalt 7. oktober ved 320 px, med `overflow-x: clip` som skjulte alt sammen:
+ *   .section__head paa /personvern   spor 329 px i 272 – overskriften 33 px ut
+ *   .scene__inner i .bevisrad paa /   spor 302 px i 272 – noekkeltallene 6 px ut
+ * Ingen av dem kunne naas: sperren mot sidelengs drag gjoer at innhold som
+ * stikker ut forsvinner i stedet for aa dra siden ut av form.
+ *
+ * Der ingenting stikker ut er endringen null: et strukket enkeltspor er like
+ * bredt med `minmax(0, 1fr)` som med `auto`. */
+.section__head { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3); max-width: 44ch; margin-bottom: var(--space-6); }
 .section__head p { color: var(--ink-muted); }
 /* Eyebrow -> overskrift beholder 12: etiketten MERKER overskriften og hoerer til
    den. Ingressen under er neste tanke, og faar et eget trinn i tillegg til gapet.
@@ -182,34 +198,30 @@ a:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
 }
 
 /* ---- Topplinje ---- */
-/* Topplinja er klebrig og 166 px hoey paa mobil. Uten scroll-padding-top parkerer
-   ethvert programmatisk hopp – ankerlenker, fokus, scrollIntoView – innholdet UNDER
-   den. En agent traff dette live: et simulert trykk landet paa menyen og navigerte
-   til feil side. Verdien bor her fordi hoeyden bor her; en komponent som satte sin
-   egen scroll-margin ville bare gjettet paa hvor hoey topplinja er. */
+/* Topplinja er klebrig. Uten scroll-padding-top parkerer ethvert programmatisk
+   hopp – ankerlenker, fokus, scrollIntoView – innholdet UNDER den. En agent traff
+   dette live: et simulert trykk landet paa menyen og navigerte til feil side.
+   Verdien bor her fordi hoeyden bor her; en komponent som satte sin egen
+   scroll-margin ville bare gjettet paa hvor hoey topplinja er. */
 html { scroll-padding-top: calc(var(--topplinje-hoyde, 80px) + var(--space-3)); }
 .topbar { border-bottom: var(--hairline) solid var(--line); background: var(--bg); }
 .topbar__inner { display: flex; align-items: center; gap: var(--space-5); min-height: 64px; }
 .topbar__logo { display: inline-flex; align-items: center; margin-right: auto; }
-.topbar__logo img { height: 22px; width: auto; }
-/* Menyen er en vannrett scroller paa mobil: 519 px innhold i 316 px. Tre toppsider
-   faller utenfor, og «Sikkerhet» sto avkuttet som «Sikkerl» paa hver eneste skjerm –
-   uten at noe antydet at den kunne dras. Tonet kant i enden er den enkleste aapenbare
-   hinten, og den forsvinner naar brukeren har scrollet helt ut. */
+/* `flex: none`. Maalt 7. oktober paa 861–1019 px: ordmerket ble PRESSET fra
+   169,9 til 77 px bredt mens hoeyden sto paa 22 – altsaa 45 % bredde, en
+   horisontalt klemt logo paa hver eneste side i hele det spennet. Aarsaken er to
+   regler som moetes: logoen er et flex-barn som kan krympe, og den globale
+   `img { max-width: 100% }` lar bildet foelge med ned. En logo er det ene
+   elementet paa et nettsted som ikke faar endre form. */
+.topbar__logo { flex: none; }
+.topbar__logo img { height: 22px; width: auto; max-width: none; flex: none; }
+/* Menyen er en vannrett scroller under 861 px: 535 px innhold i 316 px paa 390.
+   Tre toppsider faller utenfor. To ting gjoeres her:
+     1. Tonet kant i BEGGE ender, styrt av scrollposisjonen, saa kanten bare staar
+        der det faktisk er mer aa hente. Degraderingen er dagens ene hoeyrekant.
+     2. Topbar.astro drar lenken for GJELDENDE side inn i syne. Foer sto du paa
+        /om, /priser eller /verktoy uten aa se at du var der – merket laa utenfor. */
 .topbar nav { display: flex; gap: var(--space-5); }
-@media (max-width: 640px) {
-  /* Topplinja er 166 px her, mot 80 paa skrivebord. Verdien maa foelge med, ellers
-     parkerer ankerhopp innholdet under den. */
-  :root { --topplinje-hoyde: 166px; }
-  .topbar nav {
-    overflow-x: auto;
-    scrollbar-width: none;
-    padding-inline-end: var(--space-4);
-    mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
-  }
-  .topbar nav::-webkit-scrollbar { display: none; }
-  .topbar nav a { flex: 0 0 auto; }
-}
 .topbar nav a {
   font-size: 14px; line-height: 20px; color: var(--ink-muted); text-decoration: none;
   padding-block: var(--space-2);
@@ -219,11 +231,73 @@ html { scroll-padding-top: calc(var(--topplinje-hoyde, 80px) + var(--space-3)); 
   color: var(--accent-text);
   border-bottom: var(--focus-width) solid var(--accent-text);
 }
+
+/* Kantene som animeres. Registrerte egenskaper, ellers kan de ikke interpoleres –
+   en uregistrert var() i en gradient hopper rett til sluttverdien. */
+@property --meny-kant-v { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@property --meny-kant-h { syntax: "<length>"; inherits: false; initial-value: 28px; }
+
 @media (max-width: 860px) {
-  .topbar__inner { flex-wrap: wrap; padding-block: var(--space-3); }
+  /* Topplinja var 166 px paa 390 OG 412, og 168 px fra 641 til 860 – mot 80 paa
+     skrivebord. Det er 20 % av skjermen der plassen er minst. Regnskapet var:
+     ytre polstring 24 + indre polstring 24 + rad 1 (44) + radgap 24 + rad 2 (48).
+     Tre av de fem leddene er ren luft rundt luft:
+       ytre polstring   12 -> 8   (-8)
+       indre polstring  12 -> 8   (-8)
+       radgap           24 -> 8   (-16)   lenkene har selv 12 px over og under
+       nav-bunnpolstring 4 -> 0   (-4)    plassen var til et rullefelt vi skjuler
+     Igjen staar 130 px, og ingen av de to radene mistet en piksel: logolenken er
+     fortsatt 44 px hoey, og hver menylenke er fortsatt 44. Det er WCAG 2.5.8 sitt
+     krav med 20 px til overs.
+     Verdien MAA foelge med hit, ellers parkerer ankerhopp innholdet under linja. */
+  :root { --topplinje-hoyde: 130px; }
+  .topbar__inner { flex-wrap: wrap; padding-block: var(--space-2); row-gap: var(--space-2); }
   .topbar__logo { margin-right: auto; }
-  .topbar nav { order: 3; width: 100%; gap: var(--space-4); overflow-x: auto; padding-bottom: var(--space-1); }
+  .topbar nav {
+    order: 3;
+    width: 100%;
+    gap: var(--space-4);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    padding-bottom: 0;
+    padding-inline-end: var(--space-4);
+    scrollbar-width: none;
+    /* Dagens oppfoersel, og reserven: én tonet kant i hoeyre ende. */
+    mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+  }
+  .topbar nav::-webkit-scrollbar { display: none; }
+  .topbar nav a { flex: 0 0 auto; }
+
+  /* Begge kanter, og de forsvinner hver for seg naar du har naadd sin ende.
+     Langformer, aldri stenografi: lightningcss slaar `animation` +
+     `animation-timeline` sammen til en ugyldig form som nettleseren forkaster
+     uten aa si fra – samme felle som bet avsloeringene i scener.css. */
+  @supports (animation-timeline: scroll(self inline)) {
+    .topbar nav {
+      mask-image: linear-gradient(
+        to right,
+        transparent 0, #000 var(--meny-kant-v),
+        #000 calc(100% - var(--meny-kant-h)), transparent 100%);
+      animation-name: meny-kanter;
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(self inline);
+    }
+  }
 }
+@keyframes meny-kanter {
+  from { --meny-kant-v: 0px;  --meny-kant-h: 28px; }
+  to   { --meny-kant-v: 28px; --meny-kant-h: 0px; }
+}
+
+/* WCAG 2.5.8 har ingen bruddpunkt. Over 860 px maalte logolenken 170x22 og
+   nav-lenken «Om» 22,7x36 – begge under 24x24, og begge FRITTSTAAENDE lenker, saa
+   unntaket for ord inne i en setning gjelder ikke. Rettingen laa i mobilblokken
+   og stoppet paa 860. Luften legges som polstring, saa linjeboksen – og dermed
+   linjehoeyden i topplinja – staar uendret. */
+.topbar__logo { min-height: 44px; }
+.topbar nav a { display: inline-flex; align-items: center; min-height: 44px; padding-inline: var(--space-1); white-space: nowrap; }
 
 .iconbtn {
   display: inline-flex; align-items: center; justify-content: center;
@@ -243,7 +317,7 @@ html[data-theme="light"] .iconbtn [data-icon="moon"] { display: none; }
 .hero > .wrap { position: relative; z-index: 1; }
 @media (min-width: 861px) { .hero { padding-block: var(--space-9) var(--space-8); min-height: 78svh; display: flex; align-items: center; } }
 @media (min-width: 861px) { .hero > .wrap { width: 100%; } }
-.hero__grid { display: grid; gap: var(--space-7); align-items: start; }
+.hero__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-7); align-items: start; }
 @media (min-width: 861px) { .hero__grid { grid-template-columns: 7fr 5fr; gap: var(--space-8); } }
 .hero h1 { max-width: 20ch; }
 .hero h1 em { font-style: normal; color: var(--accent-text); }
@@ -261,7 +335,7 @@ html[data-theme="light"] .iconbtn [data-icon="moon"] { display: none; }
    Foer: overskrift -> avsnitt 16, avsnitt -> avsnitt 16. Like store. Da bandt
    overskriften ingenting, og /handbok, /personvern, /vilkar og de tre artiklene
    leste som en jevn remse. Maalt paa alle seks. */
-.prose { max-width: 68ch; display: grid; gap: var(--space-4); }
+.prose { max-width: 68ch; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); }
 .prose h2 { font-family: var(--font-display); font-size: 28px; line-height: 34px; font-weight: 700; letter-spacing: -0.015em; }
 .prose h3 { font-family: var(--font-display); font-size: 20px; line-height: 28px; font-weight: 600; letter-spacing: -0.01em; }
 /* `* + h2`, ikke `h2`: en marg paa det foerste barnet i et rutenett dytter hele
@@ -340,19 +414,81 @@ html[data-theme="light"] .iconbtn [data-icon="moon"] { display: none; }
 /* Avrunding og hvileskygge kommer fra form-tokenene. .card er definert HER, og
    site.css lastes etter components.css, så en regel der ble overstyrt uten å si
    fra – kortet sto flatt på åtte sider mens alt annet hadde fått dybde. */
-.card { border: var(--hairline) solid var(--line); border-radius: var(--kk-radius-kort); box-shadow: var(--kk-hvile); background: var(--bg-raised); padding: var(--space-5); display: grid; gap: var(--space-4); align-content: start; }
+.card { border: var(--hairline) solid var(--line); border-radius: var(--kk-radius-kort); box-shadow: var(--kk-hvile); background: var(--bg-raised); padding: var(--space-5); display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); align-content: start; }
 .card--sunken { background: var(--bg-sunken); }
 .shot { border: var(--hairline) solid var(--line); border-radius: var(--radius-md); overflow: hidden; background: var(--bg-sunken); }
 
-.kv { display: grid; gap: var(--space-2); }
-.kv div { display: flex; justify-content: space-between; gap: var(--space-4); padding-block: var(--space-2); border-top: var(--hairline) solid var(--line); font-size: 14px; line-height: 20px; }
+/* Avstanden ble talt to ganger. Raden hadde `padding-block: 8` OG lista hadde
+   `gap: 8`, saa over haarlinja laa 8 + 8 = 16 px og under den 8 – maalt 16 mot 9
+   paa 22 sider. Streken er skillet mellom to rader; staar den naermere raden
+   under enn raden over, leses den som et TAK over neste rad i stedet for et
+   skille mellom to likeverdige. Lista mister sitt gap, raden tar hele avstanden,
+   og summen mellom to tekstlinjer er den samme som foer: 24 px. */
+.kv { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; }
+.kv div { display: flex; justify-content: space-between; gap: var(--space-4); padding-block: var(--space-3); border-top: var(--hairline) solid var(--line); font-size: 14px; line-height: 20px; }
 .kv dt, .kv .k { color: var(--ink-muted); }
 .kv dd, .kv .v { margin: 0; font-family: var(--font-mono); color: var(--ink); font-variant-numeric: tabular-nums; }
 
+/* Verdien fikk ikke plass, og ble borte.
+ *
+ * Maalt 7. oktober paa /status ved 360 px, altsaa en vanlig Android-bredde:
+ *   «≥ 95 paa alle fire kategorier»   stakk 25 px ut og sto som «≥ 95 paa alle fire kategor»
+ *   «< 0,1»                           sto som «<»
+ *   «< 200 ms»                        sto som «< 200»
+ *   «maks 2, latin, font-display: swap» avkuttet midt i ordet
+ *   verdien for «Tredjepartsskript foer samtykke» var HELT utenfor skjermen
+ * Ved 320 px var overskytelsen 65 px, og paa /priser 32 px paa fire prisrader.
+ * Ingen av dem kunne naas: `overflow-x: clip` paa html og body hindrer dra, saa
+ * innholdet forsvant i stedet for aa dra siden ut av form – usynlig for enhver
+ * test som bare ser etter sidelengs scroll.
+ *
+ * Aarsaken er at raden er en flex-linje som ikke faar brytes, med en verdi i
+ * `white-space: nowrap` som ikke kan krympe. `flex-wrap: wrap` lar verdien falle
+ * ned paa sin EGEN linje naar den ikke faar plass ved siden av etiketten – og
+ * bare da. Faar den plass, staar raden noeyaktig som foer.
+ *
+ * Verdien faar samtidig lov til aa brytes i flere linjer, for to av verdiene paa
+ * /status er lengre enn hele skjermen alene. `text-align: end` holder de korte
+ * verdiene flush hoeyre, slik tabellblikket i lista krever. */
+@media (max-width: 720px) {
+  .kv div { flex-wrap: wrap; }
+  /* `flex: 1 1 7rem` paa etiketten, og det er hele forskjellen mellom en retting
+     og en ny feil.
+     En flexlinje brytes ut fra barnas HYPOTETISKE stoerrelse, og den er
+     max-content saa lenge flex-basis er `auto`. Flere etiketter i .kv er et helt
+     avsnitt – paa /priser staar «Side bygget, hosting, endringer og
+     sikkerhetsoppdateringer. Ingen oppstartskostnad, 12 maaneder binding …» i dt.
+     Max-content av DET er langt bredere enn skjermen, saa raden brakk alltid, og
+     prisen falt ned under avsnittet paa en side der prisen er det man ser etter.
+     Maalt ved 390 px: alle fire prisene flyttet seg, ogsaa de som hadde god plass.
+     Med basis 7rem teller etiketten som 112 px i brytningsregnestykket, og raden
+     brytes bare naar VERDIEN ikke faar plass ved siden av den. Da – og bare da –
+     faar verdien hele linjen under. `1 1` gjoer at etiketten fortsatt faar all
+     resten av plassen naar raden holder seg paa én linje. */
+  .kv dt, .kv .k { flex: 1 1 7rem; min-width: 0; }
+  .kv dd, .kv .v, .kv dd.nowrap {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    white-space: normal;
+    text-align: end;
+    text-wrap: pretty;
+  }
+}
+
 /* ---- Skjema ---- */
-.field { display: grid; gap: var(--space-2); }
+/* Etikett -> felt og felt -> hjelpetekst laa begge paa 8 px, saa hjelpeteksten
+   hang like mye paa etiketten UNDER som paa feltet OVER – den sa ikke hvilket
+   felt den forklarte. Og to felt sto bare 16 px fra hverandre, altsaa tettere
+   enn to avsnitt. Takten er naa 8 / 4 / 24: etiketten binder feltet, hjelpen
+   binder seg til feltet over, og skillet mellom to felt er det stoerste. */
+.field { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-2); }
 .field > label { font-size: 14px; line-height: 20px; font-weight: 600; }
-.field > .hint { font-size: 14px; line-height: 20px; color: var(--ink-faint); }
+.field > .hint { font-size: 14px; line-height: 20px; color: var(--ink-faint); margin-top: calc(var(--space-1) - var(--space-2)); }
+/* Skjemaene er alle `form.card`, og .card gir 16 px. Tillegget regnes mot DEN
+   verdien; en .field i en .stack (24) har allerede riktig avstand og roeres
+   ikke. I et rutenett legges margen TIL gapet – den kollapser ikke. */
+.card > .field + .field { margin-top: calc(var(--space-5) - var(--space-4)); }
 .control {
   min-height: 44px; padding: var(--space-3); width: 100%;
   background: var(--bg-sunken); color: var(--ink);
@@ -507,19 +643,10 @@ textarea.control {
      gjelder fortsatt – inline-lenker i brødtekst røres ikke. Det som
      rettes her er lenker som står som egne mål: logo, meny og footer. */
 
-  /* Logoen var 170x22. Bildet beholder sin høyde; lenken får treffflaten. */
-  .topbar__logo { min-height: 44px; }
-
-  /* «Om» var 23 px bred. Luft på sidene gir bredde uten å flytte teksten. */
-  .topbar nav a {
-    min-height: 44px;
-    display: inline-flex;
-    align-items: center;
-    padding-inline: var(--space-1);
-    /* Uten denne brakk «Apper og AI» til to linjer og gjorde hele menyraden
-       dobbelt så høy. Menyen scroller allerede vannrett, så den har plassen. */
-    white-space: nowrap;
-  }
+  /* Logoen og menylenkene sto her. De er flyttet opp til topplinje-avsnittet og
+     gjort bruddpunktfrie 7. oktober: WCAG 2.5.8 gjelder ogsaa over 860 px, og
+     maalingen viste 170x22 og 22,7x36 nettopp DER. To kopier av samme regel er
+     feilen som gjorde maskeoverstyringen paa /systemer til doed CSS. */
 
   /* Footer-lenkene sto som 17 px høye mål i en liste. En lenkeliste er
      ikke «inline i en setning», så unntaket gjelder ikke her. */
@@ -714,3 +841,156 @@ html, body { overflow-x: clip; }
    og ned mens man scroller. Maalt uten denne margen: foerste kort la seg 4 px
    OPPAA ingressen. Margen maa derfor daekke hele utslaget, ikke bare gi luft i ro. */
 .priskort-rad { margin-block-start: var(--space-7); }
+
+
+/* ---- Rutenett som eies andre steder, men som bare stikker ut paa mobil ----
+ *
+ * `section.bevisrad` og ikke `.bevisrad`: grunnregelen
+ * `.bevisrad .scene__inner { display: grid }` staar i scener.css, som sidene
+ * importerer ETTER site.css. Paa lik spesifisitet (0-2-0) vinner den som kommer
+ * sist, og regelen her hadde vaert doed CSS – noeyaktig slik maskeoverstyringen
+ * paa /systemer ble det. Elementnavnet loefter oss til (0-2-1) og avgjoer det
+ * uten !important.
+ *
+ * Maalt ved 320 px paa forsiden: sporet var 302 px i en 272 px beholder, fordi
+ * `auto` betyr max-content – og max-content her er etiketten «Sikkerhetsheadere
+ * paa denne siden» i full bredde. Noekkeltallene, maalestreken under dem og
+ * etiketten sto 6 px utenfor skjermkanten, klippet bort av `overflow-x: clip`. */
+section.bevisrad .scene__inner { grid-template-columns: minmax(0, 1fr); }
+
+/* Fullbredde-rammen i Storflate dro hele lesespalten med seg ut.
+ *
+ * `.storflate__ramme` bryter ut til vindusbredde med `inline-size: 100vw` pluss
+ * `margin-inline-start: 50%` og `translateX(-50%)`. Flyttingen er riktig, men
+ * BREDDEN er ikke: 100vw er ogsaa rammens max-content, og i et rutenett blir det
+ * sporets bredde. Paa /lab/storflate ligger figuren som barn av `main.wrap`, saa
+ * sporet ble 100vw inne i en beholder som er 100vw MINUS 2 x 24 px polstring –
+ * og baade overskriften, ingressen og bildeteksten ble strukket til det sporet
+ * og laa 24 px utenfor skjermkanten. Paa alle fem maalte bredder, i begge
+ * temaer, og 192 px utenfor paa 1440.
+ *
+ * Negative marger gjoer samme flytting uten aa roere bredden: `50%` regnes mot
+ * forelderen, saa boksen vokser symmetrisk ut til vindusbredde mens max-content
+ * forblir forelderens. Maalt paa / og /sikkerhet ved 320, 390, 412, 430, 861 og
+ * 1440 px: rammens rektangel er IDENTISK foer og etter – L0, R = vindusbredde.
+ * Det er bare /lab/storflate som endrer seg, og den endrer seg til riktig.
+ *
+ * Spesifisitet (0-2-0): komponentens egen regel er omfangsmerket av Astro og
+ * lander paa (0-1-0). */
+.storflate > .storflate__ramme {
+  inline-size: auto;
+  margin-inline: calc(50% - 50vw);
+  transform: none;
+}
+
+
+/* ---- Avstand MELLOM blokker, og mellom en blokk og den neste --------------
+ *
+ * Den globale nullstillingen setter p-marg til 0, og `.scene__inner` (scener.css)
+ * er en ren blokkbeholder uten gap. Alt en sidefil legger i en Scene stabler seg
+ * derfor paa NULL. Maalt blekk til blekk – tekstrektangler og synlige kanter, ikke
+ * CSS-verdier, fordi marger kollapser – var medianen 4 px mellom to etterfoelgende
+ * blokker, paa 17 sider:
+ *
+ *   /handbok    ingress -> «Fire steg, kjente tider»        4 px
+ *   /systemer   terminalrad -> flytdiagrammets tittel       0 px
+ *   /nettsider  kortrutenett -> avsnittet under             0 px
+ *   /sikkerhet  terminal -> terminal, terminal -> rapport   0 og 2 px
+ *   /om         pekerkortene -> «Trenger du noe av dette»   1 px
+ *
+ * Det er den samme feilen som limte tre avsnitt sammen i bunnteksten: en
+ * komponent som regner med standardmarger, i et dokument der de er nullet.
+ * Trinnet er --luft-blokk, det samme skillet som brukes mellom blokker ellers. */
+.scene__inner > * + * { margin-block-start: var(--luft-blokk); }
+
+/* Hodet eier allerede avstanden ned til innholdet sitt: `.scene__head` har
+   margin-bottom i scener.css, og den er maalt til 47-52 px. Et tillegg her
+   hadde gitt 96 og gjort hodet til sin egen oey. */
+.scene__inner > .scene__head + * { margin-block-start: 0; }
+
+/* `.bevisrad .scene__inner` er allerede et rutenett med gap (scener.css). I et
+   rutenett LEGGES margen til gapet i stedet for aa kollapse med det, saa regelen
+   over ville gitt 56 der designet sier 24. */
+section.bevisrad .scene__inner > * + * { margin-block-start: 0; }
+
+/* Prisekortene har sin egen, stoerre marg fordi de vandrer. Den staar lenger opp
+   i fila, og uten denne hadde den blitt satt NED til 32 paa mobil. */
+.scene__inner > .priskort-rad { margin-block-start: var(--space-7); }
+
+/* Et dybde-lag har KONTINUERLIG parallakse: det vandrer saa lenge det er i
+ * vinduet, med `--dybde` piksler utslag, og `--dybde` staar som inline variabel
+ * paa elementet. Maalt med bevegelse PAA, og bare naar begge elementene stod paa
+ * full opasitet – ellers maaler man inngangsgesten og ikke avstanden:
+ *
+ *   /handbok   avsnitt -> blokk med dybde 60        -36,6 px paa det verste
+ *   /nettsider kort med dybde 18 -> kort med -14      0 px (de tok borti hverandre)
+ *
+ * En marg som bare daekker avstanden i ro loeyer. Halve utslaget holder, fordi
+ * utslaget er symmetrisk om hvileposisjonen. `max(d, -1 * d)` er absoluttverdien;
+ * `abs()` er for ny til aa kunne staa alene her. */
+.scene__inner > * + .avslor--dybde {
+  margin-block-start: calc(var(--luft-blokk) + max(var(--dybde, 0px), -1 * var(--dybde, 0px)) / 2);
+}
+/* I et rutenett med flere spalter ville det samme tillegget dyttet ETT kort ned
+   i en rad som staar side om side, og raden hadde sluttet aa staa i linje – den
+   feilen er rettet en gang alt. Derfor bare naar rutenettet er EN spalte. */
+@media (max-width: 860px) {
+  :is(.grid-2, .grid-3) > * + .avslor--dybde {
+    margin-block-start: calc(max(var(--dybde, 0px), -1 * var(--dybde, 0px)) / 2);
+  }
+}
+
+/* Eyebrow -> overskrift -> ingress sto paa 17 og 18 px i scene-hodet: samme
+ * avstand over og under overskriften, altsaa ingen binding, paa 16 sider. Med
+ * bevegelse paa gikk ingressen helt ned i -2 px mot overskriften paa /sikkerhet
+ * og /priser. Dette er noeyaktig det `.section__head` fikk rettet lenger oppe;
+ * `.scene__head` er den samme konstruksjonen og ble staaende igjen.
+ * Gapet paa 16 blir staaende for etiketten, som MERKER overskriften og hoerer
+ * til den. Ingressen er neste tanke og faar et eget trinn i tillegg.
+ * `+ *` og ikke `+ p`: ingressen ligger i sin egen Avslor, altsaa en DIV. */
+.scene__head > :is(h1, h2, h3) + * {
+  margin-block-start: calc(var(--luft-overskrift) - var(--space-4));
+}
+
+/* To figurer rett etter hverandre i samme `.wrap` sto paa 2 px paa /sjekk:
+   siste linje i «Metode …» endte bokstavelig talt paa overkanten av panelet
+   under. `.wrap` har ingen rytme, og en <figure> er en egen blokk – ikke neste
+   avsnitt. Bare figur mot figur: `.wrap` brukes ogsaa av bunnteksten og av
+   etikett/overskrift-par som skal ligge tett. */
+.wrap > figure + figure { margin-block-start: var(--luft-blokk); }
+
+/* Samme feil, i to komponenter til.
+ *
+ * Et rutenett uten `grid-template-columns` faar ett `auto`-spor, og `auto` er
+ * max-content. Ved 320 px maalt 7. oktober:
+ *   .horisont__fest   spor 323,2 px i 320 – topp, spor og hjelpetekst 3,2 px ut,
+ *                     paa /apper-og-ai, /caser, /handbok, /status,
+ *                     /bransjer/handverkere og /lab/typo
+ *   .sjs__logg        spor 165,2 px i et fast 118 px spor – seks loggrader og
+ *                     verdiene deres opptil 6 px ut paa /sjekk
+ *
+ * Reglene staar HER og ikke i komponentene, fordi dette er en mobilretting i en
+ * felles gjennomgang, og fordi de maa kunne leses sammen med begrunnelsen over.
+ * Elementnavnet i selektoren er ikke pynt: komponentstiler er omfangsmerket av
+ * Astro og lander paa (0-1-0), saa (0-2-1) her vinner uansett lasterekkefoelge.
+ * Der ingenting stikker ut er endringen null. */
+section.horisont .horisont__fest,
+ul.sjs__logg { grid-template-columns: minmax(0, 1fr); }
+
+/* Klassen er doblet, og det er ikke pynt. To figurkomponenter nullstiller sin
+ * egen marg i sin egen `<style>` – `.flyt { margin: 0 }` og `.samtykke` likedan –
+ * og Astro gir komponentstiler et `[data-astro-cid-…]` paa kjoepet. Det er 0-2-0
+ * mot 0-1-0, saa regelen over tapte, og flytdiagrammet paa /systemer ble staaende
+ * paa 0 px under kortraden over, nettopp der maalingen min sa den var rettet.
+ * Dobbel klasse gir 0-2-1 og vinner uten `!important` og uten aa roere komponenten.
+ * `figure` og ikke komponentnavnene: det er en figur som er en egen blokk. */
+.scene__inner.scene__inner > * + figure,
+.wrap.wrap > figure + figure { margin-block-start: var(--luft-blokk); }
+
+/* Siste tilfelle av samme slag, og det eneste pa hele nettstedet: inne i en
+   Avslor sto et avsnitt 4 px over stillbildet sitt paa /bransjer/handverkere.
+   `.avslor` er en bevegelsesinnpakning uten egen avstandsmening, saa paret faller
+   mellom alle stoler. Doblet klasse av samme grunn som over: figurkomponenten
+   nullstiller sin egen marg. Maalt til ett treff – regelen er ikke bredere enn
+   funnet den retter. */
+.avslor.avslor > :is(p, ul, ol) + figure { margin-block-start: var(--luft-blokk); }

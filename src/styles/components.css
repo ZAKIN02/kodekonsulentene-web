@@ -29,7 +29,13 @@
    .kk-price og kontaktskjemaet vil ha dem i full bredde. */
 .kk-btn-ghost { justify-self: start; }
 .kk-btn-ghost:hover { border-color: transparent; color: var(--accent-text); }
-.kk-btn-ghost .kk-arrow { font-family: var(--font-mono); font-weight: 400; }
+/* Pilen → (U+2192) finnes IKKE i woff2-filene vi serverer – Googles «latin»-subsett
+   har ↑ og ↓, men ikke →. Med var(--font-mono) falt den derfor til SF Mono, Consolas
+   eller Menlo avhengig av operativsystem, altsaa ulik strek rett ved primaerknappen.
+   Verifisert med fontTools mot filene vi faktisk sender.
+   Loesningen er aa la den arve sidens egen skrift, som ogsaa mangler tegnet, men da
+   er fallbacket likt overalt – og vi slipper aa laste monofonten for ett tegn. */
+.kk-btn-ghost .kk-arrow { font-weight: 400; }
 .kk-btn[disabled], .kk-btn[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
 
 /* UrlCheck */
@@ -62,7 +68,7 @@
 .kk-svc ul li::before { content: "—"; flex: none; color: var(--ink-faint); font-family: var(--font-mono); }
 .kk-svc .kk-svc-link { font-weight: 600; color: var(--ink); font-size: 14px; line-height: 20px; }
 .kk-svc:hover .kk-svc-link { color: var(--accent-text); }
-.kk-svc .kk-svc-link .kk-arrow { font-family: var(--font-mono); }
+.kk-svc .kk-svc-link .kk-arrow { font-weight: 400; }
 
 /* StatusBadge */
 /* Endeluften er 12 og ikke 8 px. En pille har radius 12 px naar den er 24 px
@@ -271,3 +277,61 @@ summary { min-height: 24px; }
    «Sikkerhet»), og med en spalte ble bunnteksten 914 px paa en 844 px skjerm –
    altsaa mer enn en hel skjerm med bunntekst. Maalt uten sidelengs drag. */
 @media (max-width: 359px) { .kk-footer ul { grid-template-columns: 1fr; } }
+
+/* Spøkelsesknappen fikk ikke plass, og ble klippet.
+ *
+ * `.kk-btn` har `white-space: nowrap`, og det er riktig for en FYLT knapp: den
+ * er et avgrenset mål, og en etikett som brytes midt i gjør den bredere enn høy
+ * og vanskeligere å treffe. En spøkelsesknapp er noe annet – kommentaren over
+ * `justify-self: start` sier det selv: den ER en tekstlenke. En tekstlenke som
+ * ikke kan brytes, stikker ut.
+ *
+ * Målt 7. oktober ved 320 px på forsiden: «Se hva som ligger inne i en nettside →»
+ * ble 302 px bred i en 272 px spalte og lå 6 px utenfor skjermkanten, der
+ * `overflow-x: clip` fjernet den siste bokstaven uten å la siden dras.
+ * Over 360 px er det ingen forskjell – den brytes bare når den må.
+ *
+ * Pilen holdes sammen med det siste ordet, slik at den aldri blir stående alene
+ * på en linje. Det er markøren for «dette fører videre», og den hører til
+ * teksten.
+ *
+ * Dette er den eneste regelen mobilgjennomgangen 7. oktober la i denne fila. */
+@media (max-width: 420px) {
+  .kk-btn-ghost { white-space: normal; text-wrap: pretty; }
+  .kk-btn-ghost .kk-arrow { white-space: nowrap; }
+}
+
+/* Og den skal aldri KLEMMES til å brytes.
+   `white-space: normal` gjør en knapp brytbar, men det er bare riktig når den
+   mangler plass. I en flexrad kan den i tillegg bli krympet av en nabo med stor
+   max-content – og da brytes den selv om raden har plass til hele etiketten.
+   Målt på /sikkerhet ved 861 px: rapportens bunnlinje ga knappen 143 px av 795
+   fordi forklaringsteksten ved siden av ville hatt mer, og «Kjør den på din
+   side →» ble to linjer midt i en rad med over 100 px til overs. En knapp er et
+   avgrenset mål; den skal ha sin egen bredde eller hele linjen. */
+.kk-report-head .kk-btn,
+.kk-report-foot .kk-btn { flex: none; max-inline-size: 100%; }
+
+/* Rapportens topp- og bunnlinje ble klemt flat på mobil.
+ *
+ * Begge er flexrader med `justify-content: space-between`, og de ligger i
+ * `.kk-report`, som er 270–380 px bred på mobil mens tabellen inni scroller til
+ * 773. Raden legges ut i den SYNLIGE bredden, ikke i scrollbredden, så to
+ * elementer som til sammen trenger 750 px må dele på 270.
+ *
+ * Målt på /sikkerhet, før: forklaringsteksten «Samlet: 90 av 100, målt 6.
+ * oktober 2026 …» ble 84 px bred og 220 px høy – elleve ord i én kolonne på ett
+ * ord. Knappen ved siden sto på 167x46. Med knappen satt til å kunne brytes
+ * byttet de bare plass: knappen ble 63x126, fem linjer på ett ord hver.
+ *
+ * En rad som ikke får plass skal BRYTES, ikke klemmes. Da får forklaringen hele
+ * bredden på sin linje og knappen hele bredden på sin, og ingen av dem blir en
+ * stolpe. Over 860 px er det uendret: der er det god plass på én linje.
+ *
+ * `align-items: start` fordi radene ellers midtstiller to elementer med svært
+ * ulik høyde mot hverandre når de først er brutt. */
+@media (max-width: 860px) {
+  .kk-report-head,
+  .kk-report-foot { flex-wrap: wrap; align-items: start; row-gap: var(--space-3); }
+  .kk-report-head .kk-url { max-width: 100%; }
+}

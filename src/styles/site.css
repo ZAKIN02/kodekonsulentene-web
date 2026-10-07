@@ -1,3 +1,15 @@
+/* Myk overgang mellom sider. Dette er en CSS-at-regel – ingen ruter, ingen JavaScript,
+   0 kB. Et tidligere notat forkastet visningsoverganger fordi Astros <ClientRouter />
+   ville brutt bindingene i ti filer. Det stemte for KOMPONENTEN, men ikke for at-regelen,
+   som ikke roerer noe skript i det hele tatt.
+   Nettlesere uten stoette ignorerer blokken, og med redusert bevegelse slaar vi den av. */
+@view-transition { navigation: auto; }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) { animation: none !important; }
+}
+
 /* KodeKonsulentene – sidestiler. Lastes etter tokens.css og components.css.
    Her bor bare det tokens.css og komponentene ikke dekker: body, layout,
    mobil-typeskalaen fra brandboken, navigasjon, prosa og grain. */

@@ -277,6 +277,32 @@ const tall = new Intl.NumberFormat("nb-NO");
 
 <script>
   /**
+   * Sondering FOERST: sidene er statiske, saa HTML-en vet ikke om noekkelen finnes
+   * paa serveren. Uten dette ville en besoekende moett et innbydende skjema som
+   * feiler naar han trykker – paa en side som selger paalitelighet.
+   *
+   * Kallet bruker ingen kvote og kaller ikke Claude; det er en egen vei i ruta.
+   * Den er POST fordi nettstedet kjoerer prefetchAll, og en GET som koster noe kan
+   * utloeses av en forhaandshenter.
+   *
+   * Uten JavaScript staar skjemaet, og da svarer serveren med en aerlig side.
+   * Degraderingen gaar altsaa mot «si det som det er», ikke mot en doed knapp.
+   */
+  (async () => {
+    const seksjon = document.getElementById("ai-demo");
+    if (!seksjon) return;
+    try {
+      const r = await fetch("/api/ai-tekst", { method: "POST", headers: { "x-kk-sondering": "1" } });
+      const d = await r.json();
+      if (!d?.paa) seksjon.remove();
+    } catch {
+      seksjon.remove();
+    }
+  })();
+</script>
+
+<script>
+  /**
    * Klienten.
    *
    * Leser SSE fra /api/ai-tekst og tegner forslaget på nytt for hver bit som

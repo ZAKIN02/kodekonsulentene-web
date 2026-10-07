@@ -126,6 +126,19 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     return new Response("Forespørselen kom fra et annet nettsted.", { status: 403 });
   }
 
+  // Sondering: sier BARE om funksjonen er skrudd paa, uten aa roere kvoten og uten
+  // aa kalle Claude. Sidene er statiske, saa komponenten kan ikke vite ved bygging om
+  // noekkelen finnes paa serveren – uten dette ville en besoekende moett et skjema som
+  // feiler naar han trykker. Den er POST nettopp fordi nettstedet kjoerer prefetchAll,
+  // og en GET som koster noe kan utloeses av en forhaandshenter.
+  //
+  // Dette avsloerer om noekkelen finnes. Det er ikke en hemmelighet – det staar i
+  // grensesnittet uansett – og sonderingen bruker ingen kvote, saa den kan ikke
+  // misbrukes til aa toemme den.
+  if (request.headers.get("x-kk-sondering") === "1") {
+    return json({ paa: Boolean(hentEnv("ANTHROPIC_API_KEY")) }, 200);
+  }
+
   const { tekst, vilJson, vilStrom } = await hentFelt(request);
   const gyldig = validerTekst(tekst);
 
@@ -169,7 +182,6 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 const SSE_HODER = {
   "content-type": "text/event-stream; charset=utf-8",
   "cache-control": "no-store, no-transform",
-  connection: "keep-alive",
   // Proxyer som buffrer tar livet av poenget: da kommer alt i én klump på slutten.
   // Fly-proxyen buffrer ikke, men headeren koster ingenting og dekker Nginx-aktige
   // mellomledd hvis nettstedet en dag står bak et.

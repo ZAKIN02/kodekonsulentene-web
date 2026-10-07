@@ -233,7 +233,20 @@ describe("hemmeligheter og klientkode", () => {
     const iNokkel = kode.indexOf('hentEnv("ANTHROPIC_API_KEY")');
     const iKall = kode.indexOf("new Anthropic(");
     assert.ok(iOpphav > -1 && iKvote > iOpphav, "kvoten må sjekkes etter opphavskontrollen");
-    assert.ok(iNokkel > iKvote, "nøkkelen hentes etter kvoten");
+    // Sonderingen er et bevisst unntak: den leser nøkkelen før kvoten, men den
+    // bruker ingen kvote og kaller aldri modellen, så den kan verken tømme kvoten
+    // eller brukes til å måle responstid mot et ekte kall. Den finnes fordi sidene
+    // er statiske og HTML-en ellers ikke kan vite om funksjonen er skrudd på.
+    //
+    // Invarianten gjelder derfor den NORMALE veien: nøkkelen etter kvoten der.
+    const iSondering = kode.indexOf('x-kk-sondering');
+    const iNokkelNormal = kode.indexOf('hentEnv("ANTHROPIC_API_KEY")', iKvote);
+    assert.ok(iNokkelNormal > iKvote, "nøkkelen hentes etter kvoten i den normale veien");
+    if (iSondering > -1) {
+      const sonderingsblokk = kode.slice(iSondering, iSondering + 400);
+      assert.ok(!sonderingsblokk.includes("kvote.forsok"), "sonderingen må ikke bruke kvote");
+      assert.ok(!sonderingsblokk.includes("new Anthropic("), "sonderingen må ikke kalle modellen");
+    }
     assert.ok(iKall > iNokkel, "klienten lages først når alt annet er i orden");
   });
 

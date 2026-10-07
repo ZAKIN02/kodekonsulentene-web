@@ -15,7 +15,27 @@ const sti = Astro.url.pathname.replace(/\/$/, "") || "/";
       <img src="/logo/kk-lockup-dark.svg" alt="" width="170" height="22" data-logo="dark" />
       <img src="/logo/kk-lockup-light.svg" alt="" width="170" height="22" data-logo="light" />
     </a>
-    <nav aria-label="Hovedmeny">
+    {/* Paa telefon var menyen en vannrett scroller: fire lenker synlige, tre
+        usynlige, og ingen antydning om at den kunne dras. Tre av sju sider fantes
+        ikke for en som var paa mobil.
+        Naa er den en knapp som aapner en <dialog>. Dialogen er valgt framfor en
+        egen meny-div fordi nettleseren selv tar fokusfellen, Escape og bakgrunnen –
+        mindre kode og mer som virker. Uten JavaScript faller vi tilbake til
+        scrolleren, som i det minste naar alt. */}
+    <button class="topbar__meny" type="button" data-meny-knapp aria-expanded="false"
+            aria-controls="hovedmeny-dialog" hidden>
+      <span class="topbar__menylinjer" aria-hidden="true"></span>
+      Meny
+    </button>
+    <dialog class="menydialog" id="hovedmeny-dialog" data-meny-dialog>
+      <nav aria-label="Hovedmeny">
+        {hovedmeny.map((l) => (
+          <a href={l.href} aria-current={sti === l.href || sti.startsWith(`${l.href}/`) ? "page" : undefined}>{l.label}</a>
+        ))}
+      </nav>
+      <button class="kk-btn kk-btn-ghost" type="button" data-meny-lukk>Lukk</button>
+    </dialog>
+    <nav aria-label="Hovedmeny" data-meny-rad>
       {hovedmeny.map((l) => (
         <a href={l.href} aria-current={sti === l.href || sti.startsWith(`${l.href}/`) ? "page" : undefined}>{l.label}</a>
       ))}
@@ -68,8 +88,143 @@ const sti = Astro.url.pathname.replace(/\/$/, "") || "/";
     min-height: 56px;
   }
   /* Under 860 px bryter menyen til en vannrett scroller på egen linje. Da er
-     pilleformen feil – den blir en høy kapsel – så flaten får kortets radius. */
+     pilleformen feil – den blir en høy kapsel – så flaten får kortets radius.
+     Den ytre luften går samtidig fra 12 til 8 px: topplinja tok 166 px av en
+     844 px skjerm, og 8 px er fortsatt en tydelig flytende pille mot kanten.
+     Resten av innhentingen ligger i site.css, i samme blokk som forklarer den. */
   @media (max-width: 860px) {
     .topbar__inner { border-radius: var(--radius-md); }
+    .topbar { padding-block: var(--space-2); padding-inline: var(--space-2); }
   }
 </style>
+
+{/* Menyen er en vannrett scroller på mobil: 535 px innhold i 316 px på 390 px
+    skjerm. Står du på /om, /priser eller /verktøy, ligger lenken med
+    `aria-current="page"` UTENFOR synsranden – merket som skal si hvor du er,
+    er det eneste du ikke ser. Her dras den inn.
+
+    `nav.scrollLeft` og ikke `scrollIntoView`: den siste kan rulle SIDEN også, og
+    topplinja er klebrig, så et hopp der ville flyttet innholdet under linja.
+    Dette rører bare scrollerens egen posisjon.
+
+    Degraderingen er dagens tilstand: uten JavaScript står menyen på 0, nøyaktig
+    som før, og alle lenkene er fortsatt tilgjengelige ved å dra. */}
+<script>
+  const meny = document.querySelector<HTMLElement>(".topbar nav");
+  const her = meny?.querySelector<HTMLElement>('[aria-current="page"]');
+
+  // `data-mer` sier at menyen er bredere enn plassen sin. Det er den som slår på
+  // scroll, maske og kantene i site.css. Den kan ikke avgjøres av en
+  // mediespørring: om det finnes mer meny avhenger av lenkene, språket,
+  // skriftstørrelsen og zoomen – ikke av skjermbredden alene. Målt uten den, på
+  // 861–1024 px: raden var overtegnet og nettleseren krympet ordmerket til 77 px
+  // og temaknappen til 20 px for å få plass.
+  const vurder = () => {
+    if (!meny) return;
+    const mer = meny.scrollWidth > meny.clientWidth + 1;
+    if (mer) meny.setAttribute("data-mer", "");
+    else meny.removeAttribute("data-mer");
+    return mer;
+  };
+
+  if (meny) {
+    const mer = vurder();
+    // Står du på /om, /priser eller /verktøy, ligger lenken med
+    // `aria-current="page"` utenfor synsranden – merket som skal si hvor du er,
+    // er det eneste du ikke ser. Her dras den inn.
+    //
+    // `scrollLeft` og ikke `scrollIntoView`: den siste kan rulle SIDEN også, og
+    // topplinja er klebrig, så et hopp der ville flyttet innholdet under linja.
+    // Dette rører bare scrollerens egen posisjon.
+    if (mer && her) {
+      meny.scrollLeft = Math.max(0, her.offsetLeft - (meny.clientWidth - her.offsetWidth) / 2);
+    }
+    let tid: ReturnType<typeof setTimeout>;
+    addEventListener("resize", () => { clearTimeout(tid); tid = setTimeout(vurder, 150); });
+  }
+</script>
+
+<style is:global>
+  /* Knappen og dialogen finnes bare paa smal skjerm. Over 860 px staar lenkene
+     som foer – der er det plass til alle sju. */
+  .topbar__meny { display: none; }
+  .menydialog { display: none; }
+
+  @media (max-width: 860px) {
+    /* Raden skjules NAAR skriptet har slaatt paa knappen. Uten JavaScript staar
+       raden igjen, og da er scrolleren bedre enn ingenting. */
+    .topbar:has(.topbar__meny:not([hidden])) nav[data-meny-rad] { display: none; }
+
+    .topbar__meny {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      min-height: 44px;
+      padding-inline: var(--space-3);
+      border: var(--hairline) solid var(--line-strong);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .topbar__menylinjer {
+      inline-size: 16px;
+      block-size: 2px;
+      background: currentColor;
+      box-shadow: 0 -5px 0 currentColor, 0 5px 0 currentColor;
+    }
+
+    .menydialog {
+      display: revert;
+      margin: 0 0 0 auto;
+      inline-size: min(320px, 86vw);
+      max-inline-size: none;
+      block-size: 100dvh;
+      max-block-size: none;
+      border: 0;
+      border-inline-start: var(--hairline) solid var(--line);
+      padding: var(--space-6) var(--space-5);
+      background: var(--bg);
+      color: var(--ink);
+    }
+    .menydialog::backdrop { background: rgb(0 0 0 / 0.5); }
+    .menydialog nav { display: grid; gap: var(--space-1); }
+    .menydialog nav a {
+      display: flex;
+      align-items: center;
+      min-height: 48px;
+      padding-inline: var(--space-3);
+      border-radius: var(--radius-sm);
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 18px;
+    }
+    .menydialog nav a[aria-current="page"] { background: var(--bg-sunken); font-weight: 700; }
+    .menydialog > .kk-btn { margin-block-start: var(--space-5); inline-size: 100%; }
+  }
+</style>
+
+<script>
+  // Knappen vises foerst naar skriptet kjoerer. Da kan vi love at den virker.
+  const knapp = document.querySelector<HTMLButtonElement>("[data-meny-knapp]");
+  const dialog = document.querySelector<HTMLDialogElement>("[data-meny-dialog]");
+  if (knapp && dialog && typeof dialog.showModal === "function") {
+    knapp.hidden = false;
+    const lukk = () => { dialog.close(); };
+    knapp.addEventListener("click", () => {
+      dialog.showModal();
+      knapp.setAttribute("aria-expanded", "true");
+      dialog.querySelector<HTMLAnchorElement>("nav a")?.focus();
+    });
+    dialog.addEventListener("close", () => knapp.setAttribute("aria-expanded", "false"));
+    dialog.querySelector("[data-meny-lukk]")?.addEventListener("click", lukk);
+    // Trykk paa bakgrunnen lukker. Dialogen dekker hele hoeyden, saa vi sammenligner
+    // mot dens egen boks i stedet for aa stole paa at target er dialogen selv.
+    dialog.addEventListener("click", (e) => {
+      const r = dialog.getBoundingClientRect();
+      if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) lukk();
+    });
+  }
+</script>

@@ -8,22 +8,86 @@ import PriceCard from "../components/PriceCard.astro";
 import Button from "../components/Button.astro";
 import Faq from "../components/Faq.astro";
 import ContactBlock from "../components/ContactBlock.astro";
-import { pakker, loepende, prisvilkaar } from "../data/priser";
+import { pakker, loepende, prisvilkaar, prisenhet, mvaSetning, treAar, MAANEDER } from "../data/priser";
 import { firma } from "../data/firma";
 import { faq } from "../data/faq";
+import { beregn, formaterKr } from "../lib/priskalkyle";
 
 import "../styles/scener.css";
 
 const prisFaq = faq.filter((f) => /binding|endre|koster|eier/i.test(f.q));
+
+/**
+ * TRE FERDIGE EKSEMPLER OVER SKYVEBRYTERNE.
+ *
+ * Prisvelgeren under er god, men den er bygget som den kalkulatoren NN/g
+ * advarer mot: fire valg brukeren må ta før han får et tall. Rådet derfra er
+ * eksplisitt – ved kompleks prising skal man vise eksempelpriser for typiske
+ * scenarier, ikke kreve presise input. («Show Prices for Common Scenarios»,
+ * Nielsen, 09.04.2006.)
+ *
+ * Så: ferdige svar først, kalkulatoren står igjen for den som vil regne selv.
+ *
+ * Tallene er IKKE skrevet inn. De kommer ut av `beregn()` – samme motor som
+ * prisvelgeren og /verktoy/priskalkulator – med valgene som står i `valg`
+ * under. Da kan et eksempel ikke love noe annet enn det kalkulatoren svarer
+ * når kunden selv huker av det samme.
+ */
+const eksempler = [
+  {
+    hvem: "Rørlegger som skal finnes og bli ringt",
+    hva: "3 sider, kontaktskjema, lovsjekk",
+    valg: { sider: 3, cms: false, integrasjoner: [] as const, app: false },
+  },
+  {
+    hvem: "Klinikk som vil endre teksten selv",
+    hva: "6 sider med CMS, lokal SEO",
+    valg: { sider: 6, cms: true, integrasjoner: [] as const, app: false },
+  },
+  {
+    hvem: "Klinikk med timebestilling og Vipps i siden",
+    hva: "6 sider med CMS, booking og Vipps-betaling",
+    valg: { sider: 6, cms: true, integrasjoner: ["booking", "vipps"] as const, app: false },
+  },
+].map((e) => {
+  const r = beregn({ ...e.valg, integrasjoner: [...e.valg.integrasjoner] });
+  return {
+    ...e,
+    pakke: r.pakke,
+    sum: r.lav === r.hoy ? formaterKr(r.lav) : `${formaterKr(r.lav)}–${formaterKr(r.hoy)}`,
+    gulv: r.aapentOppe,
+  };
+});
 ---
 <Base
   tittel="Priser: nettside fra 14 900 kr"
-  beskrivelse="Åpne priser: nettside fra 14 900 kr, Bedrift 29 900 kr, system fra 60 000 kr, abonnement 1 290–1 990 kr/mnd. Timepris 950 kr. Alle priser eks. mva."
+  beskrivelse="Åpne priser: nettside fra 14 900 kr, Bedrift 29 900 kr, system fra 60 000 kr, abonnement 1 290–1 990 kr/mnd. Timepris 950 kr. Prisene er endelige – foretaket er ikke mva-registrert."
 >
   <Scene lav>
     <Mega som="h1" merke="Priser" n={1} tekst="Prisene står her" aksent="her" />
     <Avslor trinn={1}>
-      <p class="scene__ingress body-lg">Fordi du skal kunne regne på det før du ringer, og fordi den som skjuler prisen sjelden gjør det til din fordel. Alle priser er eks. mva.</p>
+      <p class="scene__ingress body-lg">Fordi du skal kunne regne på det før du ringer, og fordi den som skjuler prisen sjelden gjør det til din fordel. {mvaSetning}</p>
+    </Avslor>
+
+    {/* Ferdige svar før skyvebryterne. Se kommentaren ved `eksempler`. */}
+    <Avslor trinn={2} class="luft-over">
+      <h2 class="heading eksempler__tittel">Tre typiske oppdrag, ferdig regnet</h2>
+      <dl class="kv eksempler">
+        {eksempler.map((e) => (
+          <div>
+            <dt>
+              <strong class="body-strong">{e.hvem}</strong><br />
+              <span class="small muted">{e.hva} · {e.pakke}-pakken</span>
+            </dt>
+            <dd class="nowrap">{e.gulv ? `fra ${e.sum}` : e.sum}</dd>
+          </div>
+        ))}
+      </dl>
+      <p class="small faint eksempler__note">
+        Regnet ut av den samme kalkulatoren som står under, med de valgene som er
+        beskrevet. Står det «fra», er beløpet et gulv og ikke et tak – et
+        systemoppdrag prises etter en samtale, og da er prisen fast.
+      </p>
     </Avslor>
 
     {/* Karakteren paa denne sida er TALLENE. Kortene kommer inn i ulik dybde slik
@@ -54,6 +118,7 @@ const prisFaq = faq.filter((f) => /binding|endre|koster|eier/i.test(f.q));
           name={p.navn}
           price={p.pris}
           prefix={p.prefiks}
+          unit={prisenhet}
           description={p.beskrivelse}
           recommended={p.anbefalt}
           cta={p.cta}
@@ -81,8 +146,39 @@ const prisFaq = faq.filter((f) => /binding|endre|koster|eier/i.test(f.q));
       </dl>
       <ul class="small muted" style="margin: 0; padding-left: var(--space-5); display: grid; gap: var(--space-2)">
         {prisvilkaar.map((v) => <li>{v}</li>)}
-        <li>Timeprisen er {firma.timepris} eks. mva. Norske byråer tar typisk 900–1 800 kr/t.</li>
+        <li>Timeprisen er {firma.timepris}. Norske byråer tar typisk 900–1 800 kr/t.</li>
       </ul>
+
+      {/*
+        TOTALPRIS OVER TRE ÅR.
+
+        Kjøperens første spørsmål, og det vi ikke svarte på noe sted. Det er
+        også spørsmålet som avgjør mot et abonnement: 799 kr i måneden høres
+        billigere ut enn 29 900 kr én gang, helt til noen ganger 36.
+
+        Vi regner bare på VÅRE egne tall. Konkurrentenes månedspriser er hentet
+        fra salgsmateriell og kan endres uten at vi ser det, så vi setter ikke
+        tall på dem – vi gir formelen, så kan den som vil kjøre den på hvem som
+        helst. Det er samme grep som at /sjekk sier «ikke sjekket» framfor å
+        gjette.
+      */}
+      <div class="stack stack--tight treaar">
+        <h3 class="heading">Hva det koster over tre år</h3>
+        <dl class="kv">
+          {treAar.map((r) => (
+            <div>
+              <dt><strong class="body-strong">{r.navn}</strong><br /><span class="small muted">{r.forklaring}</span></dt>
+              <dd class="nowrap">{r.total}</dd>
+            </div>
+          ))}
+        </dl>
+        <p class="small faint">
+          Formelen er <span class="mono">byggepris + {MAANEDER} × månedspris + avtalte ekstra</span>.
+          Kjør den på hvilket som helst tilbud du får, også våre. Et abonnement uten
+          oppstartskostnad er ikke billigere enn et engangskjøp før du har ganget med
+          antall måneder du faktisk blir værende.
+        </p>
+      </div>
     </div>
     </Avslor>
   </Scene>
@@ -103,6 +199,19 @@ const prisFaq = faq.filter((f) => /binding|endre|koster|eier/i.test(f.q));
           <tr><td>Wix, Squarespace, Webflow</td><td>150–180 kr/mnd</td><td>Du gjør jobben selv. Engelsk support. Ingen integrasjon mot Tripletex, Fiken eller Vipps.</td></tr>
           <tr><td>AI-byggere</td><td>fra 250 kr/mnd</td><td>Prototype på et kvarter. Ingen som svarer når den slutter å virke, og ingen sikkerhetsgjennomgang.</td></tr>
           <tr><td>Abonnementsbyrå</td><td>499–1 740 kr/mnd</td><td>Malbasert side, levert raskt. Lite skreddersøm av systemer, og bindingstid.</td></tr>
+          {/*
+            Raden som manglet, og den eneste sammenligningen kjøperen faktisk
+            gjør. Tabellen stilte oss opp mot Wix, AI-byggere, abonnementsbyråer
+            og «etablert byrå fra 80 000 kr» – altså bare mot dem vi vinner mot.
+            Det tetteste prispunktet i markedet ligger under vår inngang, og å
+            utelate det er å la ham oppdage det hos noen andre.
+
+            Prisene er lest på leverandørenes egne sider 7. oktober 2026:
+            Skaatun Web 4 900, Oppskalert fra 6 990, Moss Webdesign 7 990,
+            HjemmesideHelten 9 990, Godt Likt Media 9 990. Samme forbehold som
+            under tabellen gjelder dem.
+          */}
+          <tr><td>Norsk byrå med pakkepris</td><td>4 900–9 990 kr</td><td>Ferdig oppsett, ofte på mal. Billigst i markedet. Sjekk hva som skjer med siden hvis du slutter å betale, og hvem som eier koden.</td></tr>
           <tr><td>KodeKonsulentene</td><td>fra 14 900 kr</td><td>Egenutviklet side, integrasjoner mot de systemene du har, sikkerhetsarbeid, og du eier koden.</td></tr>
           <tr><td>Etablert byrå</td><td>fra 80 000 kr</td><td>Team, prosess og prosjektleder. For dyrt og for tregt for de fleste småbedrifter.</td></tr>
         </tbody>
@@ -111,6 +220,12 @@ const prisFaq = faq.filter((f) => /binding|endre|koster|eier/i.test(f.q));
         Tallene for andre leverandører er hentet fra deres egne nettsider høsten 2026 og kan ha
         endret seg. De har kommersielle interesser og ulike definisjoner av «enkel nettside».
         Bruk dem som markedssignal, ikke som fasit.
+      </p>
+      {/* Pilottilbudet sto bare nederst på /caser, en side som nås fra footeren.
+          Ordrett samme setning som der – et tilbud skal lyde likt overalt. */}
+      <p class="small muted">
+        Vi tar inn to til tre pilotprosjekter til redusert pris mot at vi får bruke
+        tallene som case. Si fra hvis det er aktuelt.
       </p>
     </div>
     </Avslor>
@@ -140,6 +255,15 @@ const prisFaq = faq.filter((f) => /binding|endre|koster|eier/i.test(f.q));
 
   <ContactBlock n={6} />
 </Base>
+<style>
+  /* `.kv` eier allerede rad, kolonne og mobilbrekk for begge listene under, så
+     det eneste som mangler er luft rundt dem. Ingen nye verdier: alt gjennom
+     space-tokens. */
+  .eksempler__tittel { margin: 0 0 var(--space-4); }
+  .eksempler__note { margin: var(--space-3) 0 0; }
+  .treaar { margin-block-start: var(--space-7); }
+  .treaar .heading { margin: 0; }
+</style>
 <style is:global>
   /* Toppene sto i linje, bunnene gjorde det ikke. .avslor er en vanlig blokk, saa
      prisekortet inni fikk SIN EGEN hoeyde i stedet for radens: maalt 536/484/484 px

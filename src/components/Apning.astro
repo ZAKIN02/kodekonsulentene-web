@@ -1,14 +1,33 @@
 ---
 /**
- * Åpningen: siden måler seg selv mens du venter.
+ * Åpningen: hvorfor dette angår ham, før han ser hva vi selger.
  *
- * Hvorfor den finnes, og hvorfor den ser slik ut
- * ----------------------------------------------
- * Vi selger at utsiden av en nettside er blank, og at jobben er å vise hva som
- * ligger inne. Et innlastingsbilde som bare teller til hundre sier ingenting om
- * det. Her kjøres sidens EGEN måling i stedet: de tre tallene fra bevis.ts, talt
- * opp mens hårlinjen fylles. Ventetiden blir et bevis i stedet for en forsinkelse,
- * og tallene er de samme som står lenger nede på siden – ikke pynt.
+ * ── HVA SOM BLE BYTTET, OG HVORFOR ──────────────────────────────────────────
+ *
+ * Åpningen viste før tre målinger av DENNE siden: «6/6 sikkerhetsheadere»,
+ * «0 cookies før samtykke», «0,1 s svartid». Det var 1,5 sekund fullskjerm på
+ * vår egen teknikk. Det første ordet en rørlegger fra Google så, var
+ * «sikkerhetsheadere» – et ord han ikke kan, om et problem han ikke har.
+ *
+ * MEKANIKKEN BLIR, ORDENE BYTTES. Det er et bevisst skille. Alt under som
+ * handler om hvordan åpningen oppfører seg – ren CSS-bortgang, verdiene ferdig
+ * i HTML-en, én gang per økt, `prefers-reduced-motion`, `aria-hidden` – var
+ * riktig bygget og står urørt. Det som var galt var hva den brukte tiden til.
+ *
+ * HVORFOR IKKE BARE FJERNE DEN. Fordi 1,5 sekund uten ett konkurrerende
+ * element er den mest verdifulle flaten vi eier, og fordi det finnes nøyaktig
+ * ett norsk, verifisert tall som oversetter spesialiteten vår til hans
+ * problem. «6/6 sikkerhetsheadere» er sikkerhet som compliance. «78 % sjekker
+ * om en nettside er trygg før de bruker den» er sikkerhet som omsetning: ikke
+ * at han blir bøtelagt, men at hans egne kunder ikke tør bestille.
+ *
+ * Å beholde den som den var, var det eneste uforsvarlige alternativet.
+ *
+ * SAMME POENG STÅR I SIDEN SELV, i seksjon 05 på forsiden, med samme kilde.
+ * Det er ikke en gjentakelse – det er kravet: åpningen er `aria-hidden` og
+ * vises bare én gang per økt, med bevegelse påskrudd. Et argument som bare
+ * finnes i et dekorativt overlegg, finnes ikke for den som bruker skjermleser,
+ * har bedt om mindre bevegelse, eller kommer tilbake i morgen.
  *
  * Flaten er `--terminal`, som er mørk i BEGGE temaer. Det er ikke en snarvei: en
  * åpning i `--bg` ville blinket hvitt for den som har lyst tema, fordi temavalget
@@ -19,6 +38,7 @@
  * ------------------------
  * 1. TALLENE STÅR SOM FERDIG TEKST i HTML-en. Opptellingen i /apning.js er bare
  *    pynt på toppen. Kommer skriptet aldri fram, står riktig verdi der allerede.
+ *    Opptellingen leser `data-apning-tell`, som fortsatt står på verdiene.
  *
  * 2. HELE BORTGANGEN ER CSS. Overlegget fader ut og blir `visibility: hidden` av
  *    en keyframe, ikke av JavaScript. Feiler skriptet, forsvinner åpningen
@@ -33,15 +53,35 @@
  * maling. CSP-hashen leses ut av det ferdige bygget i sikkerhet.mjs, så den følger
  * med av seg selv.
  */
-import { bevis } from "../data/bevis";
-
 /**
- * De tre første i bevis.ts er målinger av DENNE siden, og kan etterprøves ved å
- * kjøre /sjekk på oss. Den fjerde, «24 t svar på henvendelser», er et løfte om
- * oppførsel – ikke noe en skanning kan bekrefte – og hører derfor ikke hjemme i
- * en sekvens som later som den måler.
+ * Tallene i åpningen.
+ *
+ * De hører IKKE hjemme i src/data/bevis.ts. Den fila er «målbare påstander om
+ * denne siden og dette foretaket», og disse to handler om nordmenn flest – om
+ * kunden til kunden vår. Å legge dem der ville gjort en ekstern undersøkelse om
+ * til en påstand om oss.
+ *
+ * Kilde, hentet og lest i primærkilden 7. oktober 2026:
+ *   NorSIS i samarbeid med Opinion AS, «Nordmenn og digital sikkerhetskultur
+ *   2024», juni 2024. n = 1 001, landsrepresentativt utvalg over 18 år.
+ *   norsis.no/content/uploads/2024/10/Nordmenn-og-digital-sikkerhetskultur-2024.pdf
+ *
+ * Ordrett i rapporten, og teksten under holder seg til den:
+ *   «78 % av befolkningen svarer at de undersøker om en nettside er trygg før de
+ *    bruker den»
+ *   «59 % av nordmenn sier at de har latt være å bruke tjenester på internett som
+ *    en følge av at de er redd for å bli utsatt for noe kriminelt eller ubehagelig»
+ *
+ * Forbeholdet fra rapporten, som den som vil etterprøve skal vite om: 78 %-tallet
+ * fikk et nytt svaralternativ i 2024 og er ikke direkte sammenlignbart bakover.
+ * Vi sammenligner ikke bakover, så det endrer ingenting her.
  */
-const maalinger = bevis.slice(0, 3);
+const maalinger = [
+  { value: "78 %", label: "undersøker om en nettside er trygg før de bruker den" },
+  { value: "59 %", label: "har droppet en nettjeneste av frykt for noe kriminelt eller ubehagelig" },
+];
+
+const kilde = "NorSIS og Opinion, juni 2024. 1 001 svar, landsrepresentativt.";
 
 /**
  * Vises bare når ALT stemmer: brukeren har ikke bedt om mindre bevegelse, og
@@ -79,7 +119,7 @@ document.documentElement.dataset.apning="1";
 */}
 <div class="apning" data-apning-flate aria-hidden="true">
   <p class="apning__merke">
-    <span class="apning__slash" aria-hidden="true">//</span> Sjekker kodekonsulentene.no
+    <span class="apning__slash" aria-hidden="true">//</span> Før kunden din bestiller
   </p>
 
   <ul class="apning__liste">
@@ -92,18 +132,29 @@ document.documentElement.dataset.apning="1";
   </ul>
 
   <span class="apning__strek" aria-hidden="true"></span>
+
+  {/* Kilden står i åpningen selv. Et tall uten kilde er en påstand, og det er
+      akkurat den vanen hele posisjoneringen vår står imot – også når det bare
+      vises i halvannet sekund. */}
+  <p class="apning__kilde">{kilde}</p>
 </div>
 
 <style>
   /**
    * Tidsplanen, i millisekunder fra start:
    *   0     flaten står der, merket toner inn
-   *   150   rad 1 kommer, så 2 og 3 med 200 ms mellomrom
+   *   150   rad 1 kommer, så rad 2 med 200 ms mellomrom
+   *   550   kilden toner inn, etter tallene den gjelder
    *   0-1150 hårlinjen fylles
    *   1150-1500 hele overlegget fader ut og blir visibility: hidden
    *
    * 1,5 sekund er kort med vilje. En åpning som varer lenger er i veien for den
    * som bare skulle lese noe.
+   *
+   * Varigheten står uendret selv om innholdet gikk fra tre rader til to. Det er
+   * ikke forglemmelse: kortere ville gjort at setningene ikke rekker å bli lest,
+   * og en åpning ingen rekker å lese er verre enn både å beholde og å fjerne
+   * den. Skal tallet ned, skal det måles – ikke gjettes.
    */
   /**
    * Skjult er standardtilstanden. Uten JavaScript settes aldri flagget på <html>,
@@ -201,6 +252,38 @@ document.documentElement.dataset.apning="1";
     font-size: 13px;
     line-height: 18px;
     color: var(--on-terminal-muted);
+  }
+
+  /**
+   * Kilden. 12 px i `on-terminal-muted` mot `terminal` måler 6,6:1 – over AA,
+   * og den samme fargen merkelappene allerede står i.
+   */
+  .apning__kilde {
+    margin: 0;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--on-terminal-muted);
+    animation-name: apning-inn;
+    animation-duration: 300ms;
+    animation-timing-function: ease-out;
+    animation-fill-mode: both;
+    animation-delay: 550ms;
+  }
+
+  /**
+   * På telefon tar tallet halve bredden og merkelappen brekker til fem–seks
+   * linjer ved siden av. Setningene her er hele setninger, ikke etiketter som
+   * «Cookies før samtykke», og de skal kunne leses på halvannet sekund.
+   * Under 560 px står derfor tallet over teksten, med hele bredden til begge.
+   */
+  @media (max-width: 560px) {
+    .apning__liste { grid-template-columns: minmax(0, 1fr); }
+    .apning__rad { display: block; }
+    @supports (grid-template-columns: subgrid) {
+      .apning__rad { display: block; grid-column: auto; grid-template-columns: none; }
+    }
+    .apning__verdi { display: block; min-inline-size: 0; }
+    .apning__merkelapp { display: block; margin-block-start: var(--space-2); }
   }
 
   /* Hårlinjen er fremdriften. Den fylles over hele sekvensen og er det eneste

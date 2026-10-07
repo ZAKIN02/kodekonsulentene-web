@@ -24,7 +24,7 @@ import { firma, bookUrl } from "../data/firma";
 import { bevis } from "../data/bevis";
 import { tjenester } from "../data/tjenester";
 import { prosess } from "../data/prosess";
-import { pakker, loepende, prisvilkaar } from "../data/priser";
+import { pakker, loepende, prisvilkaar, prisenhet, mvaSetning } from "../data/priser";
 import { synligeCaser } from "../data/caser";
 import { faq } from "../data/faq";
 import { flyter } from "../data/flyter";
@@ -49,6 +49,28 @@ const heroTerminal = [
   { type: "ok" as const, text: "4 ting å fikse. Rapport sendt." },
 ];
 
+/**
+ * Prisankeret i heroen.
+ *
+ * Målt på den forrige forsiden lå det første pristallet 42 % ned i teksten, og
+ * 8,9 telefonskjermer ned i piksler. Det er den eneste opplysningen målgruppen
+ * rangerer som nummer én: for foretak med 1, 2 og 5–9 ansatte er «vis prisen
+ * tydelig på nettsiden» det høyest rangerte leverandører kan forbedre –
+ * 58 %, 56 % og 63 % (SMB Group, 2024 SMB Technology Buying Journey, n = 738).
+ * Jo mindre foretaket, jo høyere rangerer den.
+ *
+ * «Fast pris» sto i ingressen før. Det er ikke et argument – nesten hvert
+ * norske byrå i markedet skriver det samme. Et tall er et argument.
+ *
+ * Tallene skrives ikke her. De leses ut av `pakker`, slik at prisankeret ikke
+ * kan komme i utakt med prisseksjonen lenger nede på samme side.
+ */
+const ankerPakker = ["Start", "Bedrift", "System"]
+  .map((navn) => pakker.find((p) => p.navn === navn))
+  .filter((p): p is NonNullable<typeof p> => Boolean(p));
+const anker = ankerPakker[0];
+const ankerResten = ankerPakker.slice(1);
+
 ---
 <Base
   tittel={firma.navn}
@@ -60,10 +82,38 @@ const heroTerminal = [
     <div class="wrap hero__grid">
       <div class="stack">
         <h1 class="display-xl">Nettsider og <em>systemer</em> som jobber for bedriften din</h1>
+        {/*
+          Ingressen var en presentasjon av oss. Nå er den det sterkeste tilbudet
+          vi har, og det er dokumentert at det er den typen tilbud som avgjør:
+          prøveperiode (62 %) og demo (54 %) er de to øverste avgjørende
+          faktorene i den endelige beslutningen (Gartner Digital Markets 2025,
+          n = 3 500). Vi har noe sterkere enn begge – en klikkbar prototype av
+          HANS side, ikke en demo av vår. Den sto før som steg 2 i prosesslista
+          i seksjon 6 av 10, mens konkurrentene roper «gratis utkast» i heroen.
+
+          Ordlyden er ikke ny. Den er hentet ordrett fra `prosess.ts` steg 2, så
+          løftet i heroen og løftet i prosessen er samme setning.
+        */}
         <p class="hero__lead body-lg">
-          Vi er KodeKonsulentene, et utviklermiljø i Oslo. Fast pris, levert raskt,
-          og du snakker med utvikleren underveis.
+          Du ser en klikkbar prototype av forsiden din før du har betalt noe.
+          Sier du nei der, koster det ingenting.
         </p>
+
+        {/*
+          Prisankeret. Står mellom ingressen og knapperaden med vilje: det er
+          der valget tas, og et tall rett over knappen er det han regner på før
+          han trykker. Alle beløp kommer fra `src/data/priser.ts`.
+        */}
+        <p class="hero__pris">
+          <span class="hero__pris-tall mono-stat">{anker.pris}</span>
+          <span class="hero__pris-tekst">
+            for en nettside, fast pris.
+            {ankerResten.map((p) => ` ${p.navn} ${p.prefiks ? `${p.prefiks} ` : ""}${p.pris}.`).join("")}
+            {" "}<a class="kk-link" href="/priser">Hele prislisten</a>
+          </span>
+        </p>
+        <p class="hero__mva small">{mvaSetning}</p>
+
         <div class="hero__cta">
           <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
           <UrlCheck hint="Gratis sjekk av siden du har i dag. Svar på 30 sekunder." />
@@ -90,7 +140,11 @@ const heroTerminal = [
         <Nokkeltall poster={bevis} navn="Målbare påstander om denne siden og dette foretaket" />
       </Avslor>
       <Avslor trinn={1}>
-        <Button variant="ghost" href="/historie">Se hva som ligger inne i en nettside</Button>
+        {/* Pekte paa /historie til 7. oktober 2026. Den siden var en KI-generert
+            film av lagstabelen, og lagstabelen staar ekte og interaktiv i seksjon
+            08 paa denne siden. Loeftet i lenketeksten innfris av /nettsider, som
+            har «Fire krav vi setter selv» og «Hva det er bygget av». */}
+        <Button variant="ghost" href="/nettsider">Se hva som ligger inne i en nettside</Button>
       </Avslor>
     </div>
   </section>
@@ -190,8 +244,22 @@ const heroTerminal = [
       <Flyt flyt={flyter.systemer} />
     </Avslor>
     </div>
+    {/*
+      Pilottilbudet sto bare nederst på /caser, en side som i praksis bare nås
+      fra footeren. Det er svaret på kjøperens spørsmål nummer ni – «kan jeg se
+      tre sider dere har laget for bedrifter som ligner min» – som vi i dag
+      svarer nei på. Å si at vi er nye er en bedre historie enn tomhet, og det
+      er den eneste av disse setningene som kan gjøre noe med saken.
+
+      Ordlyden er hentet ORDRETT fra /caser, ikke skrevet på nytt. Den er et
+      tilbud, og et tilbud skal lyde likt overalt det står.
+    */}
     <Avslor trinn={2}>
-      <p class="small faint" style="margin-top: var(--space-6)">
+      <p class="small muted" style="margin-top: var(--space-6)">
+        Vi tar inn to til tre pilotprosjekter til redusert pris mot at vi får bruke
+        tallene som case. Si fra hvis det er aktuelt.
+      </p>
+      <p class="small faint">
         Konseptarbeid er alltid merket «Konsept, ikke oppdrag». <a class="kk-link" href="/caser">Alle caser</a>.
       </p>
     </Avslor>
@@ -202,7 +270,20 @@ const heroTerminal = [
     n={5}
     eyebrow="Verktøy"
     tittel="Sjekk nettsiden din gratis"
-    ingress="Skriv inn adressen. På 30 sekunder får du ytelse, sikkerhetsheadere, cookies satt før samtykke, WCAG-feil og om org.nr. står på siden."
+    {/*
+      Rekkefølgen i opplistingen er byttet: cookies først, universell utforming
+      etterpå. Brudd på cookie-reglene kan straffes med overtredelsesgebyr på
+      inntil 10 % av årsomsetningen i Norge (ekomloven § 15-12, verifisert mot
+      Lovdata). Brudd på universell utforming har gitt to iverksatte
+      tvangsmulkter på elleve år. Vi ledet med det svakeste av de to.
+
+      Og tallet foran: hele poenget med en sikkerhetssjekk, for en rørlegger, er
+      ikke at han blir bøtelagt – det er at kundene hans ikke tør bestille.
+      Samme kilde og samme tall som i åpningssekvensen, slik at argumentet også
+      finnes for den som bruker skjermleser, har bedt om mindre bevegelse, eller
+      har sett åpningen før.
+    */}
+    ingress="78 % av nordmenn undersøker om en nettside er trygg før de bruker den, og 59 % har latt være å bruke en nettjeneste av frykt for noe kriminelt eller ubehagelig (NorSIS og Opinion, juni 2024, n = 1 001). Skriv inn adressen. På 30 sekunder får du cookies satt før samtykke, sikkerhetsheadere, ytelse, WCAG-feil og om org.nr. står på siden."
     id="sjekk"
     bred
     class="flate flate--motsatt"
@@ -284,7 +365,7 @@ const heroTerminal = [
   <Scene
     n={7}
     eyebrow="Priser"
-    ingress="Fordi du skal kunne regne på det før du ringer. Alle priser er eks. mva."
+    ingress={`Fordi du skal kunne regne på det før du ringer. ${mvaSetning}`}
     id="priser"
     bred
     class="flate flate--aksent"
@@ -298,6 +379,7 @@ const heroTerminal = [
               name={p.navn}
               price={p.pris}
               prefix={p.prefiks}
+              unit={prisenhet}
               description={p.beskrivelse}
               recommended={p.anbefalt}
               cta={p.cta}
@@ -332,8 +414,20 @@ const heroTerminal = [
   <Scene n={8} eyebrow="Om" tittel="Ingen mellomledd">
     <div class="grid-2">
       <Avslor class="stack">
+        {/*
+          «Utviklermiljø» sto her og i heroen. Enhetsregisteret sier
+          enkeltpersonforetak, sektorkode 8200 «Personlig næringsdrivende», ingen
+          registrerte ansatte – et oppslag som tar tjue sekunder, og over
+          halvparten av nordmenn mener en seriøsitetssjekk skal ta under ti
+          minutter. Ordet satte opp en forventning oppslaget river ned.
+
+          Enmannsforetak er ingen svakhet i dette markedet; flere av
+          konkurrentene er det og skjuler det dårligere. Sprekken mellom ordet og
+          oppslaget var svakheten. Setningen under sier det samme som før om hva
+          vi gjør, bare uten å love et miljø som ikke er registrert noe sted.
+        */}
         <p class="body-lg muted">
-          KodeKonsulentene er et utviklermiljø i Oslo med sikkerhet som spesialfelt.
+          KodeKonsulentene er ett enkeltpersonforetak i Oslo med sikkerhet som spesialfelt.
           Vi bygger nettsiden, systemet bak og appen oppå – uten å sette ut noe til noen.
         </p>
         <p class="muted">
@@ -367,6 +461,52 @@ const heroTerminal = [
      Den var usynlig – ingenting koblet feltet til terminalen. Denne linjen gjør
      koblingen eksplisitt, og prikken i aksentfargen leser som «dette er levende».
      Ingen påstand og ingen tall her, bare en bruksanvisning. */
+  /*
+    PRISANKERET.
+
+    Tallet er det eneste som skal lese som et tall – derfor `mono-stat`, som er
+    husets stil for live-tall, og ikke display-fonten. Brandboken: «Tall og tid
+    før adjektiver … i mono eller mono-stat; aldri i display-fontene.»
+
+    Ingen aksentfarge her. Heroen har allerede aksenten på «systemer» i h1, på
+    primærknappen og på Sjekk-knappen i URL-feltet. En fjerde ville brutt
+    regelen om én aksentdetalj, og tallet trenger den ikke: det står i `ink`
+    mot `bg`, altså sidens høyeste kontrast, mens teksten rundt er `ink-muted`.
+    Størrelsen gjør jobben, ikke fargen.
+
+    Ingen ramme, ingen flate. Et prisanker i et kort ville lest som en
+    reklameboks midt i heroen; her leser det som en opplysning.
+  */
+  .hero__pris {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2) var(--space-3);
+    margin: var(--space-5) 0 0;
+    color: var(--ink-muted);
+  }
+  .hero__pris-tall {
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  /* Teksten skal kunne brekke ved siden av tallet uten å dra raden bredere enn
+     spalten. `min-inline-size: 0` fordi et flex-barn ellers ikke krymper under
+     sin egen innholdsbredde. */
+  .hero__pris-tekst {
+    flex: 1 1 18ch;
+    min-inline-size: 0;
+  }
+  /* Målt 103x18 px: under trykkmålet på 24x24. Lenken står inne i en setning,
+     så SC 2.5.8 har et unntak for den – men den er en av to veier videre fra
+     heroen, og et unntak er ikke en grunn til å la den være liten på telefon.
+     Loddrett utfylling på et inline-element utvider treffflaten uten å endre
+     linjeboksen, så raden står nøyaktig som før: 18 + 2 x 4 = 26 px. */
+  .hero__pris-tekst a { padding-block: var(--space-1); }
+  .hero__mva {
+    margin: var(--space-2) 0 0;
+    color: var(--ink-faint);
+  }
+
   .hero__live {
     display: flex;
     align-items: center;

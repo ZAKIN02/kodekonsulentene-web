@@ -547,7 +547,11 @@ const heroTerminal = [
        forskjoevet loddrett i forhold til hverandre – det leste som at raden ikke var
        i linje. Bare kort 2 er forskjoevet, og det er nok til aa bryte rutenettet. */
     .tjenester-rad > :nth-child(3) { margin-block-start: 0; }
-    .priser-rad > :nth-child(2) { margin-block-start: calc(var(--space-6) * -1); }
+    /* Kortene sto forskjoevet loddrett: kort 2 laa en hel space-6 hoeyere enn 1 og 3.
+       Eieren meldte det to ganger – «legg de paa en linje». Rangeringen trenger ikke
+       vaere loddrett; det anbefalte kortet skiller seg ut paa merkelapp, lys flate og
+       invertert knapp. Alle tre deler naa oeverste kant. */
+    .priser-rad > :nth-child(2) { margin-block-start: 0; }
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -568,8 +572,8 @@ const heroTerminal = [
       .tjenester-rad > :nth-child(2) .kk-svc { --vri: 1.6deg;  --dybde: 30px; }
       .tjenester-rad > :nth-child(3) .kk-svc { --vri: -1.1deg; --dybde: 70px; }
       .priser-rad > :nth-child(1) .kk-price { --vri: -1.4deg; --dybde: 44px; }
-      .priser-rad > :nth-child(2) .kk-price { --vri: 0.9deg;  --dybde: 22px; }
-      .priser-rad > :nth-child(3) .kk-price { --vri: -0.7deg; --dybde: 60px; }
+      .priser-rad > :nth-child(2) .kk-price { --vri: 0.9deg;  --dybde: 44px; }
+      .priser-rad > :nth-child(3) .kk-price { --vri: -0.7deg; --dybde: 44px; }
 
       /* Ulik --dybde gir ulik fart gjennom samme omraade. Det er dybde: det som
          skal ligge «lenger bak» flytter seg lengre og lander senere. */

@@ -225,7 +225,15 @@ html { scroll-padding-top: calc(var(--topplinje-hoyde, 80px) + var(--space-3)); 
    regler som moetes: logoen er et flex-barn som kan krympe, og den globale
    `img { max-width: 100% }` lar bildet foelge med ned. En logo er det ene
    elementet paa et nettsted som ikke faar endre form. */
-.topbar__logo { flex: none; }
+/* Og ikke bare logoen: INGEN av de faste delene skal gi etter.
+   Topplinja er overtegnet mellom 861 og ~1045 px – logo 170 + meny 567 + knapp 36
+   + CTA 128 + luft 120 krever 1021 px innhold, og paa 861 er det 837. Flexboksen
+   loeste det ved aa deformere det den fikk lov til: ordmerket til 77 px og
+   temaknappen til 20x36 (maalt foer denne rettingen, paa 861, 900 og 960 px).
+   En logo og en 36 px kontroll er faste stoerrelser; det er MENYEN som skal gi.
+   Den er allerede en scroller paa mobil, og under faar den vaere det her ogsaa –
+   men bare naar den faktisk maa, se `[data-mer]`. */
+.topbar__logo, .topbar .iconbtn, .topbar__cta { flex: none; }
 .topbar__logo img { height: 22px; width: auto; max-width: none; flex: none; }
 /* Menyen er en vannrett scroller under 861 px: 535 px innhold i 316 px paa 390.
    Tre toppsider faller utenfor. To ting gjoeres her:
@@ -233,7 +241,35 @@ html { scroll-padding-top: calc(var(--topplinje-hoyde, 80px) + var(--space-3)); 
         der det faktisk er mer aa hente. Degraderingen er dagens ene hoeyrekant.
      2. Topbar.astro drar lenken for GJELDENDE side inn i syne. Foer sto du paa
         /om, /priser eller /verktoy uten aa se at du var der – merket laa utenfor. */
-.topbar nav { display: flex; gap: var(--space-5); }
+.topbar nav { display: flex; gap: var(--space-5); min-width: 0; }
+/* `[data-mer]` settes av Topbar.astro, og bare naar menyen faktisk er bredere enn
+   plassen sin. Attributtet – ikke en mediesfoersporsel – fordi det ikke er
+   skjermbredden som avgjoer om det finnes mer meny: det er forholdet mellom
+   lenkene og plassen, og det endrer seg med sprak, skriftstoerrelse og zoom.
+   Uten attributtet er menyen en vanlig rad uten maske, noeyaktig som paa
+   skrivebord i dag. */
+.topbar nav[data-mer] {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  padding-inline-end: var(--space-4);
+  mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+}
+.topbar nav[data-mer]::-webkit-scrollbar { display: none; }
+.topbar nav[data-mer] a { flex: 0 0 auto; }
+@supports (animation-timeline: scroll(self inline)) {
+  .topbar nav[data-mer] {
+    mask-image: linear-gradient(
+      to right,
+      transparent 0, #000 var(--meny-kant-v),
+      #000 calc(100% - var(--meny-kant-h)), transparent 100%);
+    animation-name: meny-kanter;
+    animation-duration: 1ms;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: scroll(self inline);
+  }
+}
 .topbar nav a {
   font-size: 14px; line-height: 20px; color: var(--ink-muted); text-decoration: none;
   padding-block: var(--space-2);
@@ -261,42 +297,18 @@ html { scroll-padding-top: calc(var(--topplinje-hoyde, 80px) + var(--space-3)); 
      Igjen staar 130 px, og ingen av de to radene mistet en piksel: logolenken er
      fortsatt 44 px hoey, og hver menylenke er fortsatt 44. Det er WCAG 2.5.8 sitt
      krav med 20 px til overs.
-     Verdien MAA foelge med hit, ellers parkerer ankerhopp innholdet under linja. */
-  :root { --topplinje-hoyde: 130px; }
+     Verdien MAA foelge med hit, ellers parkerer ankerhopp innholdet under linja.
+     132 og ikke 130: over 560 px kommer «Book 20 min» tilbake i foerste rad, og
+     den knappen er 46 px hoey mot logolenkens 44. Maalt paa elleve bredder fra
+     320 til 860 – 130 opp til 560, 132 fra 640 og opp. Den stoerste av dem er den
+     eneste trygge: to piksler til overs er usynlig, to for lite legger maalet for
+     et ankerhopp under linja. Maalt paa 768: ankeret landet 2 px for hoeyt. */
+  :root { --topplinje-hoyde: 132px; }
   .topbar__inner { flex-wrap: wrap; padding-block: var(--space-2); row-gap: var(--space-2); }
   .topbar__logo { margin-right: auto; }
-  .topbar nav {
-    order: 3;
-    width: 100%;
-    gap: var(--space-4);
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    padding-bottom: 0;
-    padding-inline-end: var(--space-4);
-    scrollbar-width: none;
-    /* Dagens oppfoersel, og reserven: én tonet kant i hoeyre ende. */
-    mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
-  }
-  .topbar nav::-webkit-scrollbar { display: none; }
-  .topbar nav a { flex: 0 0 auto; }
-
-  /* Begge kanter, og de forsvinner hver for seg naar du har naadd sin ende.
-     Langformer, aldri stenografi: lightningcss slaar `animation` +
-     `animation-timeline` sammen til en ugyldig form som nettleseren forkaster
-     uten aa si fra – samme felle som bet avsloeringene i scener.css. */
-  @supports (animation-timeline: scroll(self inline)) {
-    .topbar nav {
-      mask-image: linear-gradient(
-        to right,
-        transparent 0, #000 var(--meny-kant-v),
-        #000 calc(100% - var(--meny-kant-h)), transparent 100%);
-      animation-name: meny-kanter;
-      animation-duration: 1ms;
-      animation-timing-function: linear;
-      animation-fill-mode: both;
-      animation-timeline: scroll(self inline);
-    }
-  }
+  /* Menyen faar sin egen rad. Selve scroller-behandlingen staar over og slaar
+     inn av seg selv her, fordi `[data-mer]` da er satt. */
+  .topbar nav { order: 3; width: 100%; gap: var(--space-4); padding-bottom: 0; }
 }
 @keyframes meny-kanter {
   from { --meny-kant-v: 0px;  --meny-kant-h: 28px; }

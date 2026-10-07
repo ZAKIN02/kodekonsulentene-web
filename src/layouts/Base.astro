@@ -165,6 +165,46 @@ const basisSchema = noindex
       });
     </script>
 
+    <script>
+      // En vannrett scroller som ingen kan nå med tastatur.
+      //
+      // Prislista på /priser og sammenligningstabellen på
+      // /verktoy/priskalkulator scroller sidelengs på mobil (målt 371 px i 312
+      // og 665 px i 312). Begge er tabeller UTEN en eneste lenke eller knapp
+      // inni, så det finnes ingenting å tabbe til – og da kan en som ikke
+      // bruker peker ikke se den siste kolonnen i det hele tatt. Det er
+      // axe-regelen `scrollable-region-focusable`, og det var de eneste to
+      // bruddene vi kjente til. Målt på begge temaer.
+      //
+      // Hvorfor i JavaScript og ikke i markup: tabellene skrives av sidene,
+      // og en `tabindex` som settes der må settes om igjen hver gang noen
+      // legger til en tabell. Her settes den på det som FAKTISK scroller, og
+      // bare på det som ikke allerede kan nås.
+      //
+      // Hvorfor ikke `role="region"`: det ville overskrevet tabellrollen og
+      // tatt fra skjermleseren koblingen mellom rad og kolonne – nøyaktig det
+      // site.css sin tabellblokk er skrevet for å bevare. `tabindex` alene
+      // oppfyller kravet og rører ingen rolle.
+      //
+      // Kjøres på nytt ved endring av bredde, fordi en tabell som scroller på
+      // 390 px ikke gjør det på 1440.
+      const merkScrollere = () => {
+        for (const el of document.querySelectorAll<HTMLElement>("main table, main .kk-report, main figure, main pre")) {
+          const kanScrolle = el.scrollWidth > el.clientWidth + 1;
+          const harFokus = el.querySelector("a[href],button,input,select,textarea,[tabindex]");
+          if (kanScrolle && !harFokus) {
+            if (!el.hasAttribute("tabindex")) { el.tabIndex = 0; el.dataset.kkScroller = ""; }
+          } else if (el.dataset.kkScroller !== undefined) {
+            el.removeAttribute("tabindex");
+            delete el.dataset.kkScroller;
+          }
+        }
+      };
+      merkScrollere();
+      let tid: number | undefined;
+      addEventListener("resize", () => { clearTimeout(tid); tid = setTimeout(merkScrollere, 150) as unknown as number; });
+    </script>
+
     {/* Opptellingen i åpningen. Lastes bare der åpningen finnes, og er ren pynt:
         tallene står ferdig i HTML-en og overlegget forsvinner av CSS uansett. */}
     {visApning && <script src="/apning.js" defer />}

@@ -138,8 +138,15 @@
   .scene__head .stortekst {
     width: min(1320px, calc(100vw - 2 * var(--space-6)));
     max-width: none;
+      /* SENTRERINGEN MANGLET. Kommentaren over sa «aldri ut av skjermen», men bredden
+         alene flytter ingenting: boksen ble forankret til venstre innholdskant og stakk
+         72 px ut til hoeyre ved 1440. Noeyaktig samme feil som .mega hadde, der det sto
+         «aaper» paa skjermen i stedet for «aapent».
+         margin-inline: auto hjelper ikke – auto blir NULL naar elementet er bredere enn
+         forelderen. Differansen under sentrerer i VINDUET. */
+      margin-inline: calc(50% - min(50vw - var(--space-6), 660px));
   }
-  .stortekst.display-lg { font-size: 56px; line-height: 58px; letter-spacing: -0.03em; }
+  .stortekst.display-lg { font-size: 56px; line-height: 58px; letter-spacing: -0.03em; word-spacing: 0.04em; }
 }
 @media (min-width: 1500px) {
   .stortekst.display-lg { font-size: 64px; line-height: 66px; }

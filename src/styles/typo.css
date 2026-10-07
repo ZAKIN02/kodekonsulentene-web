@@ -355,6 +355,19 @@
   .horisont__linje { display: none; }
 }
 
+  /* Samme stabling paa telefon, og av samme grunn. Paa 390 px er sporet 1462 px bredt
+     og drives av sidescrollen – det lander naesten aldri paa en kortkant. Maalt: to
+     HALVE kort side om side med bokstaver kuttet paa BEGGE kanter, «...kningen slaar
+     ut» og «...fikat og ytelse sjekkes», paa fem sider.
+     Loddrett finnes det ingen vannrett posisjon som kan lande feil. */
+  @media (max-width: 720px) {
+    .horisont[data-fest] { height: auto; }
+    .horisont[data-fest] .horisont__fest { position: static; height: auto; }
+    .horisont__spor { flex-direction: column; overflow-x: visible; transform: none; }
+    .horisont__kort { width: auto; max-width: none; }
+    .horisont__linje { display: none; }
+  }
+
 /* ========================================================== nøkkeltall ===== */
 
 /* Tallene som grafikk, ikke som liste. Hårlinjer mellom, ingen bokser. */

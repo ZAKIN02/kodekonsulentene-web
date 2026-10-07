@@ -14,7 +14,25 @@ import { prisvilkaar } from "../../data/priser";
 import "../../styles/scener.css";
 
 const t = timepris();
-const kr = (n: number) => `${n.toLocaleString("nb-NO").replace(/ /g, " ")} kr`;
+/**
+ * ENHETEN SKAL ALDRI KUNNE BLI STAAENDE IGJEN.
+ *
+ * Tusenskillet fra `toLocaleString("nb-NO")` er U+00A0, og det ble byttet ut
+ * med et VANLIG mellomrom. Sammen med `class="nowrap"` paa cellen gjorde det
+ * ingen skade - cellen brøt uansett ikke. Men da de brede tabellene fikk lov
+ * til aa bryte (se «SAMMENLIGNINGSTABELLENE» i src/styles/components.css), ble
+ * baade tusenskillet og mellomrommet foran «kr» lovlige bruddpunkter - og
+ * tabellen klipper fra hoeyre.
+ *
+ * Maalt paa 390 px foer rettingen: beloepene sto som «19 900», «35 000»,
+ * «80 000» og «499 kr-». Enheten manglet paa den ene siden som finnes for aa
+ * fortelle deg hva noe koster.
+ *
+ * Nu er BAADE tusenskillet og mellomrommet foran «kr» harde mellomrom: et
+ * beloep er ett ord. Spennet MELLOM to beloep brytes gjerne - tankestreken er
+ * et lovlig bruddpunkt, og det er nettopp der en lang pris skal dele seg.
+ */
+const kr = (n: number) => `${n.toLocaleString("nb-NO").replace(/\s/g, "\u00A0")}\u00A0kr`;
 /**
  * `WebApplication` fra `verktoy()` i src/data/schema.ts. Siden hadde ingen
  * strukturerte data foer – hjelperen var skrevet og aldri importert av noen.
@@ -172,22 +190,26 @@ const schema = verktoy({
           </tr>
         </thead>
         <tbody>
+          {/* data-kol paa hver celle: under 720 px stables raden til et kort, og
+              da er attributtet det eneste som sier hvilken kolonne verdien kom
+              fra. Regelen staar i src/styles/components.css, under
+              «PROSATABELL SOM KORT», og slaar bare inn naar attributtet finnes. */}
           {markedspriser.map((m) => (
             <tr>
-              <td>{m.leverandor}</td>
-              <td>{m.gjelder}{m.merknad && <><br /><span class="small faint">{m.merknad}</span></>}</td>
-              <td class="nowrap mono">
+              <td data-kol="Leverandør">{m.leverandor}</td>
+              <td data-kol="Gjelder">{m.gjelder}{m.merknad && <><br /><span class="small faint">{m.merknad}</span></>}</td>
+              <td class="nowrap mono" data-kol="Pris">
                 {m.hoy === null ? `fra ${kr(m.lav ?? 0)}` : m.lav === m.hoy ? kr(m.lav ?? 0) : `${kr(m.lav ?? 0)}–${kr(m.hoy)}`}
                 {m.enhet === "mnd" ? "/mnd" : ""}
               </td>
-              <td class="small faint">Sist sjekket {m.sistSjekket}</td>
+              <td class="small faint" data-kol="Kilde">Sist sjekket {m.sistSjekket}</td>
             </tr>
           ))}
           <tr>
-            <td>Timepris i markedet</td>
-            <td>Byråer / frilansere</td>
-            <td class="nowrap mono">{kr(markedTimepris.byraaLav)}–{kr(markedTimepris.byraaHoy)}/t · {kr(markedTimepris.frilansLav)}–{kr(markedTimepris.frilansHoy)}/t</td>
-            <td class="small faint">Sist sjekket {markedTimepris.sistSjekket}</td>
+            <td data-kol="Leverandør">Timepris i markedet</td>
+            <td data-kol="Gjelder">Byråer / frilansere</td>
+            <td class="nowrap mono" data-kol="Pris">{kr(markedTimepris.byraaLav)}–{kr(markedTimepris.byraaHoy)}/t · {kr(markedTimepris.frilansLav)}–{kr(markedTimepris.frilansHoy)}/t</td>
+            <td class="small faint" data-kol="Kilde">Sist sjekket {markedTimepris.sistSjekket}</td>
           </tr>
         </tbody>
       </table>

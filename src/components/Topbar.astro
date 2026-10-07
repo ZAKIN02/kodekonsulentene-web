@@ -25,7 +25,11 @@ const sti = Astro.url.pathname.replace(/\/$/, "") || "/";
     <button class="topbar__meny" type="button" data-meny-knapp aria-expanded="false"
             aria-controls="hovedmeny-dialog" hidden>
       <span class="topbar__menylinjer" aria-hidden="true"></span>
-      Meny
+      {/* Ordet staar i et eget element fordi det skjules VISUELT under 340 px –
+          se stilblokken. `visually-hidden` og ikke `display: none`: knappens
+          tilgjengelige navn skal fortsatt vaere «Meny», ogsaa naar bare streken
+          er synlig. */}
+      <span class="topbar__menyord">Meny</span>
     </button>
     <dialog class="menydialog" id="hovedmeny-dialog" data-meny-dialog>
       <nav aria-label="Hovedmeny">
@@ -92,9 +96,61 @@ const sti = Astro.url.pathname.replace(/\/$/, "") || "/";
      Den ytre luften går samtidig fra 12 til 8 px: topplinja tok 166 px av en
      844 px skjerm, og 8 px er fortsatt en tydelig flytende pille mot kanten.
      Resten av innhentingen ligger i site.css, i samme blokk som forklarer den. */
+  /* 8 PX SPREKK OVER PILLA.
+   *
+   * `.topbar` er klebrig med `top: 0`, gjennomsiktig bakgrunn og
+   * `padding-block`. Pilla er altså ikke i toppen av det klebrige elementet –
+   * det ligger 8 px (12 px over 860) luft foran den, og den luften er
+   * gjennomsiktig. Innholdet på siden ruller FORBI i den glipa: du ser toppen
+   * av bokstavene bli skrelt av skjermkanten rett over menyen. Verst i lyst
+   * tema, der flaten under er nesten hvit og teksten nesten svart.
+   *
+   * HVORFOR IKKE BARE GI `.topbar` EN BAKGRUNN: den svever over seksjoner med
+   * ulik grunnfarge – hvit, svart og `.flate--varm` på samme side – og
+   * var(--bg) på topplinja leser rotas farge, ikke seksjonens. En ugjennomsiktig
+   * stripe hadde vært feil farge på to av tre seksjoner. En uskarp bakgrunn er
+   * utelukket; brandboken forbyr glassmorfisme.
+   *
+   * I stedet rulles luften bort. Med `top: -8px` stopper det klebrige elementet
+   * 8 px over synsranden, og pillas egen overkant lander nøyaktig på 0. Før man
+   * ruller er luften der som før – den flytende pilla er uendret i hvile. Når
+   * noe først ruller, finnes det ingen glipe å rulle gjennom.
+   *
+   * `--topplinje-hoyde` er uberørt: elementet er like høyt som før. */
+  .topbar { top: calc(-1 * var(--space-3)); }
+
   @media (max-width: 860px) {
     .topbar__inner { border-radius: var(--radius-md); }
-    .topbar { padding-block: var(--space-2); padding-inline: var(--space-2); }
+    .topbar {
+      padding-block: var(--space-2);
+      padding-inline: var(--space-2);
+      /* Luften er 8 px her, så sprekken som rulles bort er 8 px. */
+      top: calc(-1 * var(--space-2));
+    }
+
+    /* TEMAKNAPPEN STO ALENE PÅ EN EGEN RAD.
+     *
+     * Målt på 390 px, hver eneste side: logo 170 + «Meny» 85 + knapp 36 = 291 px
+     * innhold i 326 px tilgjengelig – det er 35 px til overs. Men gapet var 24 px
+     * i to ledd, altså 48, og 291 + 48 = 339. Raden brøt, månen havnet nederst
+     * til venstre med halve skjermen tom ved siden av seg, og topplinja ble
+     * 122 px høy mot 78 px fra 414 px og opp. De smaleste telefonene ble
+     * straffet hardest av et gap satt for brede skjermer.
+     *
+     * 12 px gir 291 + 24 = 315 i 326. Alt på én rad, med 11 px klaring.
+     * Treffmålene er urørte: logolenka er fortsatt 44 px høy, menyknappen 44 og
+     * temaknappen 36 × 36 med 12 px mellom seg – godt over WCAG 2.5.8 sitt krav
+     * om at mål ikke skal overlappe. */
+    .topbar__inner { column-gap: var(--space-3); }
+  }
+
+  /* Pillas egen innvendige luft hentes inn fra 24 til 12 px under 420 px.
+     Regnestykket på 360 px – den vanligste Android-bredden – går ikke opp uten
+     den: 360 − 16 (pillas luft mot skjermkanten) − 48 (innvendig luft) = 296 px
+     tilgjengelig mot 315 px innhold. Med 12 px innvendig blir det 320 mot 315.
+     Logoen står fortsatt 20 px fra skjermkanten, og ingen treffflate endrer seg. */
+  @media (max-width: 420px) {
+    .topbar__inner { padding-inline: var(--space-3); }
   }
 </style>
 
@@ -155,6 +211,41 @@ const sti = Astro.url.pathname.replace(/\/$/, "") || "/";
     let tid: ReturnType<typeof setTimeout>;
     addEventListener("resize", () => { clearTimeout(tid); tid = setTimeout(vurder, 150); });
   }
+
+  // ── --topplinje-hoyde skal være MÅLT, ikke anslått ────────────────────────
+  //
+  // site.css setter `--topplinje-hoyde: 132px` under 860 px, og `html` bruker
+  // den til `scroll-padding-top`. Tallet stemte ikke med noen bredde vi målte
+  // 7. oktober 2026:
+  //
+  //     390 px   topplinja 122 px   (menyen brøt til to rader)
+  //     414 px   topplinja  78 px
+  //     768 px   topplinja  78 px
+  //
+  // Et ankerhopp fikk altså 132 + 12 px klaring der linja var 78 – 66 px for
+  // mye, så overskriften man hoppet til havnet et godt stykke nede på skjermen.
+  // Etter at gapet ble rettet (se stilblokken over) er den ÉN rad på alle
+  // bredder, og da stemmer 132 enda dårligere.
+  //
+  // Høyden kan ikke avgjøres av en mediespørring. Den avhenger av skrift,
+  // språk, zoom og om «Book 20 min» er med – akkurat som `data-mer` over.
+  // Derfor måles den, og tallet legges på <html> som innlinjeverdi, som slår
+  // stilarkets. Uten JavaScript står 132 px igjen, altså nøyaktig som i dag.
+  //
+  // `top` er negativ (sprekken over pilla rulles bort), og det er den SYNLIGE
+  // tildekkingen vi er ute etter: når linja er klebret fast, dekker den fra 0
+  // til høyde + top. Derfor legges top til i stedet for å ignoreres.
+  const linje = document.querySelector<HTMLElement>(".topbar");
+  if (linje) {
+    const settHoyde = () => {
+      const topp = parseFloat(getComputedStyle(linje).top) || 0;
+      const h = Math.round(linje.getBoundingClientRect().height + topp);
+      if (h > 0) document.documentElement.style.setProperty("--topplinje-hoyde", `${h}px`);
+    };
+    settHoyde();
+    let t2: ReturnType<typeof setTimeout>;
+    addEventListener("resize", () => { clearTimeout(t2); t2 = setTimeout(settHoyde, 150); });
+  }
 </script>
 
 <style is:global>
@@ -187,6 +278,25 @@ const sti = Astro.url.pathname.replace(/\/$/, "") || "/";
       block-size: 2px;
       background: currentColor;
       box-shadow: 0 -5px 0 currentColor, 0 5px 0 currentColor;
+    }
+
+    /* Under 340 px gaar regnestykket ikke opp uansett: 320 − 16 − 24 gir 280 px
+       til 170 px logo, 85 px menyknapp, 36 px temaknapp og to gap – 315 px. Da
+       maa noe vike, og det er ordet «Meny», ikke ordmerket og ikke et treffmaal.
+       Knappen er fortsatt 44 px hoey, og navnet «Meny» staar igjen for
+       skjermleser. 170 + 40 + 36 + 24 = 270 i 280. */
+    @media (max-width: 340px) {
+      .topbar__menyord {
+        position: absolute;
+        inline-size: 1px;
+        block-size: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+        border: 0;
+      }
     }
 
     .menydialog {

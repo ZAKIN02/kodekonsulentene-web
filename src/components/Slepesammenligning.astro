@@ -329,10 +329,19 @@ import "../styles/interaksjon.css";
        fast høyde slik at begge sidene er på skjermen samtidig – det var nettopp
        det som manglet da den leste som to dublerte tabeller. */
     .slep { --slep-grense: 0.2; }
+    /* HØYDEN ER MÅLT, IKKE GJETTET.
+       460 px var et tall satt for hånd, og panelinnholdet er 266 og 286 px på
+       390 px. Ved hvile (p = 0,5) fikk hver halvdel 229 – altså 37 og 57 px
+       klippet bort, MIDT I en tekstrad: «Lovpålagt informasjon — Org.nr.
+       mangler» sto kuttet vannrett på midten, med halve bokstaver i begge
+       temaer, og håndtaket oppå.
+       --slep-hoyde settes av skriptet til 2 × det høyeste panelet, så ved
+       hvile står begge sidene komplette. 460 px blir stående som fallback for
+       det ene tilfellet der skriptet ikke rekker å måle. */
     .slep__flate {
       grid-template-columns: 1fr;
       grid-template-rows: calc(var(--p, 0.5) * 100%) 1fr;
-      height: 460px;
+      height: var(--slep-hoyde, 460px);
       cursor: default;
     }
     .slep__panel--etter { border-top: var(--hairline) solid var(--line); }
@@ -356,7 +365,19 @@ import "../styles/interaksjon.css";
       height: var(--focus-width);
       translate: 0 calc(var(--focus-width) / -2);
     }
-    .slep__knott { rotate: 90deg; }
+    /* Håndtaket legger seg ned. En sirkel på 30 px dekker 15 px på hver side av
+       en VANNRETT linje, og radene har bare 12 px luft over og under teksten –
+       knotten lå altså oppå bokstavene uansett hvor linja sto. Et liggende grep
+       på 56 × 18 px dekker 9 px hver vei, innenfor radens egen luft, og er
+       dessuten den riktige formen for en vannrett akse. Treffflaten er
+       uendret: det er flaten og spaken som tar trykket, ikke knotten. */
+    .slep__knott {
+      rotate: none;
+      width: 56px;
+      height: 18px;
+    }
+    .slep__knott::before { rotate: -45deg; translate: 0 -3px; }
+    .slep__knott::after { rotate: 135deg; translate: 0 3px; }
 
     .slep__hint--bred { display: none; }
     .slep__hint--smal { display: block; }
@@ -414,8 +435,80 @@ import "../styles/interaksjon.css";
       spak.setAttribute("aria-valuetext", fortell(p));
       forteller.textContent = fortell(p);
     };
+
+    // ── høyden og snappingen ────────────────────────────────────────────────
+    //
+    // To feil med samme årsak: på smal skjerm klippes panelet NEDENFRA, og
+    // ingenting passet på hvor kuttet landet.
+    //
+    //   1. Flaten hadde fast høyde 460 px mens panelene er 266 og 286 px.
+    //      Ved hvile fikk hver halvdel 229, så BEGGE sidene var klippet
+    //      samtidig – i hvilestillingen, der ingen hadde rørt noe ennå.
+    //   2. Kuttet gikk tvers gjennom en tekstrad. Du leste halve bokstaver,
+    //      og det ser ut som en feil i siden, ikke som et panel du kan dra.
+    //
+    // Høyden settes derfor til 2 × det høyeste panelet: ved p = 0,5 står begge
+    // komplette. Og når noe har SATT SEG, flyttes linja til nærmeste radgrense.
+    // Begge deler måles i DOM-en, så de følger skrift, språk og zoom av seg
+    // selv – et tall skrevet for hånd gjør ikke det.
+    const paneler = [...rot.querySelectorAll<HTMLElement>("[data-slep-panel]")];
+    const innholdet = paneler
+      .map((pa) => pa.querySelector<HTMLElement>(".slep__innhold"))
+      .filter((el): el is HTMLElement => el !== null);
+
+    const maalHoyde = () => {
+      if (!smal() || innholdet.length === 0) {
+        rot.style.removeProperty("--slep-hoyde");
+        return;
+      }
+      // Innholdsdiven, ikke panelet: panelet ER høyden vi holder på å sette, og
+      // å lese den ville latt tallet mate seg selv oppover for hver måling.
+      const hoyest = Math.max(...innholdet.map((el) => el.getBoundingClientRect().height));
+      rot.style.setProperty("--slep-hoyde", `${Math.round(hoyest * 2)}px`);
+    };
+
+    /** Avstandene fra et panels egen topp der et kutt ikke deler en rad. */
+    const grenserI = (innhold: HTMLElement) => {
+      const topp = innhold.getBoundingClientRect().top;
+      const rader = [...innhold.querySelectorAll<HTMLElement>(".slep__rad")];
+      const kanter = rader.map((r) => r.getBoundingClientRect().bottom - topp);
+      if (rader[0]) kanter.push(rader[0].getBoundingClientRect().top - topp);
+      kanter.push(innhold.getBoundingClientRect().height);
+      return kanter;
+    };
+
+    // Maks 44 px flytting. Snappingen skal rette opp et stygt kutt, ikke
+    // overstyre hvor brukeren satte linja.
+    const SNAPP_MAKS = 44;
+
+    const snapp = () => {
+      if (!smal() || innholdet.length < 2) return;
+      const H = flate.getBoundingClientRect().height;
+      if (!H) return;
+      const g = grense();
+      // Øverste panel klippes ved y; nederste har høyden H − y, så dets egne
+      // radgrenser ligger på y = H − d.
+      const kandidater = [
+        ...grenserI(innholdet[0]),
+        ...grenserI(innholdet[1]).map((d) => H - d),
+      ]
+        .map((y) => y / H)
+        .filter((v) => v >= g && v <= 1 - g);
+
+      let beste = p;
+      let naermest = Infinity;
+      for (const v of kandidater) {
+        const avstand = Math.abs(v - p) * H;
+        if (avstand < naermest) { naermest = avstand; beste = v; }
+      }
+      if (naermest <= SNAPP_MAKS) sett(beste);
+    };
+
     // Meldes bare når noe har satt seg, ikke for hver piksel under draingen.
-    const meld = () => { status.textContent = fortell(p); };
+    // Snappingen hører til samme øyeblikk: den skal rette kuttet når noe har
+    // satt seg, aldri mens fingeren eller spaken er i bevegelse.
+    const meld = () => { snapp(); status.textContent = fortell(p); };
+    maalHoyde();
     sett(0.5);
 
     // ── draing ───────────────────────────────────────────────────────────────
@@ -523,7 +616,17 @@ import "../styles/interaksjon.css";
     // grensen – 0,12 er lovlig vannrett, men for trangt loddrett. Sett den om
     // igjen gjennom samme vei inn, så klemmer den seg selv på plass.
     const bredde = window.matchMedia("(max-width: 640px)");
-    bredde.addEventListener("change", () => { stoppSveip(); sett(p); meld(); });
+    bredde.addEventListener("change", () => { stoppSveip(); maalHoyde(); sett(p); meld(); });
+
+    // Høyden må også regnes om når bredden endrer seg UTEN at aksen gjør det:
+    // en rotert telefon, et delt vindu eller større skrift gir flere linjer i
+    // en rad, og da er 2 × innholdet et annet tall. Vente til det har roet seg,
+    // ellers måler vi midt i en pågående endring.
+    let omregning: ReturnType<typeof setTimeout>;
+    addEventListener("resize", () => {
+      clearTimeout(omregning);
+      omregning = setTimeout(() => { maalHoyde(); sett(p); }, 150);
+    });
 
     const stille = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (!stille.matches && "IntersectionObserver" in window) {

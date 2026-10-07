@@ -40,6 +40,12 @@ const { smal, bred, stor, plakat, tekst, kilde, spill = false } = Astro.props;
       <source data-smal={smal} data-bred={bred} data-stor={stor} type="video/mp4" />
     </video>
   </div>
+  {/* Knappen finnes bare paa smal skjerm, og skriptet slaar den paa. Uten
+      JavaScript staar stillbildet alene – som er nøyaktig det en telefon fikk
+      ut av opptaket foer ogsaa, bare uten at noe later som det beveger seg. */}
+  <button class="demo__helskjerm kk-btn" type="button" data-demo-helskjerm hidden>
+    Spill av i fullskjerm
+  </button>
   <figcaption class="small">
     {tekst}
     {kilde && <span class="faint mono"> {kilde}</span>}
@@ -56,15 +62,89 @@ const { smal, bred, stor, plakat, tekst, kilde, spill = false } = Astro.props;
   }
   .demo__ramme video { display: block; width: 100%; height: auto; }
   .demo figcaption { color: var(--ink-muted); }
+
+  .demo__helskjerm { display: none; }
+  @media (max-width: 640px) {
+    .demo__helskjerm:not([hidden]) { display: inline-flex; justify-self: start; }
+  }
+  /* Fullskjerm skal fylle skjermen, ikke staa som et lite kort midt i svart.
+     `object-fit: contain` beholder bildeforholdet. */
+  .demo__ramme video:fullscreen { width: 100%; height: 100%; object-fit: contain; background: #000; }
 </style>
 
 <script>
+  /**
+   * ET OPPTAK PAA 0,18x ER IKKE ET BEVIS.
+   *
+   * Maalt 7. oktober 2026 paa ni sider: opptakene er 1920x1080 og males i
+   * 340x191 px. Det er 0,18x. Grensesnittekst paa 16 px i opptaket blir
+   * 2,8 px paa skjermen. Flere hele skjermer besto av et klipp der det eneste
+   * man kunne se var at det var graatt og at det rørte seg.
+   *
+   * Det kan ikke rettes med CSS. For at 16 px kildetekst skal naa 12 px paa
+   * skjermen maa klippet vises paa omtrent 1440 px bredde, og da er under en
+   * fjerdedel av bildet inne i rammen – uansett hvor man zoomer eller
+   * beskjaerer. Den varige rettingen er egne opptak tatt opp i telefonformat,
+   * og den hoerer hjemme i scripts/opptak.mjs, som allerede kjoerer hvert
+   * opptak determenistisk.
+   *
+   * Det denne endringen gjoer er aa slutte aa late som. Under 640 px staar
+   * STILLBILDET – plakaten, som er 1920 px bred – og det kan telefonen
+   * knipe-zoome og lese. Et klipp som gaar i loekke kan den ikke: bildet
+   * skifter under fingeren. Den som vil se bevegelsen faar en knapp som spiller
+   * av i fullskjerm, og det er det beste en telefon kan gi.
+   *
+   * Over 640 px er alt som foer.
+   */
+  const SMAL = matchMedia("(max-width: 640px)");
+
   for (const rot of document.querySelectorAll<HTMLElement>("[data-demo]")) {
     const film = rot.querySelector<HTMLVideoElement>("[data-demo-video]");
     const kilde = film?.querySelector<HTMLSourceElement>("source");
     const redusert = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const spar = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
-    if (!film || !kilde || redusert || spar) continue;
+    if (!film || !kilde) continue;
+
+    // Knappen staar UTENFOR vilkaarene om redusert bevegelse og datasparing.
+    // De to sier at ingenting skal begynne aa bevege seg av seg selv – ikke at
+    // brukeren ikke faar lov til aa be om det. Et trykk er nettopp det: en
+    // handling brukeren selv har valgt. Fila lastes ikke foer trykket.
+    //
+    // Knappen vises foerst naar vi vet at den virker. `webkitEnterFullscreen`
+    // er Safari paa iPhone sin eneste vei inn: der kan BARE <video> gaa i
+    // fullskjerm, ikke et vilkaarlig element.
+    const helskjerm = rot.querySelector<HTMLButtonElement>("[data-demo-helskjerm]");
+    type IOSVideo = HTMLVideoElement & { webkitEnterFullscreen?: () => void };
+    const kanHelskjerm =
+      typeof film.requestFullscreen === "function" ||
+      typeof (film as IOSVideo).webkitEnterFullscreen === "function";
+    if (helskjerm && kanHelskjerm) {
+      helskjerm.hidden = false;
+      helskjerm.addEventListener("click", () => {
+        // Kilden settes FOER play(), ellers spiller vi av et <source> uten src
+        // og feiler stille. Samme rekkefoelge som i loekken under.
+        if (!kilde.src) {
+          kilde.src = kilde.dataset.bred ?? kilde.dataset.smal ?? "";
+          film.load();
+        }
+        film.controls = true;
+        film.loop = false;
+        film.play().catch(() => {});
+        if (typeof film.requestFullscreen === "function") film.requestFullscreen().catch(() => {});
+        else (film as IOSVideo).webkitEnterFullscreen?.();
+      });
+      // Ut av fullskjerm: tilbake til stillbildet. Et klipp som blir staaende
+      // og gaa i miniatyr etterpaa er nøyaktig graauten vi ble kvitt.
+      film.addEventListener("webkitendfullscreen", () => { film.pause(); film.controls = false; });
+      document.addEventListener("fullscreenchange", () => {
+        if (document.fullscreenElement !== film) { film.pause(); film.controls = false; }
+      });
+    }
+
+    // Verken spoling eller loekke paa smal skjerm: stillbildet staar.
+    // Her kommer ogsaa de to vilkaarene som knappen over med vilje staar
+    // utenfor – ingenting skal starte av seg selv.
+    if (SMAL.matches || redusert || spar) continue;
 
     // Løkke i stedet for spoling. Rekkefølgen er viktig: kilden må settes FØR
     // play(), ellers spiller vi av et <source> uten src og feiler stille.

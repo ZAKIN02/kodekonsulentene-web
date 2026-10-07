@@ -360,3 +360,244 @@ summary { min-height: 24px; }
   .kk-report td::before { content: attr(data-kol); color: var(--ink-muted); flex: 0 0 auto; }
   .kk-report td:first-child { font-weight: 700; }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Mobilgjennomgangen 7. oktober 2026, andre runde.
+   Alt under er maalt paa 390 px i Chromium med ekte beroeringskontekst
+   (hasTouch, isMobile), i moerkt og lyst tema, med og uten redusert bevegelse.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* SAMMENLIGNINGSTABELLENE KLIPPET MIDT I ORD.
+ *
+ * `.prose table` fikk `display: block; overflow-x: auto` i site.css under 860 px,
+ * saa tabellen drar ikke lenger SIDEN sidelengs. Men en rullebeholder uten
+ * synlig rullefelt paa telefon er fortsatt usynlig innhold: maalt 7. oktober
+ *
+ *   /verktoy/priskalkulator   665 px i 342   -> 323 px skjult, hele «Kilde»-kolonnen
+ *                                               og enheten bak hvert beloep
+ *   /priser (alternativene)   371 px i 342   ->  29 px skjult, siste celle
+ *                                               endte «Engelsk support. Inge»
+ *
+ * En tabell i en rullebeholder krymper til sin MIN-innholdsbredde naar den har
+ * plass til det. Her hadde den ikke det, av to grunner, og begge er i cellene:
+ *
+ *   1. `white-space: nowrap` paa beloepscellene. En celle som ikke kan brytes
+ *      har min-innholdsbredde lik hele strengen – «900 kr-1 500 kr/t · 700
+ *      kr-1 100 kr/t» alene er bredere enn skjermen.
+ *   2. Lange ubrytelige ord («Squarespace,», «sikkerhetsgjennomgang») setter
+ *      gulvet i de andre kolonnene.
+ *
+ * FOERSTE FORSOEK VAR `overflow-wrap: anywhere` PAA HVER CELLE, OG DET VAR FEIL.
+ * Den egenskapen setter min-innholdsbredden til ETT TEGN, og en auto-tabell
+ * fordeler da plassen etter innholdsmengde i stedet for etter lesbarhet. Maalt
+ * paa 390 px: fire kolonner i 342 px ble «We / bm / est / ern», «19 90 / 0 kr– /
+ * 39 90 / 0 kr» og «Sist / sjek / ket». Tabellen gikk fra aa vaere klippet til
+ * aa vaere uleselig – verre enn feilen den skulle rette. Den er fjernet igjen.
+ *
+ * Det som staar igjen er det ene som faktisk var aarsaken: `white-space: nowrap`
+ * paa beloepscellene. Den slaas av BARE inne i en prosatabell. Den samme klassen
+ * staar paa `.kv dd` og i rapportens verdikolonne, der den gjoer riktig jobb, og
+ * de roeres ikke. Ordene faar ellers bryte som ord: `break-word` endrer ikke
+ * min-innholdsbredden, men hindrer at en enkelt lang streng males utenfor cellen.
+ *
+ * Tabeller som FORTSATT ikke faar plass paa fire kolonner skal stables om til
+ * ett kort per rad – se «PROSATABELL SOM KORT» lenger ned.
+ *
+ * Dobbel klasse i velgeren fordi site.css lastes ETTER denne fila
+ * (se Base.astro) og setter de samme egenskapene paa `.prose`. Samme grep som
+ * `.wrap.wrap > figure + figure` nederst i site.css. */
+@media (max-width: 720px) {
+  .prose.prose th,
+  .prose.prose td { overflow-wrap: break-word; hyphens: auto; }
+  .prose.prose table .nowrap { white-space: normal; }
+}
+
+/* PROSATABELL SOM KORT.
+ *
+ * Fire kolonner faar ikke plass paa 390 px. Det er ikke en stilfeil, det er
+ * aritmetikk: «Leverandoer», «Gjelder», «Pris» og «Kilde» trenger hver minst
+ * 120-150 px for aa vaere lesbare, og skjermen har 342.
+ *
+ * Samme grep som rapporttabellen lenger oppe i fila: hver rad blir et kort,
+ * kolonnehodet flytter inn foran sin egen verdi som `data-kol`, og ingenting
+ * er avhengig av vannrett rulling. Tabellen beholder `display: table` sin rolle
+ * i tilgjengelighetstreet helt ned hit; den byttes foerst her, og da er
+ * `data-kol` den eneste gjenvaerende koblingen mellom verdi og kolonnenavn.
+ * Derfor er regelen OPT-IN: den slaar bare inn naar sidens celler faktisk
+ * BAERER `data-kol`. En tabell uten attributtet staar som foer. */
+@media (max-width: 720px) {
+  .prose.prose table:has(td[data-kol]) { display: block; }
+  .prose.prose table:has(td[data-kol]) thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .prose.prose table:has(td[data-kol]) tbody,
+  .prose.prose table:has(td[data-kol]) tr,
+  .prose.prose table:has(td[data-kol]) td { display: block; width: 100%; }
+  .prose.prose table:has(td[data-kol]) tr {
+    padding-block: var(--space-3);
+    border-top: var(--hairline) solid var(--line);
+  }
+  /* Etiketten staar OVER verdien, ikke ved siden av.
+     Foerste forsoek la dem side om side med `display: flex` – samme form som
+     rapporttabellen. Det virker der, fordi den har korte verdier og ÉT barn per
+     celle. Her har «Gjelder»-cellen tekst, <br> og en <span> med merknaden, og
+     en flexcelle gjoer hvert av dem til sitt EGET element paa raden. Maalt paa
+     390 px: «Nett- / side / som / abon- / ne- / ment,» i en 70 px spalte ved
+     siden av merknaden. Etikett over verdi gir hele bredden til teksten. */
+  .prose.prose table:has(td[data-kol]) td {
+    padding: var(--space-1) 0 var(--space-3);
+    border: 0;
+  }
+  .prose.prose table:has(td[data-kol]) td[data-kol]::before {
+    content: attr(data-kol);
+    display: block;
+    margin-bottom: var(--space-1);
+    color: var(--ink-faint);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  /* Foerste celle er radens navn. Den staar som overskrift for kortet og
+     trenger ingen etikett foran seg. */
+  .prose.prose table:has(td[data-kol]) td:first-child {
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 24px;
+  }
+  .prose.prose table:has(td[data-kol]) td:first-child::before { content: none; }
+}
+
+/* EN KOMMANDO DU SKAL KOPIERE MAA KUNNE LESES FERDIG.
+ *
+ * `.kk-term pre` har alltid hatt `white-space: pre-wrap; word-break: break-word`.
+ * Men en <pre class="kk-term"> ER flaten – den har ingen <pre> inni seg – saa
+ * den arvet `white-space: pre` fra nettleseren og scrollet i stedet.
+ * Maalt paa /verktoy ved 390 px: «npx kodekonsulentene sjekk dinbedrift.no»
+ * 368 px i 290 (78 skjult, stoppet paa «dinbed»), og GitHub Action-blokken
+ * 385 px i 290.
+ *
+ * Hengende innrykk saa en brutt kommandolinje fortsatt leses som ÉN linje og
+ * ikke som to kommandoer.
+ *
+ * INNRYKKET LIGGER PAA <code>, IKKE PAA <pre>. Foerste versjon satte
+ * `padding-left: calc(var(--space-4) + 2ch)` paa <pre> – men sidene setter
+ * `style="padding: var(--space-4)"` DIREKTE paa elementet, og en
+ * innlinjeerklaering slaar et stilark. Polstringen ble altsaa staaende paa
+ * 16 px mens `text-indent: -2ch` dro foerste linje 2ch til VENSTRE for den,
+ * altsaa ut i kanten. Lagt paa barnet rører vi ikke flatens polstring. */
+pre.kk-term {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre.kk-term > code {
+  display: block;
+  padding-inline-start: 2ch;
+  text-indent: -2ch;
+}
+
+/* INNTASTINGSFELTENE LESTE SOM HULL I DET MOERKE KORTET.
+ *
+ * Et `.card` staar paa --bg-raised (#13161b i moerkt tema) og `.control` sto
+ * paa --bg-sunken (#060708). Feltet var altsaa MOERKERE enn kortet, og det
+ * eneste som tegnet det var en haarlinje. Maalt paa forsiden, /systemer og
+ * /caser: fire svarte firkanter paa en nesten svart flate – de leser som
+ * utsparinger, ikke som noe du kan skrive i.
+ *
+ * Paa en LYS flate er et senket felt riktig: der peker «senket» nedover i
+ * lyshet, som skyggen gjoer. Paa en moerk flate peker den samme logikken feil
+ * vei. Derfor er feltet nu alltid ett steg mot --ink fra kortet sitt – lysere
+ * paa moerk flate, moerkere paa lys. Begge leddene er tokens.
+ *
+ * BLANDINGEN MAA REGNES UT PAA SELVE FELTET, IKKE PAA :root.
+ * Foerste versjon la den i en `--felt`-variabel paa :root, med en egen gren for
+ * [data-theme="light"]. Egendefinerte egenskaper substitueres paa elementet der
+ * de ERKLAERES, saa `--felt` ble regnet ut av rotas tokens og arvet NEDOVER som
+ * en ferdig farge. Seksjoner som laaser sin egen palett – `.flate--varm`, og
+ * scenene paa forsiden og verktoeysidene – fikk da rotas verdi. Maalt paa
+ * /verktoy/priskalkulator i LYST tema: fire nesten hvite felt paa et moerkt
+ * kort, altsaa nøyaktig den feilen som skulle rettes, speilvendt.
+ * Regnet ut her leser `var(--ink)` og `var(--bg-raised)` seksjonens egne
+ * verdier, og regelen er sann uansett hvilken palett som gjelder.
+ *
+ * Dobbel klasse: site.css lastes etter denne fila og setter --bg-sunken paa
+ * samme velger. Samme grep som i prosatabellen over.
+ *
+ * KANTEN OG PLASSHOLDEREN MAA FOELGE MED OPP.
+ * Da flaten ble lysere, mistet de to tingene som ligger PAA den kontrast mot
+ * den. Maalt, foer og etter, paa de tre palettene vi har:
+ *
+ *                      moerk          lys           varm
+ *   kant mot felt      3,45 -> 2,27   3,43 -> 3,17  4,26 -> 2,61   (krav 3, 1.4.11)
+ *   plassholder        5,38 -> 3,55   4,78 -> 4,42  8,09 -> 4,95   (krav 4,5, 1.4.3)
+ *
+ * To av tre palettene ville altsaa falt under kravet. Kanten blandes derfor
+ * like langt videre mot --ink som flaten ble flyttet (56 % er 50 % OVER de
+ * 12 %), og plassholderen gaar fra --ink-faint til --ink-muted. Etter det:
+ *
+ *   felt mot kort      1,11 -> 1,36   1,19 -> 1,28  1,17 -> 1,40
+ *   kant mot felt      4,04           3,22          3,69
+ *   kant mot kort      5,50           4,12          5,15
+ *   plassholder        5,26           5,65          5,42
+ *
+ * Haarlinja er fortsatt en haarlinje – det er VERDIEN som er sterkere, ikke
+ * streken som er tykkere. Merkevaren er uendret.
+ *
+ * `:user-invalid` og `:user-valid` i site.css staar over denne (0,3,0 mot
+ * 0,2,0), saa roed og groenn kant ved utfylling virker som foer. */
+.control.control {
+  background: color-mix(in srgb, var(--ink) 12%, var(--bg-raised));
+  border-color: color-mix(in srgb, var(--ink) 56%, var(--bg-raised));
+}
+.control.control::placeholder { color: var(--ink-muted); }
+
+/* «SEND» SAA MINST VIKTIG UT AV ALT PAA SKJERMEN.
+ *
+ * Kontaktblokken har to kort ved siden av hverandre: «Book 20 minutter» som
+ * fylt limeknapp, og skjemaets «Send» som sekundaerknapp – altsaa --bg-raised
+ * paa et kort som ALLEREDE er --bg-raised. Null flateforskjell, bare en
+ * haarlinje. Sidens eneste innsending saa ut som en spoekelsesknapp.
+ *
+ * Paa 390 px er de to kortene dessuten paa HVER SIN skjerm (maalt: skjerm 18
+ * og 19 paa forsiden), saa «én primaerknapp per visningsomraade» er overholdt
+ * der det betyr noe. Regelen treffer bare kontaktskjemaets submit. */
+form[data-kontakt] .kk-btn[type="submit"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+  width: 100%;
+}
+form[data-kontakt] .kk-btn[type="submit"]:hover { border-color: var(--on-accent); }
+
+/* BUNNTEKSTENS METALINJE BRAKK MIDT I FRASEN.
+ *
+ * `.kk-footer-meta` er en flexrad med `space-between`. Paa 390 px fikk de to
+ * delene ~160 px hver, og «Bygget i Oslo · Uten cookies · 2026» brakk til
+ * «Bygget i Oslo · Uten» / «cookies · 2026» – skilletegnet ble staaende igjen
+ * paa linje én. To setninger som hver er under 40 tegn skal staa under
+ * hverandre, ikke ved siden av, naar raden er smalere enn de to til sammen.
+ * (Gjentakelsen av ordet «cookies» var en annen feil, og den er rettet i
+ * Base.astro der strengen lages.) */
+@media (max-width: 560px) {
+  .kk-footer .kk-footer-meta { display: grid; justify-content: start; gap: var(--space-2); }
+}
+
+/* DEN VARME FLATEN LESTE SOM MISFARGING PAA TELEFON.
+ *
+ * `.flate--varm` er en maalt, bevisst palett (se tokens.css). Paa skrivebord
+ * er den en seksjon som fyller synsfeltet. Paa 390 px er den ett baand paa
+ * under én skjermhoeyde, klemt mellom en hvit og en svart seksjon, med to
+ * harde fargeskift og ingenting som sier at skiftet er med vilje. Maalt paa
+ * /systemer (skjerm 6-7) og /nettsider (skjerm 6): spoersmaalet «ser det ut
+ * som en feil?» hadde ja som svar.
+ *
+ * Haarlinja er merkevarens tegneredskap, og en flate med en egen kant leser
+ * som et PANEL. To streker og litt mer luft over og under er hele grepet –
+ * ingen gradient, ingen ny farge. */
+@media (max-width: 720px) {
+  .flate--varm.scene,
+  .flate--varm.section {
+    border-block: var(--hairline) solid var(--line-strong);
+    padding-block: var(--space-7);
+  }
+}

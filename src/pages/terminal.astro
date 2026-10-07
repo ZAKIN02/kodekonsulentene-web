@@ -31,8 +31,19 @@ const kommandoer = [
     nivaa={1}
     n={1}
     eyebrow="Terminal"
-    tittel="Trykk ~ hvor som helst"
-    ingress="Siden har en terminal. Den er ikke pynt – den kjører de samme sjekkene som verktøyene, mot ekte nettsider, og skriver svaret rett i vinduet."
+    {/* OVERSKRIFTEN BA OM NOE SIDEN SELV SIER ER AVSKRUDD.
+        Den sto «Trykk ~ hvor som helst». To avsnitt lenger ned sto det «På
+        berøringsskjerm er den skrudd av, siden den krever tastatur» – altsaa en
+        oppfordring i stoerste skriftgrad, dementert i den minste. Paa 390 px er
+        det foerste og eneste en telefonbruker ser av denne siden.
+
+        Loesningen er ikke aa bytte tekst etter `pointer: coarse`. En
+        mediespoerring GJETTER paa inndataenheten, og et nettbrett med tastatur
+        eller en telefon med Bluetooth-tastatur gjetter den feil begge veier.
+        Overskriften sier i stedet hva siden ER, og vilkaaret staar i ingressen,
+        der det gjelder alle. */}
+    tittel="En terminal i nettleseren"
+    ingress="Trykk tilde (~) på et tastatur, så åpner den seg hvor som helst på siden. Den er ikke pynt – den kjører de samme sjekkene som verktøyene, mot ekte nettsider, og skriver svaret rett i vinduet. På berøringsskjerm er den av, siden den krever tastatur."
   >
     <div class="grid-2">
       <div class="stack">
@@ -41,10 +52,12 @@ const kommandoer = [
             <div><dt class="mono">{k}</dt><dd class="small" style="font-family: var(--font-sans)">{hva}</dd></div>
           ))}
         </dl>
+        {/* Vilkaaret om beroeringsskjerm sto baade her og i ingressen etter at
+            overskriften ble skrevet om. Det staar i ingressen nu, der det hoerer
+            hjemme, og er fjernet her. */}
         <p class="small faint">
           Piltastene blar i historikken, Tab fullfører kommandonavn, Esc lukker.
-          Den laster ingenting før du åpner den. På berøringsskjerm er den skrudd av,
-          siden den krever tastatur.
+          Den laster ingenting før du åpner den.
         </p>
         <p class="small faint">
           Det finnes også noe som ikke står i <span class="mono">help</span>.

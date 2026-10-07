@@ -150,7 +150,13 @@ const basisSchema = noindex
         phone={firma.telefon}
         links={footerLenker}
         cookieNote={firma.cookieNote}
-        meta={`Bygget i Oslo · Uten cookies · ${new Date().getFullYear()}`}
+        {/* «Uten cookies» er FJERNET herfra. Metalinja sto rett ved siden av
+            cookieNote, som allerede sier «Denne siden bruker ikke cookies.» –
+            samme opplysning to ganger i samme felt, ni ord fra hverandre. Og
+            paa 390 px fikk de to delene ~160 px hver, saa frasen brakk til
+            «Bygget i Oslo · Uten» / «cookies · 2026» med skilletegnet igjen paa
+            foerste linje. Sted og aarstall er alt denne linja skal si. */}
+        meta={`Bygget i Oslo · ${new Date().getFullYear()}`}
       />
     </div>
 

@@ -355,3 +355,41 @@
   }
   .kodebygg[data-gaar] .kodebygg__linje::after { content: none; }
 }
+
+/* ===================================================== koden paa telefon ===
+ *
+ * «Kodeflaten scroller i seg selv» var riktig, men det loeste bare den halve
+ * feilen. Maalt paa 390 px 7. oktober 2026: <pre> var 590 px i en 340 px flate,
+ * altsaa 250 px kode utenfor – og det siste synlige var
+ * «<svg viewBox="0 0 300 50" aria-hid». Et avkuttet attributtnavn.
+ *
+ * Det finnes ingenting paa skjermen som sier at flaten kan dras. Ingen
+ * rullefelt (iOS tegner det foerst UNDER draingen), ingen fade, ingen hint.
+ * Et bevis som er usynlig er ikke et bevis.
+ *
+ * Linjene brytes derfor i stedet for aa rulle, under 720 px. Tre ting maa
+ * foelge med:
+ *
+ *   `width: auto` – `max-content` var det som holdt linja bredere enn flaten.
+ *   Hengende innrykk – en brutt linje skal ikke starte under linjenummeret,
+ *   ellers kan man ikke se hvor en ny linje begynner. 3,5ch er nummerets egen
+ *   bredde (2ch + 1,5ch marg).
+ *   `overflow-wrap: anywhere` – en URL eller et langt attributt uten mellomrom
+ *   maa kunne deles. Dette er kode, ikke setninger; her er det riktig.
+ *
+ * Avdekkingssekvensen er uberoert: den animerer HELE `.kodebygg__linje`, og
+ * den er fortsatt ett element enten den males paa én eller tre visuelle linjer.
+ * `tabindex` og fokusringen staar ogsaa – flaten kan ikke lenger rulles, men
+ * den er fortsatt et gruppeelement med etikett. */
+@media (max-width: 720px) {
+  .kodebygg__kode {
+    overflow-x: visible;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .kodebygg__linje {
+    width: auto;
+    padding-left: 3.5ch;
+    text-indent: -3.5ch;
+  }
+}

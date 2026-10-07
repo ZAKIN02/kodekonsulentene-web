@@ -393,12 +393,30 @@ const beskrivelse = [
     transform: translateY(192px);
   }
 
-  .sjs__logg { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+  /* LISTA FALT FRA HVERANDRE. Begge gapene sto på var(--space-2), men de måler
+     ikke det samme: radens gap er BÅDE kolonne- og radgap, så det slo inn hver
+     gang en rad brøt over to linjer – og det gjør de fleste av dem, siden funnet
+     legger seg under feltnavnet på mobil.
+
+     Målt blekk-til-blekk på /sjekk, 360/390/412 og 1440:
+       mellom to oppføringer      14,7 px
+       mellom linjene i ÉN oppføring 17,8 px
+     Oppføringene sto altså TETTERE enn linjene inne i en oppføring. «hentSide()
+     / 264 ms til første byte» og «● sikkerhetsheadere» hadde samme avstand, så
+     du kunne ikke se hvor en rad sluttet og den neste begynte – prikken var
+     eneste holdepunkt.
+
+     Nå: 4 px radgap inne i raden, 12 px mellom oppføringene. Målt etterpå:
+       360/390/412 px   mellom 18,7 · inne i 14,4 · forhold 1,30
+       1440 px          mellom 18,2 · inne i 11,1 · forhold 1,64
+     Lista har rytme igjen. Kolonnegapet er urørt på 8 px, så prikk, feltnavn,
+     verdi og hjemmel står side ved side som før. */
+  .sjs__logg { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); }
   .sjs__loggrad {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-2);
+    gap: var(--space-1) var(--space-2);
     font-family: var(--font-mono);
     font-size: 13px;
     line-height: 20px;

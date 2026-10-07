@@ -70,11 +70,23 @@ const norskDato = (iso: string) =>
  * noen rakk å gjøre noe». Rekkefølgen er den rekkefølgen tingene faktisk skjer i
  * – dokumentet lastes, taggen kjører, cookien settes, kallet går ut.
  */
+/* HARDE MELLOMROM, TO STEDER, OG BEGGE ER MÅLT – ikke pynt.
+
+   Feltet brekker over to linjer i feltkolonnen fra 300 px og ned, og med vanlige
+   mellomrom valgte nettleseren brekkpunkt fritt. Begge utfallene var gale:
+     «førstepart» / «· 730 dager»   – linja BEGYNNER med skilletegnet
+     «tredjepart · 3» / «kall»      – tallet skilt fra enheten sin
+   U+00A0 foran · binder skilletegnet til ordet før, så det eneste lovlige
+   brekkpunktet er ETTER det: «førstepart ·» / «730 dager». U+00A0 mellom tall og
+   enhet gjør at «730 dager», «1 dag», «90 dager» og «3 kall» aldri deles – samme
+   regel som .nokkeltall__verdi allerede håndhever med white-space: nowrap.
+
+   Teksten er uendret for skjermleser og søk: U+00A0 leses som mellomrom. */
 const brudd = [
-  { tid: "0,31", navn: "_ga", felt: "førstepart · 730 dager", sporer: "Google Analytics" },
-  { tid: "0,74", navn: "_gid", felt: "førstepart · 1 dag", sporer: "Google Analytics" },
-  { tid: "1,18", navn: "_fbp", felt: "førstepart · 90 dager", sporer: "Meta Pixel" },
-  { tid: "1,62", navn: "connect.facebook.net", felt: "tredjepart · 3 kall", sporer: "Meta Pixel" },
+  { tid: "0,31", navn: "_ga", felt: "førstepart · 730 dager", sporer: "Google Analytics" },
+  { tid: "0,74", navn: "_gid", felt: "førstepart · 1 dag", sporer: "Google Analytics" },
+  { tid: "1,18", navn: "_fbp", felt: "førstepart · 90 dager", sporer: "Meta Pixel" },
+  { tid: "1,62", navn: "connect.facebook.net", felt: "tredjepart · 3 kall", sporer: "Meta Pixel" },
 ];
 
 /** Samme klokkeslett, vår egen side. Ingenting skjer – og det er hele poenget. */
@@ -408,7 +420,24 @@ const riktig = [
        til «connect.facebook.ne / t». */
     .samtykke__navn { grid-area: 1 / 3 / 2 / -1; }
     .samtykke__felt { grid-area: 2 / 3; }
-    .samtykke__sporer { grid-area: 2 / 4; text-align: right; }
+    /* Fra linje to og ut står feltet og sporeren SIDE VED SIDE, og de er to ulike
+       ting: hva cookien er, og hvem som satte den. De sto på radens kolonnegap,
+       8 px – målt 11 px blekk-til-blekk på «tredjepart · 3 kall» mot «Meta Pixel»
+       ved 360/390/412. Det er under ett ordrom i 12 px mono, så raden leste som
+       én streng: «tredjepart · 3 kall Meta Pixel». 12 px til gir 23 px, nesten to
+       ordrom, og de to feltene skiller lag uten at raden blir bredere enn før
+       (sporeren er høyrestilt i en auto-kolonne).
+
+       `align-self: start` fordi feltet brekker over to linjer når det er langt
+       («førstepart · / 730 dager»). Sentrert havnet sporernavnet midt i hullet
+       mellom de to linjene og hang i løse lufta; nå står det på første linje, der
+       raden begynner å leses. */
+    .samtykke__sporer {
+      grid-area: 2 / 4;
+      text-align: right;
+      padding-inline-start: var(--space-3);
+      align-self: start;
+    }
   }
 
   @container (min-width: 420px) {

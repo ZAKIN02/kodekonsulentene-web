@@ -65,6 +65,23 @@
      Klaringen er i em, så den følger skriftstørrelsen. */
   padding-bottom: 0.24em;
   letter-spacing: -0.04em;
+  /* Sporingen over trekker 0.04em ut av HVERT tegn – også mellomrommet. Det var
+     ikke tilsiktet: vi strammer bokstavene i display-grad, ikke ordskillet.
+
+     Målt blekk-til-blekk mellom ord, minste hull per overskrift:
+       .mega               0.153em   ← strammest ordrom på hele siden
+       .horisont__overskrift 0.162em
+       .stortekst.display-lg 0.168em (scener.css, ikke vår)
+       .horisont__tittel   0.194em  ← 26 px kort-tittel, leser fint
+     Den største skriften hadde altså 21 % MINDRE ordrom enn den minste. Det er
+     feil vei: «tar både» og «nettside og app» på /apper-og-ai leste som ett ord
+     ved 44 px, og hullet vokser proporsjonalt, så det er like galt ved 200 px
+     (6,7 px ved 390 · 11,8 ved 768 · 21,1 ved 1440 – alle 0.153em).
+
+     0.04em gir tilbake nøyaktig det sporingen tok, og lander på 0.193em – samme
+     ordrom som kort-tittelen som allerede leser riktig. Bokstavsporingen er
+     urørt, så display-karakteren er den samme. */
+  word-spacing: 0.04em;
   color: var(--ink);
   text-wrap: balance;
   /* Bryter ut av innholdsbredden, men aldri ut av skjermen.
@@ -80,7 +97,28 @@
 }
 
 @media (min-width: 721px) {
-  .mega { width: min(100vw - 2 * var(--space-6), 1600px); }
+  .mega {
+    width: min(100vw - 2 * var(--space-6), 1600px);
+    /* Den negative margen kommentaren over beskriver sto ALDRI i fila. Bare
+       bredden ble satt, og bredde uten sentrering flytter ingenting: boksen ble
+       liggende forankret i venstre innholdskant og vokste utover til høyre.
+       Feilen var altså ikke rettet, bare dokumentert.
+
+       Målt blekk utenfor viewport, høyre side:
+         /handbok               1440 px   72,5 px  «Hvordan vi jobber, åpent»
+         /bransjer/handverkere  1440 px   38,3 px  «Slutt å kjøre på befaring»
+       På /handbok sto det «Hvordan vi jobber, åper» på skjermen – n og t klippet
+       bort midt i ordet, på siden som handler om å jobbe åpent.
+
+       overflow-x: clip gjør at scrollWidth === clientWidth, så ingen overflyts-
+       test ser dette. Det må måles per tegn med Range, ikke på dokumentbredden.
+
+       50% er forelderens bredde, halve bredden vår er min(50vw - space-6, 800px).
+       Differansen sentrerer boksen i VINDUET også når den er bredere enn
+       forelderen – der margin-inline: auto gir null og ikke gjør noe.
+       Etterpå: 32 px klaring på hver side ved 1440, 160 ved 1920, 0 px klippet. */
+    margin-inline: calc(50% - min(50vw - var(--space-6), 800px));
+  }
 }
 
 /* To trinn under full skala. Finnes fordi hver eneste side åpnet på 158 px:
@@ -212,6 +250,11 @@
      trenger – mer luft per em. */
   line-height: 1.08;
   letter-spacing: -0.03em;
+  /* Samme retting som i .mega, samme begrunnelse: sporingen tar 0.03em også fra
+     mellomrommet. Målt ordrom «Fire steg, ingen overraskelser» på /apper-og-ai:
+     0.162em (5,2 px ved 390 · 6,2 ved 768 · 11,7 ved 1440). Med 0.03em tilbake
+     blir det 0.192em – i linje med .mega etter rettingen og med kort-tittelen. */
+  word-spacing: 0.03em;
   color: var(--ink);
   max-width: 18ch;
   text-wrap: balance;

@@ -14,14 +14,43 @@ konkret tilbud, ikke «si fra hvis noen trenger nettside». Raskeste vei til de 
 integrasjoner mot Tripletex, Fiken eller PowerOffice. Tilby 10 % henvisningsprovisjon.
 Dette er den eneste kanalen som kan gi jevn tilførsel uten at du selv selger.
 
-## 3. Varm, personlig utgående e-post
+## 3. Utgående kontakt – og e-post er ikke en av kanalene
 
-Med rapporten fra nettsidesjekken vedlagt. Verdi først: «Jeg fant tre ting på nettsiden
-deres som bryter cookie-reglene» slår «trenger dere ny nettside?».
+Her sto det tidligere «Varm, personlig utgående e-post» med rapporten fra
+nettsidesjekken vedlagt, begrunnet med at «B2B-e-post til foretaksadresser er normalt
+tillatt etter markedsføringsloven når mottakeren er en juridisk person».
 
-B2B-e-post til foretaksadresser er normalt tillatt etter markedsføringsloven når
-mottakeren er en juridisk person. Tilby alltid avmelding uansett.
-Mal: `.claude/skills/kodekonsulentene-nettsidesjekk/SKILL.md`.
+**Premisset holder ikke for vår målgruppe, og kanalen er strøket.**
+
+Forbrukertilsynets veiledning om markedsføring via e-post og SMS, lest 7. oktober 2026
+([forbrukertilsynet.no](https://www.forbrukertilsynet.no/lov-og-rett/veiledninger-og-retningslinjer/forbrukertilsynets-veiledning-markedsforing-via-e-post-sms-o-l)):
+forbudet i markedsføringsloven § 15 gjelder **alle fysiske personer**, inkludert en
+fysisk persons individuelle jobbadresse, **og også når adressen er registrert som
+kontaktadresse til et foretak i Brønnøysundregistrene.**
+
+Et enkeltpersonforetak **er** en fysisk person. Primærsegmentet vårt er ENK-er og de
+aller minste foretakene, og at vi har funnet adressen i Enhetsregisteret er nettopp det
+veiledningen sier ikke hjelper. At funnet er nyttig og e-posten personlig endrer
+ingenting – det er innholdet som er markedsføring, ikke tonen. Kald e-post er i praksis
+stengt mot primærsegmentet, og «B2B» er ikke et unntak i norsk rett.
+
+**De lovlige utadrettede kanalene:**
+
+1. **Telefon til foretakets publiserte bedriftsnummer.** § 15 regulerer elektronisk
+   markedsføring, ikke oppringning til et foretak. Reservasjonsregisteret gjelder for
+   fysiske personer, så sjekk det før du ringer et ENK-nummer.
+2. **Fysisk post til foretaksadressen.** Treffer ikke § 15.
+3. **Alt inngående:** søk, Google Bedriftsprofil, omtaler, henvisninger og innhold –
+   altså kanal 2, 4, 5 og 6 i denne listen.
+
+**Gratis-skanningen er riktig produkt, men bare slik den er bygget nå:** brukeren ber
+selv om rapporten og oppgir selv adressen sin. Da er det en tjeneste han har bedt om, og
+den er ikke uoppfordret markedsføring. Betingelsene for at den skal forbli det står i
+`docs/epost.md`. **Bygg aldri en versjon som sender rapporter til adresser vi har
+skrapet** – vi har allerede en liste over småbedriftsnettsider med påviste avvik
+(`src/data/maalinger.json`), og kombinasjonen av den listen og en utsending er presis det
+§ 15 forbyr. Masseskanningen er grunnlag for aggregert statistikk, aldri en
+adresseliste.
 
 ## 4. Google – lokal SEO
 
@@ -50,8 +79,11 @@ rett ut: du må ha volum for at det skal lønne seg. Prisen er ikke offentlig.
 
 ## 8. Finn.no
 
-Konkurrenter annonserer nettside fra 399 kr/mnd. Lav prioritet – kanalen trekker
-priskunder, og det er den kundetypen posisjoneringen er bygget for å unngå.
+Lav prioritet – kanalen trekker priskunder, og det er den kundetypen posisjoneringen er
+bygget for å unngå. Her sto det tidligere «Konkurrenter annonserer nettside fra
+399 kr/mnd» på Finn.no. Vi har ikke kontrollert noen Finn-annonse, så påstanden er
+fjernet. Det vi faktisk kan vise til er publiserte abonnementspriser fra 349 kr/mnd, med
+kilde og dato i `src/data/markedspriser.ts`.
 
 ## Måling
 

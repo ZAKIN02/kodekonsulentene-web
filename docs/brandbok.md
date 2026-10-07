@@ -19,7 +19,7 @@ KodeKonsulentene er et utviklermiljø i Oslo som bygger nettsider, interne syste
 - Eyebrows over seksjoner i `mono-label`, versaler, med nummer: `// 02 TJENESTER`. Nummereringen følger rekkefølgen på siden.
 - Knapper er verb i imperativ og under fire ord: «Book 20 minutter», «Sjekk nettsiden din». Aldri «Klikk her», aldri «Be om tilbud» som eneste valg.
 - Ingen anglisismer der det finnes et norsk ord: «nettside», ikke «website»; «kundeportal», ikke «dashboard». Unntak: etablerte navn (Vipps, Fiken, Lighthouse, WCAG).
-- Priser skrives med mellomrom som tusenskiller og «kr» etter, alltid med «eks. mva» synlig i samme visning: `29 900 kr eks. mva`.
+- Priser skrives med mellomrom som tusenskiller og «kr» etter, alltid med prisenheten synlig i samme visning, aldri i en fotnote: `29 900 kr endelig pris`. Enheten hentes fra `prisenhet` i `src/data/priser.ts` og skrives aldri inn for hånd – foretaket er ikke mva-registrert, og «eks. mva» ville lagt 25 % vi ikke har lov til å kreve inn, til prisen i leserens hode. Se docs/prisliste.md.
 - Ingen emoji. Ingen utropstegn. Teknisk humor er tillatt i terminalmodus (`Terminal`), ikke i tilbud eller priser.
 - Snakk om resultater, ikke teknologi: «færre telefoner, betalt med Vipps» foran «React og Supabase». Teknologi nevnes i case-detaljer og i `Terminal`, der det hører hjemme.
 
@@ -118,7 +118,7 @@ Komponentene ligger i `components/bundle.js` som `window.KK` og forventer React 
 - `StatusBadge` – `ok`/`warn`/`fail` med ord.
 - `CheckReport` – rapportrader fra «Sjekk nettsiden din».
 - `Terminal` – terminalblokk for signaturdetaljen og tekniske case-detaljer.
-- `PriceCard` – prispakke med «Anbefalt»-etikett og «eks. mva».
+- `PriceCard` – prispakke med «Anbefalt»-etikett og prisenhet fra `priser.ts`.
 - `ProcessSteps` – fire steg med tidsangivelse.
 - `LegalFooter` – lovpålagt informasjon: foretaksnavn, org.nr., adresse, kontakt, lenker.
 

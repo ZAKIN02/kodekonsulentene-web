@@ -27,7 +27,7 @@ export const faq: Sporsmaal[] = [
   },
   {
     q: "Hva koster det å endre noe etterpå?",
-    a: "Småting er inkludert i drift eller abonnement, med tak på én time per måned. Utover det er timeprisen 950 kr eks. mva, alltid avtalt skriftlig på forhånd. Du får aldri en faktura du ikke har sagt ja til.",
+    a: "Småting er inkludert i drift eller abonnement, med tak på én time per måned. Utover det er timeprisen 950 kr, og den er endelig – foretaket er ikke mva-registrert, så det kommer ingen mva på toppen. Alltid avtalt skriftlig på forhånd. Du får aldri en faktura du ikke har sagt ja til.",
   },
   {
     q: "Hva om jeg allerede har en WordPress-side?",

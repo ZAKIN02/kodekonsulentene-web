@@ -2,11 +2,15 @@
  * Ett sted for alle fakta om foretaket. Endrer du noe her, endres det overalt:
  * footer, strukturert data, vilkår, personvernerklæring og tilbudsmaler.
  *
- * Foretaksdataene er hentet fra Enhetsregisteret (data.brreg.no) 5. oktober 2026.
+ * Foretaksdataene er hentet fra Enhetsregisteret (data.brreg.no), sist
+ * kontrollert mot API-et 7. oktober 2026:
+ * https://data.brreg.no/enhetsregisteret/api/enheter/936374336
+ *
  * Siden snakker i vi-form og nevner ingen person ved navn. Det registrerte
- * foretaksnavnet inneholder etternavnet fordi foretaksnavnloven § 2-2 krever det
- * av et enkeltpersonforetak – det står derfor bare i den lovpålagte footeren,
- * aldri i brødtekst.
+ * foretaksnavnet inneholder etternavnet fordi foretaksnavneloven
+ * (LOV-1985-06-21-79) § 2-2 første ledd krever det av et enkeltpersonforetak,
+ * ordrett: «Foretaksnavn for enkeltpersonforetak skal inneholde innehaverens
+ * etternavn.» Det står derfor bare i den lovpålagte footeren, aldri i brødtekst.
  *
  * TODO før lansering: feltene merket PLASSHOLDER. Se docs/sjekklister/lansering.md.
  */
@@ -14,11 +18,31 @@ export const PLASSHOLDER_ORGNR = "000000000";
 
 export const firma = {
   navn: "KodeKonsulentene",
-  /** Registrert foretaksnavn i Enhetsregisteret. Må stå på nettsiden sammen med org.nr. */
+  /**
+   * Registrert foretaksnavn i Enhetsregisteret.
+   *
+   * Hjemmelen for å ha det på siden er ehandelsloven § 8, ikke
+   * foretaksregisterloven § 10-2: vi står i Enhetsregisteret, men
+   * `registrertIForetaksregisteret` er `false`, og § 10-2 retter seg mot
+   * foretak som er registrert i Foretaksregisteret. Ehandelsloven § 8 gjelder
+   * uansett, fordi vi tilbyr en informasjonssamfunnstjeneste.
+   */
   foretaksnavn: "KodeKonsulentene Elkassmi",
-  /** Enhetsregisteret, registrert 14. oktober 2025. Enkeltpersonforetak. */
+  /**
+   * Enhetsregisteret, registrert 14. oktober 2025. Enkeltpersonforetak.
+   * Lagres som ni siffer uten mellomrom – schema.ts, iso6523Code og
+   * mod 11-kontrollen trenger det slik. Skal det VISES, bruk `orgnrVist`.
+   */
   orgnr: "936374336",
-  /** true når foretaket er registrert i Merverdiavgiftsregisteret (omsetning > 50 000 kr / 12 mnd). */
+  /**
+   * true når foretaket er registrert i Merverdiavgiftsregisteret
+   * (registreringsplikt fra 50 000 kr omsetning / 12 mnd).
+   *
+   * VERIFISERT 7. oktober 2026 mot Enhetsregisteret:
+   * `registrertIMvaregisteret: false`. Vi kan altså ikke fakturere mva, og
+   * prisene våre er endelige. Se `mvaSetning` og `prisenhet` i priser.ts –
+   * de snur av seg selv den dagen dette feltet blir `true`.
+   */
   mva: false,
   /**
    * TODO: ehandelsloven § 8 krever geografisk adresse, ikke bare poststed.
@@ -52,6 +76,21 @@ export const firma = {
 } as const;
 
 export const bookUrl = `https://cal.com/${firma.cal}`;
+
+/**
+ * Organisasjonsnummeret slik det skal VISES for mennesker: tre og tre.
+ *
+ * Finnes fordi samme nummer sto i to former på samme nettsted. `LegalFooter`
+ * grupperer selv og skrev «936 374 336», mens /vilkar, /personvern og
+ * e-postmalene skrev `firma.orgnr` rått og fikk «936374336». Det er det samme
+ * nummeret, men et lovpålagt identifikasjonsnummer som varierer fra side til
+ * side er nøyaktig det slurvet /sjekk flagger hos andre.
+ *
+ * Regelen: alt som skal leses av et menneske bruker `orgnrVist`. Alt som skal
+ * leses av en maskin – strukturerte data, iso6523Code, mod 11 – bruker
+ * `firma.orgnr`.
+ */
+export const orgnrVist = firma.orgnr.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3");
 
 /**
  * Sann så lenge siden fortsatt bærer plassholdere i stedet for ekte foretaksdata.

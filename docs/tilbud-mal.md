@@ -41,7 +41,7 @@ og havner som ordre i regnskapet» – ikke «Astro med Supabase og Vipps-integr
 
 ## 5. Pris
 
-| | Pris eks. mva |
+| | Pris |
 |---|---|
 | [Pakke eller beskrivelse] | [pris] kr |
 | [Eventuelt tillegg] | [pris] kr |

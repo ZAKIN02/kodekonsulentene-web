@@ -26,7 +26,8 @@ Kort versjon i `.claude/skills/kodekonsulentene-lansering/SKILL.md`.
 - [ ] Rekkefølgen på forsiden følger `docs/sidemonstre.md`
 - [ ] Eyebrow-numrene stemmer med rekkefølgen
 - [ ] Ingen emoji, ingen utropstegn, ingen floskler
-- [ ] Alle priser står med «eks. mva» synlig
+- [ ] Alle priser står med prisenheten fra `priser.ts` synlig – «endelig pris» så lenge
+      `firma.mva` er `false`, aldri «eks. mva» skrevet inn for hånd
 - [ ] `/personvern` og `/vilkar` kvalitetssikret juridisk
 
 ## Ytelse og tilgjengelighet

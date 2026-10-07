@@ -49,10 +49,23 @@ En forside er ikke personopplysninger. Men:
 ## Kald e-post
 
 Markedsføringsloven § 15 krever forhåndssamtykke for e-postmarkedsføring til
-**fysiske personer**. Generiske foretaksadresser som `post@` og `firmapost@` er tillatt.
+**fysiske personer**.
 
 **Et enkeltpersonforetak er en fysisk person.** En stor del av målgruppen vår er
 ENK-er, så `navn@bedrift.no` og ENK-eiere er utenfor — uansett hvor nyttig funnet er.
+
+En generisk adresse som `post@` eller `firmapost@` er bare utenfor forbudet når
+mottakeren faktisk er en **juridisk person** (AS, ASA, SA). Hos et ENK er `post@` like
+fullt en fysisk persons adresse. Og Forbrukertilsynets veiledning, lest 7. oktober 2026,
+presiserer at forbudet gjelder **også når adressen er registrert som kontaktadresse til
+et foretak i Brønnøysundregistrene** — altså akkurat slik vi finner den. At registeret er
+åpent er ikke et samtykke.
+
+Praktisk regel før én enkelt utsending: slå opp organisasjonsformen i Enhetsregisteret.
+Er den `ENK`, er e-post utelukket. Er den `AS`, er en generisk foretaksadresse mulig, og
+avmelding skal stå der uansett.
+
+Rangeringen av kanaler, og de tre som faktisk er lovlige, står i `docs/kanaler.md`.
 
 Den trygge veien: la dem hente rapporten selv via skjemaet på `/sjekk`. Da er det
 de som tar kontakt, og vi slipper hele spørsmålet.

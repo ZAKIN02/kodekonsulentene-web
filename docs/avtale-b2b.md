@@ -24,13 +24,15 @@ tilbudet foran avtalen, og avtalen foran de generelle salgsvilkårene.
 
 ## 2. Pris og betaling
 
-Avtalt pris er **[sum] kr eks. mva**.
+Avtalt pris er **[sum] kr**. Leverandøren er ikke registrert i Merverdiavgiftsregisteret,
+så det kommer ingen merverdiavgift i tillegg. Blir leverandøren registrert i avtaleperioden,
+varsles kunden skriftlig før første faktura med avgift.
 
 - 40 % faktureres ved avtaleinngåelse
 - 60 % faktureres ved lansering
 - Betalingsfrist 14 dager. Forsinkelsesrente etter forsinkelsesrenteloven.
 
-Arbeid utenfor avtalt omfang prises til **[timepris] kr/t eks. mva** og skal avtales
+Arbeid utenfor avtalt omfang prises til **[timepris] kr/t** og skal avtales
 skriftlig før arbeidet påbegynnes.
 
 ## 3. Tidsplan

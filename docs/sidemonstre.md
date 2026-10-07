@@ -12,7 +12,7 @@ Slik settes komponentene sammen til sider. Rekkefølgen på forsiden er fast; un
 | 04 | Caser | `Eyebrow`, `heading`, skjermbilde, `Terminal` (valgfritt) | 2–4 caser: problem → løsning → resultat med tall. Egne apper teller som caser. |
 | 05 | Verktøy | `UrlCheck`, `CheckReport` | «Sjekk nettsiden din» i full bredde med et eksempel på rapport. |
 | 06 | Prosess | `ProcessSteps` | Samtale → Prototype på 72 t → Bygging → Lansering og drift. |
-| 07 | Priser | `PriceCard` ×3 + abonnement + «system fra» | Åpne priser, alltid «eks. mva». Én pakke merket «Anbefalt». |
+| 07 | Priser | `PriceCard` ×3 + abonnement + «system fra» | Åpne priser, alltid med prisenheten fra `priser.ts` synlig. Én pakke merket «Anbefalt». |
 | 08 | Om | portrett, `body` | Ansikt, kort historie, hvorfor solo er en styrke. Du-form. |
 | 09 | FAQ | `heading` som `<summary>`, `body` | Eierskap, binding, sykdom, GDPR, universell utforming. |
 | 10 | Kontakt | innebygd kalender, skjema med 3–5 felt | Ingen felt som ikke trengs for å svare. |
@@ -31,7 +31,9 @@ Avstanden mellom blokkene er `space-9` på desktop og `space-8` på mobil. Hver 
 ## Priser
 
 - Tre `PriceCard` i bredden, den midterste `recommended`. Under kortene: én rad for abonnement og én for «System fra» i `mono`.
-- Prisen i `mono-stat`, «eks. mva» i `small` rett under, aldri skjult i en fotnote.
+- Prisen i `mono-stat`, prisenheten i `small` rett under, aldri skjult i en fotnote. Enheten skrives
+  ikke inn – den kommer fra `prisenhet` i `src/data/priser.ts`, som er «endelig pris» så lenge
+  foretaket ikke er mva-registrert og «eks. mva» når det blir det. Se docs/prisliste.md.
 - Innholdslisten bruker hake-ikon i `ok` for inkludert og strek i `ink-faint` for ikke inkludert. Aldri kryss i `fail` – det er ikke en feil at Start-pakken mangler CMS.
 - Timepris og bindingstid står i klartekst ved siden av pakkene.
 

@@ -53,8 +53,11 @@ Nå bygges alt i `src/data/schema.ts`, av de samme tallene som står i teksten:
 - **`Service`**, **`WebApplication`**, **`FAQPage`** og tilbud som hjelpere.
 
 Prisene leses fra `priser.ts`, så markup og brødtekst ikke kan komme ut av synk.
-Tilbudene er merket `valueAddedTaxIncluded: false`, fordi alle priser på siden er
-eks. mva – sier vi det ikke, antar Google inkludert.
+Tilbudene er merket `valueAddedTaxIncluded: !firma.mva`. Så lenge foretaket ikke er
+mva-registrert er pakkeprisen det kjøperen faktisk betaler, og feltet skal være `true`.
+Det sto hardkodet `false` til 7. oktober 2026 og fortalte Google at 29 900 var et
+nettobeløp – samme feil som «eks. mva» gjorde mot leseren. Sier vi ingenting, antar
+Google inkludert; derfor står feltet, og derfor er det utledet og ikke skrevet inn.
 
 Sider merket `noindex` får ingen strukturerte data i det hele tatt. Verifisert:
 `/kontakt?sendt=1` har 0 blokker, `/kontakt` har 3.

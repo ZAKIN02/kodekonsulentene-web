@@ -255,3 +255,19 @@
 input[type="checkbox"],
 input[type="radio"] { inline-size: 24px; block-size: 24px; }
 summary { min-height: 24px; }
+
+/* Bunnteksten vokste til 15 lenker i EN kolonne da sitemap-arbeidet la inn bransjesider,
+   artikkeloversikt og verktoey. Maalt: lenkelista ble 412 px hoey paa skrivebord og 532 paa
+   mobil, mens nabokolonnene var 68-104 – en lang strimmel ved siden av nesten ingenting, og
+   en bunntekst paa 914 px totalt paa telefon.
+
+   `columns` i stedet for et rutenett fordi antallet lenker endrer seg naar sider kommer til:
+   spaltene fyller seg selv, og ingen maa huske aa oppdatere et kolonnetall.
+   MERK: lista er allerede `display: grid` lenger oppe i fila, og `columns` gjelder
+   ikke for et rutenett – foerste forsoek hadde null effekt, maalt til samme 412 px.
+   Derfor spalter paa rutenettet i stedet. */
+.kk-footer ul { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-5); }
+/* To spalter helt ned til 360 px: lenketekstene er korte («Priser», «Om»,
+   «Sikkerhet»), og med en spalte ble bunnteksten 914 px paa en 844 px skjerm –
+   altsaa mer enn en hel skjerm med bunntekst. Maalt uten sidelengs drag. */
+@media (max-width: 359px) { .kk-footer ul { grid-template-columns: 1fr; } }

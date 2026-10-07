@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import { verktoy } from "../data/schema";
 import SjekkSekvens from "../components/SjekkSekvens.astro";
 import Demo from "../components/Demo.astro";
 import opptak from "../data/opptak.json";
@@ -19,10 +20,23 @@ import "../styles/scener.css";
 // Siden er statisk. Sjekken kjøres av skriptet under mot /api/sjekk, slik at
 // rapporten kan hentes uten full sidelasting – og uten at siden trenger SSR.
 const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
+/**
+ * `WebApplication` fra `verktoy()` i src/data/schema.ts. Siden hadde ingen
+ * strukturerte data foer – hjelperen var skrevet og aldri importert av noen.
+ * `price: "0"` og `isAccessibleForFree` er sanne: verktoeyet krever ingen
+ * innlogging og koster ingenting.
+ */
+const schema = verktoy({
+  navn: "Sjekk nettsiden din",
+  beskrivelse:
+    "Sjekker ytelse, sikkerhetsheadere, cookies satt foer samtykke, maskinelt testbare WCAG-feil og lovpaalagt informasjon paa en nettside, og verifiserer org.nr. mot Enhetsregisteret.",
+  sti: "/sjekk",
+});
 ---
 <Base
   tittel="Sjekk nettsiden din"
   beskrivelse="Gratis sjekk av ytelse, sikkerhetsheadere, cookies før samtykke, universell utforming og lovpålagt informasjon. Rapport på 30 sekunder."
+  schema={[schema]}
 >
   {/*
     HOVEDSEKSJONEN.

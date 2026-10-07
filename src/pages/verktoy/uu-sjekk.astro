@@ -1,5 +1,6 @@
 ---
 import Base from "../../layouts/Base.astro";
+import { verktoy } from "../../data/schema";
 import Scene from "../../components/Scene.astro";
 import Mega from "../../components/Mega.astro";
 import Avslor from "../../components/Avslor.astro";
@@ -14,10 +15,23 @@ import { firma } from "../../data/firma";
 import "../../styles/scener.css";
 
 const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
+/**
+ * `WebApplication` fra `verktoy()` i src/data/schema.ts. Siden hadde ingen
+ * strukturerte data foer – hjelperen var skrevet og aldri importert av noen.
+ * `price: "0"` og `isAccessibleForFree` er sanne: verktoeyet krever ingen
+ * innlogging og koster ingenting.
+ */
+const schema = verktoy({
+  navn: "Sjekk av universell utforming",
+  beskrivelse:
+    "Automatisk WCAG-sjekk med axe-core mot de 35 suksesskriteriene som gjelder private virksomheter, og en liste over hva en automatisk test ikke kan avgjoere.",
+  sti: "/verktoy/uu-sjekk",
+});
 ---
 <Base
   tittel="Sjekk universell utforming"
   beskrivelse="Automatisk WCAG-sjekk av nettsiden din mot kravene som gjelder private virksomheter. Vi sier også hva sjekken ikke kan avgjøre. Gratis."
+  schema={[schema]}
 >
   <Scene lav>
     <Mega som="h1" merke="Verktøy" n={1} tekst="Sjekk universell utforming" />

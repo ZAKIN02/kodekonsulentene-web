@@ -516,3 +516,525 @@ input[type="range"]:focus-visible {
   from { opacity: 1; transform: translateY(calc(var(--dybde, 40px) * 1)); }
   to { opacity: 1; transform: translateY(calc(var(--dybde, 40px) * -1)); }
 }
+
+/* ======================================================= noe å GJØRE =========
+ *
+ * Alt over dette punktet er bevegelse: ting som skjer når du scroller. Målt mot
+ * spinxdigital.com hadde vi allerede ni animasjoner mot deres sju og 69
+ * transformerte elementer mot deres 38. Vi roper mer enn dem. Det som manglet
+ * var ikke mer bevegelse – det var noe å GJØRE. Før dette kunne en besøkende dra
+ * i ÉN ting (Slepesammenligning) og skrive i ETT felt (nettsidesjekken).
+ *
+ * De fire flatene under er inngangsmåter, ikke pynt:
+ *
+ *   .prisvelg  velg, og se konsekvensen i kroner i samme øyeblikk
+ *   .husk      «dette er alt vi vet om deg», målt i leserens egen nettleser
+ *   .snar      tastaturet som grensesnitt: ? for kartet, g + tast for å hoppe
+ *   .mentedu   404-siden gjetter hva du lette etter
+ *
+ * HVORFOR DE LIGGER HER OG IKKE I <style> I KOMPONENTENE:
+ * `.prisvelg` sin kjerne er `:has()` på rotelementet. Astro skoper `<style>` ved
+ * å feste et `[data-astro-cid-…]` på siste ledd i hver velger, OGSÅ inne i
+ * `:has()`, og en skopet `:has()` er en annen velger enn den man skrev. Reglene
+ * som avgjør hvilket pakkekort som vises, kan ikke stå et sted der en
+ * byggetransformasjon har lov til å endre dem – da ville prisen vært feil uten
+ * at noe feilet. Resten følger med for å holde flaten på ett sted.
+ */
+
+/* ── [hidden] MÅ VINNE, OG DET GJØR DEN IKKE AV SEG SELV ────────────────────
+ *
+ * `[hidden]` er `display: none` i NETTLESERENS eget stilark, og enhver
+ * forfatterregel som setter `display` slår det – uansett spesifisitet, fordi
+ * forfatterlaget ligger over UA-laget. `.prisvelg__husket { display: flex }`
+ * gjorde derfor at «Valgene dine fra sist står igjen» sto synlig på en helt fersk
+ * nettleser uten noe lagret. Funnet på et skjermbilde fra headless Chrome, ikke i
+ * koden: markup, skript og tester var alle riktige.
+ *
+ * Verre enn det stygge: `.snar__aapne` arver `display: inline-flex` fra
+ * `.kk-btn`, og knappen «Tastatursnarveier ?» ville derfor stått der UTEN
+ * JavaScript og ikke gjort noe når man trykket. Og `.prisvelg__regnet` ville stått
+ * tom ved siden av CSS-svaret på en side uten skript.
+ *
+ * Reglene under er 0-2-0 mot 0-1-0 og vinner i samme lag. `!important` er ikke
+ * nødvendig når velgeren er spesifikk nok, og en `!important` her ville vært
+ * umulig å overstyre den dagen noe faktisk skal vises. */
+.prisvelg__regnet[hidden],
+.prisvelg__husket[hidden],
+.husk__bunn[hidden],
+.snar__aapne[hidden],
+.snar__venter[hidden] {
+  display: none;
+}
+
+/* ============================================================= prisvelgeren ==
+ *
+ * KJERNEN ER CSS, IKKE JAVASCRIPT. Pakkevalget – det viktigste svaret – regnes
+ * ut av `:has()` og `:checked`. Uten JavaScript mister du spennet i kroner og
+ * linjene i regnestykket, ikke svaret. Reglene under er derfor ikke pynt; de er
+ * forretningslogikk, og de må leses som det.
+ */
+.prisvelg {
+  display: grid;
+  gap: var(--space-6);
+  align-items: start;
+  margin: 0;
+}
+@media (min-width: 861px) {
+  .prisvelg { grid-template-columns: 1.05fr 1fr; gap: var(--space-7); }
+}
+
+.prisvelg__valg { display: grid; gap: var(--space-5); min-width: 0; }
+
+.prisvelg__felt {
+  margin: 0;
+  padding: var(--space-3) var(--space-5) var(--space-4);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--bg-raised);
+}
+.prisvelg__felt legend { padding-inline: var(--space-2); color: var(--ink-faint); }
+
+.prisvelg__rad {
+  display: grid;
+  gap: var(--space-2);
+  padding-block: var(--space-3);
+}
+.prisvelg__etikett { color: var(--ink); font-size: 14px; line-height: 20px; }
+
+/* Nedtrekket. Ikke `appearance: none`: nettleserens egen kontroll er den som
+   virker med tastatur, med skjermleser og på en telefon – og den er allerede
+   over 24 px høy. Vi gir den bare ramme og skrift fra systemet vårt. */
+.prisvelg__select {
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
+.prisvelg__select:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: 2px; }
+
+/* Avkrysningsraden. HELE raden er trykkmålet, ikke bare boksen: 24 px er
+   minimumet i WCAG 2.5.8, og en 20 px boks med 12 px luft over og under er
+   44 px høy. Det er også grunnen til at forklaringen ligger inne i <label> og
+   ikke ved siden av – da er den en del av målet i stedet for å stjele plass fra det. */
+.prisvelg__av {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: start;
+  padding: var(--space-3);
+  margin-inline: calc(var(--space-3) * -1);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color 120ms ease, box-shadow 120ms ease;
+}
+.prisvelg__av + .prisvelg__av { border-top: var(--hairline) solid var(--line); }
+.prisvelg__av input[type="checkbox"] {
+  inline-size: 20px;
+  block-size: 20px;
+  margin: 0;
+  /* --accent-text, IKKE --accent. Limen #b6e62a mot hvitt er 1,3:1, og da er
+     det ingen synlig forskjell mellom avhuket og ikke i lyst tema. --accent-text
+     er den samme limen i mørkt tema og en dyp grønn i lyst, over 7:1 i begge.
+     WCAG 1.4.11 krever 3:1 for en kontroll som bærer mening, og en avkrysning
+     bærer hele meningen her. */
+  accent-color: var(--accent-text);
+}
+.prisvelg__av input[type="checkbox"]:focus-visible {
+  outline: var(--focus-width) solid var(--focus);
+  outline-offset: 2px;
+}
+.prisvelg__navn { display: block; color: var(--ink); }
+.prisvelg__hvorfor {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--ink-muted);
+  font-size: 13px;
+  line-height: 19px;
+}
+
+/* ── pekeren går begge veier ────────────────────────────────────────────────
+ *
+ * `[data-uthev]` settes av skriptet på BÅDE valget og linjen i regnestykket som
+ * valget skapte. Det er den eneste pekerinteraksjonen i flaten, og den finnes
+ * fordi den forklarer noe: den viser årsakskjeden i en utregning folk ellers må
+ * ta på tro. Den er ikke en hover-effekt med et formål påklistret etterpå.
+ *
+ * Streken til venstre, ikke bare bakgrunnen: en bakgrunn alene forsvinner for
+ * den som ser dårlig farge, og --accent-soft mot --bg-raised er under 1,5:1 i
+ * begge temaer. Streken i --accent-text er over 7:1 og bærer signalet alene.
+ */
+[data-uthev] {
+  background: var(--accent-soft);
+  box-shadow: inset 2px 0 0 var(--accent-text);
+}
+
+/* ── svaret ────────────────────────────────────────────────────────────────── */
+
+.prisvelg__svar {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+  padding: var(--space-5);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--bg-sunken);
+  min-width: 0;
+}
+
+.prisvelg__fast { display: grid; gap: var(--space-4); }
+
+/* FORRETNINGSLOGIKKEN. Samme regler som `beregn()` i src/lib/priskalkyle.ts:
+ *   app eller integrasjon  → System
+ *   ellers CMS eller > 3 sider → Bedrift
+ *   ellers                 → Start
+ *
+ * `[data-system]` står på app-feltet og på alle fire integrasjonene,
+ * `[data-bedrift]` på CMS-feltet, og `[data-stor]` på hvert <option> over 3.
+ * `:checked` treffer et valgt <option>, og DET er grunnen til at sideantallet er
+ * et nedtrekk og ikke en spak: en spak har ingen tilstand CSS kan lese. */
+.prisvelg__pakke { display: none; gap: var(--space-2); }
+.prisvelg:has([data-system]:checked) .prisvelg__pakke--system,
+.prisvelg:not(:has([data-system]:checked)):has([data-bedrift]:checked) .prisvelg__pakke--bedrift,
+.prisvelg:not(:has([data-system]:checked)):not(:has([data-bedrift]:checked)):has(option:checked[data-stor]) .prisvelg__pakke--bedrift,
+.prisvelg:not(:has([data-system]:checked)):not(:has([data-bedrift]:checked)):not(:has(option:checked[data-stor])) .prisvelg__pakke--start {
+  display: grid;
+}
+
+/* Uten `:has()` står ALLE TRE kortene synlige, hvert med sin egen faste pris fra
+   prislisten. Det er ikke pent, men det er sant og lesbart. Degraderingen går
+   mot synlig – aldri mot et tomt felt der et tall skulle stått. */
+@supports not selector(:has(*)) {
+  .prisvelg__pakke { display: grid; }
+  .prisvelg__pakke + .prisvelg__pakke { border-top: var(--hairline) solid var(--line); padding-top: var(--space-4); }
+}
+
+/* Skriptet kjører: CSS-svaret trekker seg tilbake for regnestykket. Attributtet
+   settes helt til slutt i skriptet, ETTER at den dynamiske flaten er fylt – så
+   det finnes ikke et øyeblikk der ingen av de to står der. */
+.prisvelg[data-klar] .prisvelg__fast { display: none; }
+
+.prisvelg__regnet { display: grid; gap: var(--space-3); }
+.prisvelg__pakkenavn { margin: 0; color: var(--ink-faint); }
+.prisvelg__sum { margin: 0; color: var(--ink); }
+.prisvelg__begrunnelse { margin: 0; color: var(--ink-muted); }
+
+/* Fast høyde. Meldingen byttes for hvert valg, og uten dette ville en linje som
+   brytes til to flyttet alt under seg – akkurat det Slepesammenligning sin
+   forteller måtte løse på samme vis. */
+.prisvelg__melding {
+  margin: 0;
+  min-height: 20px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.prisvelg__linjer { margin: 0; }
+.prisvelg__linjer div { padding-inline: var(--space-2); margin-inline: calc(var(--space-2) * -1); }
+.prisvelg__linjer dt { display: block; }
+.prisvelg__anslag {
+  display: block;
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.prisvelg__drift, .prisvelg__fastnote { margin: 0; }
+
+.prisvelg__forut summary {
+  min-height: 24px;
+  padding-block: var(--space-1);
+  color: var(--ink-muted);
+  font-size: 14px;
+  line-height: 20px;
+  cursor: pointer;
+}
+.prisvelg__forut summary:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: 2px; }
+.prisvelg__forut ul {
+  margin: var(--space-2) 0 0;
+  padding-inline-start: var(--space-5);
+  color: var(--ink-muted);
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.prisvelg__bunn {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: center;
+  padding-top: var(--space-2);
+}
+
+/* Hukommelsen, synlig. Vises bare når noe faktisk BLE husket. En nettside som
+   husker noe uten å si det, er en nettside som skjuler noe. */
+.prisvelg__husket {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  align-items: baseline;
+  margin: 0;
+  padding-top: var(--space-3);
+  border-top: var(--hairline) solid var(--line);
+  color: var(--ink-muted);
+  font-size: 13px;
+  line-height: 19px;
+}
+.prisvelg__glem {
+  min-height: 24px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--accent-text);
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.prisvelg__glem:hover { color: var(--accent-text); }
+.prisvelg__glem:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: 2px; }
+
+/* ================================================================ hukommelsen ==
+ *
+ * Tallene her er MÅLT i leserens egen nettleser, ikke skrevet inn. Fargene må
+ * derfor tåle begge temaer: `--ok` (#0b7a6b) mot den lyse flaten ligger på 4,7:1,
+ * altså så vidt over kravet, og en nedsenket flate ville tatt den under. Samme
+ * color-mix som Slepesammenligning bruker løser det temauavhengig: --ink peker
+ * ALLTID bort fra bakgrunnen, så et steg mot --ink kan bare øke kontrasten.
+ */
+.husk {
+  --husk-ok: color-mix(in srgb, var(--ok) 88%, var(--ink));
+  --husk-varsel: color-mix(in srgb, var(--warn) 88%, var(--ink));
+  display: grid;
+  gap: var(--space-5);
+}
+
+.husk__maal { margin: 0; display: grid; gap: 0; }
+.husk__rad {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block: var(--space-3);
+  border-top: var(--hairline) solid var(--line);
+}
+.husk__rad dt { color: var(--ink-muted); font-size: 14px; line-height: 20px; }
+.husk__verdi {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 20px;
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+.husk__verdi[data-husk="ok"] { color: var(--husk-ok); }
+.husk__verdi[data-husk="varsel"] { color: var(--husk-varsel); }
+
+.husk__kilde, .husk__lov { margin: 0; }
+.husk__kilde .mono, .husk__lov .mono { word-break: break-word; }
+
+/* Tabellen beholder tabellsemantikken på alle bredder. `display: block` på
+   tr/td er den vanlige mobilløsningen, og den FJERNER rad- og
+   kolonnesammenhengen for flere skjermlesere. Derfor får den i stedet lov til å
+   rulle vannrett inne i sin egen region, som er merket og kan nås med tastatur. */
+.husk__skrall {
+  overflow-x: auto;
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  background: var(--bg-raised);
+}
+.husk__skrall:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: 2px; }
+
+.husk__tabell { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 20px; }
+.husk__tabell caption {
+  text-align: start;
+  padding-bottom: var(--space-3);
+  color: var(--ink-faint);
+}
+.husk__tabell th, .husk__tabell td {
+  text-align: start;
+  vertical-align: top;
+  padding: var(--space-3) var(--space-4) var(--space-3) 0;
+  border-top: var(--hairline) solid var(--line);
+}
+.husk__tabell thead th {
+  border-top: 0;
+  padding-top: 0;
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+.husk__tabell tbody th { color: var(--ink); font-weight: 400; white-space: nowrap; }
+.husk__tabell td { color: var(--ink-muted); }
+.husk__hvorfor { display: block; color: var(--ink-faint); font-size: 13px; line-height: 19px; }
+.husk__naa {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  word-break: break-word;
+  padding-right: 0 !important;
+}
+.husk__naa[data-husk="satt"] { color: var(--ink); }
+.husk__naa[data-husk="varsel"] { color: var(--husk-varsel); }
+
+.husk__bunn { display: grid; gap: var(--space-3); justify-items: start; }
+
+/* ============================================================ snarveikartet ==
+ *
+ * `<dialog>` med `showModal()` gir fokusfelle, Esc og retur av fokus gratis.
+ * Alt det er oppførsel folk forventer av en modal, og alt det er oppførsel som
+ * blir subtilt feil når man bygger den selv.
+ */
+.snar {
+  width: min(680px, calc(100vw - var(--space-6)));
+  max-height: calc(100vh - var(--space-7));
+  padding: 0;
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--bg-raised);
+  color: var(--ink);
+  box-shadow: var(--shadow-menu);
+}
+/* Bakteppet er fast svart i BEGGE temaer med vilje: det ligger over sidens eget
+   innhold, ikke over en av våre flater, og et temastyrt bakteppe i lyst tema
+   ville ikke skilt modalen fra siden i det hele tatt. */
+.snar::backdrop { background: rgba(6, 7, 8, 0.66); }
+
+.snar__ramme { display: grid; gap: var(--space-5); padding: var(--space-5); }
+.snar__topp { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); }
+.snar__tittel {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.snar__lukk {
+  min-height: 28px;
+  min-width: 44px;
+  padding: var(--space-1) var(--space-3);
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-sunken);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 16px;
+  cursor: pointer;
+}
+.snar__lukk:hover { border-color: var(--ink); }
+.snar__lukk:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: 2px; }
+
+.snar__spalter { display: grid; gap: var(--space-5); }
+@media (min-width: 561px) { .snar__spalter { grid-template-columns: 1fr 1fr; gap: var(--space-6); } }
+.snar__spalte { display: grid; gap: var(--space-3); align-content: start; }
+.snar__spalte h3 { margin: 0; color: var(--ink-faint); }
+
+.snar__liste { margin: 0; display: grid; gap: 0; }
+.snar__rad {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: center;
+  padding-block: var(--space-2);
+  border-top: var(--hairline) solid var(--line);
+  font-size: 14px;
+  line-height: 20px;
+}
+.snar__rad dt { margin: 0; }
+.snar__rad dd { margin: 0; color: var(--ink-muted); }
+.snar__rad dd a { color: var(--ink); }
+
+/* 24 x 24. En tast man skal trykke på en telefon er et trykkmål, ikke bare et
+   tegn – og WCAG 2.5.8 setter grensen der. */
+.snar__kbd {
+  display: inline-grid;
+  place-items: center;
+  min-inline-size: 24px;
+  min-block-size: 24px;
+  padding-inline: var(--space-2);
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-sunken);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 16px;
+}
+.snar__aapne .snar__kbd { border-color: currentColor; background: transparent; color: inherit; }
+
+.snar__hemmelig, .snar__fot { margin: 0; }
+.snar__fot { padding-top: var(--space-3); border-top: var(--hairline) solid var(--line); }
+
+/* Brikken som viser at `g` venter. Nede til VENSTRE: terminalhintet i site.css
+   står nede til høyre, og to brikker oppå hverandre er en kollisjon ingen tester
+   fanger. `pointer-events: none` fordi den aldri skal stå i veien for en lenke. */
+.snar__venter {
+  position: fixed;
+  bottom: var(--space-4);
+  left: var(--space-4);
+  z-index: 25;
+  margin: 0;
+  padding: var(--space-1) var(--space-2);
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-raised);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+
+/* ================================================================= mente du ==
+ *
+ * Ingen `min-height`. Blokken er tom til skriptet finner et godt nok gjett, og en
+ * tom boks som holder av plass til noe som kanskje aldri kommer, er en layout
+ * som hopper.
+ */
+.mentedu { display: grid; gap: var(--space-2); }
+/* Luft under gjettet, men BARE når det finnes et gjett. `[data-klar]` settes av
+   skriptet først etter at innholdet er lagt inn, så en tom blokk flytter
+   ingenting. En margin som står der uansett er en layout som hopper. */
+.mentedu[data-klar] { margin-bottom: var(--space-6); }
+.mentedu__gjett {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 4vw, 34px);
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.mentedu__foran { color: var(--ink-muted); }
+.mentedu__lenke {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--accent-text);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+}
+.mentedu__lenke:hover { color: var(--accent-text); }
+.mentedu__lenke:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: 3px; }
+.mentedu__sti { margin: 0; font-family: var(--font-mono); word-break: break-word; }
+
+/* REDUSERT BEVEGELSE for de fire flatene over.
+ *
+ * Merk hva som IKKE står her: ingenting skjules, og ingen interaksjon slås av.
+ * Det eneste som ryker er utglattingen av uthevingen. Den som har bedt om mindre
+ * bevegelse skal ha en flate som VIRKER, bare uten overgangene – samme regel som
+ * draingen i Slepesammenligning følger lenger opp i denne filen. */
+@media (prefers-reduced-motion: reduce) {
+  .prisvelg__av { transition: none; }
+}

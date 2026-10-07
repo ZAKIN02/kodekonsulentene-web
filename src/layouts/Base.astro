@@ -21,11 +21,31 @@ interface Props {
   schema?: Record<string, unknown>[];
   /** Filnavn i /og/ uten endelse. Faller tilbake på forsidekortet. */
   ogBilde?: string;
+  /**
+   * Settes bare på artikler. Gir `og:type=article` og de to datoene Facebook,
+   * LinkedIn og Slack leser når de bygger forhåndsvisningen. Datoene skal være
+   * de samme som står i brødteksten og i Article-markupen – ikke «i dag».
+   */
+  artikkel?: { publisert: string; oppdatert: string };
 }
 // Uferdig side skal aldri indekseres, uansett hva siden selv ber om.
-const { tittel, beskrivelse, noindex = erUferdig, schema = [], ogBilde = "forside" } = Astro.props;
+const {
+  tittel,
+  beskrivelse,
+  noindex = erUferdig,
+  schema = [],
+  ogBilde = "forside",
+  artikkel,
+} = Astro.props;
 const ogUrl = new URL(`/og/${ogBilde}.png`, Astro.site ?? firma.url).href;
-const fullTittel = tittel === firma.navn ? `${firma.navn} – ${firma.tagline}` : `${tittel} – ${firma.navn}`;
+/**
+ * Forsiden får navnet først og et kort tillegg; alle andre sider får sitt eget
+ * navn først og foretaket bak. Rekkefølgen er bevisst: det er sidens eget emne
+ * som avgjør om noen klikker, men navnet skal stå i hver tittel, fordi det er
+ * navnet vi forsøker å bli funnet på.
+ */
+const fullTittel =
+  tittel === firma.navn ? `${firma.navn} – ${firma.titteltillegg}` : `${tittel} – ${firma.navn}`;
 const kanonisk = new URL(Astro.url.pathname, Astro.site ?? firma.url).href;
 
 /**
@@ -63,18 +83,27 @@ const basisSchema = noindex
     <link rel="canonical" href={kanonisk} />
     {noindex && <meta name="robots" content="noindex, follow" />}
 
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={artikkel ? "article" : "website"} />
     <meta property="og:site_name" content={firma.navn} />
     <meta property="og:locale" content="nb_NO" />
     <meta property="og:title" content={fullTittel} />
     <meta property="og:description" content={beskrivelse} />
     <meta property="og:url" content={kanonisk} />
     <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={tittel} />
+    {artikkel && <meta property="article:published_time" content={artikkel.publisert} />}
+    {artikkel && <meta property="article:modified_time" content={artikkel.oppdatert} />}
+    {/* Twitter/X arver og:title og og:description når de mangler, men bare noen
+        av lesebrettene gjør det. Slack, Discord og flere leser twitter:-feltene
+        først. Det koster to linjer å slippe å gjette. */}
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTittel} />
+    <meta name="twitter:description" content={beskrivelse} />
     <meta name="twitter:image" content={ogUrl} />
+    <meta name="twitter:image:alt" content={tittel} />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     {/* 180x180, ikke 1024. apple-touch-icon pekte på en fil beregnet for App Store –

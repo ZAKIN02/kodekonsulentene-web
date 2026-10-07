@@ -1,0 +1,280 @@
+---
+/**
+ * Snarveikartet – tastaturet som grensesnitt, ikke som nødutgang.
+ *
+ * Terminalen på tilde er den detaljen folk husker nettstedet for. Problemet med
+ * den er at den er ÉN detalj: finner du den, finner du ingenting mer. Dette er
+ * laget som gjør den til et system.
+ *
+ *   `?`              åpner kartet du nå leser om
+ *   `g` og en tast   går til en side – `g p` til priser, `g s` til sjekken
+ *
+ * `g`-sekvensen er lånt fra Gmail, GitHub og Linear, og den er lånt med vilje:
+ * en utvikler som prøver `g p` på en norsk håndverkerside og FÅR prisene, har
+ * fått vite noe om hvem som har bygget siden. Det er hele poenget med den.
+ *
+ * ── HVORFOR DEN VISER SEG SELV MENS DU BRUKER DEN ────────────────────────────
+ *
+ * Trykker du `g`, legger det seg en liten brikke nede til venstre som sier at
+ * den venter, og hvilke taster som gjelder. Uten den ville `g` vært en
+ * blindgate: ingenting skjer, og du vet ikke om du traff feil eller om
+ * funksjonen ikke finnes. En skjult snarvei uten tilbakemelding er ikke en
+ * snarvei, den er en felle.
+ *
+ * Brikken forsvinner av seg selv etter 1,6 sekunder. Trykker du en tast som ikke
+ * er en snarvei, sier den det, og forsvinner.
+ *
+ * ── HVORFOR SNARVEIENE IKKE TELLES I SKJEMAFELT ──────────────────────────────
+ *
+ * `?` og `g` er helt vanlige tegn man skriver. Teller vi dem mens markøren står
+ * i nettsidesjekkens URL-felt, stjeler vi bokstaver fra det folk skriver og
+ * åpner en modal over arbeidet deres. Samme forbehold som tastesekvensen i
+ * `public/terminal.js` har. Kontrollen dekker `input`, `textarea`, `select` og
+ * `contenteditable`, og alt med en modifikatortast holdt nede går urørt videre –
+ * ellers hadde `Ctrl+G` (finn neste) sluttet å virke i nettleseren.
+ *
+ * ── DEGRADERING ──────────────────────────────────────────────────────────────
+ *
+ * UTEN JAVASCRIPT finnes snarveiene ikke, og da skal kartet over dem heller ikke
+ * finnes. Et `<dialog>` uten `open` er `display: none` fra nettleserens side,
+ * og det er riktig her: innholdet dokumenterer funksjoner som ikke er der.
+ * Ingenting som ville vært synlig blir borte – alle sidene kartet peker på
+ * ligger i hovedmenyen og i footeren som vanlige lenker.
+ *
+ * Knappen som åpner kartet står derimot `hidden` til skriptet slår den på, av
+ * samme grunn som inputfeltet på /404 er `disabled` uten JavaScript: en knapp
+ * som ikke gjør noe er verre enn ingen knapp.
+ *
+ * MED REDUSERT BEVEGELSE er det ingen forskjell – flaten har ingen bevegelse å
+ * skru av. Den vises, den vises ikke.
+ *
+ * I FIREFOX er alt uendret. `<dialog>`, `showModal()` og `::backdrop` er støttet,
+ * og ingenting her bruker `animation-timeline`.
+ *
+ * ── ÉN SANNHET OM SIDENE: BYGGET FEILER PÅ EN DØD SNARVEI ────────────────────
+ *
+ * Sjekken under slår opp hver snarvei mot de FILENE som faktisk ligger i
+ * `src/pages`, hentet med `import.meta.glob`. Vite løser globen ved bygging, så
+ * listen er filsystemet selv – ikke en liste noen må huske å vedlikeholde.
+ *
+ * Første utkast sammenlignet mot `src/data/navigasjon.ts` i stedet, og det var
+ * feil på en måte som er verdt å skrive ned: byggingen stoppet på `g k` → `/kontakt`,
+ * en side som finnes og har gjort det hele tiden. Den står bare ikke i
+ * hovedmenyen. En sjekk som sier fra om det riktige av feil grunn, sier fra om
+ * det gale neste gang.
+ *
+ * En snarvei til en 404 er verre enn ingen snarvei, så dette skal stoppe bygget.
+ */
+import "../styles/interaksjon.css";
+
+interface Props {
+  /** Viser knappen som åpner kartet. Skru av der topbaren har sin egen inngang. */
+  knapp?: boolean;
+  class?: string;
+}
+const { knapp = true, class: cls } = Astro.props;
+
+/**
+ * Snarveiene. `tast` er bokstaven etter `g`.
+ *
+ * Rekkefølgen er den en bedriftseier ville lest den i, ikke alfabetisk: hjem,
+ * det vi selger, det som er gratis, og så oss selv.
+ */
+const hopp = [
+  { tast: "h", href: "/", hva: "Forsiden" },
+  { tast: "n", href: "/nettsider", hva: "Nettsider" },
+  { tast: "i", href: "/sikkerhet", hva: "Sikkerhet" },
+  { tast: "p", href: "/priser", hva: "Priser" },
+  { tast: "v", href: "/verktoy", hva: "Verktøy" },
+  { tast: "s", href: "/sjekk", hva: "Sjekk nettsiden din" },
+  { tast: "k", href: "/kontakt", hva: "Kontakt" },
+  { tast: "t", href: "/terminal", hva: "Om terminalen" },
+] as const;
+
+/**
+ * Byggetidssjekk mot filsystemet. En snarvei til en side som ikke finnes er en
+ * lenke uten mål, bare uten `<a>` rundt – og da fanger ingen av de andre testene
+ * den. Dynamiske ruter (`[slug].astro`) utelates: de har ingen fast sti å peke på.
+ */
+const kjente = new Set(
+  Object.keys(import.meta.glob("/src/pages/**/*.astro"))
+    .filter((f) => !f.includes("["))
+    .map((f) => f.replace("/src/pages", "").replace(/\.astro$/, "").replace(/\/index$/, "") || "/"),
+);
+for (const h of hopp) {
+  if (!kjente.has(h.href)) {
+    throw new Error(
+      `Snarveikart.astro: «g ${h.tast}» peker på ${h.href}, men det finnes ingen slik fil i src/pages.`,
+    );
+  }
+}
+
+/** Taster som ikke er `g`-hopp, men som finnes. Dokumentert samme sted. */
+const andre = [
+  { tast: "?", hva: "Dette kartet" },
+  { tast: "~", hva: "Åpner terminalen. Ctrl + K gjør det samme." },
+  { tast: "Esc", hva: "Lukker det som er åpent" },
+] as const;
+
+---
+{knapp && (
+  <button type="button" class="kk-btn snar__aapne" data-snar-aapne hidden>
+    Tastatursnarveier <kbd class="snar__kbd">?</kbd>
+  </button>
+)}
+
+<dialog class:list={["snar", cls]} data-snar aria-labelledby="snar-tittel">
+  <div class="snar__ramme">
+    <div class="snar__topp">
+      <h2 class="snar__tittel" id="snar-tittel">Tastatur</h2>
+      <button type="button" class="snar__lukk" data-snar-lukk aria-label="Lukk snarveikartet">Esc</button>
+    </div>
+
+    <div class="snar__spalter">
+      <section class="snar__spalte" aria-labelledby="snar-hopp">
+        <h3 class="mono-label" id="snar-hopp">Trykk g, så</h3>
+        <dl class="snar__liste">
+          {hopp.map((h) => (
+            <div class="snar__rad">
+              <dt><kbd class="snar__kbd">{h.tast}</kbd></dt>
+              <dd><a class="kk-link" href={h.href}>{h.hva}</a></dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      <section class="snar__spalte" aria-labelledby="snar-andre">
+        <h3 class="mono-label" id="snar-andre">Alene</h3>
+        <dl class="snar__liste">
+          {andre.map((a) => (
+            <div class="snar__rad">
+              <dt><kbd class="snar__kbd">{a.tast}</kbd></dt>
+              <dd>{a.hva}</dd>
+            </div>
+          ))}
+        </dl>
+        <p class="small faint snar__hemmelig">
+          Det finnes én tastesekvens som ikke står her. Den er tolv år eldre enn nettstedet,
+          og de som spilte mye på åttitallet finner den raskest.
+        </p>
+      </section>
+    </div>
+
+    <p class="small faint snar__fot">
+      Snarveiene teller ikke mens du skriver i et felt, og aldri sammen med Ctrl, Cmd eller Alt.
+      Alt de gjør finnes også som vanlige lenker i menyen.
+    </p>
+  </div>
+</dialog>
+
+{/* Brikken som viser at `g` venter. Står utenfor dialogen, fordi den skal kunne
+    vises mens kartet er lukket. `aria-live` gjør at en skjermleser får vite at
+    noe venter – uten den ville sekvensen vært usynlig for den som ikke ser. */}
+<p class="snar__venter" data-snar-venter role="status" aria-live="polite" hidden></p>
+
+<script>
+  /**
+   * Én registrering per dokument, uansett hvor mange ganger komponenten står på
+   * siden. Uten vakten ville to kart gitt to lyttere, og `g p` hadde navigert to
+   * ganger – harmløst i praksis, men det er ikke et argument.
+   */
+  const vindu = window as Window & { __kkSnarvei?: true };
+  const kart = document.querySelector<HTMLDialogElement>("[data-snar]");
+  const venter = document.querySelector<HTMLElement>("[data-snar-venter]");
+
+  // `showModal` finnes i alle nettlesere vi bryr oss om, men kontrollen koster
+  // ingenting og alternativet er en knapp som ikke gjør noe.
+  if (!vindu.__kkSnarvei && kart && typeof kart.showModal === "function") {
+    vindu.__kkSnarvei = true;
+
+    /**
+     * Snarveiene LESES UT AV HTML-EN, ikke skrevet opp på nytt her.
+     *
+     * Det er samme regel som `pris`-kommandoen i public/terminal.js følger mot
+     * prislisten: finnes listen to steder, kommer de to i utakt. Her betyr det at
+     * kartet brukeren leser og tastene som faktisk virker ikke kan være uenige –
+     * en snarvei som ikke står i kartet er umulig å lage ved uhell.
+     */
+    const snarveier = new Map<string, string>();
+    for (const rad of kart.querySelectorAll(".snar__rad")) {
+      const tast = rad.querySelector("kbd")?.textContent?.trim().toLowerCase();
+      const href = rad.querySelector("a[href]")?.getAttribute("href");
+      if (tast && href && tast.length === 1) snarveier.set(tast, href);
+    }
+    const bokstaver = [...snarveier.keys()].join(" ");
+
+    for (const b of document.querySelectorAll<HTMLButtonElement>("[data-snar-aapne]")) {
+      b.hidden = false;
+      b.addEventListener("click", () => { if (!kart.open) kart.showModal(); });
+    }
+    for (const b of document.querySelectorAll<HTMLButtonElement>("[data-snar-lukk]")) {
+      b.addEventListener("click", () => kart.close());
+    }
+
+    // Klikk på bakteppet. `<dialog>` lukker ikke av seg selv der, og en modal med
+    // Esc som eneste vei ut er en felle for den som bruker mus.
+    kart.addEventListener("click", (e) => { if (e.target === kart) kart.close(); });
+
+    /* ── g-sekvensen ────────────────────────────────────────────────────────── */
+
+    let timer = 0;
+    const vis = (tekst: string, ms: number) => {
+      if (!venter) return;
+      venter.textContent = tekst;
+      venter.hidden = false;
+      clearTimeout(timer);
+      timer = window.setTimeout(skjul, ms);
+    };
+    const skjul = () => {
+      if (venter) venter.hidden = true;
+      clearTimeout(timer);
+      timer = 0;
+    };
+
+    let gVenter = false;
+
+    /** Felt der tastetrykk hører til brukeren, ikke til oss. */
+    const iFelt = (el: EventTarget | null) =>
+      el instanceof HTMLElement &&
+      (el.isContentEditable ||
+        el instanceof HTMLInputElement ||
+        el instanceof HTMLTextAreaElement ||
+        el instanceof HTMLSelectElement);
+
+    document.addEventListener("keydown", (e) => {
+      // Modifikatortaster går urørt videre. Ctrl+G er «finn neste» i nettleseren,
+      // og den skal fortsatt virke.
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (iFelt(e.target)) return;
+
+      if (gVenter) {
+        gVenter = false;
+        const href = snarveier.get(e.key.toLowerCase());
+        if (href) {
+          e.preventDefault();
+          skjul();
+          location.href = href;
+          return;
+        }
+        // Si fra. En sekvens som bare dør gjør at man tror funksjonen ikke finnes.
+        vis(`g ${e.key} finnes ikke`, 1200);
+        return;
+      }
+
+      if (e.key === "g") {
+        gVenter = true;
+        // 1,6 sekunder. Under ett blir det for kort for den som må se etter
+        // bokstaven på brikken; over to står den og roper etter at du har gitt opp.
+        vis(`g … ${bokstaver}`, 1600);
+        return;
+      }
+      if (e.key === "?") {
+        e.preventDefault();
+        if (!kart.open) kart.showModal();
+      }
+    });
+
+    // Mister vinduet fokus midt i en sekvens, skal brikken ikke bli stående.
+    window.addEventListener("blur", () => { gVenter = false; skjul(); });
+  }
+</script>

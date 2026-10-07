@@ -13,6 +13,7 @@ import Stillbilde from "../../components/Stillbilde.astro";
 import Horisont from "../../components/Horisont.astro";
 import ContactBlock from "../../components/ContactBlock.astro";
 import { bookUrl } from "../../data/firma";
+import { tjeneste } from "../../data/schema";
 
 import "../../styles/scener.css";
 
@@ -30,13 +31,18 @@ const kobles = [
   { nr: "04", tittel: "SMS og push", tekst: "Varselet om ny befaring kommer dit du faktisk ser det, ikke i en innboks du leser om kvelden." },
 ];
 
-const schema = {
-  "@context": "https://schema.org",
-  "@type": "Service",
-  serviceType: "Nettside og befaringssystem for håndverkere",
-  provider: { "@type": "ProfessionalService", name: "KodeKonsulentene" },
-  areaServed: { "@type": "City", name: "Oslo" },
-};
+/**
+ * Fra `tjeneste()`. Se klinikksiden for hvorfor den gamle `provider`-noden var
+ * et problem: den lagde en andre, navnløs virksomhet paa samme side.
+ */
+const schema = tjeneste({
+  type: "Nettside og befaringssystem for håndverkere",
+  navn: "Nettside og befaringssystem for håndverkere",
+  beskrivelse:
+    "Befaringsforespørsel med bilder fra kunden, tilbud samme dag og ordre rett i Tripletex eller Fiken.",
+  sti: "/bransjer/handverkere",
+  pakker: ["Start", "Bedrift"],
+});
 ---
 <Base
   tittel="Nettside for håndverkere i Oslo"

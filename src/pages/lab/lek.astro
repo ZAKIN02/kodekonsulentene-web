@@ -1,0 +1,100 @@
+---
+/**
+ * Lab: noe å GJØRE.
+ *
+ * Siden finnes for å verifisere de fire nye flatene isolert, før de plasseres på
+ * ekte sider. `noindex`, ikke i sitemap, ikke lenket fra navigasjonen.
+ *
+ * Målt utgangspunkt for hvorfor de ble bygget: mot spinxdigital.com hadde vi
+ * allerede ni animasjoner mot deres sju og 69 transformerte elementer mot deres
+ * 38. Vi mangler ikke bevegelse. Før disse fire kunne en besøkende dra i ÉN ting
+ * (Slepesammenligning) og skrive i ETT felt (nettsidesjekken) på hele nettstedet.
+ *
+ * Hva som skal sjekkes her, og i hvilke fire tilstander:
+ *
+ *   NORMALT             alt virker, pekeren kobler valg og linje
+ *   REDUSERT BEVEGELSE  alt virker fortsatt, bare uten utglatting
+ *   UTEN JAVASCRIPT     prisvelgeren velger pakke med `:has()`, hukommelsen sier
+ *                       ærlig at verdiene måles i nettleseren, snarveikartet og
+ *                       «mente du» finnes ikke – og skjuler ingenting som burde vært der
+ *   EKTE FIREFOX        identisk med normalt; ingenting her bruker view()
+ */
+import Base from "../../layouts/Base.astro";
+import Section from "../../components/Section.astro";
+import Prisvelger from "../../components/Prisvelger.astro";
+import Hukommelse from "../../components/Hukommelse.astro";
+import Snarveikart from "../../components/Snarveikart.astro";
+import Mentedu from "../../components/Mentedu.astro";
+import "../../styles/interaksjon.css";
+---
+<Base
+  tittel="Lab: noe å gjøre"
+  beskrivelse="Verifisering av prisvelger, hukommelse, snarveikart og «mente du»."
+  noindex
+>
+  <Section
+    nivaa={1}
+    n={1}
+    eyebrow="Lab"
+    tittel="Noe å gjøre"
+    ingress="Fire flater som svarer på deg. Velg noe, husk noe, trykk på en tast, eller skriv feil adresse."
+  />
+
+  <Section
+    n={2}
+    eyebrow="Prisvelger"
+    tittel="Velg, og se konsekvensen"
+    ingress="Samme regnemotor som /verktoy/priskalkulator, importert og ikke kopiert. Hold pekeren over en linje i regnestykket – valget som skapte den lyser."
+  >
+    <Prisvelger id="lab-pris" />
+  </Section>
+
+  <Section
+    n={3}
+    eyebrow="Hukommelse"
+    tittel="Dette er alt vi vet om deg"
+    ingress="Tallene måles i din egen nettleser med document.cookie og Resource Timing. Vi kan ikke skrive dem inn."
+  >
+    <Hukommelse />
+  </Section>
+
+  <Section
+    n={4}
+    eyebrow="Tastatur"
+    tittel="Trykk ? for kartet, g for å hoppe"
+    ingress="g og så p går til prisene. Brikken nede til venstre viser at sekvensen venter, og hvilke taster som gjelder."
+  >
+    {/* Snarveikartet registrerer seg én gang per dokument. Det står også på /404,
+        og vakten i skriptet er grunnen til at to forekomster ikke gir to hopp. */}
+    <Snarveikart />
+  </Section>
+
+  <Section
+    n={5}
+    eyebrow="Mente du"
+    tittel="404-siden gjetter"
+    ingress="Blokken under er tom her, fordi /lab/lek ER en side som finnes. Prøv /priserr eller /kontkt for å se gjettet."
+  >
+    <Mentedu />
+    <ul class="lek__proev">
+      <li><a class="kk-link" href="/priserr">/priserr</a> – ett tegn for mye</li>
+      <li><a class="kk-link" href="/prise">/prise</a> – ett tegn for lite</li>
+      <li><a class="kk-link" href="/kontkt">/kontkt</a> – en manglende a</li>
+      <li><a class="kk-link" href="/verktoy/priskalkulatro">/verktoy/priskalkulatro</a> – to byttet om</li>
+      <li><a class="kk-link" href="/noe-helt-annet-som-ikke-finnes">/noe-helt-annet-som-ikke-finnes</a> – for langt unna, og da gjetter den ikke</li>
+    </ul>
+  </Section>
+</Base>
+
+<style>
+  .lek__proev {
+    margin: var(--space-5) 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: var(--space-3);
+    color: var(--ink-muted);
+    font-size: 14px;
+    line-height: 20px;
+  }
+</style>

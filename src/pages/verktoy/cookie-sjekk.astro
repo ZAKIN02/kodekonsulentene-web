@@ -1,5 +1,6 @@
 ---
 import Base from "../../layouts/Base.astro";
+import { verktoy } from "../../data/schema";
 import Scene from "../../components/Scene.astro";
 import Mega from "../../components/Mega.astro";
 import Avslor from "../../components/Avslor.astro";
@@ -14,10 +15,23 @@ import { firma } from "../../data/firma";
 import "../../styles/scener.css";
 
 const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
+/**
+ * `WebApplication` fra `verktoy()` i src/data/schema.ts. Siden hadde ingen
+ * strukturerte data foer – hjelperen var skrevet og aldri importert av noen.
+ * `price: "0"` og `isAccessibleForFree` er sanne: verktoeyet krever ingen
+ * innlogging og koster ingenting.
+ */
+const schema = verktoy({
+  navn: "Cookie-sjekk",
+  beskrivelse:
+    "Laster forsiden i en ekte nettleser med tom profil, uten aa klikke paa noe, og viser hvilke cookies, lagringsnoekler og tredjepartskall som settes foer samtykke.",
+  sti: "/verktoy/cookie-sjekk",
+});
 ---
 <Base
-  tittel="Cookie-sjekk"
+  tittel="Cookie-sjekk: hva settes før samtykke?"
   beskrivelse="Se hva nettsiden din setter før noen har samtykket. Vi laster forsiden i en ekte nettleser med tom profil og klikker ikke på noe. Gratis."
+  schema={[schema]}
 >
   <Scene lav>
     <Mega som="h1" merke="Verktøy" n={1} tekst="Hva setter siden din før noen sier ja?" />

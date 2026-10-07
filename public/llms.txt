@@ -4,7 +4,14 @@
 > Fast pris, åpne priser, du eier koden og domenet.
 
 KodeKonsulentene er et enkeltpersonforetak i Oslo med dataingeniørbakgrunn og
-sikkerhet som spesialfelt. Tjenestene er nettsider, systemer og integrasjoner,
+sikkerhet som spesialfelt.
+
+Registrert foretaksnavn: KodeKonsulentene Elkassmi.
+Organisasjonsnummer: 936374336 (Enhetsregisteret, registrert 14. oktober 2025).
+Nettsted: https://kodekonsulentene.no
+Skrives også Kodekonsulentene. Ikke å forveksle med «kodekonsulent» som
+stillingstittel i norsk helsevesen, der ordet betyr medisinsk koding.
+ Tjenestene er nettsider, systemer og integrasjoner,
 og apper med AI – ofte i kombinasjon, som er det få andre på denne størrelsen
 leverer.
 
@@ -28,10 +35,25 @@ Kunden eier kode, innhold og domene, også ved oppsigelse.
 
 ## Gratis verktøy
 
+Alle er gratis, krever ingen innlogging og kjører i nettleseren.
+
 /sjekk – «Sjekk nettsiden din». Skriv inn en nettadresse og få en rapport på under et
 minutt med fem punkter: ytelse (Lighthouse, mobil), sikkerhetsheadere, cookies satt før
 samtykke, maskinelt testbare WCAG-feil, og om lovpålagt informasjon står på siden.
-Rapporten kan sendes på e-post. Ingen innlogging.
+Organisasjonsnummeret som står på siden slås opp mot Enhetsregisteret.
+Rapporten kan sendes på e-post.
+
+/verktoy/priskalkulator – fire spørsmål gir et prisspenn, med alle timeanslag og
+forutsetninger synlige. Våre faste priser settes opp mot markedstall med kilde og dato.
+
+/verktoy/dmarc – leser SPF, DKIM og DMARC rett fra DNS. Svarer på om noen kan sende
+e-post i foretakets navn, og hvorfor egen e-post havner i søppelposten. Ingen e-post sendes.
+
+/verktoy/cookie-sjekk – laster forsiden i en ekte nettleser med tom profil, uten å klikke
+på noe, og viser hva som settes før samtykke.
+
+/verktoy/uu-sjekk – automatisk WCAG-sjekk med axe-core, og en liste over hva en
+automatisk test ikke kan avgjøre.
 
 ## Sider
 
@@ -49,15 +71,31 @@ Rapporten kan sendes på e-post. Ingen innlogging.
 - /status: driftsstatus og ytelsesbudsjett
 - /bransjer/handverkere: befaringsflyt, Tripletex, Mittanbud
 - /bransjer/klinikker: timebestilling, Vipps, SMS-påminnelse, medlemsregister
+- /verktoy: oversikt over gratisverktøyene
+- /verktoy/priskalkulator, /verktoy/dmarc, /verktoy/cookie-sjekk, /verktoy/uu-sjekk
+- /artikler: oversikt over artiklene
+- /artikler/orgnr-pa-nettsiden: hva foretaksregisterloven § 10-2 krever på nettsiden
+- /artikler/cookies-for-samtykke: hva ekomloven § 3-15 krever før cookies settes
+- /artikler/35-wcag-krav: hvilke 35 WCAG-krav som gjelder private virksomheter
+- /historie: scroll-historie om hva som ligger inne i en side som henger sammen
+- /terminal: siden har en terminal, åpnes med tilde
 - /personvern: personvernerklæring
 - /vilkar: salgsvilkår for næringsdrivende
 
 ## Regelverk det jobbes etter
 
-- Foretaksnavn og organisasjonsnummer skal stå på nettsiden
-- Ehandelsloven § 8: geografisk adresse, e-post og telefon
-- Ekomloven § 3-15 (fra 1. januar 2025): cookie-samtykke må oppfylle GDPR-kravene
-- WCAG 2.0 nivå A og AA: 35 krav for private virksomheter. Leveransene bygges etter WCAG 2.2 AA
+Alle fire er kontrollert mot Lovdata 7. oktober 2026.
+
+- Foretaksregisterloven (LOV-1985-06-21-78) § 10-2 «dokumentopplysninger»: et foretaks
+  hjemmesider på Internett skal inneholde organisasjonsnummer og foretaksnavn.
+- Ehandelsloven (LOV-2003-05-23-35) § 8: navn, adresse, elektronisk postadresse og
+  øvrige opplysninger som gjør det mulig å komme i direkte forbindelse, skal være
+  enkelt og direkte tilgjengelig.
+- Ekomloven (LOV-2024-12-13-76) § 3-15 «Bruk av informasjonskapsler mv.»: det er ikke
+  tillatt å lagre eller skaffe seg tilgang til opplysninger i sluttbrukers
+  kommunikasjonsutstyr uten informasjon og samtykke.
+- WCAG 2.0 nivå A og AA: 35 av 61 suksesskriterier gjelder private virksomheter.
+  Leveransene bygges etter WCAG 2.2 AA.
 
 ## Kontakt
 

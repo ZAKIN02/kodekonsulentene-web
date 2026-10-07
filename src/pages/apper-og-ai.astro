@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import { tjeneste } from "../data/schema";
 import Flyt from "../components/Flyt.astro";
 import { flyter } from "../data/flyter";
 import Scene from "../components/Scene.astro";
@@ -9,6 +10,7 @@ import Pekerkort from "../components/Pekerkort.astro";
 import Horisont from "../components/Horisont.astro";
 import Button from "../components/Button.astro";
 import Terminal from "../components/Terminal.astro";
+import AiTekst from "../components/AiTekst.astro";
 import ContactBlock from "../components/ContactBlock.astro";
 import { synligeCaser } from "../data/caser";
 import { bookUrl } from "../data/firma";
@@ -30,10 +32,19 @@ const steg = [
   { nr: "03", tittel: "Den kobles til det du har", tekst: "Appen henter fra samme sted som nettsiden og regnskapet. Et eget datasett ved siden av er en ny kilde til uenighet om hvilke tall som gjelder." },
   { nr: "04", tittel: "Den legges ut i ditt navn", tekst: "App Store og Google Play krever en utviklerkonto. Den står på din bedrift, ikke på oss, så appen blir værende din også om du bytter leverandør." },
 ];
+/** Fra `tjeneste()`. Siden hadde ingen strukturerte data foer. */
+const schema = tjeneste({
+  type: "Utvikling av apper og AI-assistenter",
+  navn: "Apper og AI",
+  beskrivelse:
+    "iOS-app, intern app for felt og verksted, og AI-assistent med databehandleravtale. Utviklerkontoen staar paa kundens foretak.",
+  sti: "/apper-og-ai",
+});
 ---
 <Base
-  tittel="Apper og AI"
-  beskrivelse="iOS-app, intern app og AI-assistent fra samme utvikler som bygger nettsiden. Oslo, fast pris, databehandleravtale på plass."
+  tittel="Apper og AI for små bedrifter"
+  beskrivelse="iOS-app, intern app og AI-assistent fra samme utvikler som bygger nettsiden. Oslo, fast pris og databehandleravtale. Utviklerkontoen står på din bedrift."
+  schema={[schema]}
 >
   <Scene lav>
     <Mega som="h1" merke="Apper og AI" n={1} tekst="Få leverandører tar både nettside og app" aksent="app" />
@@ -167,7 +178,20 @@ const steg = [
         noe konkret; platen sa ingenting. Fjernet av samme grunn som apper-par. */}
   </Scene>
 
-  <ContactBlock n={7} />
+  {/* DEMOEN. Her stoppet siden før: seks seksjoner om at vi lager AI-apper, og
+      ingenting en kunde kunne røre. Mønsterdokumentet (docs/sidemonstre.md) sier
+      at bransjesider skal ha «én demo som kan klikkes i – en demo slår et
+      avsnitt», og det gjelder like mye for den siden som SELGER AI.
+
+      Den står etter seksjon 6 med vilje. Seksjon 5 og 6 setter regelen – AI skal
+      gjøre én jobb, og den skal merkes – og demoen er den jobben. Står den før,
+      er det en effekt; står den her, er det et bevis på det som nettopp ble sagt.
+
+      Teknikken ligger i src/components/AiTekst.astro og src/pages/api/ai-tekst.ts.
+      Kostnad, tak og hemmeligheter står i docs/ai-tekst.md. */}
+  <AiTekst n={7} />
+
+  <ContactBlock n={8} />
 </Base>
 <style is:global>
   /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig

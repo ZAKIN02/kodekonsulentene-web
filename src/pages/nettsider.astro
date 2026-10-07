@@ -13,28 +13,31 @@ import Terminal from "../components/Terminal.astro";
 import ProcessSteps from "../components/ProcessSteps.astro";
 import ContactBlock from "../components/ContactBlock.astro";
 import { prosess } from "../data/prosess";
-import { pakker } from "../data/priser";
+import { tjeneste } from "../data/schema";
 import { bookUrl } from "../data/firma";
 
 import "../styles/scener.css";
 
-const schema = {
-  "@context": "https://schema.org",
-  "@type": "Service",
-  serviceType: "Utvikling av nettsider",
-  provider: { "@type": "ProfessionalService", name: "KodeKonsulentene" },
-  areaServed: { "@type": "City", name: "Oslo" },
-  offers: pakker.slice(0, 2).map((p) => ({
-    "@type": "Offer",
-    name: p.navn,
-    price: p.pris.replace(/\D/g, ""),
-    priceCurrency: "NOK",
-    description: p.beskrivelse,
-  })),
-};
+/**
+ * Markupen kom fra `tjeneste()` i src/data/schema.ts, ikke skrevet her.
+ *
+ * Den som sto her før hadde `provider: { "@type": "ProfessionalService", name:
+ * "KodeKonsulentene" }` – en NY foretaksnode uten `@id`. Google så da to
+ * virksomheter på samme side: den ekte med org.nr. og en navnløs kopi. Nettopp
+ * den tvetydigheten er det vi forsøker å få bort, siden «kodekonsulent» også er
+ * en stilling i helsevesenet. Nå peker `provider` på `/#foretak`.
+ */
+const schema = tjeneste({
+  type: "Utvikling av nettsider",
+  navn: "Nettside til fast pris",
+  beskrivelse:
+    "Nettside bygget fra grunnen av: ytelse, lokal SEO, universell utforming og lovpålagt informasjon på plass før lansering. Du eier koden og domenet.",
+  sti: "/nettsider",
+  pakker: ["Start", "Bedrift"],
+});
 ---
 <Base
-  tittel="Nettsider"
+  tittel="Nettsider til fast pris i Oslo"
   beskrivelse="Nettside til fast pris i Oslo: Lighthouse 95+, lokal SEO, WCAG 2.2 AA og cookieløs analyse. Start 14 900 kr, Bedrift 29 900 kr eks. mva."
   schema={[schema]}
 >

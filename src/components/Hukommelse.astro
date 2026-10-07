@@ -1,0 +1,277 @@
+---
+/**
+ * Hukommelsen – «dette er alt vi vet om deg», målt i leserens egen nettleser.
+ *
+ * Nettstedet selger null cookies. Det er en PÅSTAND, og en påstand om personvern
+ * er den typen som er umulig å etterprøve for den som leser. Denne flaten gjør
+ * den etterprøvbar på stedet: den teller cookies med `document.cookie`, teller
+ * forespørsler til andre domener med Resource Timing, og lister opp nøyaktig hva
+ * som ligger i `localStorage` – med verdiene, og med en knapp som sletter dem.
+ *
+ * Det er samme bevegelse som nettsidesjekken gjør mot andres sider, snudd mot
+ * oss selv. Og den kan ikke jukses: tallene kommer fra nettleserens egne API-er,
+ * ikke fra noe vi har skrevet inn.
+ *
+ * ── HVORFOR DETTE ER DEN ÆRLIGE VERSJONEN AV «SIDEN HUSKER DEG» ──────────────
+ *
+ * En nettside som husker deg uten å si det, er en nettside som skjuler noe. Vi
+ * husker to ting – temavalget og valgene i prisvelgeren – og begge er rene
+ * bekvemmeligheter. Da er det riktige å LEGGE DEM PÅ BORDET, ikke å bruke dem
+ * til å hilse på folk ved navn.
+ *
+ * ── DEGRADERING ──────────────────────────────────────────────────────────────
+ *
+ * UTEN JAVASCRIPT står tabellen der med alt den kan si uten å måle: hva vi
+ * lagrer, hvorfor, og hvor lenge. Måleverdiene står som «– måles i din
+ * nettleser», ikke som et tomt felt og ikke som en null vi ikke har målt. Det
+ * siste ville vært en påstand uten dekning, og det er nøyaktig den feilen
+ * flaten finnes for å unngå.
+ *
+ * Ingen bevegelse her i det hele tatt, så redusert bevegelse og Firefox er
+ * identiske med alt annet.
+ *
+ * ── ÉN SANNHET OM NØKLENE ────────────────────────────────────────────────────
+ *
+ * Listen under er kanonisk. Legger noen et nytt `localStorage`-kall et sted i
+ * koden uten å føre det inn her, viser flaten det selv: ukjente nøkler havner i
+ * en egen rad merket «ikke dokumentert». Det er en lekkasjetest som står på
+ * siden og går hver gang noen åpner den.
+ */
+import "../styles/interaksjon.css";
+
+interface Props {
+  class?: string;
+}
+const { class: cls } = Astro.props;
+
+/**
+ * Alt nettstedet lagrer, og hvorfor. `nokkel` må stemme med koden som skriver:
+ *   kk-tema      – src/layouts/Base.astro og sikkerhet.mjs (TEMA_SCRIPT)
+ *   kk-prisvalg  – src/components/Prisvelger.astro
+ */
+const lagret = [
+  {
+    nokkel: "kk-tema",
+    hva: "Om du valgte lyst eller mørkt tema",
+    hvorfor: "Så siden ikke blinker hvitt neste gang du kommer.",
+  },
+  {
+    nokkel: "kk-prisvalg",
+    hva: "Valgene dine i prisvelgeren",
+    hvorfor: "Så du ikke må huke av Vipps og regnskap på nytt.",
+  },
+] as const;
+---
+<div class:list={["husk", cls]} data-husk>
+  <dl class="husk__maal">
+    <div class="husk__rad">
+      <dt>Cookies satt av denne siden</dt>
+      <dd class="husk__verdi" data-husk-cookies>– måles i din nettleser</dd>
+    </div>
+    <div class="husk__rad">
+      <dt>Forespørsler til andre domener på denne siden</dt>
+      <dd class="husk__verdi" data-husk-tredje>– måles i din nettleser</dd>
+    </div>
+    <div class="husk__rad">
+      <dt>Ting lagret i din nettleser</dt>
+      <dd class="husk__verdi" data-husk-antall>– måles i din nettleser</dd>
+    </div>
+  </dl>
+
+  <p class="small faint husk__kilde">
+    Tallene over leses av nettleserens egne API-er – <span class="mono">document.cookie</span> og
+    <span class="mono">performance.getEntriesByType("resource")</span> – i det øyeblikket du åpner
+    siden. Vi kan ikke skrive dem inn.
+  </p>
+
+  {/* Regionen finnes for at tabellen skal kunne RULLE VANNRETT på en telefon i
+      stedet for å brytes om til blokker. `display: block` på tr og td er den
+      vanlige mobilløsningen, og den fjerner rad- og kolonnesammenhengen for flere
+      skjermlesere – en tabell om personvern er det siste stedet å miste den.
+      `tabindex` er påkrevd: en flate som kan rulles må kunne rulles med
+      tastaturet, og da må den kunne få fokus. */}
+  <div class="husk__skrall" role="region" tabindex="0" aria-label="Hva vi lagrer, og hvorfor">
+    <table class="husk__tabell">
+      <caption class="mono-label">Hva vi lagrer, og hvorfor</caption>
+      <thead>
+        <tr><th scope="col">Nøkkel</th><th scope="col">Hva</th><th scope="col">Verdi nå</th></tr>
+      </thead>
+      <tbody data-husk-tbody>
+        {lagret.map((l) => (
+          <tr data-husk-nokkel={l.nokkel}>
+            <th scope="row" class="mono">{l.nokkel}</th>
+            <td>
+              {l.hva}
+              <span class="husk__hvorfor">{l.hvorfor}</span>
+            </td>
+            <td class="husk__naa" data-husk-naa>ikke lest</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  {/* Knappen finnes bare når det er noe å slette. Uten JavaScript er det
+      ingenting å slette fra en knapps synspunkt – da er den ikke skjult, den er
+      ikke relevant, og da skal den ikke stå der og late som. */}
+  <div class="husk__bunn" data-husk-bunn hidden>
+    <button type="button" class="kk-btn" data-husk-slett>Slett alt vi husker</button>
+    <p class="small faint" role="status" aria-live="polite" data-husk-kvittering></p>
+  </div>
+
+  <p class="small faint husk__lov">
+    Det finnes ingen samtykkedialog på dette nettstedet, fordi det ikke er noe å
+    samtykke til. <span class="mono">localStorage</span> brukt til ren bekvemmelighet er ikke
+    sporing, og ekomloven § 3-15 krever samtykke for lagring som ikke er nødvendig for tjenesten.
+  </p>
+</div>
+
+<script>
+  /**
+   * Alt her er lesing. Flaten skriver ingenting til `localStorage` – den viser
+   * bare det andre har lagt der, og sletter på forespørsel.
+   */
+  const KJENTE = ["kk-tema", "kk-prisvalg"];
+
+  /** Lange verdier kuttes. Hele verdien ligger i title, så ingenting skjules. */
+  const kort = (v: string) => (v.length > 60 ? `${v.slice(0, 59)}…` : v);
+
+  for (const rot of document.querySelectorAll<HTMLElement>("[data-husk]")) {
+    const utCookies = rot.querySelector<HTMLElement>("[data-husk-cookies]");
+    const utTredje = rot.querySelector<HTMLElement>("[data-husk-tredje]");
+    const utAntall = rot.querySelector<HTMLElement>("[data-husk-antall]");
+    const tbody = rot.querySelector<HTMLElement>("[data-husk-tbody]");
+    const bunn = rot.querySelector<HTMLElement>("[data-husk-bunn]");
+    const slett = rot.querySelector<HTMLButtonElement>("[data-husk-slett]");
+    const kvittering = rot.querySelector<HTMLElement>("[data-husk-kvittering]");
+    if (!tbody) continue;
+
+    /** Nøkler vi IKKE har dokumentert. Står i egne rader, merket. */
+    const ukjenteRader = new Set<HTMLElement>();
+
+    const les = () => {
+      // ── cookies ────────────────────────────────────────────────────────────
+      // document.cookie er "" når det ikke er noen. split(";") på tom streng gir
+      // [""], derfor filteret – ellers ville svaret vært 1 på en side med null.
+      const cookies = document.cookie.split(";").map((s) => s.trim()).filter(Boolean);
+      if (utCookies) {
+        utCookies.textContent = cookies.length === 0 ? "0" : String(cookies.length);
+        utCookies.dataset.husk = cookies.length === 0 ? "ok" : "varsel";
+      }
+
+      // ── forespørsler ut av domenet ─────────────────────────────────────────
+      // Resource Timing ser alle ressurser siden hentet, også de en innbygging
+      // drar inn. Tallet er derfor ekte for NETTOPP DENNE siden, og det er slik
+      // det skal formuleres: /kontakt har en Cal.com-innbygging, og da er tallet
+      // ikke null. Flaten skal måle, ikke selge.
+      let utenfor = 0;
+      let kjentApi = false;
+      try {
+        const her = location.origin;
+        const poster = performance.getEntriesByType("resource") as PerformanceResourceTiming[];
+        kjentApi = true;
+        utenfor = poster.filter((p) => {
+          try { return new URL(p.name, her).origin !== her; } catch { return false; }
+        }).length;
+      } catch {
+        kjentApi = false;
+      }
+      if (utTredje) {
+        utTredje.textContent = kjentApi ? String(utenfor) : "kan ikke måles her";
+        utTredje.dataset.husk = kjentApi && utenfor === 0 ? "ok" : "varsel";
+      }
+
+      // ── localStorage ───────────────────────────────────────────────────────
+      let noekler: string[] = [];
+      let kanLese = true;
+      try {
+        noekler = Object.keys(localStorage);
+      } catch {
+        // Privat vindu eller blokkerte data. Da er svaret ærlig «vet ikke».
+        kanLese = false;
+      }
+
+      for (const rad of ukjenteRader) rad.remove();
+      ukjenteRader.clear();
+
+      let funnet = 0;
+      for (const rad of tbody.querySelectorAll<HTMLElement>("[data-husk-nokkel]")) {
+        const naa = rad.querySelector<HTMLElement>("[data-husk-naa]");
+        if (!naa) continue;
+        if (!kanLese) { naa.textContent = "kan ikke leses"; continue; }
+        let verdi: string | null = null;
+        try { verdi = localStorage.getItem(rad.dataset.huskNokkel ?? ""); } catch {}
+        if (verdi === null) {
+          naa.textContent = "ikke satt";
+          naa.removeAttribute("title");
+          delete naa.dataset.husk;
+        } else {
+          funnet += 1;
+          naa.textContent = kort(verdi);
+          naa.title = verdi;
+          naa.dataset.husk = "satt";
+        }
+      }
+
+      // Udokumenterte nøkler. Dette er lekkasjetesten: skriver noen noe nytt til
+      // localStorage uten å føre det inn i tabellen, dukker det opp her.
+      if (kanLese) {
+        for (const n of noekler) {
+          if (KJENTE.includes(n)) continue;
+          funnet += 1;
+          let verdi = "";
+          try { verdi = localStorage.getItem(n) ?? ""; } catch {}
+          const tr = document.createElement("tr");
+          const th = document.createElement("th");
+          th.scope = "row";
+          th.className = "mono";
+          th.textContent = n;
+          const td = document.createElement("td");
+          td.textContent = "Ikke dokumentert i denne tabellen.";
+          const td2 = document.createElement("td");
+          td2.className = "husk__naa";
+          td2.textContent = kort(verdi);
+          td2.title = verdi;
+          td2.dataset.husk = "varsel";
+          tr.append(th, td, td2);
+          tbody.appendChild(tr);
+          ukjenteRader.add(tr);
+        }
+      }
+
+      if (utAntall) {
+        utAntall.textContent = kanLese ? String(funnet) : "kan ikke måles her";
+        utAntall.dataset.husk = kanLese && funnet === 0 ? "ok" : "";
+      }
+
+      if (bunn) {
+        if (kanLese && funnet > 0) bunn.removeAttribute("hidden");
+        else bunn.setAttribute("hidden", "");
+      }
+    };
+
+    slett?.addEventListener("click", () => {
+      let antall = 0;
+      try {
+        for (const n of Object.keys(localStorage)) { localStorage.removeItem(n); antall += 1; }
+      } catch {}
+      les();
+      if (kvittering) {
+        kvittering.textContent =
+          antall === 0
+            ? "Det var ingenting å slette."
+            : `Slettet ${antall} ${antall === 1 ? "oppføring" : "oppføringer"}. Temaet står til du velger på nytt.`;
+      }
+      // Knappen forsvinner når det ikke er mer å slette, og da ville fokuset
+      // falt til <body>. Kvitteringen får fokus i stedet, så det neste en
+      // skjermleser eller et tastatur møter er svaret på det du nettopp gjorde.
+      if (bunn?.hasAttribute("hidden") && kvittering) {
+        kvittering.tabIndex = -1;
+        kvittering.focus();
+      }
+    });
+
+    les();
+    rot.dataset.klar = "";
+  }
+</script>

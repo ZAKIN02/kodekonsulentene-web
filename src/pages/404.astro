@@ -13,6 +13,8 @@
 import Base from "../layouts/Base.astro";
 import Section from "../components/Section.astro";
 import Button from "../components/Button.astro";
+import Mentedu from "../components/Mentedu.astro";
+import Snarveikart from "../components/Snarveikart.astro";
 import { hovedmeny } from "../data/navigasjon";
 
 // Bare det hovedmenyen ikke allerede har – «Verktøy» ligger der fra før.
@@ -29,6 +31,11 @@ const snarveier = [
     tittel="Den siden finnes ikke"
     ingress="Lenken er gammel eller feilskrevet. Siden du står på nå er likevel ikke tom – den er en terminal. Skriv noe."
   >
+    {/* Gjettet står FØRST, over terminalen. En 404 har ett jobb nummer én – å få
+        folk videre dit de skulle – og terminalen er nummer to. Blokken er tom til
+        skriptet finner en sti som er nær nok, og tar da ingen plass. */}
+    <Mentedu />
+
     <div class="fire-null">
       <div class="kkterm fire-null__term" data-kkterm-innfelt>
         <div class="kkterm__bar">
@@ -63,6 +70,9 @@ cat: finnes ikke
           {snarveier.map((l) => <li><a class="kk-link" href={l.href}>{l.label}</a></li>)}
         </ul>
         <Button variant="primary" href="/">Til forsiden</Button>
+        {/* Den som havner på en 404 og blir stående, er ofte den som leter. Da er
+            dette stedet å si at tastaturet gjør mer enn å skrive i terminalen. */}
+        <Snarveikart />
       </nav>
     </div>
   </Section>

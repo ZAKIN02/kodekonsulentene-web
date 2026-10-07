@@ -60,6 +60,32 @@ const oppdatert = "5. oktober 2026";
         PageSpeed Insights-API for å måle ytelse. Ingen opplysninger om deg sendes med.
       </p>
 
+      {/* Denne seksjonen kom med AI-omskriveren på /apper-og-ai. Den må stå her:
+          funksjonen sender tekst en besøkende limer inn til en ny databehandler,
+          og GDPR art. 13 krever at det er opplyst FØR den brukes – ikke etterpå.
+          Overskriften har id-en «ai» fordi feltet lenker rett hit. */}
+      <h2 id="ai">Hva skjer med teksten du limer inn i AI-demoen</h2>
+      <p class="muted">
+        På <a class="kk-link" href="/apper-og-ai#ai-demo">/apper-og-ai</a> kan du lime
+        inn tekst fra din egen nettside og få den skrevet om. Teksten sendes fra
+        serveren vår til Anthropic, som kjører språkmodellen Claude, og svaret
+        sendes tilbake til nettleseren din. Verken teksten eller svaret lagres hos
+        oss – de finnes bare i den ene forespørselen, og er borte når den er svart på.
+      </p>
+      <p class="muted">
+        Anthropic er databehandler for selve omskrivingen, og behandlingen skjer
+        utenfor EØS. Vi oppgir ingen opplysninger om deg i kallet: ingen navn,
+        ingen e-postadresse, ingen IP-adresse. Det eneste som sendes, er teksten du
+        selv limte inn. Lim derfor ikke inn personopplysninger eller noe fortrolig –
+        funksjonen er laget for den teksten som allerede står åpent på nettsiden din.
+      </p>
+      <p class="muted">
+        Funksjonen setter ingen cookies, og den krever ingen innlogging. For å hindre
+        misbruk teller serveren antall kall per IP-adresse i minnet, uten å lagre
+        adressen til disk og uten å koble den til noe annet. Telleren nullstilles
+        når serveren starter på nytt.
+      </p>
+
       <h2>Hva lagres når du bruker kontaktskjemaet</h2>
       <p class="muted">
         Navn, e-postadresse, eventuell nettadresse og meldingen du skriver. Opplysningene
@@ -79,14 +105,16 @@ const oppdatert = "5. oktober 2026";
         <li>Kundeopplysninger: så lenge kundeforholdet varer, og deretter tre år.</li>
         <li>Regnskapsbilag: fem år, som bokføringsloven krever.</li>
         <li>Nettsidesjekker: lagres ikke.</li>
+        <li>Tekst limt inn i AI-demoen: lagres ikke.</li>
       </ul>
 
       <h2>Hvem får opplysningene</h2>
       <p class="muted">
         Databehandlere vi bruker: Fly.io (drift av nettsiden, EU-region Amsterdam),
-        Resend (utsending av e-post) og regnskapsprogram for fakturering. Det er inngått
-        databehandleravtale der det kreves. Opplysninger selges aldri videre, og brukes
-        ikke til profilering eller annonsering.
+        Resend (utsending av e-post), Anthropic (språkmodellen bak AI-demoen, utenfor
+        EØS) og regnskapsprogram for fakturering. Det er inngått databehandleravtale
+        der det kreves. Opplysninger selges aldri videre, og brukes ikke til
+        profilering eller annonsering.
       </p>
 
       <h2>Dine rettigheter</h2>

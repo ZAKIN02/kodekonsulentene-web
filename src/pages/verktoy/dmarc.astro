@@ -1,5 +1,6 @@
 ---
 import Base from "../../layouts/Base.astro";
+import { verktoy } from "../../data/schema";
 import Snitt from "../../components/Snitt.astro";
 import { snitt } from "../../data/flyter";
 import Scene from "../../components/Scene.astro";
@@ -15,10 +16,23 @@ import { firma } from "../../data/firma";
 import "../../styles/scener.css";
 
 const forhandsutfylt = Astro.url.searchParams.get("domene") ?? "";
+/**
+ * `WebApplication` fra `verktoy()` i src/data/schema.ts. Siden hadde ingen
+ * strukturerte data foer – hjelperen var skrevet og aldri importert av noen.
+ * `price: "0"` og `isAccessibleForFree` er sanne: verktoeyet krever ingen
+ * innlogging og koster ingenting.
+ */
+const schema = verktoy({
+  navn: "SPF-, DKIM- og DMARC-sjekk",
+  beskrivelse:
+    "Leser SPF, DKIM og DMARC rett fra DNS og forklarer om noen kan sende e-post i foretakets navn, og hvorfor egen e-post havner i soeppelposten. Ingen e-post sendes.",
+  sti: "/verktoy/dmarc",
+});
 ---
 <Base
   tittel="Sjekk e-posten din: SPF, DKIM og DMARC"
   beskrivelse="Gratis sjekk av SPF, DKIM og DMARC på domenet ditt. Se om noen kan sende e-post i bedriftens navn, og om din egen e-post havner i søppelposten."
+  schema={[schema]}
 >
   <Scene lav>
     <Mega som="h1" merke="Verktøy" n={1} tekst="Kan noen sende e-post i ditt navn?" />

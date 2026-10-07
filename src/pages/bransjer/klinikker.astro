@@ -12,6 +12,7 @@ import ProcessSteps from "../../components/ProcessSteps.astro";
 import Pekerkort from "../../components/Pekerkort.astro";
 import ContactBlock from "../../components/ContactBlock.astro";
 import { bookUrl } from "../../data/firma";
+import { tjeneste } from "../../data/schema";
 
 import "../../styles/scener.css";
 
@@ -22,13 +23,20 @@ const steg = [
   { title: "Oppgjøret stemmer", time: "Automatisk", text: "Betalingen ligger som ordre i regnskapet. Ingen avstemming av Vipps mot timeboken." },
 ];
 
-const schema = {
-  "@context": "https://schema.org",
-  "@type": "Service",
-  serviceType: "Bookingsystem og nettside for klinikker og treningssentre",
-  provider: { "@type": "ProfessionalService", name: "KodeKonsulentene" },
-  areaServed: { "@type": "City", name: "Oslo" },
-};
+/**
+ * Fra `tjeneste()`, ikke skrevet her. Den gamle noden lagde en NAVNLOES
+ * foretakskopi via `provider: { "@type": "ProfessionalService", name: ... }` –
+ * uten `@id`, saa Google saa to virksomheter paa siden. Nå peker den paa
+ * `/#foretak`, som er den ene med org.nr.
+ */
+const schema = tjeneste({
+  type: "Bookingsystem og nettside for klinikker og treningssentre",
+  navn: "Nettside og bookingsystem for klinikker",
+  beskrivelse:
+    "Timebestilling, Vipps-betaling, SMS-paaminnelse og medlemsregister for klinikker, treningssentre og kampsportklubber.",
+  sti: "/bransjer/klinikker",
+  pakker: ["System"],
+});
 ---
 <Base
   tittel="Nettside og booking for klinikker"

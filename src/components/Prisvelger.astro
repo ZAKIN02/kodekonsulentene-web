@@ -1,0 +1,387 @@
+---
+/**
+ * Prisvelgeren – velg, og se konsekvensen i samme øyeblikk.
+ *
+ * Kalkulatoren på /verktoy/priskalkulator er sidens beste side, og den ligger
+ * tre klikk unna. Dette er den samme regnemotoren – `src/lib/priskalkyle.ts`,
+ * importert, ikke kopiert – i en form som tåler å stå i en seksjon på forsiden.
+ *
+ * ── TRE TING SOM SKILLER DEN FRA EN PRISTABELL ───────────────────────────────
+ *
+ * 1. DEN SVARER FØR DU HAR SENDT NOE. Ingen knapp, ingen «regn ut». `input`-
+ *    hendelsen er hele kontrakten: du huker av Vipps, og beløpet flytter seg.
+ *
+ * 2. DEN VISER REGNESTYKKET, IKKE BARE SVARET. Hver linje står med timeanslaget
+ *    sitt. Et estimat uten forutsetninger er en påstand; med dem er det et
+ *    argument. Det er også grunnen til at `beregn()` returnerer `linjer` og
+ *    ikke bare et tall.
+ *
+ * 3. PEKEREN GÅR BEGGE VEIER. Peker du på en linje i regnestykket, lyser valget
+ *    som skapte den. Peker du på et valg, lyser linjen. Det er den eneste
+ *    pekerinteraksjonen her, og den finnes fordi den FORKLARER noe: den viser
+ *    årsakskjeden i en utregning folk ellers må ta på tro. Pynt hadde vært å
+ *    la kortet vippe.
+ *
+ * ── DEGRADERING: FIRE TILSTANDER, ALLE MOT SYNLIG ────────────────────────────
+ *
+ * UTEN JAVASCRIPT virker velgeren likevel, og det er ikke en talemåte. Selve
+ * pakkevalget – det viktigste svaret – er ren CSS: tre pakkekort ligger ferdig
+ * i HTML-en, og `:has()` på rotelementet viser det som valgene peker på.
+ * Nettleseren gjør utregningen med `:checked`. Du mister spennet i kroner og
+ * linjene, ikke svaret.
+ *
+ * UTEN `:has()` står alle tre kortene synlige samtidig, med sin egen faste pris.
+ * Det er ikke pent, men det er sant, og det er lesbart. Degraderingen går mot
+ * synlig – aldri mot et tomt felt der et tall skulle stått.
+ *
+ * MED REDUSERT BEVEGELSE er det bare overgangene som ryker. Tallene byttes fortsatt.
+ *
+ * I FIREFOX er alt dette uendret: ingenting her bruker `animation-timeline`.
+ *
+ * ── HVORFOR <select> OG IKKE EN SPAK FOR SIDEANTALLET ────────────────────────
+ *
+ * Fordi CSS må kunne lese valget uten JavaScript. `:checked` treffer et valgt
+ * `<option>`, og da kan `:has(option:checked[data-stor])` avgjøre om vi er over
+ * tre sider. En `input[type=range]` har ingen tilstand CSS kan lese, og da ville
+ * pakkevalget krevd JavaScript – altså nøyaktig det vi ikke vil.
+ *
+ * Og et tall nedtrekket ikke kan gi, dikter vi ikke opp: alternativene er
+ * konkrete sidetall, ikke «9 eller flere» som vi så måtte gjette et tall bak.
+ *
+ * ── ÉN SANNHET OM PRIS ───────────────────────────────────────────────────────
+ *
+ * Ikke ett tall er skrevet inn i denne filen. Pakkeprisene, timeprisen,
+ * timeanslagene og de løpende kostnadene kommer alle fra `src/data/priser.ts`
+ * gjennom `src/lib/priskalkyle.ts`, både i HTML-en som rendres og i skriptet
+ * som regner. Endrer prislisten seg, endrer denne seg.
+ */
+import { pakker } from "../data/priser";
+import { tillegg, pakkepris, timepris, formaterKr, beregn } from "../lib/priskalkyle";
+import Button from "./Button.astro";
+import "../styles/interaksjon.css";
+
+interface Props {
+  /** Må være unik på siden – knytter etiketter til felt. */
+  id?: string;
+  class?: string;
+}
+const { id = "prisvelger", class: cls } = Astro.props;
+
+/** Nedtrekket. Konkrete sidetall, ingen «9+» vi måtte gjette et tall bak. */
+const sidevalg = [1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 15, 20];
+
+/**
+ * Fallback-kortene. Ett per pakke, hentet rett fra prislisten, og det er disse
+ * CSS-en veksler mellom uten JavaScript. `prefiks` er «fra» på System-pakken –
+ * den følger med, ellers ville et gulv lest som en fast pris.
+ */
+const kort = pakker.map((p) => ({
+  navn: p.navn,
+  pris: `${p.prefiks ? `${p.prefiks} ` : ""}${formaterKr(pakkepris(p.navn))}`,
+  beskrivelse: p.beskrivelse,
+}));
+
+/**
+ * Utgangsestimatet. Rendres ferdig i HTML-en, slik at den dynamiske flaten ikke
+ * står tom i millisekundene før skriptet kjører – og slik at den stemmer med
+ * nedtrekkets og avkrysningenes utgangsstilling (3 sider, ingenting avhuket).
+ */
+const start = beregn({ sider: 3, cms: false, integrasjoner: [], app: false });
+const t = timepris();
+---
+<form class:list={["prisvelg", cls]} data-prisvelg aria-labelledby={`${id}-tittel`}>
+  <h3 class="visually-hidden" id={`${id}-tittel`}>Regn ut et prisanslag</h3>
+
+  <div class="prisvelg__valg">
+    <fieldset class="prisvelg__felt">
+      <legend class="mono-label">Omfang</legend>
+
+      <div class="prisvelg__rad">
+        <label class="prisvelg__etikett" for={`${id}-sider`}>Hvor mange sider?</label>
+        <select class="prisvelg__select" id={`${id}-sider`} data-prisvelg-sider>
+          {sidevalg.map((n) => (
+            <option value={n} selected={n === 3} data-stor={n > 3 ? "" : undefined}>
+              {n} {n === 1 ? "side" : "sider"}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <label class="prisvelg__av" data-prisvelg-kilde="cms">
+        <input type="checkbox" data-prisvelg-cms data-bedrift />
+        <span>
+          <span class="prisvelg__navn">Jeg vil endre innholdet selv</span>
+          <span class="prisvelg__hvorfor">Da trenger du et CMS, og det er Bedrift-pakken.</span>
+        </span>
+      </label>
+    </fieldset>
+
+    <fieldset class="prisvelg__felt">
+      <legend class="mono-label">Skal den snakke med noe?</legend>
+      {tillegg.map((i) => (
+        <label class="prisvelg__av" data-prisvelg-kilde={i.id}>
+          <input type="checkbox" value={i.id} data-prisvelg-tillegg data-system />
+          <span>
+            <span class="prisvelg__navn">{i.navn}</span>
+            <span class="prisvelg__hvorfor">{i.forklaring} Anslag: {i.timerLav}–{i.timerHoy} timer.</span>
+          </span>
+        </label>
+      ))}
+      <label class="prisvelg__av" data-prisvelg-kilde="app">
+        <input type="checkbox" data-prisvelg-app data-system />
+        <span>
+          <span class="prisvelg__navn">Jeg trenger også en app</span>
+          <span class="prisvelg__hvorfor">Da blir tallet et gulv, ikke et spenn. En app estimeres etter en samtale.</span>
+        </span>
+      </label>
+    </fieldset>
+  </div>
+
+  {/* ── SVARET ───────────────────────────────────────────────────────────────
+      To flater over hverandre, aldri begge samtidig:
+
+      `.prisvelg__fast` er CSS-svaret. Tre kort, `:has()` velger. Det er dette
+      som står igjen uten JavaScript.
+
+      `.prisvelg__regnet` er skriptets svar, med spenn og linjer. Den vises først
+      når `data-klar` er satt, altså når skriptet faktisk kjører – ikke når det
+      er lastet. */}
+  <div class="prisvelg__svar">
+    <div class="prisvelg__fast" aria-hidden="false">
+      {kort.map((k) => (
+        <div class={`prisvelg__pakke prisvelg__pakke--${k.navn.toLowerCase()}`}>
+          <p class="mono-label prisvelg__pakkenavn">{k.navn}-pakken</p>
+          <p class="mono-stat prisvelg__sum">{k.pris}</p>
+          <p class="small prisvelg__begrunnelse">{k.beskrivelse}</p>
+        </div>
+      ))}
+      <p class="small faint prisvelg__fastnote">
+        Faste pakkepriser fra prislisten. Hele regnestykket med timeanslag ligger i
+        <a class="kk-link" href="/verktoy/priskalkulator">priskalkulatoren</a>.
+      </p>
+    </div>
+
+    <div class="prisvelg__regnet" data-prisvelg-regnet hidden>
+      {/* Kort og rolig. En live-region som leser hele regnestykket på nytt for
+          hvert tastetrykk er støy, ikke hjelp – derfor melder bare denne linjen
+          seg, og linjene under står utenfor regionen. */}
+      <p class="prisvelg__melding" role="status" aria-live="polite" data-prisvelg-melding></p>
+
+      <p class="mono-label prisvelg__pakkenavn" data-prisvelg-pakke>{start.pakke}-pakken</p>
+      <p class="mono-stat prisvelg__sum" data-prisvelg-spenn>{formaterKr(start.lav)}</p>
+      <p class="small prisvelg__begrunnelse" data-prisvelg-hvorfor>{start.pakkeBegrunnelse}</p>
+
+      <dl class="kv prisvelg__linjer" data-prisvelg-linjer></dl>
+
+      <p class="small faint prisvelg__drift">
+        Etter lansering: {start.loepende.navn} {start.loepende.pris}.
+        Timeprisen i anslagene er {t.toLocaleString("nb-NO")} kr.
+      </p>
+
+      <details class="prisvelg__forut">
+        <summary>Hva anslaget forutsetter</summary>
+        <ul>{start.forutsetninger.map((f) => <li>{f}</li>)}</ul>
+      </details>
+    </div>
+
+    <div class="prisvelg__bunn">
+      <Button variant="primary" href="/kontakt">Få et fast tilbud</Button>
+      <a class="kk-link small" href="/verktoy/priskalkulator">Åpne hele kalkulatoren</a>
+    </div>
+
+    {/* Hukommelsen, synlig. Vises bare når noe faktisk BLE husket, og da med en
+        knapp som glemmer det igjen. En nettside som husker noe uten å si det,
+        er en nettside som skjuler noe. */}
+    <p class="prisvelg__husket" data-prisvelg-husket hidden>
+      <span>Valgene dine fra sist står igjen. De ligger i din egen nettleser, ikke hos oss.</span>
+      <button type="button" class="prisvelg__glem" data-prisvelg-glem>Glem dem</button>
+    </p>
+  </div>
+</form>
+
+<script>
+  import { beregn, formaterKr, type Integrasjon, type Valg } from "../lib/priskalkyle";
+
+  /**
+   * Samme `beregn()` som på /verktoy/priskalkulator og i testene. Importert, ikke
+   * skrevet om: det er grunnen til at tall her ikke kan drive fra prislisten.
+   */
+  const NOKKEL = "kk-prisvalg";
+
+  for (const rot of document.querySelectorAll<HTMLElement>("[data-prisvelg]")) {
+    const sider = rot.querySelector<HTMLSelectElement>("[data-prisvelg-sider]");
+    const cms = rot.querySelector<HTMLInputElement>("[data-prisvelg-cms]");
+    const app = rot.querySelector<HTMLInputElement>("[data-prisvelg-app]");
+    const regnet = rot.querySelector<HTMLElement>("[data-prisvelg-regnet]");
+    const melding = rot.querySelector<HTMLElement>("[data-prisvelg-melding]");
+    const utPakke = rot.querySelector<HTMLElement>("[data-prisvelg-pakke]");
+    const utSpenn = rot.querySelector<HTMLElement>("[data-prisvelg-spenn]");
+    const utHvorfor = rot.querySelector<HTMLElement>("[data-prisvelg-hvorfor]");
+    const utLinjer = rot.querySelector<HTMLElement>("[data-prisvelg-linjer]");
+    const husket = rot.querySelector<HTMLElement>("[data-prisvelg-husket]");
+    const glem = rot.querySelector<HTMLButtonElement>("[data-prisvelg-glem]");
+    const tilleggsfelt = [...rot.querySelectorAll<HTMLInputElement>("[data-prisvelg-tillegg]")];
+
+    // Mangler én av dem, er markupen endret. Da er det riktigere å la CSS-svaret
+    // stå enn å vise en halv flate.
+    if (!sider || !cms || !app || !regnet || !utSpenn || !utLinjer) continue;
+
+    /* ── les og skriv valgene ──────────────────────────────────────────────── */
+
+    const les = (): Valg => ({
+      sider: Number(sider.value) || 1,
+      cms: cms.checked,
+      app: app.checked,
+      integrasjoner: tilleggsfelt.filter((f) => f.checked).map((f) => f.value as Integrasjon),
+    });
+
+    /** Hver linje `beregn()` lager skal kunne peke tilbake på valget sitt. */
+    const kildeFor = (tekst: string): string => {
+      const treff = tilleggsfelt.find((f) => {
+        const navn = f.closest("label")?.querySelector(".prisvelg__navn")?.textContent?.trim();
+        return navn === tekst;
+      });
+      if (treff) return treff.value;
+      if (tekst.startsWith("App")) return "app";
+      if (tekst.includes("utover pakken")) return "sider";
+      return "";
+    };
+
+    const tegn = () => {
+      const valg = les();
+      const e = beregn(valg);
+
+      // «fra 95 000 kr» når tallet er et gulv, «60 000–95 000 kr» når det er et
+      // spenn. Et gulv som ser ut som et spenn er en usannhet på ett tegn.
+      const spenn = e.aapentOppe
+        ? `fra ${formaterKr(e.lav)}`
+        : e.lav === e.hoy
+          ? formaterKr(e.lav)
+          : `${formaterKr(e.lav).replace(" kr", "")}–${formaterKr(e.hoy)}`;
+
+      if (utPakke) utPakke.textContent = `${e.pakke}-pakken`;
+      utSpenn.textContent = spenn;
+      if (utHvorfor) utHvorfor.textContent = e.pakkeBegrunnelse;
+      if (melding) melding.textContent = `${e.pakke}-pakken, ${spenn} eks. mva.`;
+
+      // Linjene bygges om i sin helhet. Færre enn ti rader, så det er billigere
+      // enn å holde orden på hvilke som skal bort.
+      utLinjer.textContent = "";
+      for (const l of e.linjer) {
+        const rad = document.createElement("div");
+        const kilde = kildeFor(l.tekst);
+        if (kilde) rad.dataset.prisvelgLinje = kilde;
+
+        const dt = document.createElement("dt");
+        dt.textContent = l.tekst;
+        if (l.anslag) {
+          const anslag = document.createElement("span");
+          anslag.className = "prisvelg__anslag";
+          // «150–150 t» er ikke et spenn, det er et gulv skrevet feil. Appen har
+          // bare ett timeanslag (TIMER_APP_FRA), og da skal det stå som «fra».
+          anslag.textContent =
+            l.anslag.timerLav === l.anslag.timerHoy
+              ? `fra ${l.anslag.timerLav} timer (anslag)`
+              : `${l.anslag.timerLav}–${l.anslag.timerHoy} timer (anslag)`;
+          dt.appendChild(anslag);
+        }
+
+        const dd = document.createElement("dd");
+        dd.textContent =
+          l.lav === l.hoy ? formaterKr(l.lav) : `${formaterKr(l.lav).replace(" kr", "")}–${formaterKr(l.hoy)}`;
+
+        rad.append(dt, dd);
+        utLinjer.appendChild(rad);
+      }
+
+      // VI LAGRER BARE NÅR DET ER NOE Å HUSKE.
+      //
+      // Første versjon skrev valgene ved hvert tastetrykk, også etter at brukeren
+      // hadde trykket «Glem dem» – og da sto `kk-prisvalg` igjen i localStorage med
+      // utgangsstillingen i seg. Målt: {"sider":3,"cms":false,"app":false,
+      // "integrasjoner":[]}. Knappen hadde altså ikke glemt noe, og Hukommelse-
+      // flaten på samme nettsted ville vist nøkkelen som satt. En knapp som lover
+      // å glemme og ikke gjør det, er verre enn ingen knapp.
+      const urort =
+        valg.sider === 3 && !valg.cms && !valg.app && valg.integrasjoner.length === 0;
+      try {
+        if (urort) localStorage.removeItem(NOKKEL);
+        else localStorage.setItem(NOKKEL, JSON.stringify(valg));
+      } catch {
+        // Privat vindu, blokkerte data, full kvote. Velgeren skal virke uansett.
+      }
+    };
+
+    /* ── hukommelsen ───────────────────────────────────────────────────────── */
+
+    const gjenopprett = () => {
+      let lagret: unknown;
+      try {
+        const raa = localStorage.getItem(NOKKEL);
+        if (!raa) return false;
+        lagret = JSON.parse(raa);
+      } catch {
+        return false;
+      }
+      // Alt som kommer ut av localStorage er ukjent data, også vårt eget fra i
+      // går. Hvert felt valideres mot feltene som faktisk finnes.
+      const v = lagret as Partial<Valg> | null;
+      if (!v || typeof v !== "object") return false;
+      let noe = false;
+      if (typeof v.sider === "number" && [...sider.options].some((o) => Number(o.value) === v.sider)) {
+        if (Number(sider.value) !== v.sider) noe = true;
+        sider.value = String(v.sider);
+      }
+      if (v.cms === true) { cms.checked = true; noe = true; }
+      if (v.app === true) { app.checked = true; noe = true; }
+      if (Array.isArray(v.integrasjoner)) {
+        for (const f of tilleggsfelt) {
+          if (v.integrasjoner.includes(f.value as Integrasjon)) { f.checked = true; noe = true; }
+        }
+      }
+      return noe;
+    };
+
+    glem?.addEventListener("click", () => {
+      try { localStorage.removeItem(NOKKEL); } catch {}
+      sider.value = "3";
+      cms.checked = false;
+      app.checked = false;
+      for (const f of tilleggsfelt) f.checked = false;
+      husket?.setAttribute("hidden", "");
+      tegn();
+      // Fokus skal ikke forsvinne når knappen som hadde det blir borte.
+      sider.focus();
+    });
+
+    /* ── pekeren går begge veier ───────────────────────────────────────────── */
+
+    const uthev = (kilde: string | null) => {
+      for (const el of rot.querySelectorAll<HTMLElement>("[data-prisvelg-kilde], [data-prisvelg-linje]")) {
+        const min = el.dataset.prisvelgKilde ?? el.dataset.prisvelgLinje;
+        if (kilde && min === kilde) el.dataset.uthev = "";
+        else delete el.dataset.uthev;
+      }
+    };
+
+    // Delegert, fordi linjene bygges om for hvert valg. Ett par lyttere, ikke ti.
+    const fra = (maal: EventTarget | null): string | null => {
+      const el = (maal as Element | null)?.closest?.("[data-prisvelg-kilde], [data-prisvelg-linje]");
+      if (!(el instanceof HTMLElement)) return null;
+      return el.dataset.prisvelgKilde ?? el.dataset.prisvelgLinje ?? null;
+    };
+    rot.addEventListener("pointerover", (e) => uthev(fra(e.target)), { passive: true });
+    rot.addEventListener("pointerleave", () => uthev(null), { passive: true });
+    // Tastaturet får samme kobling. En sammenheng bare musa ser, er ingen sammenheng.
+    rot.addEventListener("focusin", (e) => uthev(fra(e.target)));
+    rot.addEventListener("focusout", () => uthev(null));
+
+    /* ── i gang ────────────────────────────────────────────────────────────── */
+
+    rot.addEventListener("input", tegn);
+    if (gjenopprett()) husket?.removeAttribute("hidden");
+    regnet.removeAttribute("hidden");
+    rot.dataset.klar = "";
+    tegn();
+  }
+</script>

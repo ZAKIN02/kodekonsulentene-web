@@ -1,0 +1,489 @@
+---
+/**
+ * AI-demoen på /apper-og-ai: lim inn teksten fra din egen nettside, og se den
+ * skrevet om – mens den blir skrevet.
+ *
+ * HVORFOR DEN FINNES. Siden har hele tiden PÅSTÅTT at vi bygger AI-apper. /sjekk
+ * beviser det samme for nettsidesjekken ved å faktisk kjøre den. Dette er det
+ * samme prinsippet for AI: en besøkende skal kunne røre den, med en gang, uten
+ * å registrere seg. Forskjellen på å påstå og å vise.
+ *
+ * TRE TING SOM ER BINDENDE I DENNE FILA:
+ *
+ *  1. Nøkkelen er ikke her. Kallet går fra /api/ai-tekst, på serveren. Det
+ *     eneste nettleseren vet er at det finnes et endepunkt på vårt eget domene.
+ *  2. Skjemaet er et EKTE `<form method="post">`. Uten JavaScript sender det til
+ *     /api/ai-tekst, som svarer med en komplett HTML-side. Skriptet nederst
+ *     overtar bare når det kan.
+ *  3. Svaret settes aldri inn som HTML. Hvert felt skrives med textContent.
+ *     Det er en ukjent besøkendes tekst som går inn i modellen, og det modellen
+ *     sender tilbake er derfor ikke mer til å stole på enn det som ble limt inn.
+ *
+ * BEVEGELSEN. Brandboken forbyr «tekst som skriver seg selv uten innhold», med
+ * Terminal som unntaket, fordi skrivingen DER er innholdet. Det samme gjelder
+ * her: det er ikke en animasjon av tekst, det er tekst som kommer inn. Markøren
+ * som blinker er den eneste dekorasjonen, og den står av under
+ * prefers-reduced-motion.
+ */
+import Section from "./Section.astro";
+import { MAKS_TEGN, MIN_TEGN } from "../lib/ai-tekst";
+import { firma } from "../data/firma";
+
+interface Props {
+  /** Nummeret i sidens rekkefølge, som ellers på siden. */
+  n?: number;
+}
+const { n } = Astro.props;
+
+/** Tusenskiller med mellomrom, som brandboken krever av alle tall. */
+const tall = new Intl.NumberFormat("nb-NO");
+---
+
+<Section
+  id="ai-demo"
+  n={n}
+  eyebrow="Prøv det selv"
+  tittel="Teksten din, skrevet om mens du ser på"
+  ingress="Lim inn teksten fra forsiden din. Claude skriver den om til noe som selger, og sier etterpå hva som ble endret og hvorfor. Ingen innlogging, ingen e-post, ingenting lagres."
+>
+    <form class="ai-grid" method="post" action="/api/ai-tekst" data-ai-skjema>
+      {/* FØR: kundens egen tekst. Feltet er samtidig venstre halvdel av
+          før/etter-sammenligningen – det er ingen grunn til å vise teksten to
+          ganger når den allerede står der brukeren skrev den. */}
+      <div class="ai-kort ai-kort--inn">
+        <p class="mono-label ai-merke">Før · din tekst</p>
+        <div class="field">
+          <label for="ai-tekst">Tekst fra nettsiden din</label>
+          <textarea
+            class="control ai-felt"
+            id="ai-tekst"
+            name="tekst"
+            rows="12"
+            required
+            minlength={MIN_TEGN}
+            maxlength={MAKS_TEGN}
+            spellcheck="false"
+            placeholder="Velkommen til oss. Vi er en totalleverandør av skreddersydde løsninger innen rørlegging, og vi har lidenskap for kvalitet i alle ledd …"
+          ></textarea>
+          <span class="hint">
+            Minst {tall.format(MIN_TEGN)} tegn, maks {tall.format(MAKS_TEGN)}. Ta med
+            overskriften og de første avsnittene.{" "}
+            <span class="mono" data-ai-teller>0</span>
+          </span>
+        </div>
+        <div class="row">
+          <button class="kk-btn kk-btn-primary" type="submit" data-ai-send>Skriv den om</button>
+          <span class="small faint mono" data-ai-status aria-hidden="true"></span>
+        </div>
+        <p class="small faint ai-personvern">
+          Teksten sendes til Anthropic, som kjører Claude, for å bli skrevet om.
+          Vi lagrer den ikke – verken det du limer inn eller svaret du får.{" "}
+          <a class="kk-link" href="/personvern#ai">Hva som skjer med teksten</a>.
+        </p>
+      </div>
+
+      {/* ETTER: resultatet. Står med vilje UTENFOR en Avslor – innhold som kommer
+          av en handling skal ikke vente på at noen scroller. Samme vurdering som
+          rapportboksen på /sjekk. */}
+      <div class="ai-kort ai-kort--ut">
+        <p class="mono-label ai-merke">
+          Etter · forslag fra Claude
+          <span class="ai-markor" data-ai-markor aria-hidden="true"></span>
+        </p>
+
+        {/*
+          aria-live står på «off» med vilje. En polite live-region som får ny
+          tekst på hvert token leser hele forslaget om og om igjen – det er
+          uutholdelig med skjermleser. Beskjeden om at svaret er ferdig kommer i
+          stedet i én kort melding under, én gang.
+        */}
+        <div class="ai-ut" data-ai-ut aria-live="off" aria-busy="false">
+          <p class="muted ai-tom">
+            Resultatet kommer her, linje for linje, med en gang modellen begynner
+            å skrive.
+          </p>
+        </div>
+
+        <p class="visually-hidden" role="status" data-ai-melding></p>
+
+        <noscript>
+          <p class="small muted">
+            Du har JavaScript av, og det er helt greit. Trykk «Skriv den om», så
+            får du svaret på en egen side i stedet for linje for linje her.
+            Mangler nøkkelen på serveren, sier siden det i stedet for å gjette.
+            Du kan også sende teksten til{" "}
+            <a class="kk-link" href={`mailto:${firma.epost}?subject=Skriv%20om%20teksten%20min`}>{firma.epost}</a>.
+          </p>
+        </noscript>
+      </div>
+    </form>
+
+    <p class="small faint ai-fot">
+      Dette er et forslag, ikke en fasit. Modellen får beskjed om å ikke finne på
+      tall, priser eller sertifikater som ikke står i teksten din – står det
+      likevel noe du ikke kjenner igjen, er det en feil, og vi vil høre om den.
+    </p>
+</Section>
+
+<style is:global>
+  /* `is:global` er nødvendig, ikke slurv. Astro gir bare elementene i MALEN et
+     scope-attributt, og halvparten av elementene her lages av skriptet mens
+     svaret strømmer inn. Med scoped CSS ville forslaget kommet ustylet – samme
+     feilklasse som pseudoelementet i Scene.astro: regelen ser riktig ut og
+     treffer ingenting.
+     Alt er derfor prefikset `ai-`, og ingen av navnene finnes andre steder i
+     src/styles/. Alle verdier går gjennom tokens; ingen farge, avstand eller
+     radius er skrevet av fra brandboken. */
+  .ai-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-5);
+    align-items: start;
+  }
+  @media (min-width: 60rem) {
+    .ai-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  .ai-kort {
+    border: var(--hairline) solid var(--line);
+    border-radius: var(--radius-md);
+    padding: var(--space-5);
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+  }
+  .ai-kort--inn { background: var(--bg-raised); }
+  /* Resultatflaten er den innfelte. Den leses som et svar, ikke som et nytt
+     skjema, og det er den samme forskjellen rapportboksen på /sjekk bruker. */
+  .ai-kort--ut { background: var(--bg-sunken); }
+
+  .ai-merke {
+    margin: 0;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .ai-felt {
+    /* Innlimt nettsidetekst er løpende tekst, ikke kode. */
+    font-family: var(--font-sans);
+    min-height: 14rem;
+    resize: vertical;
+  }
+
+  .ai-personvern { margin: 0; }
+  .ai-fot { margin: var(--space-5) 0 0; max-width: 44rem; }
+
+  .ai-ut { display: grid; gap: var(--space-4); min-height: 14rem; align-content: start; }
+  .ai-tom { margin: 0; }
+
+  /* Typografien kommer fra de globale stilene (.heading, .body-lg, .mono-label,
+     .small). Her står bare det som er layout, slik at ingen skriftstørrelse
+     eller farge blir skrevet av fra brandboken en gang til. */
+  .ai-tittel {
+    margin: 0;
+    /* Teksten vokser tegn for tegn. Uten dette hopper linjeskiftene. */
+    text-wrap: balance;
+  }
+  .ai-ingress { margin: 0; }
+  .ai-punkter {
+    margin: 0;
+    padding-left: var(--space-5);
+    display: grid;
+    gap: var(--space-2);
+    color: var(--ink-muted);
+  }
+
+  /* Knappeteksten vises som en VERDI, ikke som en knapp. En flate som ser ut som
+     en primærknapp og ikke gjør noe er en felle, og brandboken har bare én
+     primærknapp per visning uansett – den står i skjemaet til venstre. */
+  .ai-knapp { display: grid; gap: var(--space-1); }
+  .ai-knapp-verdi { margin: 0; color: var(--accent-text); font-family: var(--font-mono); }
+
+  .ai-grep {
+    border-top: var(--hairline) solid var(--line);
+    padding-top: var(--space-4);
+    display: grid;
+    gap: var(--space-3);
+  }
+  .ai-grep-liste {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: var(--space-3);
+    counter-reset: grep;
+  }
+  .ai-grep-liste li {
+    counter-increment: grep;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-3);
+    color: var(--ink-muted);
+  }
+  .ai-grep-liste li::before {
+    content: counter(grep);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 22px;
+    color: var(--accent-text);
+  }
+
+  .ai-feil { margin: 0; display: grid; gap: var(--space-2); }
+  .ai-feil-tittel { margin: 0; font-weight: 600; }
+  .ai-feil-tekst { margin: 0; color: var(--ink-muted); }
+
+  .ai-raa {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 20px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+    color: var(--on-terminal-muted);
+    background: var(--terminal);
+    border-radius: var(--radius-sm);
+    padding: var(--space-3);
+    max-height: 14rem;
+    overflow: auto;
+  }
+
+  /* Markøren. Den er den ENESTE bevegelsen her, den sitter i merkelappen slik at
+     den ikke flytter på teksten som kommer inn, og den vises bare mens det
+     faktisk strømmer. */
+  .ai-markor {
+    display: none;
+    width: 0.5em;
+    height: 1em;
+    background: var(--accent);
+  }
+  /* `:has()` er bærende her, og konsekvensen av at en gammel nettleser mangler
+     den er at markøren aldri vises. Teksten som kommer inn er beviset på at noe
+     skjer; markøren er pynt på toppen av det. */
+  .ai-kort--ut:has([data-ai-ut][aria-busy="true"]) .ai-markor {
+    display: inline-block;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .ai-kort--ut:has([data-ai-ut][aria-busy="true"]) .ai-markor {
+      animation: ai-blink 1s steps(2, jump-none) infinite;
+    }
+  }
+  @keyframes ai-blink {
+    to { opacity: 0.15; }
+  }
+</style>
+
+<script>
+  /**
+   * Klienten.
+   *
+   * Leser SSE fra /api/ai-tekst og tegner forslaget på nytt for hver bit som
+   * kommer inn. Tolkingen ligger i src/lib/ai-tekst.ts og deles med serveren –
+   * `tolkSvar` tåler et halvt svar nettopp fordi den blir kalt slik.
+   *
+   * Hvorfor fetch og ikke EventSource: EventSource kan bare gjøre GET, og da
+   * måtte teksten ligget i URL-en. Et GET-endepunkt som koster penger per kall
+   * er dessuten noe hvilken som helst forhåndshenter kan utløse.
+   */
+  import { MAKS_TEGN, MIN_TEGN, tolkSvar, type Forslag } from "../lib/ai-tekst";
+
+  const skjema = document.querySelector<HTMLFormElement>("[data-ai-skjema]");
+  const felt = document.querySelector<HTMLTextAreaElement>("#ai-tekst");
+  const ut = document.querySelector<HTMLElement>("[data-ai-ut]");
+  const statuslinje = document.querySelector<HTMLElement>("[data-ai-status]");
+  const teller = document.querySelector<HTMLElement>("[data-ai-teller]");
+  const melding = document.querySelector<HTMLElement>("[data-ai-melding]");
+  const knapp = document.querySelector<HTMLButtonElement>("[data-ai-send]");
+
+  if (skjema && felt && ut && statuslinje && teller && melding && knapp) {
+    // Lokalt alias med vilje. TypeScript snevrer ikke `ut` inne i funksjonene
+    // under – de er hoistet og kan i prinsippet kalles før vakten over – så uten
+    // dette måtte hver bruk hatt et utropstegn, og da er vakten ikke lenger verdt
+    // noe. `boks` er en const av den snevrede typen.
+    const boks = ut;
+    const tall = new Intl.NumberFormat("nb-NO");
+
+    const visTeller = () => {
+      const n = felt.value.trim().length;
+      teller.textContent = `${tall.format(n)} / ${tall.format(MAKS_TEGN)}`;
+    };
+    felt.addEventListener("input", visTeller);
+    visTeller();
+
+    /** Skriver ut en melding i stedet for et resultat. Ingen HTML, bare tekst. */
+    function visFeil(tittel: string, tekst: string) {
+      boks.replaceChildren(
+        lag("div", "ai-feil", [
+          lag("p", "ai-feil-tittel", tittel),
+          lag("p", "ai-feil-tekst", tekst),
+        ]),
+      );
+    }
+
+    function lag(tag: string, klasse: string, innhold: string | Node[] = ""): HTMLElement {
+      const el = document.createElement(tag);
+      el.className = klasse;
+      if (typeof innhold === "string") el.textContent = innhold;
+      else el.append(...innhold);
+      return el;
+    }
+
+    /**
+     * Tegner forslaget. Kalles på hver bit, så den bygger hele treet på nytt –
+     * det er ti korte linjer, og en diff-algoritme på den mengden tekst ville
+     * vært mer kode enn den sparer.
+     *
+     * Alt settes med textContent. Modellsvaret er avledet av tekst en ukjent
+     * besøkende limte inn, og skal aldri tolkes som markering.
+     */
+    function tegn(f: Forslag, raa: string) {
+      if (f.avvist) {
+        visFeil("Ikke nok å gå på.", f.avvist);
+        return;
+      }
+
+      const deler: Node[] = [];
+      if (f.tittel) deler.push(lag("p", "heading ai-tittel", f.tittel));
+      if (f.ingress) deler.push(lag("p", "body-lg muted ai-ingress", f.ingress));
+      if (f.punkter.length) {
+        deler.push(lag("ul", "ai-punkter body", f.punkter.map((p) => lag("li", "", p))));
+      }
+      if (f.knapp) {
+        deler.push(
+          lag("div", "ai-knapp", [
+            lag("p", "mono-label ai-merke", "Knappetekst"),
+            lag("p", "ai-knapp-verdi", `«${f.knapp}»`),
+          ]),
+        );
+      }
+
+      if (f.grep.length) {
+        deler.push(
+          lag("div", "ai-grep", [
+            lag("p", "mono-label ai-merke", "Hva som ble endret, og hvorfor"),
+            lag("ol", "ai-grep-liste small", f.grep.map((g) => lag("li", "", [lag("span", "", g)]))),
+          ]),
+        );
+      }
+
+      if (!deler.length) {
+        // Modellen har begynt, men ingen hel linje er ferdig ennå. Vis det som
+        // kommer inn rått i stedet for ingenting – da ser brukeren at det går.
+        deler.push(lag("pre", "ai-raa", raa));
+      }
+
+      boks.replaceChildren(...deler);
+    }
+
+    let kjorer = false;
+
+    skjema.addEventListener("submit", async (e) => {
+      // Uten JavaScript har nettleseren allerede sendt skjemaet. Herfra overtar vi.
+      e.preventDefault();
+      if (kjorer) return;
+
+      const tekst = felt.value.trim();
+      if (tekst.length < MIN_TEGN) {
+        visFeil(
+          "For lite å gå på.",
+          `${tall.format(tekst.length)} tegn. Modellen trenger minst ${tall.format(MIN_TEGN)} – ta med overskriften og de første avsnittene fra forsiden din.`,
+        );
+        return;
+      }
+
+      kjorer = true;
+      knapp.disabled = true;
+      melding.textContent = "";
+      boks.setAttribute("aria-busy", "true");
+      statuslinje.textContent = "sender …";
+      boks.replaceChildren(lag("p", "muted ai-tom", "Modellen leser teksten din …"));
+
+      let raa = "";
+      try {
+        const svar = await fetch("/api/ai-tekst", {
+          method: "POST",
+          headers: { "content-type": "application/json", accept: "text/event-stream" },
+          body: JSON.stringify({ tekst }),
+        });
+
+        if (!svar.body) throw new Error("tom kropp");
+        const leser = svar.body.getReader();
+        const dekoder = new TextDecoder();
+        let buffer = "";
+
+        for (;;) {
+          const { done, value } = await leser.read();
+          if (done) break;
+          buffer += dekoder.decode(value, { stream: true });
+
+          // SSE skiller hendelser med blank linje. Siste, ufullstendige del blir
+          // liggende i bufferet til resten kommer.
+          const hendelser = buffer.split("\n\n");
+          buffer = hendelser.pop() ?? "";
+
+          for (const h of hendelser) {
+            const linje = h.split("\n").find((l) => l.startsWith("data:"));
+            if (!linje) continue;
+            let d: { t?: string; v?: string; ut?: number; inn?: number; modell?: string; etter?: number };
+            try {
+              d = JSON.parse(linje.slice(5).trim());
+            } catch {
+              continue;
+            }
+
+            if (d.t === "start") {
+              statuslinje.textContent = `${d.modell ?? "claude"} skriver …`;
+            } else if (d.t === "tekst") {
+              raa += d.v ?? "";
+              tegn(tolkSvar(raa), raa);
+            } else if (d.t === "feil") {
+              visFeil("Omskrivingen stoppet.", d.v ?? "Ukjent feil.");
+              statuslinje.textContent = "stoppet";
+              melding.textContent = `Omskrivingen stoppet. ${d.v ?? ""}`;
+              raa = "";
+              break;
+            } else if (d.t === "ferdig") {
+              statuslinje.textContent = [
+                "ferdig",
+                d.inn ? `${tall.format(d.inn)} tokens inn` : null,
+                d.ut ? `${tall.format(d.ut)} tokens ut` : null,
+              ]
+                .filter(Boolean)
+                .join(" · ");
+              melding.textContent = "Forslaget er ferdig skrevet.";
+            }
+          }
+        }
+
+        if (raa) {
+          const f = tolkSvar(raa);
+          tegn(f, raa);
+          // Rådataene, for den som vil se nøyaktig hva modellen sendte. Det er
+          // samme ærlighet som «Forbehold»-blokka i nettsidesjekken.
+          const d = document.createElement("details");
+          d.append(
+            Object.assign(document.createElement("summary"), {
+              className: "small faint",
+              textContent: "Se hva modellen faktisk svarte",
+            }),
+            lag("pre", "ai-raa", raa),
+          );
+          boks.append(d);
+        }
+      } catch {
+        visFeil(
+          "Omskrivingen stoppet.",
+          "Fikk ikke svar fra serveren. Prøv igjen om et øyeblikk – teksten din står fortsatt i feltet.",
+        );
+        statuslinje.textContent = "stoppet";
+        melding.textContent = "Omskrivingen stoppet.";
+      } finally {
+        kjorer = false;
+        knapp.disabled = false;
+        boks.setAttribute("aria-busy", "false");
+      }
+    });
+  }
+</script>

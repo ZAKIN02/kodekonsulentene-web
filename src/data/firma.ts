@@ -35,6 +35,14 @@ export const firma = {
   cal: "kodekonsulentene/20min",
   timepris: "950 kr",
   tagline: "Nettsider som virker. Systemer som henger sammen.",
+  /**
+   * Forsidens <title> etter navnet. Taglinen er for lang: «KodeKonsulentene –
+   * Nettsider som virker. Systemer som henger sammen.» er 68 tegn, og Google gir
+   * omtrent 60 før den kutter. Da ryker halve setningen uansett, og plassen er
+   * bedre brukt på de ordene folk søker på. Taglinen står fortsatt i footeren og
+   * som `slogan` i strukturerte data – den er ikke borte, bare ikke i tittelen.
+   */
+  titteltillegg: "nettsider og systemer i Oslo",
   /** Posisjoneringen i én setning – brukes i meta description og i tilbud. */
   posisjonering:
     "For norske småbedrifter som har vokst ut av Wix-siden: nettsider og systemer som henger sammen med booking, Vipps og regnskap – sikkert, raskt og til fast pris.",

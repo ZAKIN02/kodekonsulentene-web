@@ -4,6 +4,7 @@ import Section from "../../components/Section.astro";
 import Button from "../../components/Button.astro";
 import ContactBlock from "../../components/ContactBlock.astro";
 import { finnArtikkel } from "../../data/artikler";
+import { artikkel } from "../../data/schema";
 import { WCAG_NAVN } from "../../data/wcag";
 import maalinger from "../../data/maalinger.json";
 
@@ -23,7 +24,16 @@ const vanligste = [
   "document-title",
 ] as const;
 
+/**
+ * `Article` foerst, saa FAQPage.
+ *
+ * Artiklene hadde BARE FAQPage foer – ingen Article, ingen datoer, ingen
+ * forfatter. Google kunne ikke se at det var en artikkel. Datoene kommer fra
+ * artikler.ts og er de samme som staar i broedteksten: `publisert` og datoen
+ * innholdet sist ble kontrollert mot kilden.
+ */
 const schema = [
+  artikkel(a),
   {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -56,7 +66,12 @@ const schema = [
   },
 ];
 ---
-<Base tittel={a.tittel} beskrivelse={a.beskrivelse} schema={schema} ogBilde="sikkerhet">
+<Base
+  tittel={a.tittel}
+  beskrivelse={a.beskrivelse}
+  schema={schema}
+  artikkel={{ publisert: a.publisert, oppdatert: a.oppdatert }}
+  ogBilde="sikkerhet">
   <Section
     nivaa={1}
     n={1}

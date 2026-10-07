@@ -1,5 +1,6 @@
 ---
 import Base from "../../layouts/Base.astro";
+import { verktoy } from "../../data/schema";
 import Scene from "../../components/Scene.astro";
 import Mega from "../../components/Mega.astro";
 import Avslor from "../../components/Avslor.astro";
@@ -14,10 +15,23 @@ import "../../styles/scener.css";
 
 const t = timepris();
 const kr = (n: number) => `${n.toLocaleString("nb-NO").replace(/ /g, " ")} kr`;
+/**
+ * `WebApplication` fra `verktoy()` i src/data/schema.ts. Siden hadde ingen
+ * strukturerte data foer – hjelperen var skrevet og aldri importert av noen.
+ * `price: "0"` og `isAccessibleForFree` er sanne: verktoeyet krever ingen
+ * innlogging og koster ingenting.
+ */
+const schema = verktoy({
+  navn: "Priskalkulator for nettside",
+  beskrivelse:
+    "Fire spoersmaal gir et prisspenn med alle timeanslag og forutsetninger synlige, satt opp mot vaare faste priser og mot markedstall med kilde og dato.",
+  sti: "/verktoy/priskalkulator",
+});
 ---
 <Base
-  tittel="Hva koster en nettside? Kalkulator med åpne priser"
+  tittel="Priskalkulator: hva koster en nettside?"
   beskrivelse="Svar på fire spørsmål og få et prisspenn med alle forutsetninger synlige. Våre priser er faste og står åpent. Markedstallene har kilde og dato."
+  schema={[schema]}
 >
   <Scene lav>
     <Mega som="h1" merke="Verktøy" n={1} tekst="Hva koster det?" />

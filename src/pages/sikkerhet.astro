@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import { tjeneste } from "../data/schema";
 import Storflate from "../components/Storflate.astro";
 import opptak from "../data/opptak.json";
 import Demo from "../components/Demo.astro";
@@ -44,10 +45,23 @@ const tiltak = [
   ["Sikkerhetskopi", "Daglig backup med test av gjenoppretting hver måned. En backup du ikke har prøvd å lese tilbake, er ikke en backup."],
   ["Rapport", "Du får en kort rapport ved lansering som sier hva som er testet og hva som ikke er det. Den er lesbar uten utviklerbakgrunn."],
 ];
+/**
+ * Fra `tjeneste()`, uten `pakker`: lovsjekk-pakken ligger i `loepende` i
+ * priser.ts, ikke i `pakker`, og hjelperen leser bare den siste. Heller ingen
+ * pris i markupen enn en pris hentet fra feil liste.
+ */
+const schema = tjeneste({
+  type: "Sikkerhetsgjennomgang og lovsjekk av nettsider",
+  navn: "Sikkerhet og lovsjekk",
+  beskrivelse:
+    "Sikkerhetsheadere, avhengighetsskanning, tilgangsstyring og sikkerhetskopi paa hver leveranse, og lovsjekk av cookie-samtykke, universell utforming, org.nr.-krav og personvernerklaering.",
+  sti: "/sikkerhet",
+});
 ---
 <Base
-  tittel="Sikkerhet"
+  tittel="Sikkerhet og lovkrav på nettsider"
   beskrivelse="Sikkerhetsheadere, avhengighetsskanning, GDPR og universell utforming på hver leveranse. Lovsjekk-pakke til fast pris: 7 900 kr eks. mva."
+  schema={[schema]}
 >
   <Scene lav>
     <Mega som="h1" merke="Sikkerhet" n={1} tekst="Siden vår består sin egen sjekk" aksent="sjekk" />

@@ -1,0 +1,169 @@
+---
+/**
+ * «Mente du …?» – 404-siden gjetter hva du lette etter.
+ *
+ * En blindvei er det dårligste stedet å miste noen, og den vanligste 404-en er
+ * ikke et dødt domene: det er `/pris`, `/tjenester`, `/sikkerhet/` med skråstrek,
+ * eller en lenke noen har skrevet av fra en PDF. I alle de tilfellene VET siden
+ * hva du mente. Den bare pleier å ikke si det.
+ *
+ * Her måles avstanden mellom stien du ba om og hver sti som finnes, og den
+ * nærmeste tilbys som en stor, trykkbar lenke øverst.
+ *
+ * ── HVORFOR DET MÅ SKJE I NETTLESEREN ────────────────────────────────────────
+ *
+ * 404-siden er PRERENDRET, som alt annet på markedssiden. Ved bygging er stien
+ * `/404`, ikke den brukeren faktisk ba om – den finnes bare i nettleserens
+ * `location.pathname`. Et serversvar som kjente stien ville krevd at hele
+ * 404-siden kjørte på serveren for hver treff fra en lenkeråte-robot.
+ *
+ * ── HVORFOR LEVENSHTEIN OG IKKE «STARTS WITH» ────────────────────────────────
+ *
+ * Fordi feilene går begge veier. `/priser/` er et tegn for mye, `/prise` er ett
+ * for lite, `/pirser` er to byttet om. Et prefiksoppslag tar den første og ingen
+ * av de to andre. Avstanden tar alle tre, og den er 30 linjer.
+ *
+ * TERSKELEN ER DET VIKTIGE VALGET. Et gjett som er feil er verre enn ingen gjett:
+ * det sender folk videre til noe de ikke ba om, og da har siden løyet om at den
+ * forsto. Grensen er derfor knyttet til lengden – høyst en tredjedel av den
+ * korteste strengen kan være feil, og aldri mer enn fire tegn. `/kontakt` mot
+ * `/caser` er avstand 6 og blir ikke foreslått. `/priserr` mot `/priser` er 1 og
+ * blir det.
+ *
+ * ── DEGRADERING ──────────────────────────────────────────────────────────────
+ *
+ * UTEN JAVASCRIPT er blokken tom og tar ingen plass: det er skriptet som lager
+ * innholdet, ikke CSS som skjuler det. Ingenting som ville vært synlig blir
+ * borte. Lenkelisten over sidene som finnes står ferdig i HTML-en ved siden av,
+ * og den er den egentlige utveien – dette er en snarvei oppå den.
+ *
+ * Det er grunnen til at blokken ikke har `min-height`: en tom boks som holder av
+ * plass til noe som kanskje aldri kommer, er en layout som hopper.
+ *
+ * MED REDUSERT BEVEGELSE og i FIREFOX er alt identisk. Ingen bevegelse her.
+ */
+import { hovedmeny, footerLenker } from "../data/navigasjon";
+import "../styles/interaksjon.css";
+
+interface Props {
+  class?: string;
+}
+const { class: cls } = Astro.props;
+
+/**
+ * Kandidatene. Alt som står i menyen eller footeren, pluss de to inngangene som
+ * folk oftest skriver inn for hånd. Ingen hardkodet liste over sider – da ville
+ * en ny side manglet her uten at noe sa fra.
+ */
+const sider = [...hovedmeny, ...footerLenker]
+  .filter((l) => l.href.startsWith("/"))
+  // Terminal-lenken heter «Terminal (~)» i footeren, og parentesen er støy i en
+  // setning som «Mente du Terminal (~)?».
+  .map((l) => ({ href: l.href, label: l.label.replace(/\s*\(~\)\s*/, "") }))
+  .concat([
+    { href: "/sjekk", label: "Sjekk nettsiden din" },
+    { href: "/kontakt", label: "Kontakt" },
+    { href: "/caser", label: "Caser" },
+    { href: "/verktoy/priskalkulator", label: "Priskalkulator" },
+    { href: "/verktoy/dmarc", label: "DMARC-sjekk" },
+    { href: "/verktoy/uu-sjekk", label: "Sjekk universell utforming" },
+    { href: "/verktoy/cookie-sjekk", label: "Cookie-sjekk" },
+  ])
+  // Samme href kan stå både i meny og footer. Første forekomst vinner.
+  .filter((l, i, alle) => alle.findIndex((a) => a.href === l.href) === i);
+
+const data = JSON.stringify(sider);
+---
+<div class:list={["mentedu", cls]} data-mentedu data-sider={data}></div>
+
+<script>
+  interface Side { href: string; label: string }
+
+  /**
+   * Levenshtein-avstand med to rader i stedet for en full matrise. Listen er på
+   * under tjue sider, så dette er ikke en optimalisering som trengs – det er bare
+   * mindre kode enn matrisen.
+   */
+  function avstand(a: string, b: string): number {
+    if (a === b) return 0;
+    if (!a.length) return b.length;
+    if (!b.length) return a.length;
+    let forrige = Array.from({ length: b.length + 1 }, (_, i) => i);
+    for (let i = 1; i <= a.length; i += 1) {
+      const naa = [i];
+      for (let j = 1; j <= b.length; j += 1) {
+        naa[j] = Math.min(
+          forrige[j] + 1,                                   // slett
+          naa[j - 1] + 1,                                   // sett inn
+          forrige[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1),  // bytt
+        );
+      }
+      forrige = naa;
+    }
+    return forrige[b.length];
+  }
+
+  /** `/Priser/` og `/priser` er samme sti for et menneske. */
+  const normaliser = (s: string) => s.toLowerCase().replace(/\/+$/, "") || "/";
+
+  for (const rot of document.querySelectorAll<HTMLElement>("[data-mentedu]")) {
+    let sider: Side[] = [];
+    try {
+      const raa = JSON.parse(rot.dataset.sider ?? "[]");
+      if (Array.isArray(raa)) {
+        sider = raa.filter(
+          (s): s is Side => !!s && typeof s.href === "string" && typeof s.label === "string",
+        );
+      }
+    } catch {
+      // Ødelagt attributt. Da står blokken tom, og lenkelisten ved siden av gjør jobben.
+    }
+    if (!sider.length) continue;
+
+    const bedt = normaliser(location.pathname);
+    // På /404 selv, eller på forsiden, er det ingenting å gjette om.
+    if (bedt === "/" || bedt === "/404") continue;
+
+    let beste: Side | null = null;
+    let bestAvstand = Infinity;
+    for (const s of sider) {
+      const d = avstand(bedt, normaliser(s.href));
+      if (d < bestAvstand) { bestAvstand = d; beste = s; }
+    }
+    if (!beste) continue;
+
+    // Terskelen. Se resonnementet øverst i filen: et gjett som er feil er verre
+    // enn ingen gjett.
+    const kortest = Math.min(bedt.length, normaliser(beste.href).length);
+    const tak = Math.min(4, Math.floor(kortest / 3));
+    if (bestAvstand > tak || bestAvstand === 0) continue;
+
+    const p = document.createElement("p");
+    p.className = "mentedu__gjett";
+
+    const foran = document.createElement("span");
+    foran.className = "mentedu__foran";
+    foran.textContent = "Mente du ";
+
+    const a = document.createElement("a");
+    a.className = "mentedu__lenke";
+    a.href = beste.href;
+    a.textContent = beste.label;
+
+    const etter = document.createElement("span");
+    etter.className = "mentedu__foran";
+    etter.textContent = "?";
+
+    p.append(foran, a, etter);
+
+    const sti = document.createElement("p");
+    sti.className = "mentedu__sti small faint";
+    // Stien skrives som tekst, aldri som HTML: den kommer fra adressefeltet, og
+    // det er den klassiske veien inn for en XSS. `textContent` lukker den.
+    const tegn = bestAvstand === 1 ? "ett tegn" : `${bestAvstand} tegn`;
+    sti.textContent = `Du ba om ${bedt}. Det er ${tegn} fra ${normaliser(beste.href)}.`;
+
+    rot.append(p, sti);
+    rot.dataset.klar = "";
+  }
+</script>

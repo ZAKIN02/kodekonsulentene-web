@@ -1,0 +1,83 @@
+---
+/**
+ * Artikkeloversikten.
+ *
+ * HVORFOR SIDEN FINNES. De tre artiklene hadde ÉN innlenke hver, målt over
+ * bygget HTML (`/artikler/35-wcag-krav`: 1, `cookies-for-samtykke`: 1,
+ * `orgnr-pa-nettsiden`: 1), og lenken kom fra en annen artikkel. De sto altså
+ * ikke i meny, ikke i footer, og hadde ingen inngang fra noen tjenesteside. For
+ * Google betyr det at de ligger utenfor den delen av nettstedet som faktisk er
+ * lenket sammen – og artikler er det eneste innholdet her som svarer på søk
+ * ingen har skrevet firmanavnet i.
+ *
+ * Siden er derfor et knutepunkt, ikke en destinasjon: den lenker til alle tre,
+ * og den er selv lenket fra footeren, som står på hver side. Det gir hver
+ * artikkel en innlenke fra en side Google når fra forsiden.
+ *
+ * Listen kommer fra src/data/artikler.ts. Legger noen til en artikkel der, står
+ * den her – ingen liste å glemme å oppdatere.
+ */
+import Base from "../../layouts/Base.astro";
+import Section from "../../components/Section.astro";
+import Pekerkort from "../../components/Pekerkort.astro";
+import ContactBlock from "../../components/ContactBlock.astro";
+import { artikler } from "../../data/artikler";
+import { artikkelOversikt } from "../../data/schema";
+
+/** Nyest først. Rekkefølgen leses av datoen, ikke av rekkefølgen i filen. */
+const sortert = [...artikler].sort((a, b) => b.publisert.localeCompare(a.publisert));
+
+const schema = [artikkelOversikt(sortert)];
+
+/**
+ * ISO-datoen hører hjemme i markupen, ikke i brødteksten. Resten av nettstedet
+ * skriver «5. oktober 2026», og en side som sier «2026-10-06» midt i en setning
+ * leser som en loggfil.
+ */
+const norskDato = (iso: string) =>
+  new Date(iso).toLocaleDateString("nb-NO", { day: "numeric", month: "long", year: "numeric" });
+---
+
+<Base
+  tittel="Artikler om lovkrav på nettsider"
+  beskrivelse="Hva loven krever av en norsk nettside: cookie-samtykke, universell utforming og organisasjonsnummer. Med paragraf, kilde og et verktøy for din egen side."
+  schema={schema}
+>
+  <Section
+    nivaa={1}
+    n={1}
+    eyebrow="Artikler"
+    tittel="Hva loven krever av nettsiden din"
+    ingress="Tre artikler om kravene vi oftest ser brutt. Hver av dem oppgir paragrafen, hva den sier, og hvilket verktøy som avgjør om din egen side er i orden."
+  >
+    <div class="grid-3">
+      {
+        sortert.map((a, i) => (
+          <Pekerkort
+            nr={i + 1}
+            tittel={a.tittel}
+            tekst={a.loefte}
+            href={`/artikler/${a.slug}`}
+            lenketekst="Les artikkelen"
+          />
+        ))
+      }
+    </div>
+
+    <div class="prose" style="margin-top: var(--space-6)">
+      <p class="small faint">
+        {/* Datoene står her fordi de står i artiklene og i markupen. En
+            oversikt som skjuler hvor gammelt innholdet er, er mindre nyttig enn
+            ingen oversikt – særlig når innholdet er juridisk. */}
+        Alle tre er kontrollert mot kilden {norskDato(sortert[0].oppdatert)}. Dette er
+        ikke juridisk rådgivning.
+      </p>
+    </div>
+  </Section>
+
+  <ContactBlock
+    n={2}
+    tittel="Vil du vite om din egen side er i orden?"
+    ingress="Sjekken leser siden din og svarer på de samme punktene artiklene handler om. Den tar under ett minutt og krever ingen innlogging."
+  />
+</Base>

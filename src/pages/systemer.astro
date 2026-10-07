@@ -9,6 +9,7 @@ import Flyt from "../components/Flyt.astro";
 import ContactBlock from "../components/ContactBlock.astro";
 import { bookUrl } from "../data/firma";
 import { flyter } from "../data/flyter";
+import { tjeneste } from "../data/schema";
 
 import "../styles/scener.css";
 
@@ -20,10 +21,23 @@ const integrasjoner = [
   { navn: "BankID", verdi: "Avtaler signeres på minutter, juridisk bindende.", teknisk: "Criipto/Idura eller Signicat – ferdig tjeneste til du har volum" },
   { navn: "Kundeportal", verdi: "Kunden ser status, filer og fakturaer selv.", teknisk: "Supabase med radnivå-sikkerhet" },
 ];
+/**
+ * Siden hadde ingen strukturerte data i det hele tatt. `tjeneste()` har ligget
+ * ubrukt i src/data/schema.ts hele tiden – ingen side importerte den.
+ */
+const schema = tjeneste({
+  type: "Systemutvikling og integrasjoner",
+  navn: "Systemer og integrasjoner",
+  beskrivelse:
+    "Booking, betaling og regnskap koblet sammen: Vipps, Tripletex, Fiken, PowerOffice, BankID og kundeportal.",
+  sti: "/systemer",
+  pakker: ["System"],
+});
 ---
 <Base
   tittel="Systemer og integrasjoner"
-  beskrivelse="Booking, Vipps, Tripletex, Fiken og BankID koblet sammen til ett system. Fra 60 000 kr eks. mva. Utvikler i Oslo."
+  beskrivelse="Booking, Vipps, Tripletex, Fiken, PowerOffice og BankID koblet sammen til ett system, slik at ingen skriver samme tall to ganger. Fra 60 000 kr eks. mva."
+  schema={[schema]}
 >
   <Scene lav>
     <Mega som="h1" merke="Systemer" n={1} tekst="Få systemene du betaler for til å snakke sammen" aksent="sammen" />

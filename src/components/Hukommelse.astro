@@ -79,7 +79,7 @@ const lagret = [
   </dl>
 
   <p class="small faint husk__kilde">
-    Tallene over leses av nettleserens egne API-er – <span class="mono">document.cookie</span> og
+    Tallene over leses av nettleserens egne API-er – <span class="mono">document.cookie</span> og{" "}
     <span class="mono">performance.getEntriesByType("resource")</span> – i det øyeblikket du åpner
     siden. Vi kan ikke skrive dem inn.
   </p>
@@ -111,12 +111,16 @@ const lagret = [
     </table>
   </div>
 
-  {/* Knappen finnes bare når det er noe å slette. Uten JavaScript er det
-      ingenting å slette fra en knapps synspunkt – da er den ikke skjult, den er
-      ikke relevant, og da skal den ikke stå der og late som. */}
-  <div class="husk__bunn" data-husk-bunn hidden>
-    <button type="button" class="kk-btn" data-husk-slett>Slett alt vi husker</button>
-    <p class="small faint" role="status" aria-live="polite" data-husk-kvittering></p>
+  <div class="husk__bunn">
+    {/* Knappen finnes bare når det er noe å slette. Uten JavaScript er det
+        ingenting å slette fra en knapps synspunkt – da er den ikke skjult, den er
+        ikke relevant, og da skal den ikke stå der og late som. */}
+    <button type="button" class="kk-btn husk__slett" data-husk-slett hidden>Slett alt vi husker</button>
+    {/* Kvitteringen står UTENFOR det som skjules. Første versjon hadde den inne i
+        blokken som forsvinner idet det siste er slettet, og da ble svaret på
+        handlingen borte i samme øyeblikk som handlingen lyktes – og fokuset falt
+        til <body>, målt i headless Chrome. */}
+    <p class="small faint husk__kvittering" role="status" aria-live="polite" data-husk-kvittering></p>
   </div>
 
   <p class="small faint husk__lov">
@@ -141,7 +145,7 @@ const lagret = [
     const utTredje = rot.querySelector<HTMLElement>("[data-husk-tredje]");
     const utAntall = rot.querySelector<HTMLElement>("[data-husk-antall]");
     const tbody = rot.querySelector<HTMLElement>("[data-husk-tbody]");
-    const bunn = rot.querySelector<HTMLElement>("[data-husk-bunn]");
+    const slettBlokk = rot.querySelector<HTMLElement>("[data-husk-slett]");
     const slett = rot.querySelector<HTMLButtonElement>("[data-husk-slett]");
     const kvittering = rot.querySelector<HTMLElement>("[data-husk-kvittering]");
     if (!tbody) continue;
@@ -156,7 +160,7 @@ const lagret = [
       const cookies = document.cookie.split(";").map((s) => s.trim()).filter(Boolean);
       if (utCookies) {
         utCookies.textContent = cookies.length === 0 ? "0" : String(cookies.length);
-        utCookies.dataset.husk = cookies.length === 0 ? "ok" : "varsel";
+        utCookies.dataset.huskStatus = cookies.length === 0 ? "ok" : "varsel";
       }
 
       // ── forespørsler ut av domenet ─────────────────────────────────────────
@@ -178,7 +182,7 @@ const lagret = [
       }
       if (utTredje) {
         utTredje.textContent = kjentApi ? String(utenfor) : "kan ikke måles her";
-        utTredje.dataset.husk = kjentApi && utenfor === 0 ? "ok" : "varsel";
+        utTredje.dataset.huskStatus = kjentApi && utenfor === 0 ? "ok" : "varsel";
       }
 
       // ── localStorage ───────────────────────────────────────────────────────
@@ -204,12 +208,12 @@ const lagret = [
         if (verdi === null) {
           naa.textContent = "ikke satt";
           naa.removeAttribute("title");
-          delete naa.dataset.husk;
+          delete naa.dataset.huskStatus;
         } else {
           funnet += 1;
           naa.textContent = kort(verdi);
           naa.title = verdi;
-          naa.dataset.husk = "satt";
+          naa.dataset.huskStatus = "satt";
         }
       }
 
@@ -232,7 +236,7 @@ const lagret = [
           td2.className = "husk__naa";
           td2.textContent = kort(verdi);
           td2.title = verdi;
-          td2.dataset.husk = "varsel";
+          td2.dataset.huskStatus = "varsel";
           tr.append(th, td, td2);
           tbody.appendChild(tr);
           ukjenteRader.add(tr);
@@ -241,12 +245,12 @@ const lagret = [
 
       if (utAntall) {
         utAntall.textContent = kanLese ? String(funnet) : "kan ikke måles her";
-        utAntall.dataset.husk = kanLese && funnet === 0 ? "ok" : "";
+        utAntall.dataset.huskStatus = kanLese && funnet === 0 ? "ok" : "";
       }
 
-      if (bunn) {
-        if (kanLese && funnet > 0) bunn.removeAttribute("hidden");
-        else bunn.setAttribute("hidden", "");
+      if (slettBlokk) {
+        if (kanLese && funnet > 0) slettBlokk.removeAttribute("hidden");
+        else slettBlokk.setAttribute("hidden", "");
       }
     };
 
@@ -260,14 +264,15 @@ const lagret = [
         kvittering.textContent =
           antall === 0
             ? "Det var ingenting å slette."
-            : `Slettet ${antall} ${antall === 1 ? "oppføring" : "oppføringer"}. Temaet står til du velger på nytt.`;
-      }
-      // Knappen forsvinner når det ikke er mer å slette, og da ville fokuset
-      // falt til <body>. Kvitteringen får fokus i stedet, så det neste en
-      // skjermleser eller et tastatur møter er svaret på det du nettopp gjorde.
-      if (bunn?.hasAttribute("hidden") && kvittering) {
-        kvittering.tabIndex = -1;
-        kvittering.focus();
+            : `Slettet ${antall} ${antall === 1 ? "oppføring" : "oppføringer"}. Siden ser lik ut til du laster den på nytt.`;
+        // Knappen forsvinner i samme øyeblikk som den siste oppføringen er borte,
+        // og da ville fokuset falt til <body>. Kvitteringen tar det i stedet, så
+        // det neste et tastatur eller en skjermleser møter er svaret på det du
+        // nettopp gjorde.
+        if (slettBlokk?.hasAttribute("hidden")) {
+          kvittering.tabIndex = -1;
+          kvittering.focus();
+        }
       }
     });
 

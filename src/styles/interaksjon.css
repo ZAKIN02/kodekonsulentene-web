@@ -562,6 +562,7 @@ input[type="range"]:focus-visible {
 .prisvelg__husket[hidden],
 .husk__bunn[hidden],
 .snar__aapne[hidden],
+.husk__slett[hidden],
 .snar__venter[hidden] {
   display: none;
 }
@@ -735,8 +736,14 @@ input[type="range"]:focus-visible {
 }
 
 .prisvelg__linjer { margin: 0; }
-.prisvelg__linjer div { padding-inline: var(--space-2); margin-inline: calc(var(--space-2) * -1); }
+/* `.kv div` i site.css er flex med space-between. Her maa den faa LOV til aa
+   brekke: paa 390 px brakk «14 250–28 500 kr» midt i beloepet, fordi raden tvang
+   alt paa én linje og lot bare verdien bryte. Med wrap paa raden og nowrap paa
+   verdien faller hele beloepet ned paa sin egen linje i stedet, fortsatt
+   hoeyrestilt. Maalt paa 390 px i headless Chrome med berøringskontekst. */
+.prisvelg__linjer div { padding-inline: var(--space-2); margin-inline: calc(var(--space-2) * -1); flex-wrap: wrap; }
 .prisvelg__linjer dt { display: block; }
+.prisvelg__linjer dd { white-space: nowrap; margin-inline-start: auto; }
 .prisvelg__anslag {
   display: block;
   color: var(--ink-faint);
@@ -834,8 +841,8 @@ input[type="range"]:focus-visible {
   font-variant-numeric: tabular-nums;
   text-align: end;
 }
-.husk__verdi[data-husk="ok"] { color: var(--husk-ok); }
-.husk__verdi[data-husk="varsel"] { color: var(--husk-varsel); }
+.husk__verdi[data-husk-status="ok"] { color: var(--husk-ok); }
+.husk__verdi[data-husk-status="varsel"] { color: var(--husk-varsel); }
 
 .husk__kilde, .husk__lov { margin: 0; }
 .husk__kilde .mono, .husk__lov .mono { word-break: break-word; }
@@ -884,10 +891,16 @@ input[type="range"]:focus-visible {
   word-break: break-word;
   padding-right: 0 !important;
 }
-.husk__naa[data-husk="satt"] { color: var(--ink); }
-.husk__naa[data-husk="varsel"] { color: var(--husk-varsel); }
+.husk__naa[data-husk-status="satt"] { color: var(--ink); }
+.husk__naa[data-husk-status="varsel"] { color: var(--husk-varsel); }
 
 .husk__bunn { display: grid; gap: var(--space-3); justify-items: start; }
+/* Knappen, ikke blokken, er det som skjules – kvitteringen skal overleve at
+   knappen forsvinner. `.kk-btn` setter `display: inline-flex`, og det slår UA-ens
+   `[hidden] { display: none }` i forfatterlaget. Derfor må den stå her. */
+.husk__slett[hidden] { display: none; }
+.husk__kvittering { margin: 0; }
+.husk__kvittering:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: 3px; }
 
 /* ============================================================ snarveikartet ==
  *

@@ -999,3 +999,7 @@ ul.sjs__logg { grid-template-columns: minmax(0, 1fr); }
    fordi nettleserens egen 1em-marg paa dl aldri ble nullstilt. Det ga skjeve rader paa
    /nettsider og /status. En linje her i stedet for en lapp per side. */
 .kv { margin: 0; }
+
+/* Generisk: gir et element luft over naar det foelger broedtekst. Brukes der en
+   komponent trenger pusterom uten aa laane et navn som betyr noe annet. */
+.luft-over, .scene__inner > .luft-over { margin-block-start: var(--space-7); }

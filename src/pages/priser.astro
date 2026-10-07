@@ -38,7 +38,9 @@ const prisFaq = faq.filter((f) => /binding|endre|koster|eier/i.test(f.q));
         :has() og :checked velger pakke uten en linje JavaScript, saa den
         virker ogsaa uten. Prisene kommer fra samme beregn() som resten av
         nettstedet, ikke fra en kopi som kan drive. */}
-    <Prisvelger class="priskort-rad" />
+    {/* Egen klasse, ikke priskort-rad. Aa gjenbruke den gjorde at prisvelgeren og
+        kortrutenettet ikke lot seg skille – verken i CSS eller i maaling. */}
+    <Prisvelger class="luft-over" />
 
     <div class="grid-3 priskort-rad">
       {pakker.map((p, k) => (

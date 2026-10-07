@@ -2,6 +2,9 @@
 import { defineConfig } from "astro/config";
 import node from "@astrojs/node";
 import sitemap from "@astrojs/sitemap";
+// Artikkeldatoene leses fra samme fil som sidene og markupen bruker, så sitemap
+// ikke kan si en annen dato enn den som står i teksten.
+import { artikler } from "./src/data/artikler.ts";
 
 /**
  * Prioritet i sitemap er et HINT om hvilke sider som betyr mest for OSS – ikke
@@ -16,8 +19,13 @@ const prioritet = (sti) => {
   // søker etter. De er like viktige som tjenestesidene.
   if (sti === "/sjekk" || sti.startsWith("/verktoy")) return 0.9;
   if (sti.startsWith("/bransjer/")) return 0.8;
+  // Artiklene falt gjennom til 0.3 – samme nivå som salgsvilkårene. De er det
+  // eneste innholdet her som svarer på søk ingen har skrevet firmanavnet i
+  // («må nettsiden ha org.nr.», «cookies uten samtykke»), og de er derfor blant
+  // de beste inngangene vi har. Oversikten er knutepunktet og ligger likt.
+  if (sti === "/artikler" || sti.startsWith("/artikler/")) return 0.7;
   if (sti === "/kontakt") return 0.7;
-  if (["/caser", "/om", "/handbok", "/historie"].includes(sti)) return 0.6;
+  if (["/caser", "/om", "/handbok"].includes(sti)) return 0.6;
   if (["/status", "/terminal"].includes(sti)) return 0.4;
   return 0.3; // /personvern, /vilkar
 };
@@ -27,6 +35,23 @@ const frekvens = (sti) => {
   if (["/personvern", "/vilkar"].includes(sti)) return "yearly";
   return "monthly";
 };
+
+/**
+ * `lastmod`, men BARE der vi har en ekte dato.
+ *
+ * Artiklene har `oppdatert` i src/data/artikler.ts – datoen innholdet sist ble
+ * kontrollert mot kilden. Den er sann og den er nyttig: Google bruker lastmod til
+ * å avgjøre om en side er verdt å kravle på nytt.
+ *
+ * De andre sidene får INGEN lastmod. Alternativet hadde vært byggetidspunktet, og
+ * det er en løgn i XML: hver deploy ville meldt at alle 27 sidene var endret.
+ * Google ignorerer lastmod-datoer den oppdager er upålitelige, så en falsk dato
+ * på alt ville også ødelagt verdien av de tre som er ekte.
+ */
+const artikkelDatoer = Object.fromEntries(
+  artikler.map((a) => [`/artikler/${a.slug}`, a.oppdatert]),
+);
+const sistEndret = (sti) => artikkelDatoer[sti];
 
 // Static av default – hele markedssiden prerendres til HTML ved bygg.
 // Bare /api/sjekk og /api/kontakt kjører på serveren (de har `export const prerender = false`).
@@ -55,9 +80,14 @@ export default defineConfig({
         const sti = new URL(element.url).pathname.replace(/\/+$/, "") || "/";
         element.priority = prioritet(sti);
         element.changefreq = frekvens(sti);
+        const dato = sistEndret(sti);
+        if (dato) element.lastmod = new Date(dato).toISOString();
         return element;
       },
-      i18n: { defaultLocale: "nb", locales: { nb: "nb-NO" } },
+      // INGEN i18n-blokk. Den sto her og deklarerte `xmlns:xhtml` i sitemap uten
+      // å sende et eneste <xhtml:link>-element, fordi det bare finnes én locale.
+      // Nettstedet er enspråklig norsk; hreflang og alternates hører til et
+      // nettsted som har noe å peke på. Se docs/seo-teknisk.md.
     }),
   ],
   build: { inlineStylesheets: "always" },

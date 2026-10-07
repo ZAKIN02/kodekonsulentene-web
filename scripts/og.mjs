@@ -107,7 +107,6 @@ const SIDER = [
   { sti: "/priser", fil: "priser", eyebrow: "Priser", tittel: "Prisene står her", beskrivelse: "Fordi du skal kunne regne på det før du ringer. Alle priser eks. mva." },
   { sti: "/sikkerhet", fil: "sikkerhet", eyebrow: "Sikkerhet", tittel: "Siden vår består sin egen sjekk", beskrivelse: "Sikkerhetsheadere, cookies, universell utforming og lovpålagt informasjon." },
   { sti: "/systemer", fil: "systemer", eyebrow: "Systemer", tittel: "Få systemene du betaler for til å snakke sammen", beskrivelse: "Booking, Vipps, Tripletex, Fiken og BankID – koblet til ett system." },
-  { sti: "/historie", fil: "historie", eyebrow: "Historie", tittel: "Fra rot til system", beskrivelse: "Vi tar en nettside fra hverandre, lag for lag, og setter den sammen igjen." },
 ];
 
 /* ------------------------------------------------------------------- kjør ---- */

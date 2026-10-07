@@ -12,14 +12,13 @@ import {
  * node:test-suiten var grønn. Navnet på testen sier hva den vokter.
  */
 
-const SIDER = ["/", "/historie", "/sjekk", "/priser", "/sikkerhet", "/verktoy"];
+const SIDER = ["/", "/nettsider", "/sjekk", "/priser", "/sikkerhet", "/verktoy"];
 
 /** Tekst som ligger over bilde eller video, og beholderen den males mot. */
 const TEKST_OVER_MEDIE: { side: string; beholder: string; tekst: string; navn: string }[] = [
   { side: "/", beholder: ".hero", tekst: ".hero__lead", navn: "hero-ingress" },
   { side: "/", beholder: ".hero", tekst: ".hero h1", navn: "hero-overskrift" },
   { side: "/", beholder: ".teaser", tekst: ".teaser__tekst .body-lg", navn: "stripe-ingress" },
-  { side: "/historie", beholder: ".hist", tekst: ".hist__kort .body-lg", navn: "historie-ingress" },
 ];
 
 test.describe("konsoll og CSP", () => {
@@ -38,7 +37,7 @@ test.describe("konsoll og CSP", () => {
 });
 
 test.describe("video kan faktisk spilles og spoles", () => {
-  for (const side of ["/", "/historie"]) {
+  for (const side of ["/", "/verktoy"]) {
     test(`@overvaak ${side}: videoene er lastbare og spolbare`, async ({ page }) => {
       await page.goto(side, { waitUntil: "networkidle" });
       await scrollGjennom(page, 10);
@@ -166,7 +165,7 @@ test.describe("tilgjengelighet", () => {
 test.describe("uten JavaScript", () => {
   test.use({ javaScriptEnabled: false });
 
-  for (const side of ["/", "/historie"]) {
+  for (const side of ["/", "/nettsider"]) {
     test(`${side}: innhold og CTA står uten JS`, async ({ page }) => {
       await page.goto(side, { waitUntil: "domcontentloaded" });
       await expect(page.locator("h1")).toHaveCount(1);
@@ -201,22 +200,29 @@ test.describe("redusert bevegelse", () => {
     }
   });
 
-  test("/historie faller til statisk modus", async ({ page }) => {
-    await page.goto("/historie", { waitUntil: "networkidle" });
-    await page.waitForTimeout(800);
-    const aktiv = await page.evaluate(
-      () => document.querySelector("[data-story]")?.hasAttribute("data-aktiv") ?? null,
-    );
-    test.skip(aktiv === null, "/historie har ingen scroll-historie");
-    expect(aktiv, "historien kjører i bevegelsesmodus tross reduced motion").toBe(false);
-
-    // Alt innholdet skal fortsatt være lesbart.
-    const titler = page.locator(".hist__kort .display-lg");
-    const n = await titler.count();
-    expect(n).toBeGreaterThan(0);
-    for (let i = 0; i < n; i++) {
-      await titler.nth(i).scrollIntoViewIfNeeded();
-      await expect(titler.nth(i)).toBeVisible();
+  test("ingen scroll-spolt video noe sted", async ({ page }) => {
+    // Erstatter «/historie faller til statisk modus». /historie ble slettet
+    // 7. oktober 2026, men mekanismen den voktet – en video som spoles av
+    // scroll-posisjonen – kan komme tilbake i en ny komponent. Testen spør
+    // derfor etter mønsteret, ikke etter siden.
+    for (const side of SIDER) {
+      await page.goto(side, { waitUntil: "networkidle" });
+      await scrollGjennom(page, 8);
+      await page.waitForTimeout(600);
+      const spolt = await page.evaluate(() =>
+        [...document.querySelectorAll("video")].some((v) => v.currentTime > 0),
+      );
+      expect(spolt, `${side}: video spoles tross prefers-reduced-motion`).toBe(false);
     }
+  });
+});
+
+test.describe("slettede sider svarer 301", () => {
+  // /historie lå i sitemap med prioritet 0,6 og kan være indeksert utenfra.
+  // En 404 der ville kastet bort lenkeverdien; omdirigeringen lever i server.mjs.
+  test("/historie peker videre til /nettsider", async ({ request }) => {
+    const svar = await request.get("/historie", { maxRedirects: 0 });
+    expect(svar.status(), "/historie skal svare 301").toBe(301);
+    expect(svar.headers()["location"]).toBe("/nettsider");
   });
 });

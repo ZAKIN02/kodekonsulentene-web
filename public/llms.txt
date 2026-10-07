@@ -77,7 +77,6 @@ automatisk test ikke kan avgjøre.
 - /artikler/orgnr-pa-nettsiden: hva foretaksregisterloven § 10-2 krever på nettsiden
 - /artikler/cookies-for-samtykke: hva ekomloven § 3-15 krever før cookies settes
 - /artikler/35-wcag-krav: hvilke 35 WCAG-krav som gjelder private virksomheter
-- /historie: scroll-historie om hva som ligger inne i en side som henger sammen
 - /terminal: siden har en terminal, åpnes med tilde
 - /personvern: personvernerklæring
 - /vilkar: salgsvilkår for næringsdrivende

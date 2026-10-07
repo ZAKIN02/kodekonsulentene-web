@@ -278,10 +278,35 @@ function medSsrCsp(res) {
   return res;
 }
 
+/**
+ * Varige 301-er for sider vi har fjernet.
+ *
+ * `/historie` ble slettet 7. oktober 2026: siden var en KI-generert film av
+ * lagstabelen, og lagstabelen står ekte og interaktiv på forsiden og /om.
+ * Brandbokens rangordning setter generert materiale utenfor listen, og CLAUDE.md
+ * forbyr både KI-genererte bilder og scroll-jacking – siden var begge deler.
+ * Den lå i sitemap med prioritet 0,6, så den kan være indeksert og lenket utenfra.
+ * 301 i stedet for 404: lenkeverdien hører hjemme på /nettsider, som svarer på
+ * nøyaktig det /historie lovte («Fire krav vi setter selv», «Hva det er bygget av»).
+ *
+ * Nøklene står UTEN etterfølgende skråstrek; oppslaget normaliserer bort både den
+ * og spørrestrengen, slik at /historie, /historie/ og /historie?x=1 treffer likt.
+ */
+const FLYTTET = {
+  "/historie": "/nettsider",
+};
+
 const server = createServer(async (req, res) => {
   settHeadere(res);
 
   if (req.method !== "GET" && req.method !== "HEAD") return astro(req, res, () => ikkeFunnet(res));
+
+  const baneUtenSpoersmaal = (req.url ?? "/").split("?")[0];
+  const nyBane = FLYTTET[baneUtenSpoersmaal.replace(/\/+$/, "") || "/"];
+  if (nyBane) {
+    res.writeHead(301, { location: nyBane, "content-type": "text/plain; charset=utf-8" });
+    return void res.end(`301 ${nyBane}`);
+  }
 
   const sti = trygg(req.url ?? "/");
   if (sti) {

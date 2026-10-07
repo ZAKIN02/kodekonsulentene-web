@@ -10,7 +10,6 @@ const RUTER = [
     "/",
     ...hovedmeny.map((l) => l.href),
     ...footerLenker.map((l) => l.href),
-    "/historie",
     "/kontakt",
     "/caser",
     "/verktoy/priskalkulator",

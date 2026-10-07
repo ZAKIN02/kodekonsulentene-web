@@ -210,7 +210,6 @@ const SEKSJON: Record<string, string> = {
   "/caser": "Caser",
   "/handbok": "Håndbok",
   "/sjekk": "Sjekk nettsiden din",
-  "/historie": "Historie",
   "/status": "Driftsstatus",
   "/kontakt": "Kontakt",
 };
@@ -260,7 +259,14 @@ function tilbud(navn: string[]): Node[] {
       description: p.beskrivelse,
       price: p.pris.replace(/\D/g, ""),
       priceCurrency: "NOK",
-      // Alle priser på siden er eks. mva. Sier vi det ikke, antar Google inkl.
+      // `valueAddedTaxIncluded` sier om beløpet er det kjøperen faktisk betaler.
+      // Så lenge `firma.mva` er false er foretaket ikke i Merverdiavgifts-
+      // registeret (verifisert 7. oktober 2026 mot Enhetsregisteret), og da
+      // KAN det ikke komme avgift på toppen: beløpet er totalsummen, og feltet
+      // skal være true. Sto som hardkodet `false` og fortalte Google at 29 900
+      // var et nettobeløp – samme feil som «eks. mva» gjorde mot leseren.
+      // Snur av seg selv den dagen vi blir mva-registrert.
+      //
       // `prefiks: "fra"` betyr at prisen er et gulv, ikke et fast tall – da
       // oppgis den som minPrice, ellers som price.
       priceSpecification: {
@@ -269,7 +275,7 @@ function tilbud(navn: string[]): Node[] {
           ? { minPrice: p.pris.replace(/\D/g, "") }
           : { price: p.pris.replace(/\D/g, "") }),
         priceCurrency: "NOK",
-        valueAddedTaxIncluded: false,
+        valueAddedTaxIncluded: !firma.mva,
       },
       availability: "https://schema.org/InStock",
       url: abs(p.href),

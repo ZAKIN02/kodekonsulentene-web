@@ -27,7 +27,6 @@ export const footerLenker: NavLenke[] = [
   { label: "Priser", href: "/priser" },
   { label: "Caser", href: "/caser" },
   { label: "Artikler", href: "/artikler" },
-  { label: "Historie", href: "/historie" },
   { label: "Sjekk nettsiden din", href: "/sjekk" },
   { label: "Gratisverktøy", href: "/verktoy" },
   // De to verktøyene som ikke lenkes fra noen tjenesteside, bare fra /verktoy.

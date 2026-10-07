@@ -151,7 +151,7 @@
 @media (max-width: 720px) { .kk-steps { grid-template-columns: 1fr; } .kk-grid-3 { grid-template-columns: 1fr; } }
 
 /* LegalFooter */
-.kk-footer { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: var(--space-6); padding: var(--space-6) var(--space-5); border-top: var(--hairline) solid var(--line); font-size: 14px; line-height: 20px; color: var(--ink-muted); }
+.kk-footer { display: grid; grid-template-columns: 1.1fr 0.9fr 1.8fr; gap: var(--space-6); padding: var(--space-6) var(--space-5); border-top: var(--hairline) solid var(--line); font-size: 14px; line-height: 20px; color: var(--ink-muted); }
 /* Bunnteksten har tre avsnitt under hverandre, men den globale nullstillingen
    setter p-marg til 0. Bare ordmerket hadde egen marg, saa slagordet og org.nr.
    klistret seg sammen paa NULL piksler paa seks sider. Kolonnen faar derfor sin
@@ -272,11 +272,21 @@ summary { min-height: 24px; }
    MERK: lista er allerede `display: grid` lenger oppe i fila, og `columns` gjelder
    ikke for et rutenett – foerste forsoek hadde null effekt, maalt til samme 412 px.
    Derfor spalter paa rutenettet i stedet. */
-.kk-footer ul { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-5); }
+/* auto-fit med minstebredde, IKKE repeat(2). Min foerste versjon tvang to spalter
+   uansett plass, og ved 768 px gir bunntekstens egen tre-spaltede layout bare ~174 px
+   til lenkelista – altsaa 83 px per spalte, der «Sjekk nettsiden din» brakk over tre
+   linjer og kom 3,8 px fra naboen. Med auto-fit faller den til én spalte naar det ikke
+   er plass til to, og rekker to igjen naar det er. */
+/* Lenkekolonnen faar naa 1,8fr i stedet for 1fr. Grunnen er maalt: den lengste lenken
+   «E-postsjekk (SPF, DMARC)» trenger 173 px, mens kolonnen var 278 px bred – to spalter
+   fikk ALDRI plass, uansett hvilken minstebredde jeg satte. Problemet var fordelingen i
+   bunnteksten, ikke spaltene.
+   auto-fit med 170 px minste: to spalter naar det er plass, én naar det ikke er. */
+.kk-footer ul { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); column-gap: var(--space-5); }
 /* To spalter helt ned til 360 px: lenketekstene er korte («Priser», «Om»,
    «Sikkerhet»), og med en spalte ble bunnteksten 914 px paa en 844 px skjerm –
    altsaa mer enn en hel skjerm med bunntekst. Maalt uten sidelengs drag. */
-@media (max-width: 359px) { .kk-footer ul { grid-template-columns: 1fr; } }
+
 
 /* Spøkelsesknappen fikk ikke plass, og ble klippet.
  *

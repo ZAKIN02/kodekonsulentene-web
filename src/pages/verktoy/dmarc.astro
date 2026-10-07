@@ -77,7 +77,7 @@ const schema = verktoy({
 
       <noscript>
         <p class="card">
-          Sjekken krever JavaScript. Send domenet til
+          Sjekken krever JavaScript. Send domenet til{" "}
           <a class="kk-link" href={`mailto:${firma.epost}?subject=E-postsjekk`}>{firma.epost}</a>,
           så kjører vi den manuelt.
         </p>
@@ -101,7 +101,7 @@ const schema = verktoy({
           DMARC binder de to sammen og sier hva som skal skje når noe ikke stemmer.
         </p>
         <p class="muted">
-          Den vanligste feilen er ikke at postene mangler, men at DMARC står på
+          Den vanligste feilen er ikke at postene mangler, men at DMARC står på{" "}
           <span class="mono">p=none</span>. Da blir falsk e-post i ditt navn levert
           som normalt – du får bare en rapport om at det skjedde.
         </p>

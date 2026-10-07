@@ -281,3 +281,28 @@ describe("storflaten viser klippet i full styrke", () => {
     assert.ok(!/opacity:\s*0?\.\d/.test(kilde), "flaten toner ned klippet – da er vi tilbake til tapet");
   });
 });
+
+describe("Astro spiser ikke mellomrom foran inline-elementer", () => {
+  /**
+   * Astro fjerner linjeskiftet foran et inline-element, så ord limes sammen i bygget
+   * mens kilden ser riktig ut. Fella er funnet ni ganger i språkvasken og tre ganger
+   * til i dag: «timeprisen på950 kr», «DMARC står påp=none», «tilhei@kodekonsulentene».
+   *
+   * Testen leser den BYGDE HTML-en, ikke kilden, fordi det er der feilen oppstår.
+   */
+  test("ingen ord er limt til et inline-element i bygget", () => {
+    const INLINE = "(?:a|strong|em|b|i|code|abbr|small|span)";
+    const feil: string[] = [];
+    for (const f of filer) {
+      const html = readFileSync(f, "utf8");
+      // Et ord, så rett i et inline-element med klasse mono/kk-link – de to formene
+      // vi faktisk har brent oss på. Bredere regex gir falske treff på span-er med marg.
+      for (const m of html.matchAll(
+        new RegExp(`[a-zA-ZæøåÆØÅ]<${INLINE} class="(?:mono|kk-link)"`, "g"),
+      )) {
+        feil.push(`${f}: …${m[0]}`);
+      }
+    }
+    assert.deepEqual(feil, [], `limte ord i bygget:\n${feil.join("\n")}`);
+  });
+});

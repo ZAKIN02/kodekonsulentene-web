@@ -86,7 +86,7 @@ const schema = verktoy({
         <div id="svar" aria-live="polite"></div>
         <noscript>
           <p class="card">
-            Kalkulatoren krever JavaScript. Hele prislisten står uansett åpent på
+            Kalkulatoren krever JavaScript. Hele prislisten står uansett åpent på{" "}
             <a class="kk-link" href="/priser">prissiden</a>.
           </p>
         </noscript>
@@ -99,9 +99,12 @@ const schema = verktoy({
     <Avslor>
     <div class="grid-2">
       <div class="stack">
+        {/* {" "} foran beloepet: Astro spiser linjeskiftet foran et inline-element, saa det
+          sto «timeprisen paa950 kr» paa skjermen. Fella er funnet ni ganger i dette
+          prosjektet – usynlig i kilden, synlig i bygget. */}
         <h3 class="subheading">Timeanslag</h3>
         <p class="small muted">
-          Pakkeprisene er faste. Alt utover dem regnes ut fra timeprisen på
+          Pakkeprisene er faste. Alt utover dem regnes ut fra timeprisen på{" "}
           <span class="mono">{kr(t)}</span> eks. mva og anslagene under.{" "}
           <strong>Dette er våre anslag, ikke målte tall.</strong> Spennet er bredt med vilje:
           en Vipps-integrasjon mot én betaling er noe annet enn mot et abonnement.

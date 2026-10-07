@@ -12,6 +12,15 @@ import { chromium } from "playwright";
 import AxeBuilder from "@axe-core/playwright";
 import { erTillattVert } from "./ssrf.mjs";
 import { finnSporer, erForstepart } from "./sporere.mjs";
+import {
+  finnSamtykkelosninger,
+  tolkConsentMode,
+  vurderSamtykke,
+  klassifiserCookie,
+  klassifiserLagring,
+  GLOBALER_SOM_LESES,
+  TCF_GLOBALER,
+} from "./samtykke.mjs";
 import { forklar } from "./wcag-navn.mjs";
 
 const TIDSAVBRUDD_MS = 30_000;
@@ -85,10 +94,89 @@ async function ventTilRo(side) {
 }
 
 /**
+ * Leser samtykkesignalene ut av den ferdig lastede siden.
+ *
+ * Alt dette avleses, ingenting tolkes her – tolkningen ligger i samtykke.mjs,
+ * som er rene funksjoner og kan testes uten nettleser.
+ *
+ * Det viktigste signalet er `window.google_tag_data.ics`: Googles egen interne
+ * samtykketilstand. Den er pålitelig på en måte tekstsøk i koden ikke er, fordi
+ * den finnes uansett om `gtag('consent', 'default', …)` står i HTML-en, kommer
+ * fra GTM-beholderen eller settes av en CMP etter innlasting. I vår måling av
+ * 24 norske nettsteder 7. oktober 2026 hadde 16 et verifisert standardkall –
+ * bare 3 av dem viste det i den servergjengitte HTML-en.
+ */
+async function lesSamtykkesignaler(side, globaler) {
+  return side
+    .evaluate((navnliste) => {
+      const w = window;
+
+      const funnet = navnliste.filter((n) => {
+        try {
+          return typeof w[n] !== "undefined";
+        } catch {
+          return false;
+        }
+      });
+
+      let ics = null;
+      try {
+        const rå = w.google_tag_data?.ics;
+        if (rå && typeof rå === "object") {
+          ics = {
+            usedDefault: rå.usedDefault === true,
+            usedUpdate: rå.usedUpdate === true,
+            entries: {},
+          };
+          for (const [k, v] of Object.entries(rå.entries ?? {})) {
+            if (v && typeof v === "object") {
+              ics.entries[k] = { default: v.default, update: v.update };
+            }
+          }
+        }
+      } catch {
+        ics = null;
+      }
+
+      // Samtykkekall i dataLayer. Formen er gtag-arguments: ['consent','default',{…}].
+      let consentKall = [];
+      try {
+        if (Array.isArray(w.dataLayer)) {
+          consentKall = w.dataLayer
+            .filter((a) => a && (a[0] === "consent" || a["0"] === "consent"))
+            .map((a) => {
+              try {
+                return JSON.stringify([...a]).slice(0, 600);
+              } catch {
+                return "";
+              }
+            })
+            .filter(Boolean);
+        }
+      } catch {
+        consentKall = [];
+      }
+
+      return {
+        globaler: funnet,
+        ics,
+        consentKall,
+        tcfLocator: Boolean(document.querySelector('iframe[name="__tcfapiLocator"]')),
+      };
+    }, globaler)
+    .catch(() => ({ globaler: [], ics: null, consentKall: [], tcfLocator: false }));
+}
+
+/**
  * Cookie-skanning: hva settes FØR noen har samtykket?
  *
  * Vi klikker aldri på noe. Et samtykkebanner som ligger der uberørt er nettopp
  * poenget – alt som er satt i det øyeblikket, er satt uten samtykke.
+ *
+ * Men «satt uten samtykke» er ikke det samme som «ulovlig», og det er hele
+ * forskjellen denne funksjonen må kunne måle. Derfor leser den også
+ * samtykkesignalene fra siden, klassifiserer hver cookie, og lar samtykke.mjs
+ * sette en dom med tre grader der én av dem er «kan ikke avgjøres maskinelt».
  *
  * @param {string} urlStreng
  */
@@ -99,6 +187,8 @@ export async function skannCookies(urlStreng) {
 
   /** @type {Map<string, {vert: string, sporer: object|null, antall: number}>} */
   const tredjepartskall = new Map();
+  /** Alle verter siden hentet noe fra. Trengs for å kjenne igjen CMP-skript. */
+  const alleVerter = new Set();
 
   try {
     const side = await kontekst.newPage();
@@ -110,6 +200,7 @@ export async function skannCookies(urlStreng) {
       } catch {
         return;
       }
+      alleVerter.add(vert);
       if (erForstepart(vert, url.hostname)) return;
       const sporer = finnSporer(vert);
       const forrige = tredjepartskall.get(vert);
@@ -124,19 +215,28 @@ export async function skannCookies(urlStreng) {
     await ventTilRo(side);
 
     const sluttUrl = side.url();
-    const cookies = (await kontekst.cookies()).map((c) => ({
-      navn: c.name,
-      domene: c.domain,
-      forstepart: erForstepart(c.domain, new URL(sluttUrl).hostname),
-      /** -1 i Playwright betyr øktcookie (slettes når nettleseren lukkes). */
-      levetidDager:
-        c.expires && c.expires > 0
-          ? Math.max(0, Math.round((c.expires * 1000 - Date.now()) / 86_400_000))
-          : null,
-      sikker: c.secure,
-      httpOnly: c.httpOnly,
-      sporer: finnSporer(c.domain.replace(/^\./, ""))?.navn ?? null,
-    }));
+    const signaler = await lesSamtykkesignaler(side, GLOBALER_SOM_LESES);
+
+    const cookies = (await kontekst.cookies()).map((c) => {
+      const klasse = klassifiserCookie(c.name);
+      return {
+        navn: c.name,
+        domene: c.domain,
+        forstepart: erForstepart(c.domain, new URL(sluttUrl).hostname),
+        /** -1 i Playwright betyr øktcookie (slettes når nettleseren lukkes). */
+        levetidDager:
+          c.expires && c.expires > 0
+            ? Math.max(0, Math.round((c.expires * 1000 - Date.now()) / 86_400_000))
+            : null,
+        sikker: c.secure,
+        httpOnly: c.httpOnly,
+        sporer: finnSporer(c.domain.replace(/^\./, ""))?.navn ?? null,
+        /** «ukjent» er et gyldig svar. Se samtykke.mjs. */
+        klasse: klasse.klasse,
+        hva: klasse.hva,
+        kilde: klasse.kilde,
+      };
+    });
 
     const lagring = await side
       .evaluate(() => {
@@ -170,14 +270,58 @@ export async function skannCookies(urlStreng) {
       .filter((k) => !k.sporer)
       .map((k) => ({ vert: k.vert, antallKall: k.antall }));
 
+    const sporereDedup = dedupliser(sporere);
+
+    /* ------------------------------------------------- samtykkedommen ---- */
+
+    // Lagringsnøkler sendes inn sammen med cookienavnene, fordi flere
+    // samtykkeløsninger ikke bruker cookies i det hele tatt. Usercentrics lagrer
+    // alt i localStorage (`uc_settings`, `uc_tcf` …), og Termly bruker
+    // `TERMLY_API_CACHE`. Leste vi bare cookies, ville vi konkludert med «ingen
+    // samtykkeløsning» på sider som har en.
+    const lagringsnokler = [...lagring.local, ...lagring.session];
+
+    const samtykkelosninger = finnSamtykkelosninger({
+      verter: [...alleVerter],
+      globaler: signaler.globaler,
+      cookienavn: [...cookies.map((c) => c.navn), ...lagringsnokler],
+    });
+
+    const consentMode = tolkConsentMode({
+      ics: signaler.ics,
+      consentKall: signaler.consentKall,
+    });
+
+    const tcf =
+      signaler.tcfLocator || TCF_GLOBALER.some((g) => signaler.globaler.includes(g));
+
+    const dom = vurderSamtykke({
+      cookienavn: cookies.map((c) => c.navn),
+      lagringsnokler,
+      sporereLastet: sporereDedup.map((s) => s.navn),
+      samtykkelosninger,
+      consentMode,
+      tcf,
+      kjortJavaScript: true,
+    });
+
     return {
       url: sluttUrl,
       status: svar?.status() ?? null,
       cookies,
       lagring,
-      sporere: dedupliser(sporere),
+      lagringsklasser: Object.fromEntries(
+        lagringsnokler.map((n) => [n, klassifiserLagring(n).klasse]),
+      ),
+      sporere: sporereDedup,
       ukjenteTredjeparter,
       blokkertAvVern: [...new Set(blokkert)],
+      samtykke: {
+        ...dom,
+        losninger: samtykkelosninger,
+        consentMode,
+        tcf,
+      },
     };
   } finally {
     await kontekst.close().catch(() => {});

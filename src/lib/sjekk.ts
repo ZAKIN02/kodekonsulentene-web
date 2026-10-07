@@ -158,6 +158,16 @@ export function analyserHeadere(h: Headers): HeaderFunn {
 export interface CookieFunn extends Funn {
   egne: number;
   sporere: string[];
+  /** Samtykkeløsninger vi kjente igjen i markupen. Navn, ikke antall. */
+  samtykkelosninger: string[];
+  /** Google Consent Mode slik den står i koden. `null` = vi kan ikke se det. */
+  consentMode: { tilstede: boolean; standardNektet: boolean | null };
+  /** Cookies fra `Set-Cookie` vi kjenner igjen som drift, økt eller sikkerhet. */
+  tekniske: string[];
+  /** Cookies fra `Set-Cookie` vi ikke kjenner igjen. «Ukjent» er et gyldig svar. */
+  ukjente: string[];
+  /** Hva maskinen ikke kunne avgjøre. Skal alltid vises til brukeren. */
+  uavklart: string[];
   status: Status;
 }
 
@@ -175,9 +185,92 @@ const SPORERE: Array<[RegExp, string]> = [
 ];
 
 /**
- * Teller hva som settes *før* samtykke. Vi laster bare HTML-en, så dette er et
- * nedre anslag: skript som settes inn av et samtykkeverktøy etter klikk, teller ikke.
- * Det er riktig vei å ta feil – vi overdriver aldri funnene.
+ * Samtykkeløsninger som kan kjennes igjen på skriptverten i markupen.
+ *
+ * > **⚠ Hold i synk:** dette er en forkortet utgave av `SAMTYKKELOSNINGER` i
+ * > `services/skanner/samtykke.mjs`. Skanneren er en egen Fly-app med egen
+ * > byggekontekst (`services/` står i `.dockerignore`), så Astro-appen kan ikke
+ * > importere fra den – samme grunn som for `ssrf.mjs`. `test/samtykke.test.ts`
+ * > kjører begge listene mot de samme vertene og blir rød hvis de spriker.
+ *
+ * Bare vertsnavn. Ingen ordsøk: «samtykke» på en side som *skriver om* samtykke
+ * er ikke en samtykkeløsning, og den fella gikk vi i selv under utprøvingen –
+ * datatilsynet.no fikk treff på ordet.
+ */
+const SAMTYKKEVERTER: Array<[string, string]> = [
+  ["cookieinformation.com", "Cookie Information"],
+  ["cookiebot.com", "Cookiebot"],
+  ["cookielaw.org", "OneTrust"],
+  ["onetrust.com", "OneTrust"],
+  ["onetrust.io", "OneTrust"],
+  ["cookieyes.com", "CookieYes"],
+  ["cdn-cookieyes.com", "CookieYes"],
+  ["usercentrics.eu", "Usercentrics"],
+  ["usercentrics.com", "Usercentrics"],
+  // Klaro hostes paa cdn.kiprotect.com. klaro.org er dokumentasjonssiden, og
+  // sto her i et tidlig utkast – synktesten fanget det.
+  ["kiprotect.com", "Klaro"],
+  ["heyklaro.com", "Klaro"],
+  ["iubenda.com", "Iubenda"],
+  ["termly.io", "Termly"],
+  ["sp-prod.net", "Sourcepoint"],
+  ["privacy-mgmt.com", "Sourcepoint"],
+  ["cookiefirst.com", "CookieFirst"],
+  ["cookiehub.net", "CookieHub"],
+  ["cookiehub.com", "CookieHub"],
+  ["osano.com", "Osano"],
+  ["didomi.io", "Didomi"],
+  ["privacy-center.org", "Didomi"],
+  ["axept.io", "Axeptio"],
+  ["cookie-script.com", "CookieScript"],
+  ["consentmanager.net", "consentmanager.net"],
+  ["tarteaucitron.io", "tarteaucitron.js"],
+  ["cookiepro.com", "OneTrust"],
+  ["monsido-consent.com", "Monsido / Acquia Optimize"],
+];
+
+/**
+ * Cookienavn vi kjenner igjen som drift, økt eller sikkerhet.
+ *
+ * Kort med vilje. Målt 7. oktober 2026 sendte **15 av 38** norske nettsteder
+ * minst én `Set-Cookie` på første svar, og **ingen** av dem sendte en cookie vi
+ * kan dokumentere som sporing. Alt var lastbalansering, økt, botfiltrering eller
+ * et førstepartsnavn vi ikke kjente igjen. Den fullstendige klassifiseringen
+ * ligger i `services/skanner/samtykke.mjs` og brukes der den hører hjemme: i
+ * nettleserskanningen, som faktisk ser cookies satt av JavaScript.
+ */
+const TEKNISKE_COOKIES =
+  /^(PHPSESSID|PHPSESSIONID|JSESSIONID|ASP\.NET_SessionId|sessionid|session_id|sess|connect\.sid|laravel_session|sid|csrf_token|csrftoken|XSRF-TOKEN|_csrf|__cf_bm|cf_clearance|__cflb|__cfruid|ARRAffinity|ARRAffinitySameSite|ApplicationGateway.*Affinity.*|BIGipServer.*|TS[0-9a-f]{6,}|AWSALB|AWSALBCORS|AWSELB|_GRECAPTCHA|wordpress_test_cookie|wp-settings-\d+|wp-settings-time-\d+|wp_lang|woocommerce_cart_hash|woocommerce_items_in_cart|EPiStateMarker|EPiServer_Commerce_AnonymousId|EPi_NumberOfVisits|LFR_SESSION_STATE_\d+|COOKIE_SUPPORT|GUEST_LANGUAGE_ID|cart|secure_customer_sig|svSession|language|lang|locale|NEXT_LOCALE)$/i;
+
+/**
+ * Hva settes, og hva finnes av samtykkehåndtering – lest ut av HTML-en alene.
+ *
+ * ## Hvorfor denne funksjonen ikke kan dømme
+ *
+ * `/sjekk` henter siden med `fetch` og kjører ikke JavaScript. Vi målte hva det
+ * koster, 7. oktober 2026, på 24 norske nettsteder skannet både med nettleser og
+ * som rå HTML:
+ *
+ * - **16** hadde et verifisert `gtag('consent', 'default', …)`-kall i nettleseren.
+ *   **3** viste det i HTML-en. **13 gjorde det ikke.**
+ * - **20** hadde en samtykkeløsning i nettleseren. **9** viste løsningens
+ *   skriptvert i HTML-en. **11 gjorde det ikke.**
+ *
+ * Et `<script src="…/gtag/js">` i markupen er derfor ikke bevis for at noe
+ * lagres uten samtykke. Google Consent Mode gjør nettopp dette: laster skriptet,
+ * lagrer ingenting. Fram til nå satte denne funksjonen `fail` og skrev «Det
+ * bryter ekomloven § 3-15» på det grunnlaget. Det var en påstand om lovbrudd
+ * bygget på et skriptnavn.
+ *
+ * Derfor har raden tre utfall her, og **`fail` er ikke blant dem**:
+ *
+ * - `ok`      – ingenting satt, ingen sporing funnet
+ * - `warn`    – sporing i koden og ingen samtykkeløsning å se, ELLER cookies satt
+ *               ved første besøk
+ * - `neutral` – sporing *og* samtykkehåndtering funnet: kan ikke avgjøres maskinelt
+ *
+ * Den virkelige målingen skjer i nettleseren (`services/skanner`), som ser hva
+ * som faktisk ble lagret. Rapporten sier det, hver gang.
  */
 export function analyserCookies(h: Headers, html: string): CookieFunn {
   const satt = typeof h.getSetCookie === "function" ? h.getSetCookie() : [];
@@ -186,16 +279,51 @@ export function analyserCookies(h: Headers, html: string): CookieFunn {
 
   const rent = fjernKommentarer(html);
   const sporere = [...new Set(SPORERE.filter(([re]) => re.test(rent)).map(([, navn]) => navn))];
+  const samtykkelosninger = [
+    ...new Set(SAMTYKKEVERTER.filter(([vert]) => rent.includes(vert)).map(([, navn]) => navn)),
+  ];
+
+  // Consent Mode i markupen: standardkallet må stå der, og minst én av de fire
+  // annonse- og analysekategoriene må være «denied». Står kallet der med
+  // «granted», er standardNektet false – da er sporingen slått på fra start.
+  const harDefaultKall = /consent['"]?\s*,\s*['"]default['"]/i.test(rent);
+  const nektet = /(ad_storage|analytics_storage|ad_user_data|ad_personalization)["']?\s*:\s*["']denied["']/i.test(rent);
+  const consentMode = {
+    tilstede: harDefaultKall || /gtag\s*\(\s*['"]consent['"]/i.test(rent),
+    standardNektet: harDefaultKall ? nektet : null,
+  };
+
+  const navn = fraHeader.map((c) => c.split("=")[0]?.trim() ?? "").filter(Boolean);
+  const tekniske = navn.filter((n) => TEKNISKE_COOKIES.test(n));
+  const ukjente = navn.filter((n) => !TEKNISKE_COOKIES.test(n));
+
+  const samtykkeSpor = samtykkelosninger.length > 0 || consentMode.standardNektet === true;
 
   const detaljer: string[] = [];
-  for (const c of fraHeader) {
-    const navn = c.split("=")[0]?.trim();
-    if (navn) detaljer.push(`Cookie «${navn}» settes ved første besøk.`);
+  for (const n of tekniske) detaljer.push(`Cookie «${n}» settes ved første besøk. Vi kjenner den igjen som teknisk.`);
+  for (const n of ukjente) detaljer.push(`Cookie «${n}» settes ved første besøk. Vi kjenner den ikke igjen.`);
+  for (const s of sporere) detaljer.push(`${s} lastes i forsidekoden.`);
+  for (const l of samtykkelosninger) detaljer.push(`Samtykkeløsning funnet i koden: ${l}.`);
+  if (consentMode.standardNektet === true) {
+    detaljer.push("Google Consent Mode står i koden med standardtilstand «denied».");
+  } else if (consentMode.standardNektet === false) {
+    detaljer.push("Google Consent Mode står i koden, men standardtilstanden er «granted».");
   }
-  for (const s of sporere) detaljer.push(`${s} lastes uten at samtykke er innhentet.`);
 
-  const status: Status = sporere.length > 0 ? "fail" : egne > 0 ? "warn" : "ok";
-  return { egne, sporere, status, detaljer };
+  const uavklart: string[] = [
+    "JavaScript er ikke kjørt. Cookies som settes av skript er ikke med, og en samtykkeløsning som lastes dynamisk er usynlig her.",
+  ];
+  if (sporere.length > 0 && !samtykkeSpor) {
+    uavklart.push("Vi fant ingen samtykkeløsning i koden. Det er ikke det samme som at det ikke finnes en – av 16 norske sider vi målte med verifisert samtykkeoppsett, viste bare 3 det i HTML-en.");
+  }
+  if (ukjente.length > 0) {
+    uavklart.push(`Om ${ukjente.length === 1 ? "cookien" : "cookiene"} ${ukjente.join(", ")} er strengt nødvendig${ukjente.length === 1 ? "" : "e"} kan ingen maskin avgjøre.`);
+  }
+
+  const status: Status =
+    sporere.length > 0 ? (samtykkeSpor ? "neutral" : "warn") : egne > 0 ? "warn" : "ok";
+
+  return { egne, sporere, samtykkelosninger, consentMode, tekniske, ukjente, uavklart, status, detaljer };
 }
 
 /* ----------------------------------------- Universell utforming ---- */
@@ -400,17 +528,37 @@ export function byggRapport(args: {
         : `Mangler ${headere.mangler.slice(0, 3).join(", ")}${headere.mangler.length > 3 ? " m.fl." : ""}. Uten dem er siden lettere å misbruke til å lure dine egne kunder.`,
   };
 
+  // Cookie-raden sier hva vi målte, aldri at noe er ulovlig.
+  //
+  // Den sa det før: «Det bryter ekomloven § 3-15» så snart et sporingsskript sto
+  // i markupen. Men § 3-15 gjelder lagring i brukerens kommunikasjonsutstyr, ikke at en
+  // fil ble lastet ned – og Google Consent Mode laster nettopp skriptet uten å
+  // lagre noe. Av 16 norske sider med verifisert samtykkeoppsett viste bare 3 det
+  // i den servergjengitte HTML-en, så fra HTML alene kan vi ikke se forskjellen.
+  // Raden kan derfor ikke gi «brudd» her. Den viser til nettleserskanningen.
   const cookieAntall = cookies.egne + cookies.sporere.length;
   const cookieRad: Rad = {
     name: "Cookies før samtykke",
     status: cookies.status,
     value: String(cookieAntall),
-    note:
-      cookies.sporere.length > 0
-        ? `${cookies.sporere.join(", ")} laster før noen har sagt ja. Det bryter ekomloven § 3-15, som siden 1. januar 2025 krever GDPR-gyldig samtykke.`
-        : cookies.egne > 0
-          ? `${cookies.egne} ${cookies.egne === 1 ? "cookie" : "cookies"} settes ved første besøk. Er de strengt nødvendige for driften, er det lov – ellers må de vente på samtykke.`
-          : "Ingenting settes før samtykke. Da trenger siden strengt tatt ikke banner.",
+    note: (() => {
+      if (cookies.sporere.length > 0 && cookies.status === "neutral") {
+        const spor = cookies.samtykkelosninger.length
+          ? cookies.samtykkelosninger.join(", ")
+          : "Google Consent Mode med standardtilstand «denied»";
+        return `${cookies.sporere.join(", ")} lastes, men siden har ${spor}. Om sporingen faktisk er sperret før samtykke kan ikke leses ut av koden – det må måles i en nettleser.`;
+      }
+      if (cookies.sporere.length > 0) {
+        return `${cookies.sporere.join(", ")} lastes i forsidekoden, og vi fant ingen samtykkeløsning. Etter ekomloven § 3-15 krever sporing samtykke – men vi kjørte ikke JavaScript, så en samtykkeløsning som lastes dynamisk ville vi ikke sett. Cookie-sjekken laster siden i en ekte nettleser og gir svaret.`;
+      }
+      if (cookies.ukjente.length > 0) {
+        return `${cookies.ukjente.length} ${cookies.ukjente.length === 1 ? "cookie" : "cookies"} settes ved første besøk, og vi kjenner ${cookies.ukjente.length === 1 ? "den" : "dem"} ikke igjen. Er ${cookies.ukjente.length === 1 ? "den" : "de"} strengt nødvendig${cookies.ukjente.length === 1 ? "" : "e"} for driften, er det lov – ellers må ${cookies.ukjente.length === 1 ? "den" : "de"} vente på samtykke.`;
+      }
+      if (cookies.egne > 0) {
+        return `${cookies.egne} ${cookies.egne === 1 ? "cookie" : "cookies"} settes ved første besøk, og vi kjenner ${cookies.egne === 1 ? "den" : "alle"} igjen som teknisk${cookies.egne === 1 ? "" : "e"}: ${cookies.tekniske.join(", ")}. Det er den typen § 3-15 gjør unntak for, men vurderingen er juridisk og gjøres ikke her.`;
+      }
+      return "Ingenting settes før samtykke, og vi fant ingen sporingsverktøy. Da trenger siden strengt tatt ikke banner.";
+    })(),
   };
 
   const uuRad: Rad = {
@@ -476,6 +624,11 @@ export function byggRapport(args: {
       "Sjekken leser forsiden slik en besøkende får den første gang, uten å kjøre JavaScript.",
       "Kontrast, tastaturnavigasjon og skjermleserflyt kan ikke måles maskinelt og er ikke vurdert her.",
       "Cookies som settes av JavaScript etter innlasting, vises ikke. Tallet er et minimum.",
+      // Forbeholdet står med tall, fordi tallet er grunnen til at cookie-raden
+      // ikke kan si «brudd». Egen måling 7. oktober 2026, n = 24 norske nettsteder
+      // skannet både i nettleser og som rå HTML.
+      "Cookie-raden kan ikke avgjøre om samtykke håndteres riktig. Et sporingsskript i koden kan være sperret av Google Consent Mode eller et samtykkeverktøy, og av 16 norske sider vi målte med verifisert samtykkeoppsett viste bare 3 det i den servergjengitte HTML-en. Raden sier derfor aldri «brudd» – den sier hva som står i koden, og hva som må måles i en nettleser.",
+      "Om en cookie er «strengt nødvendig» etter ekomloven § 3-15 er en juridisk vurdering. Ingen maskin kan gjøre den, og denne gjør den ikke.",
       "Organisasjonsnummeret slås opp i Enhetsregisteret. Vi sjekker at nummeret finnes, ikke at det er riktig foretak for nettsiden.",
       "Dette er ikke juridisk rådgivning.",
     ],

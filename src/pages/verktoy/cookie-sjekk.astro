@@ -300,8 +300,13 @@ const schema = verktoy({
                 <td class="kk-note">${esc(r.oppsummering)}</td>
               </tr>
               <tr>
-                <td class="kk-name">Sporingstjenester</td>
-                <td>${badge(r.sporere.length ? "fail" : "ok")}</td>
+                {/* «warn», ikke «fail». Et lastet sporingsskript er en HTTP-forespoersel – ekomloven
+                      § 3-15 gjelder LAGRING I og TILGANG TIL utstyret. Maalt paa 38 sider: tre
+                      nettsteder lastet Google Tag Manager, satte NULL cookies, hadde samtykke paa
+                      «denied» som standard – og fikk likevel «fail» her. Ett av dem hadde et helt
+                      korrekt oppsett. */}
+                  <td class="kk-name">Sporingstjenester</td>
+                <td>${badge(r.sporere.length ? "warn" : "ok")}</td>
                 <td class="kk-value">${r.sporere.length}</td>
                 <td class="kk-note">${r.sporere.length ? esc(r.sporere.map((s) => s.navn).join(", ")) : "Ingen kjente sporere lastet før samtykke."}</td>
               </tr>

@@ -1,0 +1,222 @@
+---
+// Scroll-styrt video i en avrundet «scene» som åpner seg til full bredde mens du ruller.
+// Uten JavaScript, med redusert bevegelse eller Save-Data vises posterbildet og teksten som vanlig innhold.
+//
+// Filer som må ligge i public/scener/<navn>/:
+//   <navn>-1080.mp4  <navn>-1080.webm   (16:9, desktop)
+//   <navn>-mobil.mp4 <navn>-mobil.webm  (9:16, mobil)
+//   poster.avif (16:9)  poster-mobil.avif (9:16)   = første ramme i videoen
+interface Steg {
+  tittel: string;
+  tekst: string;
+}
+interface Props {
+  navn: string;
+  etikett: string;
+  steg: Steg[];
+  hoppTil: string;
+  prioritet?: boolean;
+}
+const { navn, etikett, steg, hoppTil, prioritet = false } = Astro.props;
+const base = `/scener/${navn}`;
+---
+
+<section class="scene" data-scene aria-label={etikett} style={`--lengde: ${steg.length}`}>
+  <a class="scene__hopp" href={`#${hoppTil}`}>Hopp over animasjonen</a>
+  <div class="scene__flate" aria-hidden="true">
+    <picture>
+      <source media="(max-width: 767px)" srcset={`${base}/poster-mobil.avif`} type="image/avif" />
+      <img
+        src={`${base}/poster.avif`}
+        alt=""
+        width="1920"
+        height="1080"
+        decoding="async"
+        loading={prioritet ? 'eager' : 'lazy'}
+        fetchpriority={prioritet ? 'high' : 'auto'}
+      />
+    </picture>
+    <video muted playsinline preload="none" data-mobil={`${base}/${navn}-mobil`} data-desktop={`${base}/${navn}-1080`}></video>
+  </div>
+  <ol class="scene__tekst">
+    {
+      steg.map((s) => (
+        <li class="scene__steg">
+          <h2>{s.tittel}</h2>
+          <p>{s.tekst}</p>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<script>
+  for (const scene of document.querySelectorAll('[data-scene]')) {
+    const video = scene.querySelector('video');
+    const redusert = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const tilkobling = Reflect.get(navigator, 'connection');
+    const spar = Boolean(tilkobling && tilkobling.saveData);
+    if (!video || redusert || spar) continue;
+
+    scene.setAttribute('data-aktiv', '');
+    let maal = 0;
+    let planlagt = false;
+
+    // Flytter videoen til riktig tidspunkt. Starter aldri et nytt søk mens et annet pågår.
+    const sok = () => {
+      if (video.readyState < 1 || video.seeking || !Number.isFinite(video.duration)) return;
+      if (Math.abs(video.currentTime - maal) > 0.02) video.currentTime = maal;
+    };
+
+    const oppdater = () => {
+      planlagt = false;
+      const r = scene.getBoundingClientRect();
+      const lengde = Math.max(1, r.height - innerHeight);
+      const p = Math.min(1, Math.max(0, -r.top / lengde));
+      scene.style.setProperty('--framdrift', p.toFixed(4));
+      scene.style.setProperty('--apning', Math.min(1, p / 0.12).toFixed(3));
+      if (Number.isFinite(video.duration)) maal = p * Math.max(0, video.duration - 0.05);
+      sok();
+    };
+
+    const planlegg = () => {
+      if (planlagt) return;
+      planlagt = true;
+      requestAnimationFrame(oppdater);
+    };
+
+    // Videoen lastes først når scenen nærmer seg skjermen.
+    const last = new IntersectionObserver(
+      (treff) => {
+        if (!treff.some((t) => t.isIntersecting)) return;
+        last.disconnect();
+        const stor = matchMedia('(min-width: 768px)').matches;
+        const mp4 = video.canPlayType('video/mp4; codecs="avc1.42E01E"') !== '';
+        const fil = stor ? video.dataset.desktop : video.dataset.mobil;
+        video.src = `${fil}.${mp4 ? 'mp4' : 'webm'}`;
+        video.preload = 'auto';
+        video.load();
+      },
+      { rootMargin: '150% 0px' },
+    );
+    last.observe(scene);
+
+    video.addEventListener('loadedmetadata', oppdater);
+    video.addEventListener('loadeddata', () => scene.setAttribute('data-klar', ''));
+    video.addEventListener('seeked', sok);
+    addEventListener('scroll', planlegg, { passive: true });
+    addEventListener('resize', planlegg);
+    // iOS lar ikke siden søke i videoen før den har vært startet én gang.
+    addEventListener(
+      'touchstart',
+      () => {
+        video.play().then(() => video.pause()).catch(() => {});
+      },
+      { once: true, passive: true },
+    );
+    oppdater();
+  }
+</script>
+
+<style>
+  .scene {
+    position: relative;
+    --apning: 1;
+  }
+  /* Skjult til den får tastaturfokus. */
+  .scene__hopp {
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+    z-index: 3;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .scene__hopp:focus {
+    width: auto;
+    height: auto;
+    clip-path: none;
+    padding: 0.5rem 0.75rem;
+    background: #fbfbf9;
+    color: #111315;
+  }
+  .scene__flate {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: 24px;
+    background: #0b0d10;
+  }
+  .scene__flate img,
+  .scene__flate video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .scene__flate video {
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .scene[data-klar] .scene__flate video {
+    opacity: 1;
+  }
+  .scene__tekst {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .scene__steg {
+    max-width: 34rem;
+    padding: 2rem 1.5rem;
+  }
+  @media (max-width: 767px) {
+    .scene__flate {
+      aspect-ratio: 3 / 4;
+    }
+    .scene__flate img,
+    .scene__flate video {
+      object-position: center bottom;
+    }
+  }
+
+  /* Aktiv: JavaScript kjører og brukeren har ikke bedt om mindre bevegelse. */
+  .scene[data-aktiv] {
+    height: calc(var(--lengde, 4) * 100svh);
+  }
+  .scene[data-aktiv] .scene__flate {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    aspect-ratio: auto;
+    border-radius: 0;
+    clip-path: inset(
+      calc((1 - var(--apning)) * 10svh) calc((1 - var(--apning)) * 5vw) round calc((1 - var(--apning)) * 24px)
+    );
+  }
+  .scene[data-aktiv] .scene__tekst {
+    position: relative;
+    z-index: 1;
+    margin-top: -100svh;
+    pointer-events: none;
+  }
+  .scene[data-aktiv] .scene__steg {
+    min-height: 100svh;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 8vw;
+    color: #e9ecef;
+  }
+  @media (max-width: 767px) {
+    .scene[data-aktiv] .scene__steg {
+      justify-content: flex-start;
+      padding: 14svh 1.5rem 0;
+    }
+  }
+</style>

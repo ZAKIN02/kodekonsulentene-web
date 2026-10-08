@@ -11,6 +11,9 @@ Fase 1, bølge 1.1 pågår. Venter på: produsent, designleder, bevegelse
   Portvalgene (retning, lys/mørk, jeg/vi, myk rulling, peker-etikett) er delegert til dirigenten.
   Saldo ikke oppgitt; logges per generering, eier leser console.higgsfield.ai.
   Merge/publisering krever fortsatt eksplisitt GODKJENT ved PORT 3.
+- 8. okt (delegert avgjørelse, dirigenten): siden snakker som «jeg», navn kan stå i brødtekst.
+  Briefens del 6/12 går foran CLAUDE.md v1 for dette arbeidet. Portrett = merket plassholder til eier leverer.
+  Det registrerte foretaksnavnet står fortsatt bare i footeren (lovkrav).
 - 8. okt: Higgsfield kjøres via API-et, ikke CLI-en. Nøkkel i ~/.config/kodekonsulentene/higgsfield.env,
   forhåndsbetalt saldo (fylt på 7. okt). Rørledningen er scripts/scene.mjs + @higgsfield/client,
   prøvd i drift med tre publiserte klipp. Briefens del 9-prompter brukes, men gjennom denne veien.

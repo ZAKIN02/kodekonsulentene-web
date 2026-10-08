@@ -1,0 +1,3 @@
+Edit the supplied image with a very small change; keep everything else pixel-identical: camera, framing, lighting, background, the slab, the glass, the seam line.
+The front edge of the base plate currently shows six ports. There must be exactly five. Remove the leftmost port completely so the metal front face is plain there, leaving exactly five ports in a row, each with exactly one black braided cable plugged into it, and exactly five small lime dots, one above each of the five ports. Five ports, five cables, five dots.
+No text or markings.

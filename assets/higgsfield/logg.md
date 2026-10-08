@@ -86,3 +86,18 @@ En linje før hver generering og en etter. `est=` er prisanslag fra POST /estima
   - resultat: assets/higgsfield/raa/utkast-mobil-A-std-1.mp4 | 720x1280 | sum etter=62.032
 - 2026-10-08 14:24:18Z START assets/higgsfield/raa/hero-mobil-A | kling-video/v3.0/pro/image-to-video 6s cfg=std start=assets/higgsfield/bilder/A-mobil.png slutt=assets/higgsfield/bilder/B-mobil.png | promptfil=klipp-A-v2.txt | est=5.376 | sum før=62.032 | merknad: klipp A mobil pro 9:16, prompt v2
   - resultat: assets/higgsfield/raa/hero-mobil-A.mp4 | 1080x1920 | sum etter=67.408
+- 2026-10-08 15:05:58Z START assets/higgsfield/bilder/C-fraA-1 | xai/grok-imagine-image-2.0 16:9 2k ref=assets/higgsfield/bilder/A.png | promptfil=bilde-C-v3.txt | est=1.44 | sum før=67.408 | merknad: C fra A (grok), v3: tidy pile into flush slab
+  - resultat: assets/higgsfield/bilder/C-fraA-1.png | 2816x1584 | sum etter=68.848
+- 2026-10-08 15:06:42Z START assets/higgsfield/bilder/C-fraA-2 | xai/grok-imagine-image-2.0 16:9 2k ref=assets/higgsfield/bilder/A.png | promptfil=bilde-C-v4.txt | est=1.44 | sum før=68.848 | merknad: C fra A forsøk 2: v4. Forsøk 1 hadde 5 plater, ingen kabler, frontvinkel. Endret: tellesetninger, behold kameravinkel, kabler i porter
+  - resultat: assets/higgsfield/bilder/C-fraA-2.png | 2816x1584 | sum etter=70.288
+- 2026-10-08 15:07:15Z START assets/higgsfield/bilder/C-fraA-3 | alibaba/qwen-image-3/edit 16:9 2k ref=assets/higgsfield/bilder/A.png | promptfil=bilde-C-v4.txt | est=1.2 | sum før=70.288 | merknad: C fra A forsøk 3: samme v4, byttet modell til qwen edit (grok holdt ikke antall/kamera i 1-2)
+- 2026-10-08 15:07:21Z IKKE FULLFØRT assets/higgsfield/bilder/C-fraA-3 | status=failed This model is temporarily unavailable. Please try again later or contact support. | est=-1.2 (failed/nsfw refunderes)
+- 2026-10-08 15:07:33Z START assets/higgsfield/bilder/C-fraA-3 | xai/grok-imagine-image-2.0 16:9 2k ref=assets/higgsfield/bilder/A.png | promptfil=bilde-C-v5.txt | est=1.44 | sum før=70.288 | merknad: C fra A forsøk 3 (grok): v5. Forsøk 2 hadde 6 kabler, ingen keramikk, andre vinkel. Endret: minimal-endring-formulering, keramikk nevnt, fem korte kabler som ender i bildet. Qwen utilgjengelig
+  - resultat: assets/higgsfield/bilder/C-fraA-3.png | 2816x1584 | sum etter=71.728
+- 2026-10-08 15:08:15Z START assets/higgsfield/bilder/C-fraA-4 | xai/grok-imagine-image-2.0 16:9 2k ref=assets/higgsfield/bilder/A.png | promptfil=bilde-C-v6.txt | est=1.44 | sum før=71.728 | merknad: C fra A forsøk 4: v6. Forsøk 3 var nær men hadde seks porter/prikker, glass med overheng. Endret: tellesetning fem porter/kabler/prikker og flush glass
+  - resultat: assets/higgsfield/bilder/C-fraA-4.png | 2816x1584 | sum etter=73.168
+- 2026-10-08 15:09:01Z START assets/higgsfield/bilder/C-fraA-5 | xai/grok-imagine-image-2.0 16:9 2k ref=assets/higgsfield/bilder/C-fraA-3.png | promptfil=bilde-C-v7.txt | est=1.44 | sum før=73.168 | merknad: C fra A forsøk 5: liten retting av forsøk 3 (seks porter til fem), v7
+  - resultat: assets/higgsfield/bilder/C-fraA-5.png | 2816x1584 | sum etter=74.608
+- 2026-10-08 15:09:45Z START assets/higgsfield/bilder/C-fraA-6 | xai/grok-imagine-image-2.0 16:9 2k ref=assets/higgsfield/bilder/A.png,assets/higgsfield/bilder/B-justert.png | promptfil=bilde-C-v8.txt | est=1.6 | sum før=74.608 | merknad: C fra A forsøk 6 (siste): to referanser A og B-justert (viser fem porter), v8
+  - resultat: assets/higgsfield/bilder/C-fraA-6.png | 2816x1584 | sum etter=76.208
+- 2026-10-08 f3: STOPP. Seks forsøk på C (C-fraA-1..6, Grok; ett Qwen-kall feilet med «temporarily unavailable», est refundert) ga ingen bilde som består kontrollen. Ingen video, sløyfe eller nærbilder generert. Sum est etter f3: 76.208.

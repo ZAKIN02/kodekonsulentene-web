@@ -70,9 +70,9 @@ Dette er ikke juridisk rådgivning.
 ## public/scener/hero/
 - Type: KI-generert video og stillbilde. Merket på siden: «Illustrasjon laget med KI».
 - Plattform: Higgsfield (API), betalt konto. Vilkår punkt 4.4 lest 2026-10-08 (lest av brief, ikke åpnet på nytt av produsenten; eier bekrefter).
-- Bilder: A (16:9) Qwen Image 3 (`alibaba/qwen-image-3/text-to-image`, 2k), forsøk 3 av 3. B (16:9) og mobilbildene (9:16 A og B) Grok Imagine Image 2.0 (`xai/grok-imagine-image-2.0`, 2k), redigert fra A. B flyttet 55 px opp med ffmpeg (ingen oppskalering) for å treffe bunnplaten i A. Generert 2026-10-08. C (16:9) er ikke levert.
+- Bilder: A (16:9) Qwen Image 3 (`alibaba/qwen-image-3/text-to-image`, 2k), forsøk 3 av 3. B (16:9) og mobilbildene (9:16 A og B) Grok Imagine Image 2.0 (`xai/grok-imagine-image-2.0`, 2k), redigert fra A. B flyttet 55 px opp med ffmpeg (ingen oppskalering) for å treffe bunnplaten i A. Generert 2026-10-08. C (16:9) er ikke levert: seks Grok-forsøk som redigering av A (assets/higgsfield/bilder/C-fraA-1..6.png) holdt ikke antall plater, porter og kabler, og de ligger kun i assets/ og er ikke publisert.
 - Video: Kling 3.0 pro (`kling-video/v3.0/pro/image-to-video`), 6 s, lyd av, klipp A i 16:9 (forsøk 1 i pro etter 2 std-utkast) og 9:16 (forsøk 1 i pro etter 1 std-utkast). Generert 2026-10-08. Klipp B (B til C) finnes ikke.
 - Prompter: assets/higgsfield/prompter/ (stilkort, bilde-A-v3, bilde-B-v4, bilde-A-mobil, klipp-A-v2). Fullt forsøksforløp i assets/higgsfield/logg.md.
 - Etterarbeid: scripts/lag-scene.sh hero.
 - Innhold: ingen logoer, varemerker, personer eller navngitte kunstneres stil.
-- Kreditter brukt: ca. 67 (estimat fra POST /estimate for hele oppdraget, inkludert forkastede bilder og std-utkast).
+- Kreditter brukt: ca. 76 totalt (estimat fra POST /estimate, inkludert forkastede bilder og std-utkast; 8,8 av dem i f3-produsent-endelig).

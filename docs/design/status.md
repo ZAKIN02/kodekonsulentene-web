@@ -1,7 +1,8 @@
 # Status for redesignet
 
 Oppdatert: 8. oktober 2026
-Fase 2, bølge 2.1/2.2 pågår. Venter på: tekstforfatter (forside) og bygger (tokens/fonter)
+Fase 3, bølge 3.1 pågår. Venter på: produsent (C/klipp B/sløyfe/nærbilder, ramme 150),
+bevegelse (øyeblikk 2/3/6) og bygger (forsiden)
 
 - 8. okt (delegert): tema følger prefers-color-scheme; lyst er standard uten systempreferanse.
 

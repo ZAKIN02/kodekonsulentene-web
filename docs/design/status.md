@@ -1,7 +1,9 @@
 # Status for redesignet
 
 Oppdatert: 8. oktober 2026
-Fase 2, bølge 2.1 pågår. Venter på: designleder og tekstforfatter
+Fase 2, bølge 2.1/2.2 pågår. Venter på: tekstforfatter (forside) og bygger (tokens/fonter)
+
+- 8. okt (delegert): tema følger prefers-color-scheme; lyst er standard uten systempreferanse.
 
 ## PORT 1 (delegert avgjørelse, dirigenten, 8. okt)
 - GODKJENT retning A «Befaring», med C sin typografiske prisliste (inngår i A-planen).

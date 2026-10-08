@@ -1,7 +1,7 @@
 # Status for redesignet
 
 Oppdatert: 8. oktober 2026
-Fase 0, steg 0.3. Venter på: produsent (saldosjekk)
+Fase 0 ferdig. Venter på: eier (PORT 0)
 
 ## Beslutninger fra eier
 - 8. okt: Higgsfield kjøres via API-et, ikke CLI-en. Nøkkel i ~/.config/kodekonsulentene/higgsfield.env,
@@ -17,7 +17,7 @@ Ramme: ikke satt. Brukt: 0. Saldo sist: ukjent – higgsfield-CLI er ikke instal
 | f0-kartlegger-repo | kartlegger | Kartlegg repoet | FERDIG | docs/design/kartlegging.md |
 | f0-kartlegger-referanser | kartlegger | Referansestudien | DELVIS, godtatt | docs/design/referanser.md |
 | f0-revisor-utgangsmaaling | revisor | Utgangsmåling av produksjon | FERDIG, 10/10 krav | docs/design/rapporter/f0-revisor-utgangsmaaling.md |
-| f0-produsent-saldo | produsent | Modell- og saldosjekk via API | PÅGÅR | docs/design/rapporter/f0-produsent-saldo.md |
+| f0-produsent-saldo | produsent | Modell- og saldosjekk via API | FERDIG | docs/design/rapporter/f0-produsent-saldo.md |
 
 ## Låste filer
 - (fylles fra kartlegging.md)
@@ -30,6 +30,12 @@ Ramme: ikke satt. Brukt: 0. Saldo sist: ukjent – higgsfield-CLI er ikke instal
 - Tredjeparts-skills fra del 11 (Higgsfield, GSAP, Emil, Impeccable/Taste, Web Quality): IKKE installert. Krever ja fra eier.
 
 ## Åpne punkter
+- Higgsfield-API: Nano Banana finnes ikke i katalogen – nærmeste bildemodell er Qwen Image 3 (bare 1k/2k).
+  `pro`/`std` er egne Kling-endepunkt uten aspect_ratio-felt (formatet følger startbildet), og om `pro` gir
+  1080p må måles på første klipp. Saldo kan ikke leses via API (405) – eier leser console.higgsfield.ai.
+  Målte prisanslag (med 50 % rabatt): Kling std 4,0 / pro 5,4 / 4k 20,2, Qwen edit 1,2 kreditter per klipp/bilde.
+- scripts/scene.mjs dekker ikke del 9 som den står (hardkodet Qwen + Kling 4K, laster ikke ned, andre stier).
+  Produsenten har foreslått et eget produksjonsskript – venter på ja fra eier ved PORT 0.
 - Referansestudien (DELVIS): heydays mobil og kundeliste ikke sett, variants håndbok/lønn/priser ikke sett,
   opptak.webm ikke avspilt (bevegelse utledet av bildedifferanser), epic.nets showreel viste feilmelding.
   Godtatt av dirigenten – prinsippene som trengs for retningsplanene er dekket.

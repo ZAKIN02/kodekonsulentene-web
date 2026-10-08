@@ -34,6 +34,11 @@ async function ventPaaVideo(page: Page) {
   });
 }
 
+/** Rulleintensjon: videoen lastes først når brukeren har vist at hen vil rulle. */
+async function visIntensjon(page: Page) {
+  await page.evaluate(() => dispatchEvent(new Event('scroll')));
+}
+
 test.describe('desktop', () => {
   test('serveren svarer 206 på Range', async ({ request }) => {
     const svar = await request.get('/scener/test/test-1080.webm', {
@@ -43,8 +48,54 @@ test.describe('desktop', () => {
     expect(svar.headers()['content-range']).toContain('bytes 0-99/');
   });
 
+  test('scene øverst laster ingen video før første rulleintensjon', async ({ page }) => {
+    const videokall: string[] = [];
+    page.on('request', (r) => {
+      if (/\.(mp4|webm)(\?|$)/.test(r.url())) videokall.push(r.url());
+    });
+    await page.goto('/');
+    // Scenen er aktivert og innenfor 150 % av vinduet, men ingen video hentes.
+    await page.waitForSelector('[data-scene][data-aktiv]');
+    await page.waitForTimeout(600);
+    expect(videokall).toEqual([]);
+    expect(await page.locator('video').getAttribute('src')).toBeNull();
+    // Første rulleintensjon (ekte musehjul) starter lastingen.
+    await page.mouse.wheel(0, 100);
+    await page.waitForFunction(() => document.querySelector('video')?.getAttribute('src') !== null);
+    await ventPaaVideo(page);
+    expect(videokall.length).toBeGreaterThan(0);
+  });
+
+  test('aktivering av scenen gir ikke ny CLS', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForSelector('[data-scene][data-aktiv]');
+    const cls = await page.evaluate(
+      () =>
+        new Promise<number>((res) => {
+          let sum = 0;
+          new PerformanceObserver((liste) => {
+            for (const e of liste.getEntries() as PerformanceEntry[]) {
+              const skift = e as unknown as { hadRecentInput: boolean; value: number };
+              if (!skift.hadRecentInput) sum += skift.value;
+            }
+          }).observe({ type: 'layout-shift', buffered: true });
+          setTimeout(() => res(sum), 1000);
+        }),
+    );
+    expect(cls).toBeLessThan(0.01);
+  });
+
+  test('flaten har samme bakgrunn som klippene', async ({ page }) => {
+    await page.goto('/');
+    const bakgrunn = await page.evaluate(
+      () => getComputedStyle(document.querySelector('.scene__flate')!).backgroundColor,
+    );
+    expect(bakgrunn).toBe('rgb(8, 8, 9)'); // #080809
+  });
+
   test('halvveis i rullingen er halvveis i videoen', async ({ page }) => {
     await page.goto('/');
+    await visIntensjon(page);
     await ventPaaVideo(page);
     await rullTil(page, 0.5);
     await ventPaaTid(page, MAAL(0.5));
@@ -88,6 +139,7 @@ test.describe('desktop', () => {
 
   test('baklengs rulling spoler tilbake', async ({ page }) => {
     await page.goto('/');
+    await visIntensjon(page);
     await ventPaaVideo(page);
     await rullTil(page, 0.8);
     await ventPaaTid(page, MAAL(0.8));
@@ -101,6 +153,7 @@ test.describe('desktop', () => {
 
   test('bunnen er slutten av videoen', async ({ page }) => {
     await page.goto('/');
+    await visIntensjon(page);
     await ventPaaVideo(page);
     await rullTil(page, 1);
     await ventPaaTid(page, MAAL(1));
@@ -128,6 +181,7 @@ test.describe('desktop', () => {
     });
     page.on('pageerror', (e) => feil.push(String(e)));
     await page.goto('/');
+    await visIntensjon(page);
     await ventPaaVideo(page);
     for (const p of [0.1, 0.3, 0.5, 0.7, 1, 0.4, 0]) {
       await rullTil(page, p);
@@ -183,6 +237,7 @@ test.describe('mobil', () => {
 
   test('mobil får 9:16-fila', async ({ page }) => {
     await page.goto('/');
+    await visIntensjon(page);
     await page.waitForFunction(() => {
       const v = document.querySelector('video');
       return !!v && v.getAttribute('src') !== null;
@@ -201,6 +256,7 @@ test.describe('mobil', () => {
 
   test('ingen vannrett rulling på mobil', async ({ page }) => {
     await page.goto('/');
+    await visIntensjon(page);
     await ventPaaVideo(page);
     for (const p of [0, 0.3, 0.7, 1]) {
       await rullTil(page, p);
@@ -215,6 +271,7 @@ test.describe('mobil', () => {
 
   test('rullingen styrer videoen også på mobil', async ({ page }) => {
     await page.goto('/');
+    await visIntensjon(page);
     await ventPaaVideo(page);
     await rullTil(page, 0.5);
     await ventPaaTid(page, MAAL(0.5));

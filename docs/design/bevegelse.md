@@ -24,6 +24,7 @@ tastaturet. Maks én Scene per side.
 | `steg` | `{ tittel: string; tekst: string }[]` | ja | Tekststegene. Hvert steg får én skjermhøyde. Antallet styrer scenens rullelengde (`steg.length` × 100svh). |
 | `hoppTil` | `string` | ja | `id` (uten `#`) på elementet rett etter scenen. Hopp-lenken peker hit. `bygger` må sette denne id-en på neste blokk. |
 | `prioritet` | `boolean` | nei (`false`) | `true` bare når scenen er øverst på siden: posterbildet får `loading="eager"` og `fetchpriority="high"`. |
+| `bakgrunn` | `string` | nei (`'#080809'`) | Bakgrunnsfarge bak videoen (`--scene-bakgrunn`). Skal være identisk med klippenes bakgrunn, slik at flate og video er sømløse. De ekte klippene har `#080809`. |
 
 ### Filer som må finnes i `public/scener/<navn>/`
 
@@ -77,8 +78,14 @@ JavaScript. Stillbilde og vanlig rulling.
 - Første Tab i scenen treffer «Hopp over animasjonen», som hopper til `#<hoppTil>`.
   Lenken er visuelt skjult til den får fokus.
 - Videoflaten er `aria-hidden` – alt innhold ligger i tekststegene.
-- Video er alltid uten lyd og lastes først når scenen nærmer seg skjermen
-  (IntersectionObserver, `rootMargin: 150%`).
+- Video er alltid uten lyd og lastes først når **begge** vilkår er oppfylt:
+  scenen er innenfor 150 % av vinduet (IntersectionObserver) **og** brukeren har
+  vist rulleintensjon (første scroll, wheel, touchstart eller keydown). En scene
+  øverst på siden henter derfor ingen video i første innlasting – posterbildet
+  bærer førsteinntrykket, og sidevektsbudsjettet på 700 kB holdes.
+- Scenen aktiveres av et lite inline-skript som kjører før første opptegning,
+  slik at sticky-oppsettet ikke flytter innhold (ingen ny CLS). Ikke flytt
+  inline-skriptet bort fra komponenten.
 
 ### Å vite
 
@@ -86,7 +93,8 @@ JavaScript. Stillbilde og vanlig rulling.
   selv mp4 eller webm ut fra `canPlayType`.
 - iOS krever én berøring før siden får spole i videoen; komponenten håndterer
   det, men det er ikke testet på ekte iPhone ennå.
-- Fargene i komponenten (`#fbfbf9`, `#111315`, `#0b0d10`, `#e9ecef`) er
-  referanseverdier fra briefen og byttes til tokens når designsystem v2 finnes.
+- Fargene i komponenten (`#fbfbf9`, `#111315`, `#080809`, `#e9ecef`) er
+  referanseverdier og byttes til tokens når designsystem v2 finnes.
+  `#080809` er målt bakgrunn i de ekte klippene (revisors måling).
 - Tekst over video skal holde 4,5:1 – kontroller mot de ekte klippene når de
   kommer; mørke klipp er en forutsetning.

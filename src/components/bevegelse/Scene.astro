@@ -16,12 +16,19 @@ interface Props {
   steg: Steg[];
   hoppTil: string;
   prioritet?: boolean;
+  /** Bakgrunnsfarge bak videoen. Skal være lik klippenes bakgrunn, så flate og video er sømløse. */
+  bakgrunn?: string;
 }
-const { navn, etikett, steg, hoppTil, prioritet = false } = Astro.props;
+const { navn, etikett, steg, hoppTil, prioritet = false, bakgrunn = '#080809' } = Astro.props;
 const base = `/scener/${navn}`;
 ---
 
-<section class="scene" data-scene aria-label={etikett} style={`--lengde: ${steg.length}`}>
+<section
+  class="scene"
+  data-scene
+  aria-label={etikett}
+  style={`--lengde: ${steg.length}; --scene-bakgrunn: ${bakgrunn}`}
+>
   <a class="scene__hopp" href={`#${hoppTil}`}>Hopp over animasjonen</a>
   <div class="scene__flate" aria-hidden="true">
     <picture>
@@ -49,6 +56,18 @@ const base = `/scener/${navn}`;
     }
   </ol>
 </section>
+
+<script is:inline>
+  // Aktiverer scenen før første opptegning, slik at sticky-oppsettet ikke
+  // flytter innholdet etterpå (CLS). Kjører synkront under parsing; hovedskriptet
+  // under er et modulskript og kjører først etter at siden er tegnet.
+  if (
+    !matchMedia('(prefers-reduced-motion: reduce)').matches &&
+    !(navigator.connection && navigator.connection.saveData)
+  ) {
+    for (const scene of document.querySelectorAll('[data-scene]')) scene.setAttribute('data-aktiv', '');
+  }
+</script>
 
 <script>
   for (const scene of document.querySelectorAll('[data-scene]')) {
@@ -85,17 +104,33 @@ const base = `/scener/${navn}`;
       requestAnimationFrame(oppdater);
     };
 
-    // Videoen lastes først når scenen nærmer seg skjermen.
+    // Videoen lastes først når scenen nærmer seg skjermen OG brukeren har vist
+    // rulleintensjon. Posterbildet bærer førsteinntrykket, så en scene øverst på
+    // siden ikke henter megabyte med video i første innlasting.
+    let naer = false;
+    let villet = false;
+    const lastVideo = () => {
+      if (!naer || !villet || video.src) return;
+      const stor = matchMedia('(min-width: 768px)').matches;
+      const mp4 = video.canPlayType('video/mp4; codecs="avc1.42E01E"') !== '';
+      const fil = stor ? video.dataset.desktop : video.dataset.mobil;
+      video.src = `${fil}.${mp4 ? 'mp4' : 'webm'}`;
+      video.preload = 'auto';
+      video.load();
+    };
+    const intensjoner = ['scroll', 'wheel', 'touchstart', 'keydown'];
+    const intensjon = () => {
+      villet = true;
+      for (const navn of intensjoner) removeEventListener(navn, intensjon);
+      lastVideo();
+    };
+    for (const navn of intensjoner) addEventListener(navn, intensjon, { passive: true });
     const last = new IntersectionObserver(
       (treff) => {
         if (!treff.some((t) => t.isIntersecting)) return;
         last.disconnect();
-        const stor = matchMedia('(min-width: 768px)').matches;
-        const mp4 = video.canPlayType('video/mp4; codecs="avc1.42E01E"') !== '';
-        const fil = stor ? video.dataset.desktop : video.dataset.mobil;
-        video.src = `${fil}.${mp4 ? 'mp4' : 'webm'}`;
-        video.preload = 'auto';
-        video.load();
+        naer = true;
+        lastVideo();
       },
       { rootMargin: '150% 0px' },
     );
@@ -148,7 +183,7 @@ const base = `/scener/${navn}`;
     aspect-ratio: 16 / 9;
     overflow: hidden;
     border-radius: 24px;
-    background: #0b0d10;
+    background: var(--scene-bakgrunn, #080809);
   }
   .scene__flate img,
   .scene__flate video {

@@ -23,12 +23,15 @@ const taUt = (fil, start, slutt) => {
   return fil.slice(a + start.length, b);
 };
 
+const inlineSkript = taUt(astro, '<script is:inline>', '</script>');
 const skript = taUt(astro, '<script>', '</script>');
 const stil = taUt(astro, '<style>', '</style>');
 
 // Props som i brukseksempelet i briefens del 8, med navn="test" for testvideoene.
+// SCENE_NAVN=hero gir de ekte klippene, til manuell kontroll.
 const props = {
-  navn: 'test',
+  navn: process.env.SCENE_NAVN || 'test',
+  bakgrunn: '#080809',
   etikett: 'Slik befarer vi en nettside',
   hoppTil: 'etter',
   prioritet: false,
@@ -43,7 +46,7 @@ const props = {
 const base = `/scener/${props.navn}`;
 
 // Speiler template-delen av Scene.astro (prioritet=false gir loading="lazy" og fetchpriority="auto").
-const sceneHtml = `<section class="scene" data-scene aria-label="${props.etikett}" style="--lengde: ${props.steg.length}">
+const sceneHtml = `<section class="scene" data-scene aria-label="${props.etikett}" style="--lengde: ${props.steg.length}; --scene-bakgrunn: ${props.bakgrunn}">
   <a class="scene__hopp" href="#${props.hoppTil}">Hopp over animasjonen</a>
   <div class="scene__flate" aria-hidden="true">
     <picture>
@@ -78,6 +81,9 @@ ${stil}
   <body>
     <main>
       ${sceneHtml}
+      <script>
+${inlineSkript}
+      </script>
       <section id="etter" style="padding: 4rem 1.5rem">
         <h2>Etter scenen</h2>
         <p>Vanlig innhold som kommer etter scenen, slik at det går an å rulle forbi.</p>

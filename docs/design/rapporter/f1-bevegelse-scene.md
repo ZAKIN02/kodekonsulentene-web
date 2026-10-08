@@ -22,6 +22,16 @@ Kortet forbyr build, og jeg eier ingen side i `src/pages/`. Testsiden genereres 
 - Testen «mobil får 9:16-fila» godtar både webm og mp4. Briefen (del 8) sier Playwrights Chromium ikke spiller H.264, men Chromium i Playwright 1.63 gjør det (`canPlayType` gir ikke tom streng lenger; målt i testen – komponenten valgte mp4 og dekodet den). Kontrollens poeng – at mobil får `-mobil`-fila – testes fortsatt strengt, pluss faktisk dekoding via videoWidth/Height. webm-filene beholdes; produksjon trenger dem for andre nettlesere.
 - Skillene `emil-design-eng`, `find-animation-opportunities` og `review-animations` finnes ikke i oppsettet. Selvkontrollen er gjort manuelt (filmstriper + testene). GSAP-skills er ikke relevante – scenen bruker ikke GSAP.
 
+## Oppfølging (revisors tre funn, docs/design/rapporter/f1-revisor-maaling.md)
+
+1. **Videolasting:** Videoen lastes nå først når begge vilkår er oppfylt: IntersectionObserver (150 % av vinduet) **og** brukerens første rulleintensjon (scroll/wheel/touchstart/keydown, lytterne fjernes etter første treff). En scene øverst henter null videobytes i første innlasting – verifisert av ny test som teller mp4/webm-rekvester (0 før, >0 etter første musehjul). Redusert bevegelse/Save-Data laster fortsatt ingenting.
+2. **CLS:** Scenen aktiveres av et lite inline-skript (`<script is:inline>` i komponenten) som kjører synkront under parsing, før første opptegning – sticky-oppsettet står dermed fra start og flytter aldri innhold. Valgt framfor min-height-reservasjon fordi det gir identisk layout før og etter aktivering uansett steghøyde. Ny test måler `layout-shift` via PerformanceObserver: **CLS 0,000** (krav < 0,01).
+3. **Bakgrunn:** Ny prop `bakgrunn` (default `#080809`, målt i de ekte klippene) satt som `--scene-bakgrunn` på seksjonen og brukt av flaten. Dokumentert i docs/design/bevegelse.md.
+
+Avvik fra referansekoden i del 8 er dermed: inline-aktiveringsskriptet, intensjonsvilkåret i lastingen, og `bakgrunn`-prop – alle pålagt av oppfølgingen. Resten står ordrett.
+
+**Målt etter oppfølgingen:** 15 av 15 tester grønne (3 nye: ingen videorekvest før rulleintensjon, CLS < 0,01, bakgrunn `rgb(8, 8, 9)`). Egen JavaScript (inline + modul): **1,5 kB gzip** (3 639 B rå). Filmstriper mot de ekte klippene i `public/scener/hero/` (`SCENE_NAVN=hero`): `.design/arbeid/bevegelse/filmstripe-hero-desktop/` og `filmstripe-hero-mobil/`, sett gjennom – hvit tekst over nesten svart klippbakgrunn er godt lesbar på desktop; på mobil krysser brødteksten i steg 2 glassplaten i ett klipp (lys flate) – kontrastmåling mot ekte klipp står fortsatt som åpent punkt for revisor/kritiker. Flate og klipp er sømløse med `#080809`. Testserveren svarte 206 på Range og er stoppet.
+
 ## Åpne punkter
 
 1. **iOS er ikke testet** – komponentens touchstart-opplåsing må prøves på ekte iPhone (står også i briefen).

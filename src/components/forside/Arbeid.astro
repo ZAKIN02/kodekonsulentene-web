@@ -1,0 +1,123 @@
+---
+// Arbeid (briefen del 6 punkt 8, designsystem v2 7.11): ekte arbeid i store
+// flater. Appene mangler fra eier og står som grå plassholdere – ingenting
+// diktes opp. Demo-caset beholder den ærlige merkelappen sin.
+// Tekst ordrett fra docs/design/tekst/forside.md del 4.
+---
+
+<section class="arbeid bunn-ark rytme-vanlig" aria-labelledby="arbeid-tittel">
+  <div class="felt">
+    <h2 id="arbeid-tittel">Hva jeg har bygget</h2>
+    <p class="arbeid__ingress">
+      Problem, løsning, resultat. Står det et tall her, er det målt – ikke anslått.
+    </p>
+
+    <div class="apper">
+      <article class="app">
+        <p class="merkelapp">App</p>
+        <div class="plass app__media">MANGLER: skjermopptak</div>
+        <h3>MANGLER: navn på app nummer én, fra eier</h3>
+        <p>MANGLER: problem og løsning i to setninger, fra eier</p>
+        <p class="app__tall">MANGLER: nedlastinger og vurdering i App Store, dokumentert av eier</p>
+      </article>
+      <article class="app">
+        <p class="merkelapp">App</p>
+        <div class="plass app__media">MANGLER: skjermopptak</div>
+        <h3>MANGLER: navn på app nummer to, fra eier</h3>
+        <p>MANGLER: problem og løsning, fra eier</p>
+        <p class="app__tall">MANGLER: brukertall, dokumentert av eier</p>
+      </article>
+    </div>
+
+    <article class="demo">
+      <p class="merkelapp">Ikke et levert oppdrag</p>
+      <h3>Bookingsystem for klinikk</h3>
+      <p>
+        Problem. Timebestilling over telefon i åpningstiden betyr tapte timer, avbrutte
+        behandlinger og en halv dag i måneden på å avstemme Vipps mot regnskapet.
+      </p>
+      <p>
+        Løsning. Booking med Vipps-betaling ved bestilling, automatisk SMS-påminnelse, og timen
+        rett inn i behandlerens kalender og som ordre i regnskapet.
+      </p>
+      <p><a href="/caser">Se caset</a></p>
+    </article>
+
+    <p class="pilot">
+      Jeg tar inn to til tre pilotprosjekter til redusert pris mot at jeg får bruke tallene som
+      case. Si fra hvis det er aktuelt.
+    </p>
+    <p class="merkeregel">Konseptarbeid er alltid merket «Konsept, ikke oppdrag».</p>
+    <p class="alle"><a href="/caser">Se alle caser</a></p>
+  </div>
+</section>
+
+<style>
+  .arbeid__ingress {
+    margin-top: var(--rom-3);
+    max-width: var(--maal-brod);
+  }
+
+  .apper {
+    display: grid;
+    gap: var(--rom-7) var(--spalteluke);
+    margin-top: var(--rom-7);
+  }
+
+  @media (min-width: 768px) {
+    .apper {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .app__media {
+    aspect-ratio: 16 / 10;
+    margin-top: var(--rom-3);
+  }
+
+  .app h3 {
+    margin-top: var(--rom-4);
+  }
+
+  .app p:not(.merkelapp) {
+    margin-top: var(--rom-2);
+    max-width: var(--maal-brod);
+  }
+
+  .app__tall {
+    font-size: var(--tekst-liten);
+  }
+
+  /* Demo-caset er en tekstflate, ikke enda et mediekort. */
+  .demo {
+    margin-top: var(--rom-8);
+    max-width: var(--maal-brod);
+    border-top: var(--kant-1) solid var(--tekst);
+    padding-top: var(--rom-5);
+  }
+
+  .demo h3 {
+    margin-top: var(--rom-3);
+    font-size: var(--tekst-h2);
+    line-height: 1.1;
+  }
+
+  .demo p:not(.merkelapp) {
+    margin-top: var(--rom-3);
+  }
+
+  .pilot {
+    margin-top: var(--rom-8);
+    max-width: var(--maal-brod);
+  }
+
+  .merkeregel {
+    margin-top: var(--rom-2);
+    max-width: var(--maal-brod);
+    font-size: var(--tekst-liten);
+  }
+
+  .alle {
+    margin-top: var(--rom-5);
+  }
+</style>

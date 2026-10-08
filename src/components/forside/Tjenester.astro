@@ -1,0 +1,72 @@
+---
+// Det jeg bygger (designsystem v2 7.12): tre store tekstlenker, ikke kort og
+// ikke nummerert. Tekst ordrett fra docs/design/tekst/forside.md del 6.
+const tjenester = [
+  {
+    href: "/nettsider",
+    navn: "Nettsider",
+    linje: "Rask side som rangerer lokalt, består lovkravene og lar deg endre teksten selv.",
+  },
+  {
+    href: "/systemer",
+    navn: "Systemer og integrasjoner",
+    linje: "Booking, betaling og regnskap som snakker sammen, slik at ingen skriver samme tall to ganger.",
+  },
+  {
+    href: "/apper-og-ai",
+    navn: "Apper og AI",
+    linje: "Intern app eller iOS-app fra den som bygde nettsiden – og AI som faktisk gjør en jobb.",
+  },
+];
+---
+
+<section class="tjenester rytme-pause" aria-labelledby="tjenester-tittel">
+  <div class="felt">
+    <h2 id="tjenester-tittel">Tre ting jeg gjør</h2>
+    <p class="tjenester__ingress">
+      Og én ting jeg ikke gjør: selge deg noe du ikke trenger. Trenger du bare en lovsjekk, er
+      det det du får.
+    </p>
+    <ul class="liste">
+      {tjenester.map((t) => (
+        <li>
+          <a href={t.href}>{t.navn}</a>
+          <p>{t.linje}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .tjenester__ingress {
+    margin-top: var(--rom-3);
+    max-width: var(--maal-brod);
+  }
+
+  .liste {
+    margin-top: var(--rom-7);
+    padding: 0;
+    list-style: none;
+  }
+
+  .liste li {
+    padding-block: var(--rom-5);
+    border-top: var(--kant-1) solid var(--tekst);
+  }
+
+  .liste li:last-child {
+    border-bottom: var(--kant-1) solid var(--tekst);
+  }
+
+  .liste a {
+    font-size: var(--tekst-h2);
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .liste p {
+    margin-top: var(--rom-2);
+    max-width: var(--maal-brod);
+  }
+</style>

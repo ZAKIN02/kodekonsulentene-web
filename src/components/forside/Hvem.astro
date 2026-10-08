@@ -1,0 +1,64 @@
+---
+// Hvem jeg er (briefen del 6 punkt 7): portrett, navn og første person.
+// Portrett og navn mangler fra eier og står som plassholdere – aldri KI.
+// Tekst ordrett fra docs/design/tekst/forside.md del 9.
+---
+
+<section class="hvem rytme-pause" aria-labelledby="hvem-tittel">
+  <div class="felt rutenett">
+    <div class="plass portrett">MANGLER: portrett av eier – ekte foto, ikke KI</div>
+    <div class="tekst">
+      <h2 id="hvem-tittel">Hvem jeg er</h2>
+      <p>
+        KodeKonsulentene er mitt enkeltpersonforetak i Oslo, med sikkerhet som spesialfelt. Jeg
+        bygger nettsiden, systemet bak og appen oppå – og setter ikke ut noe til noen.
+      </p>
+      <p>
+        Jeg holder antallet prosjekter lavt med vilje, så ingenting forsvinner i et ledd. Hvordan
+        jeg jobber, hva ting koster, og hva som skjer hvis jeg ikke kan fullføre, står i
+        håndboken.
+      </p>
+      <p class="navn">MANGLER: navnet slik eier vil ha det på siden</p>
+      <p class="mer"><a href="/om">Mer om meg</a></p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .rutenett {
+    display: grid;
+    gap: var(--rom-6) var(--spalteluke);
+  }
+
+  @media (min-width: 768px) {
+    .rutenett {
+      grid-template-columns: repeat(12, 1fr);
+    }
+    .portrett {
+      grid-column: 1 / 5;
+    }
+    .tekst {
+      grid-column: 6 / 13;
+    }
+  }
+
+  .portrett {
+    aspect-ratio: 4 / 5;
+    max-width: 420px;
+    background: var(--ark);
+  }
+
+  .tekst p:not(.navn, .mer) {
+    margin-top: var(--rom-4);
+    max-width: var(--maal-brod);
+  }
+
+  .navn {
+    margin-top: var(--rom-5);
+    font-weight: 700;
+  }
+
+  .mer {
+    margin-top: var(--rom-4);
+  }
+</style>

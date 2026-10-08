@@ -1,0 +1,133 @@
+---
+// Toppmeny for v2 (designsystem v2 7.15): logo, lenker på desktop og en
+// «Meny»-knapp (sekundærknapp) på mobil. Tema følger prefers-color-scheme,
+// så det er ingen temaknapp her (avgjort ved f2, se tokens-v2.css).
+import { hovedmeny } from "../../data/navigasjon";
+---
+
+<header class="hode">
+  <div class="felt hode__rad">
+    <a class="hode__logo" href="/" aria-label="KodeKonsulentene – til forsiden">
+      <img class="logo-lys" src="/logo/kk-lockup-light.svg" alt="" width="170" height="22" />
+      <img class="logo-mork" src="/logo/kk-lockup-dark.svg" alt="" width="170" height="22" />
+    </a>
+    <nav class="hode__meny" aria-label="Hovedmeny">
+      <ul>
+        {hovedmeny.map((l) => (
+          <li><a href={l.href}>{l.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+    <details class="hode__smal">
+      <summary>Meny</summary>
+      <nav aria-label="Hovedmeny">
+        <ul>
+          {hovedmeny.map((l) => (
+            <li><a href={l.href}>{l.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<style>
+  .hode__rad {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--rom-4);
+    padding-block: var(--rom-4);
+  }
+
+  .hode__logo {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .logo-mork {
+    display: none;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .logo-lys {
+      display: none;
+    }
+    .logo-mork {
+      display: block;
+    }
+  }
+
+  .hode__meny ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--rom-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  .hode__meny a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .hode__smal {
+    position: relative;
+    display: none;
+  }
+
+  /* «Meny» er en sekundærknapp (7.3): ingen fyll, kant i kontrollfargen. */
+  .hode__smal summary {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: var(--rom-4);
+    border: var(--kant-2) solid var(--kant-kontroll);
+    border-radius: var(--radius-ark);
+    font-weight: 500;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .hode__smal summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .hode__smal summary:hover {
+    background: var(--ark);
+  }
+
+  .hode__smal[open] nav {
+    position: absolute;
+    right: 0;
+    top: calc(100% + var(--rom-2));
+    z-index: 5;
+    min-width: 14rem;
+    background: var(--ark);
+    border: var(--kant-1) solid var(--tekst);
+    border-radius: var(--radius-ark);
+  }
+
+  .hode__smal ul {
+    padding: var(--rom-2) 0;
+    list-style: none;
+  }
+
+  .hode__smal a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: var(--rom-5);
+  }
+
+  @media (max-width: 767px) {
+    .hode__meny {
+      display: none;
+    }
+    .hode__smal {
+      display: block;
+    }
+  }
+</style>

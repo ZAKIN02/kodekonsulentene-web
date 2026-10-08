@@ -1,0 +1,77 @@
+---
+// Lovpålagt footer for v2 (designsystem v2 7.16). Alle fakta fra
+// src/data/firma.ts, ingenting skrevet av. Lenkelista er dagens liste fra
+// navigasjon.ts, uendret (tekstmanuset, footer.lenker). Det registrerte
+// foretaksnavnet står bare her (foretaksnavnloven § 2-2).
+import { firma, orgnrVist } from "../../data/firma";
+import { footerLenker } from "../../data/navigasjon";
+---
+
+<footer class="bunn rytme-tett">
+  <div class="felt">
+    <p class="bunn__ordmerke">{firma.navn}</p>
+    <p class="bunn__tagline">{firma.tagline}</p>
+    <nav aria-label="Bunnmeny">
+      <ul class="bunn__lenker">
+        {footerLenker.map((l) => (
+          <li><a href={l.href}>{l.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+    <ul class="bunn__fakta">
+      <li>{firma.foretaksnavn}</li>
+      <li>Org.nr. {orgnrVist}</li>
+      <li>{firma.adresse}</li>
+      <li><a href={`mailto:${firma.epost}`}>{firma.epost}</a></li>
+    </ul>
+    <p class="bunn__cookies">{firma.cookieNote}</p>
+  </div>
+</footer>
+
+<style>
+  .bunn {
+    background: var(--ark);
+    border-top: var(--kant-1) solid var(--tekst);
+    font-size: var(--tekst-liten);
+    line-height: 1.45;
+  }
+
+  .bunn__ordmerke {
+    font-weight: 700;
+  }
+
+  .bunn__tagline {
+    margin-top: var(--rom-1);
+  }
+
+  /* Lenkene bryter over flere linjer, aldri vannrett rulling ved 320 px. */
+  .bunn__lenker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--rom-5);
+    margin-top: var(--rom-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  .bunn__lenker a,
+  .bunn__fakta a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    padding-block: var(--rom-1);
+  }
+
+  .bunn__fakta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--rom-5);
+    margin-top: var(--rom-6);
+    padding: 0;
+    list-style: none;
+  }
+
+  .bunn__cookies {
+    margin-top: var(--rom-3);
+  }
+</style>

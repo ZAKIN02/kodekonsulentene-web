@@ -1,0 +1,84 @@
+---
+// Spørsmål (designsystem v2 7.14): <details> og <summary> med et pluss som
+// roteres 45° når svaret åpnes. Teksten kommer fra index.astro, som også
+// bygger FAQPage-markupen av den samme lista – én kilde.
+import type { Sporsmaal } from "../../data/faq";
+
+interface Props {
+  liste: Sporsmaal[];
+}
+const { liste } = Astro.props;
+---
+
+<section class="faq bunn-ark rytme-tett" aria-labelledby="faq-tittel">
+  <div class="felt">
+    <h2 id="faq-tittel">Det folk spør om først</h2>
+    <div class="liste">
+      {liste.map((f) => (
+        <details>
+          <summary>
+            <span>{f.q}</span>
+            <svg class="pluss" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+              <line x1="8" y1="1" x2="8" y2="15" />
+              <line x1="1" y1="8" x2="15" y2="8" />
+            </svg>
+          </summary>
+          <p>{f.a}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .liste {
+    margin-top: var(--rom-6);
+    max-width: var(--maal-brod);
+  }
+
+  details {
+    border-bottom: var(--kant-1) solid var(--tekst);
+  }
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--rom-4);
+    padding-block: var(--rom-4);
+    font-size: var(--tekst-h3);
+    font-weight: 700;
+    line-height: 1.25;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary:hover span {
+    text-decoration: underline;
+    text-decoration-thickness: var(--kant-2);
+    text-underline-offset: 0.2em;
+  }
+
+  .pluss {
+    flex: none;
+    overflow: visible;
+    transition: transform var(--tid-svar-lang) var(--inn-ut);
+  }
+
+  .pluss line {
+    stroke: currentColor;
+    stroke-width: var(--kant-2);
+  }
+
+  details[open] .pluss {
+    transform: rotate(45deg);
+  }
+
+  details > p {
+    padding-bottom: var(--rom-5);
+  }
+</style>

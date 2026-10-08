@@ -1,0 +1,208 @@
+---
+// Befaringsrapporten (briefen del 6 punkt 3, designsystem v2 7.6): et ark i
+// A4-proporsjon, forhåndsutfylt med målingene for kodekonsulentene.no.
+// Tekst ordrett fra docs/design/tekst/forside.md del 3. Prisen leses fra
+// src/data/priser.ts. Den levende utfyllingen fra adressefeltet kommer i
+// bølge 3.2 – ankeret #rapport og radene står klare.
+//
+// Påskriftene i høyre spalte på desktop er pålagt av designsystem v2 4.2 og
+// 7.6: en målelinje peker inn på raden og gjentar den målte verdien i
+// arbeidstegningsspråket. De er aria-hidden, siden verdien står i raden.
+import { loepende, prisenhet } from "../../data/priser";
+
+const lovsjekkPris = loepende.find((r) => r.navn === "Lovsjekk-pakke")?.pris ?? "MANGLER: pris";
+
+const rader = [
+  { navn: "Cookies før samtykke", verdi: "0", paaskrift: true },
+  { navn: "Sikkerhetsheadere", verdi: "6 av 6", paaskrift: true },
+  { navn: "Svartid, målt fra Oslo", verdi: "0,1 s", paaskrift: true },
+  { navn: "Org.nr. på siden", verdi: "Funnet", paaskrift: false },
+];
+---
+
+<section id="rapport" class="rapport rytme-pause" aria-labelledby="rapport-tittel">
+  <div class="felt rutenett">
+    <article class="ark">
+      <header class="ark__hode">
+        <h2 id="rapport-tittel">Befaringsrapport</h2>
+        <p class="ark__emne">kodekonsulentene.no</p>
+      </header>
+      <p class="ark__ingress">
+        Forhåndsutfylt for min egen side. Kjører du befaringen øverst, fylles den ut for din –
+        linje for linje.
+      </p>
+      <ol class="rader">
+        {rader.map((r) => (
+          <li class="rad">
+            <span class="rad__navn">{r.navn}</span>
+            <span class="rad__verdi">{r.verdi}</span>
+            {r.paaskrift && (
+              <span class="rad__paaskrift" aria-hidden="true">
+                <svg class="rad__linje" viewBox="0 0 120 8" preserveAspectRatio="none" aria-hidden="true">
+                  <line x1="0" y1="4" x2="120" y2="4" />
+                  <line x1="1" y1="0" x2="1" y2="8" />
+                </svg>
+                {r.verdi}
+              </span>
+            )}
+          </li>
+        ))}
+        <li class="rad">
+          <span class="rad__navn">Ytelse</span>
+          <span class="rad__plass">
+            MANGLER: målt ytelsestall for kodekonsulentene.no; revisor må måle før raden kan stå
+          </span>
+        </li>
+      </ol>
+      <p class="ark__venter">Fylles ut når du kjører befaringen.</p>
+      <div class="fastpris">
+        <p>
+          Fast pris på utbedring: <strong>{lovsjekkPris}</strong>, {prisenhet}. Dekker
+          cookie-samtykke, universell utforming, org.nr. og personvernerklæring.
+        </p>
+        <a class="knapp" href="/kontakt">Book 20 minutter</a>
+      </div>
+    </article>
+  </div>
+</section>
+
+<style>
+  .rutenett {
+    display: grid;
+  }
+
+  /* Arket beholder papir og blekk i begge temaer: det er et dokument. */
+  .ark {
+    display: flex;
+    flex-direction: column;
+    background: var(--papir);
+    color: var(--blekk);
+    border-radius: var(--radius-ark);
+    padding: clamp(var(--rom-5), 4vw, var(--rom-7));
+  }
+
+  @media (min-width: 1024px) {
+    .rutenett {
+      grid-template-columns: repeat(12, 1fr);
+      column-gap: var(--spalteluke);
+    }
+    /* Arket i spalte 1–7, påskriftene peker ut i spalte 8–12 (v2 4.2). */
+    .ark {
+      grid-column: 1 / 8;
+      aspect-ratio: 210 / 297;
+    }
+  }
+
+  .ark__hode {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--rom-2) var(--rom-6);
+    border-bottom: var(--kant-2) solid var(--blekk);
+    padding-bottom: var(--rom-4);
+  }
+
+  .ark__emne {
+    font-weight: 700;
+  }
+
+  .ark__ingress {
+    margin-top: var(--rom-5);
+    max-width: var(--maal-brod);
+  }
+
+  .rader {
+    margin-top: var(--rom-6);
+    padding: 0;
+    list-style: none;
+  }
+
+  .rad {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--rom-4);
+    padding-block: var(--rom-3);
+    border-bottom: var(--kant-1) solid var(--blekk);
+  }
+
+  .rad__navn {
+    font-weight: 700;
+  }
+
+  .rad__verdi {
+    text-align: right;
+  }
+
+  .rad__plass {
+    text-align: right;
+    font-size: var(--tekst-liten);
+    max-width: 24ch;
+  }
+
+  /* Påskrift med målelinje, bare på desktop. Linja går fra raden og ut i
+     høyre spalte, med teksten utenfor arket (v2 6.5). */
+  .rad__paaskrift {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .rad__paaskrift {
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      display: inline-flex;
+      align-items: center;
+      gap: var(--rom-2);
+      white-space: nowrap;
+      color: var(--maalelinje);
+      font-size: var(--tekst-liten);
+      font-weight: 500;
+    }
+
+    .rad__linje {
+      width: clamp(48px, 8vw, 140px);
+      height: 8px;
+      overflow: visible;
+    }
+
+    .rad__linje line {
+      stroke: var(--maalelinje);
+      stroke-width: var(--maalelinje-bredde);
+    }
+  }
+
+  /* Venter-raden i stedet for tomme linjer (kritikerfunn, v2 7.6). */
+  .ark__venter {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    margin-top: var(--rom-5);
+    min-height: var(--rom-8);
+  }
+
+  /* Fastprisfeltet (7.5): refleksflate uten kant, kant-0 inne i arket. */
+  .fastpris {
+    margin-top: auto;
+    padding: var(--rom-5);
+    background: var(--refleksflate);
+    color: var(--tekst-pa-refleks);
+    border-radius: var(--radius-0);
+  }
+
+  .fastpris strong {
+    font-family: var(--font-karakter);
+    font-weight: 700;
+    font-stretch: 75%;
+    font-size: var(--tekst-pris);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .fastpris .knapp {
+    margin-top: var(--rom-4);
+  }
+</style>

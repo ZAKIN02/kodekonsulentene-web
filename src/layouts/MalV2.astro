@@ -1,0 +1,356 @@
+---
+// Mal for designsystem v2 «Befaring» (docs/design/designsystem-v2.md).
+// Det tekniske hodet er kopiert fra Base.astro: meta, OG, canonical og
+// strukturerte data følger samme mønster. Forskjellene er bevisste:
+//  - fonter-v2.css og tokens-v2.css i stedet for v1-stilene
+//  - forhåndslast av de to latinske variabelfontene (Schibsted + Archivo)
+//  - tema følger prefers-color-scheme (ingen temaskript, avgjort ved f2)
+//  - ingen Apning, terminal.js, hero-live.js eller Snarveikart – forsiden
+//    i v2 har ikke formspråket deres; /terminal finnes fortsatt som side
+import "../styles/fonter-v2.css";
+import "../styles/tokens-v2.css";
+import Hode from "../components/forside/Hode.astro";
+import Bunn from "../components/forside/Bunn.astro";
+import { firma, erUferdig } from "../data/firma";
+import { foretak, nettsted, brodsmuler } from "../data/schema";
+
+interface Props {
+  tittel: string;
+  beskrivelse: string;
+  /** Settes bare på sider som ikke skal indekseres. */
+  noindex?: boolean;
+  /** Ekstra JSON-LD utover LocalBusiness, f.eks. FAQPage. */
+  schema?: Record<string, unknown>[];
+  /** Filnavn i /og/ uten endelse. Faller tilbake på forsidekortet. */
+  ogBilde?: string;
+}
+
+const { tittel, beskrivelse, noindex = erUferdig, schema = [], ogBilde = "forside" } = Astro.props;
+const ogUrl = new URL(`/og/${ogBilde}.png`, Astro.site ?? firma.url).href;
+// Samme tittelregel som i Base: forsiden får navnet først og et kort tillegg.
+const fullTittel =
+  tittel === firma.navn ? `${firma.navn} – ${firma.titteltillegg}` : `${tittel} – ${firma.navn}`;
+const kanonisk = new URL(Astro.url.pathname, Astro.site ?? firma.url).href;
+
+const basisSchema = noindex
+  ? []
+  : [foretak(), nettsted(), brodsmuler(Astro.url.pathname, tittel)].filter(
+      (n): n is Record<string, unknown> => n !== null,
+    );
+---
+
+<!doctype html>
+<html lang="nb">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTittel}</title>
+    <meta name="description" content={beskrivelse} />
+    <link rel="canonical" href={kanonisk} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={firma.navn} />
+    <meta property="og:locale" content="nb_NO" />
+    <meta property="og:title" content={fullTittel} />
+    <meta property="og:description" content={beskrivelse} />
+    <meta property="og:url" content={kanonisk} />
+    <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={tittel} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTittel} />
+    <meta name="twitter:description" content={beskrivelse} />
+    <meta name="twitter:image" content={ogUrl} />
+    <meta name="twitter:image:alt" content={tittel} />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/logo/apple-touch-icon.png" />
+    {/* Forhåndslast de to latinske subsettene, så font-display: swap ikke
+        bytter skrift etter første maling. Latin-ext lastes via unicode-range. */}
+    <link rel="preload" href="/fonts/schibsted-grotesk-var-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/archivo-var-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    {/* Verdiene er --betong og --blakopi fra tokens-v2.css; meta kan ikke lese CSS-variabler. */}
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#E9EAE6" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#12285C" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
+
+    {basisSchema.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} is:inline />)}
+    {!noindex && schema.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} is:inline />)}
+  </head>
+
+  <body>
+    <a class="hopp" href="#innhold">Hopp til innhold</a>
+    <Hode />
+    <main id="innhold">
+      <slot />
+    </main>
+    <Bunn />
+  </body>
+</html>
+
+<style is:global>
+  /* Grunnstiler for v2-sidene. Alle verdier fra tokens-v2.css. */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background: var(--bunn);
+    color: var(--tekst);
+    font-family: var(--font-tekst);
+    font-size: var(--tekst-brod);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  p,
+  ul,
+  ol,
+  dl,
+  dd,
+  figure,
+  fieldset {
+    margin: 0;
+  }
+
+  h2 {
+    font-size: var(--tekst-h2);
+    font-weight: 700;
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+
+  h3 {
+    font-size: var(--tekst-h3);
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  code,
+  pre {
+    font-family: var(--font-kode);
+  }
+
+  a {
+    color: var(--lenke);
+    text-decoration: underline;
+    text-decoration-thickness: var(--kant-1);
+    text-underline-offset: 0.2em;
+  }
+
+  a:hover,
+  a:active {
+    text-decoration-thickness: var(--kant-2);
+  }
+
+  :focus-visible {
+    outline: var(--kant-2) solid var(--fokus);
+    outline-offset: var(--fokus-avstand);
+  }
+
+  ::selection {
+    background: var(--refleksflate);
+    color: var(--tekst-pa-refleks);
+  }
+
+  ::placeholder {
+    color: var(--tekst-plass);
+    opacity: 1;
+  }
+
+  /* Innholdsbredden: én venstrekant for alt (designsystem v2 del 4.2). */
+  .felt {
+    max-width: calc(var(--bredde-side) + 2 * var(--sidekant));
+    margin-inline: auto;
+    padding-inline: var(--sidekant);
+  }
+
+  /* Skjult for øyet, lest av skjermleser. */
+  .usynlig {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* Hopp til innhold (7.18): første Tab-stopp, synlig bare ved fokus. */
+  .hopp {
+    position: absolute;
+    left: var(--sidekant);
+    top: var(--rom-2);
+    z-index: 10;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .hopp:focus {
+    width: auto;
+    height: auto;
+    clip-path: none;
+    padding: var(--rom-3) var(--rom-5);
+    background: var(--refleksflate);
+    color: var(--tekst-pa-refleks);
+    border: var(--kant-2) solid var(--kant-refleks);
+    border-radius: var(--radius-ark);
+    text-decoration: none;
+  }
+
+  /* Seksjonsrytme og bunner (designsystem v2 del 8). */
+  .rytme-tett {
+    padding-block: var(--rytme-tett);
+  }
+
+  .rytme-vanlig {
+    padding-block: var(--rytme-vanlig);
+  }
+
+  .rytme-pause {
+    padding-block: var(--rytme-pause);
+  }
+
+  .bunn-ark {
+    background: var(--ark);
+  }
+
+  /* Hovedknapp (7.2): refleksflate med blekkant, lik i begge temaer. */
+  .knapp {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 56px;
+    padding-inline: var(--rom-6);
+    background: var(--refleksflate);
+    color: var(--tekst-pa-refleks);
+    border: var(--kant-2) solid var(--kant-refleks);
+    border-radius: var(--radius-ark);
+    font-family: var(--font-tekst);
+    font-size: var(--tekst-brod);
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background var(--tid-svar) var(--ut);
+  }
+
+  .knapp:hover {
+    background: var(--refleksflate-trykk);
+    text-decoration: none;
+  }
+
+  .knapp:active {
+    background: var(--refleksflate-trykk);
+    transform: translateY(1px);
+  }
+
+  /* Merkelapp (7.10): ærlige merkelapper på refleks, vanlig skrift. */
+  .merkelapp {
+    display: inline-block;
+    padding: var(--rom-1) var(--rom-2);
+    background: var(--refleksflate);
+    color: var(--tekst-pa-refleks);
+    border-radius: var(--radius-ark);
+    font-size: var(--tekst-liten);
+    font-weight: 500;
+    line-height: 1.45;
+  }
+
+  /* Grå plassholder for materiale eier ikke har levert ennå. */
+  .plass {
+    display: grid;
+    place-content: center;
+    padding: var(--rom-5);
+    background: var(--bunn);
+    border: var(--kant-1) dashed var(--kant-kontroll);
+    border-radius: var(--radius-ark);
+    color: var(--tekst);
+    font-size: var(--tekst-liten);
+    text-align: center;
+  }
+
+  /* ---------------------------------------------------------------------- */
+  /* Scenen (7.7): stilene under justerer innholdet i <Scene> utenfra.       */
+  /* Komponenten i src/components/bevegelse/ endres ikke.                    */
+
+  /* Fokus i scenen bruker scenens lenkefarge. */
+  .scene :focus-visible {
+    outline-color: var(--scene-lenke);
+  }
+
+  /* Uten JavaScript / redusert bevegelse: stegene leses som vanlig liste
+     med sidens venstrekant og samme overskriftsgrad som resten av siden. */
+  main .scene[data-scene]:not([data-aktiv]) .scene__steg {
+    max-width: calc(var(--bredde-side) + 2 * var(--sidekant));
+    margin-inline: auto;
+    padding: var(--rom-6) var(--sidekant);
+  }
+
+  main .scene[data-scene]:not([data-aktiv]) .scene__steg h2 {
+    font-size: var(--tekst-h2);
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  main .scene[data-scene]:not([data-aktiv]) .scene__steg p {
+    max-width: var(--maal-brod);
+    margin-top: var(--rom-3);
+  }
+
+  /* Aktiv scene: all tekst står i tittelfeltet – én tett plate i scenens
+     bunnfarge, nederst til venstre ved sidekanten (2.5 og 7.7). Platen er
+     h2 + p med lik bredde og delt kant, så de leser som ett felt. */
+  main .scene[data-scene][data-aktiv] .scene__tekst .scene__steg {
+    justify-content: flex-end;
+    align-items: flex-start;
+    padding: 0 var(--sidekant) 12svh;
+    color: var(--scene-tekst);
+  }
+
+  main .scene[data-scene][data-aktiv] .scene__tekst .scene__steg h2,
+  main .scene[data-scene][data-aktiv] .scene__tekst .scene__steg p {
+    width: min(36ch, 100%);
+    margin: 0;
+    background: var(--scene-bunn);
+    color: var(--scene-tekst);
+  }
+
+  main .scene[data-scene][data-aktiv] .scene__tekst .scene__steg h2 {
+    padding: var(--rom-4) var(--rom-5) 0;
+    border: var(--kant-1) solid var(--scene-tekst);
+    border-bottom: none;
+    border-radius: var(--radius-ark) var(--radius-ark) 0 0;
+    font-size: var(--tekst-h3);
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  main .scene[data-scene][data-aktiv] .scene__tekst .scene__steg p {
+    padding: var(--rom-2) var(--rom-5) var(--rom-4);
+    border: var(--kant-1) solid var(--scene-tekst);
+    border-top: none;
+    border-radius: 0 0 var(--radius-ark) var(--radius-ark);
+    font-weight: 500;
+    font-size: var(--tekst-brod);
+  }
+
+  /* Kolofonen rett under scenen (påbudt KI-merking, briefen del 6 punkt 12). */
+  .kolofon {
+    margin-top: var(--rom-3);
+    font-size: var(--tekst-liten);
+  }
+</style>

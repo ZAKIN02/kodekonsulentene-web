@@ -1,763 +1,119 @@
 ---
-import Base from "../layouts/Base.astro";
-import Scene from "../components/Scene.astro";
-import Storflate from "../components/Storflate.astro";
-import Avslor from "../components/Avslor.astro";
-import Eyebrow from "../components/Eyebrow.astro";
-import Button from "../components/Button.astro";
-import UrlCheck from "../components/UrlCheck.astro";
-import Nokkeltall from "../components/Nokkeltall.astro";
-import Slepesammenligning from "../components/Slepesammenligning.astro";
-import Lagstabel from "../components/Lagstabel.astro";
-import Mega from "../components/Mega.astro";
-import ServiceCard from "../components/ServiceCard.astro";
-import Terminal from "../components/Terminal.astro";
-import PriceCard from "../components/PriceCard.astro";
-import ProcessSteps from "../components/ProcessSteps.astro";
-import Flyt from "../components/Flyt.astro";
-import Faq from "../components/Faq.astro";
-import ContactBlock from "../components/ContactBlock.astro";
+// Forsiden, retning A «Befaring». Rekkefølgen er fast (briefen del 6):
+// Tilbudet → Scenen → Rapporten → Arbeid → Garantien → Det jeg bygger →
+// Prisvelgeren og prislista → Slik går det → Hvem jeg er → Spørsmål →
+// Kontakt → Footer. Tekst ordrett fra docs/design/tekst/forside.md.
+// Øyeblikk 2, 3, 5 og 6 felles inn i bølge 3.2 – seksjonene står klare.
+import MalV2 from "../layouts/MalV2.astro";
+import Scene from "../components/bevegelse/Scene.astro";
+import Tilbud from "../components/forside/Tilbud.astro";
+import Rapport from "../components/forside/Rapport.astro";
+import Arbeid from "../components/forside/Arbeid.astro";
+import Garanti from "../components/forside/Garanti.astro";
+import Tjenester from "../components/forside/Tjenester.astro";
+import Prisliste from "../components/forside/Prisliste.astro";
+import Prosess from "../components/forside/Prosess.astro";
+import Hvem from "../components/forside/Hvem.astro";
+import Sporsmal from "../components/forside/Sporsmal.astro";
+import Kontakt from "../components/forside/Kontakt.astro";
+import { firma } from "../data/firma";
+import { faqSide } from "../data/schema";
+import type { Sporsmaal } from "../data/faq";
 
-import "../styles/scener.css";
+const beskrivelse =
+  "Gratis befaring av nettsiden din: rapport på 30 sekunder. Nettsider og systemer for norske småbedrifter i Oslo, til fast pris.";
 
-import { firma, bookUrl } from "../data/firma";
-import { bevis } from "../data/bevis";
-import { tjenester } from "../data/tjenester";
-import { prosess } from "../data/prosess";
-import { pakker, loepende, prisvilkaar, prisenhet, mvaSetning } from "../data/priser";
-import { synligeCaser } from "../data/caser";
-import { faq } from "../data/faq";
-import { flyter } from "../data/flyter";
-
-const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: faq.map((f) => ({
-    "@type": "Question",
-    name: f.q,
-    acceptedAnswer: { "@type": "Answer", text: f.a },
-  })),
-};
-
-const heroTerminal = [
-  { type: "cmd" as const, text: "sjekk dinbedrift.no" },
-  { type: "out" as const, text: "ytelse ................ 54/100" },
-  { type: "fail" as const, text: "cookies før samtykke .. 3  (ekomloven § 3-15)" },
-  { type: "warn" as const, text: "sikkerhetsheadere ..... 2/6" },
-  { type: "fail" as const, text: "org.nr. ............... ikke funnet" },
-  { type: "out" as const, text: "" },
-  { type: "ok" as const, text: "4 ting å fikse. Rapport sendt." },
+// Scenen, variant «A→B alene» (tekstmanuset del 2): tre steg, der det siste
+// peker videre til rapporten.
+const steg = [
+  {
+    tittel: "Dette er nettsiden din",
+    tekst: "Fire lag og fem kabler i rot. Utenfra ser du bare det øverste laget.",
+  },
+  {
+    tittel: "Jeg tar den fra hverandre",
+    tekst: "Lag for lag: design, kode, sikkerhet og integrasjoner.",
+  },
+  {
+    tittel: "Hvert lag blir målt",
+    tekst: "Laster siden raskt? Er den trygg? Snakker systemene bak sammen? Svaret står i rapporten under.",
+  },
 ];
 
-/**
- * Prisankeret i heroen.
- *
- * Målt på den forrige forsiden lå det første pristallet 42 % ned i teksten, og
- * 8,9 telefonskjermer ned i piksler. Det er den eneste opplysningen målgruppen
- * rangerer som nummer én: for foretak med 1, 2 og 5–9 ansatte er «vis prisen
- * tydelig på nettsiden» det høyest rangerte leverandører kan forbedre –
- * 58 %, 56 % og 63 % (SMB Group, 2024 SMB Technology Buying Journey, n = 738).
- * Jo mindre foretaket, jo høyere rangerer den.
- *
- * «Fast pris» sto i ingressen før. Det er ikke et argument – nesten hvert
- * norske byrå i markedet skriver det samme. Et tall er et argument.
- *
- * Tallene skrives ikke her. De leses ut av `pakker`, slik at prisankeret ikke
- * kan komme i utakt med prisseksjonen lenger nede på samme side.
- */
-const ankerPakker = ["Start", "Bedrift", "System"]
-  .map((navn) => pakker.find((p) => p.navn === navn))
-  .filter((p): p is NonNullable<typeof p> => Boolean(p));
-const anker = ankerPakker[0];
-const ankerResten = ankerPakker.slice(1);
+// Datoene i «Slik går det» regnes ut ved bygg (tekstmanuset del 8):
+// prototypen er dagens dato + 3 døgn, lanseringen er ISO-uka for dagens dato
+// + 24 døgn (72 timer prototype + 3 uker bygging, øvre grense av «2–3 uker»).
+const DOGN = 86_400_000;
+const naa = new Date();
+const prototypedato = new Intl.DateTimeFormat("nb-NO", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+}).format(new Date(naa.getTime() + 3 * DOGN));
 
+function isoUke(d: Date): number {
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const dag = t.getUTCDay() || 7;
+  t.setUTCDate(t.getUTCDate() + 4 - dag);
+  const start = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
+  return Math.ceil(((t.getTime() - start.getTime()) / DOGN + 1) / 7);
+}
+const lanseringsuke = isoUke(new Date(naa.getTime() + 24 * DOGN));
+
+// Spørsmålene, ordrett fra tekstmanuset del 10. Samme liste går til
+// FAQPage-markupen, så tekst og strukturerte data ikke kan komme i utakt.
+const sporsmaal: Sporsmaal[] = [
+  {
+    q: "Eier jeg koden og domenet?",
+    a: "Ja. Domenet står registrert på ditt foretak fra dag én, og koden ligger i en konto i ditt navn fra lansering. Sier du opp et abonnement, får du en kjørbar kopi av siden og databasen – ingen innlåsing.",
+  },
+  {
+    q: "Hva er bindingstiden?",
+    a: "Abonnement har 12 måneder binding, fordi byggekostnaden ligger i de første månedene. Drift og vedlikehold på en side du har kjøpt har ingen binding og kan sies opp med én måneds varsel.",
+  },
+  {
+    q: "Hva skjer hvis du ikke kan fullføre?",
+    a: "Du har koden, domenet og alle kontoer i ditt navn, så siden står uansett. Avtalen sier at du får full dokumentasjon og alle tilganger utlevert innen fem arbeidsdager hvis jeg ikke kan fullføre, og jeg oppgir to andre utviklere som kan overta.",
+  },
+  {
+    q: "Trenger siden min cookie-banner?",
+    a: "Sannsynligvis ikke. Jeg bruker cookieløs analyse, og da er det ingenting å samtykke til. Fra 1. januar 2025 krever ekomloven § 3-15 at cookie-samtykke oppfyller GDPR-kravene – ingen forhåndsavkryssing, «avvis» like lett som «godta», ingen sporing før samtykke. Den enkleste måten å overholde det på er å ikke sette cookies.",
+  },
+  {
+    q: "Må siden være universelt utformet?",
+    a: "Private virksomheter skal oppfylle 35 krav i WCAG 2.0 nivå A og AA. Jeg bygger etter WCAG 2.2 AA, som er strengere, fordi det koster lite ekstra og gjør at du også kan levere til det offentlige. Du får en rapport som viser hva som er testet.",
+  },
+  {
+    q: "Hva koster det å endre noe etterpå?",
+    a: "Småting er inkludert i drift eller abonnement, med tak på én time per måned. Utover det gjelder timeprisen i prislista over, alltid avtalt skriftlig på forhånd. Du får aldri en faktura du ikke har sagt ja til.",
+  },
+  {
+    q: "Hva om jeg allerede har en WordPress-side?",
+    a: "Da er lovsjekk-pakken ofte riktig sted å starte. Hva den dekker og hva den koster, står nederst i befaringsrapporten lenger opp. Virker resten av siden, trenger du ikke en ny.",
+  },
+];
 ---
-<Base
-  tittel={firma.navn}
-  beskrivelse={firma.posisjonering}
-  schema={[faqSchema]}
->
-  <!-- 01 Hero -->
-  <section class="hero">
-    <div class="wrap hero__grid">
-      <div class="stack">
-        <h1 class="display-xl">Nettsider og <em>systemer</em> som jobber for bedriften din</h1>
-        {/*
-          Ingressen var en presentasjon av oss. Nå er den det sterkeste tilbudet
-          vi har, og det er dokumentert at det er den typen tilbud som avgjør:
-          prøveperiode (62 %) og demo (54 %) er de to øverste avgjørende
-          faktorene i den endelige beslutningen (Gartner Digital Markets 2025,
-          n = 3 500). Vi har noe sterkere enn begge – en klikkbar prototype av
-          HANS side, ikke en demo av vår. Den sto før som steg 2 i prosesslista
-          i seksjon 6 av 10, mens konkurrentene roper «gratis utkast» i heroen.
 
-          Ordlyden er ikke ny. Den er hentet ordrett fra `prosess.ts` steg 2, så
-          løftet i heroen og løftet i prosessen er samme setning.
-        */}
-        <p class="hero__lead body-lg">
-          Du ser en klikkbar prototype av forsiden din før du har betalt noe.
-          Sier du nei der, koster det ingenting.
-        </p>
+<MalV2 tittel={firma.navn} beskrivelse={beskrivelse} schema={[faqSide(sporsmaal)]}>
+  <Tilbud />
 
-        {/*
-          Prisankeret. Står mellom ingressen og knapperaden med vilje: det er
-          der valget tas, og et tall rett over knappen er det han regner på før
-          han trykker. Alle beløp kommer fra `src/data/priser.ts`.
-        */}
-        <p class="hero__pris">
-          <span class="hero__pris-tall mono-stat">{anker.pris}</span>
-          <span class="hero__pris-tekst">
-            for en nettside, fast pris.
-            {ankerResten.map((p) => ` ${p.navn} ${p.prefiks ? `${p.prefiks} ` : ""}${p.pris}.`).join("")}
-            {" "}<a class="kk-link" href="/priser">Hele prislisten</a>
-          </span>
-        </p>
-        <p class="hero__mva small">{mvaSetning}</p>
-
-        <div class="hero__cta">
-          <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
-          <UrlCheck hint="Gratis sjekk av siden du har i dag. Svar på 30 sekunder." />
-        </div>
-        <p class="hero__live small">
-          <span class="hero__live-prikk" aria-hidden="true"></span>
-          Skriv inn adressen, så kjører sjekken i terminalen her – uten at du forlater siden.
-        </p>
-      </div>
-      <Terminal
-        lines={heroTerminal}
-        cursor
-        skriv
-        live
-        label="Terminalutsnitt som viser en nettsidesjekk: ytelse 54 av 100, tre cookies før samtykke, to av seks sikkerhetsheadere, organisasjonsnummer ikke funnet."
-      />
-    </div>
-  </section>
-
-  <!-- 02 Bevis -->
-  <section class="scene scene--lav bevisrad flate flate--motsatt">
-    <div class="scene__inner">
-      <Avslor>
-        <Nokkeltall poster={bevis} navn="Målbare påstander om denne siden og dette foretaket" />
-      </Avslor>
-      <Avslor trinn={1}>
-        {/* Pekte paa /historie til 7. oktober 2026. Den siden var en KI-generert
-            film av lagstabelen, og lagstabelen staar ekte og interaktiv i seksjon
-            08 paa denne siden. Loeftet i lenketeksten innfris av /nettsider, som
-            har «Fire krav vi setter selv» og «Hva det er bygget av». */}
-        <Button variant="ghost" href="/nettsider">Se hva som ligger inne i en nettside</Button>
-      </Avslor>
-    </div>
-  </section>
-
-  <!-- 03 Tjenester -->
-  {/*
-    AKT 1 AV FORSIDENS HISTORIE, og den gaar over TRE seksjoner.
-
-    .scenefilm-ramme er position: relative og SceneFilm er absolute inset 0, saa
-    filmen dekker hele rammen. Spolingen regnes ut fra RAMMENS plass i vinduet, og
-    naar rammen spenner tre seksjoner spoler ETT klipp gjennom alle tre i stedet
-    for aa spille av og stoppe i en. Det er forskjellen paa en historie og tre
-    kapitler ved siden av hverandre: blokken er forseglet ved «Tre ting vi gjoer»,
-    kjerneproeven er paa vei ut ved «Hva vi bygger», og det indre ligger aapent med
-    den limegroenne linjen tent naar du kommer til «Sjekk nettsiden din gratis».
-    Seksjon fem gir bare mening fordi du har sett seksjon tre.
-
-    Klippet laa ferdig i public/historie/ i tre opploesninger, 10,5 MB, og INGEN
-    side refererte det: HeroFilm, som var ment aa vise det, importeres ikke av noen
-    side. Motivet er dessuten noeyaktig det vi selger - utsiden er blank, og jobben
-    er aa vise hva som ligger inne.
-
-    Forsiden brukte foer samme systemer-klipp som /systemer, altsaa identisk film
-    paa to sider. Det er naa frigjort til /systemer alene.
-  */}
-  <div class="scenefilm-ramme">
   <Scene
-    n={3}
-    eyebrow="Tjenester"
-    tittel="Tre ting vi gjør"
-    ingress="Og én ting vi ikke gjør: selge deg noe du ikke trenger. Trenger du bare en lovsjekk, er det det du får."
-  >
-    <div class="grid-3 tjenester-rad">
-      {tjenester.map((t, i) => (
-        <Avslor trinn={i}>
-          <ServiceCard
-            n={t.n}
-            title={t.tittel}
-            href={t.href}
-            description={t.beskrivelse}
-            items={t.punkter}
-            linkLabel={t.lenketekst}
-          />
-        </Avslor>
-      ))}
-    </div>
-  </Scene>
-  </div>
-
-  <!-- 04 Caser -->
-  <Scene
-    n={4}
-    eyebrow="Caser"
-    tittel="Hva vi bygger"
-    lav
-    ingress="Problem, løsning, resultat. Står det et tall her, er det målt – ikke anslått."
-  >
-    {/* Ett case gir ETT kort i et tre-spalters rutenett: en smal strimmel alene med
-        en stor tom flate ved siden av. Vi finner ikke paa flere caser. Men diagrammet
-        handler om NOEYAKTIG samme sak – klinikkens booking gaar Kunde, Booking, Vipps,
-        Fiken, SMS. Caset forteller hva, diagrammet viser hvordan. */}
-    <div class="case-og-flyt">
-    <div class="case-kort">
-      {synligeCaser.map((c, i) => (
-        <Avslor trinn={i} as="article" class="card">
-          <div class="row" style="justify-content: space-between">
-            <Eyebrow>{c.type}</Eyebrow>
-            <span class="mono faint">{c.kunde}</span>
-          </div>
-          <h3 class="heading">{c.tittel}</h3>
-          <p class="small muted"><strong>Problem.</strong> {c.problem}</p>
-          <p class="small muted"><strong>Løsning.</strong> {c.losning}</p>
-          {c.resultat && (
-            <dl class="kv">
-              {c.resultat.map((r) => (
-                <div><dt>{r.tekst}</dt><dd>{r.verdi}</dd></div>
-              ))}
-            </dl>
-          )}
-          <p class="mono faint">{c.stack.join(" · ")}</p>
-          {c.href && <Button variant="ghost" href={c.href}>Se caset</Button>}
-        </Avslor>
-      ))}
-    </div>
-    {/*
-      Maalt mot spinxdigital.com – det naermeste sammenlignbare byraaet – har de
-      36 store bilder og vi ett. Vi skal ikke finne paa kundearbeid vi ikke har;
-      synligeCaser filtrerer bort alt udokumentert med vilje, og det staar.
-
-      Men vi har noe de ikke har: fem verktoey mot ekte data, ni klipp, fire
-      diagrammer og opptak av vaar egen side i drift. Alt det laa paa undersidene
-      mens forsiden viste nesten ingenting av det. Flytdiagrammet er substans vi
-      eier, med EKTE systemnavn – Kunde, Booking, Vipps, Fiken, SMS – og koster
-      0 kB fordi det er SVG og CSS.
-    */}
-    <Avslor trinn={1} class="case-flyt">
-      <Flyt flyt={flyter.systemer} />
-    </Avslor>
-    </div>
-    {/*
-      Pilottilbudet sto bare nederst på /caser, en side som i praksis bare nås
-      fra footeren. Det er svaret på kjøperens spørsmål nummer ni – «kan jeg se
-      tre sider dere har laget for bedrifter som ligner min» – som vi i dag
-      svarer nei på. Å si at vi er nye er en bedre historie enn tomhet, og det
-      er den eneste av disse setningene som kan gjøre noe med saken.
-
-      Ordlyden er hentet ORDRETT fra /caser, ikke skrevet på nytt. Den er et
-      tilbud, og et tilbud skal lyde likt overalt det står.
-    */}
-    <Avslor trinn={2}>
-      <p class="small muted" style="margin-top: var(--space-6)">
-        Vi tar inn to til tre pilotprosjekter til redusert pris mot at vi får bruke
-        tallene som case. Si fra hvis det er aktuelt.
-      </p>
-      <p class="small faint">
-        Konseptarbeid er alltid merket «Konsept, ikke oppdrag». <a class="kk-link" href="/caser">Alle caser</a>.
-      </p>
-    </Avslor>
-  </Scene>
-
-  <!-- 05 Verktøy -->
-  <Scene
-    n={5}
-    eyebrow="Verktøy"
-    tittel="Sjekk nettsiden din gratis"
-    {/*
-      Rekkefølgen i opplistingen er byttet: cookies først, universell utforming
-      etterpå. Brudd på cookie-reglene kan straffes med overtredelsesgebyr på
-      inntil 10 % av årsomsetningen i Norge (ekomloven § 15-12, verifisert mot
-      Lovdata). Brudd på universell utforming har gitt to iverksatte
-      tvangsmulkter på elleve år. Vi ledet med det svakeste av de to.
-
-      Og tallet foran: hele poenget med en sikkerhetssjekk, for en rørlegger, er
-      ikke at han blir bøtelagt – det er at kundene hans ikke tør bestille.
-      Samme kilde og samme tall som i åpningssekvensen, slik at argumentet også
-      finnes for den som bruker skjermleser, har bedt om mindre bevegelse, eller
-      har sett åpningen før.
-    */}
-    ingress="78 % av nordmenn undersøker om en nettside er trygg før de bruker den, og 59 % har latt være å bruke en nettjeneste av frykt for noe kriminelt eller ubehagelig (NorSIS og Opinion, juni 2024, n = 1 001). Skriv inn adressen. På 30 sekunder får du cookies satt før samtykke, sikkerhetsheadere, ytelse, WCAG-feil og om org.nr. står på siden."
-    id="sjekk"
-    bred
-    class="flate flate--motsatt"
-    {/* `lav` fjerner minstehøyden. Seksjonen er innholdsrik nok i seg selv, og uten
-        den la den 109 px slakk til tomrommet mot neste seksjon – som visuelt leste
-        som rundt 290 px, fordi det neste elementet er en filmflate der motivet er
-        maskert bort på venstre side nettopp der øyet leter. */}
-    lav
-  >
-    <div class="stack">
-      <Avslor>
-        <UrlCheck id="url-seksjon" buttonLabel="Kjør sjekken" hint="Ingen innlogging. Du velger selv om rapporten skal sendes på e-post." />
-      </Avslor>
-      <Avslor trinn={1}>
-        <Slepesammenligning id="sjekk-sammenlign" />
-      </Avslor>
-      <Avslor trinn={2}>
-        <Button variant="ghost" href="/sjekk">Kjør den på din side</Button>
-      </Avslor>
-    </div>
-  </Scene>
-
-  {/*
-    AKT 2. Samme blokk, samme kamera, samme lys som akt 1 - men naa settes
-    innholdet inn igjen, ett lag om gangen, mens den limegroenne linjen vokser.
-    «Fire steg, kjente tider» gjort fysisk. Seksjonen gir bare mening fordi du
-    har sett akt 1 lenger oppe: der ble blokken aapnet, her fylles den.
-  */}
-  <!-- 06 Prosess -->
-  <Scene
-    n={6}
-    eyebrow="Prosess"
-    tittel="Fire steg, kjente tider"
-    ingress="Du ser en klikkbar prototype før du har betalt noe. Sier du nei der, koster det ingenting."
-    bred
-  >
-    <Avslor>
-      <ProcessSteps steps={prosess} />
-    </Avslor>
-    {/*
-      AKT 2 – naa som EGEN FLATE, ikke som bakgrunn.
-
-      Maalt: siden vaar beveger seg bare naar brukeren scroller. Pikselavvik i ro,
-      uten at noen roerer noe: jeton 485, osmo 222, oss 153. Det er sannsynligvis
-      presis det kunden mener med «statisk» – siden lever ikke foer han gjoer noe.
-
-      Som bakgrunn laa dette klippet paa 42 % opasitet bak fire tekstkolonner, med
-      maske. Vi betalte megabyte uten aa faa effekten, og det tvang fram en egen
-      global regel fordi «Lansering og drift» maalte 3,70:1 mot blokken. Som flate
-      spiller klippet i full opasitet uten maske og uten tekst oppaa – og uten
-      kontrastproblemet, fordi ingen tekst ligger over det lenger.
-
-      `vend` er fjernet: speilvendingen fantes bare for aa flytte bevegelsen inn i
-      baandet masken slapp fram. Uten maske vises hele rammen.
-
-      Ligger under folden med vilje. Et klipp som spiller av seg selv koster
-      baandbredde og batteri, saa dette er sidens ENE.
-    */}
-    <Avslor trinn={1}>
-    </Avslor>
-  </Scene>
-
-  <!-- 07 Priser -->
-
-  {/* Full styrke, kant til kant. Vi viste ni klipp på 42 % opasitet bak tekst og
-      betalte megabyte uten å få effekten – her er klippet innholdet.
-      Klippet er trimmet fra 8,0 til 5,4 s: Kling kjører ~1,5 s foran bestilt klokke
-      og brukte ikke halen, så de siste tre sekundene sto stille. */}
-  <Storflate
-    smal="/scener/floke-1280.mp4"
-    bred="/scener/floke-1920.mp4"
-    stor="/scener/floke-2560.mp4"
-    plakat="/scener/floke-poster.avif"
-    tittel="Fem systemer. Én kjede."
-    tekst="Fem systemer som ikke snakket sammen, og fem som gjør det. Det er hele jobben."
-    hoyde={66}
+    navn="hero"
+    etikett="Slik befarer jeg en nettside"
+    hoppTil="rapport"
+    prioritet
+    bakgrunn="#080809"
+    steg={steg}
   />
+  <p class="kolofon felt">Illustrasjon laget med KI</p>
 
-  <Scene
-    n={7}
-    eyebrow="Priser"
-    ingress={`Fordi du skal kunne regne på det før du ringer. ${mvaSetning}`}
-    id="priser"
-    bred
-    class="flate flate--aksent"
-  >
-    <Mega tekst="Prisene står her" aksent="her" class="priser__mega" />
-    <div class="stack">
-      <div class="grid-3 priser-rad">
-        {pakker.map((p, i) => (
-          <Avslor trinn={i}>
-            <PriceCard
-              name={p.navn}
-              price={p.pris}
-              prefix={p.prefiks}
-              unit={prisenhet}
-              description={p.beskrivelse}
-              recommended={p.anbefalt}
-              cta={p.cta}
-              href={p.href}
-              features={[
-                ...p.inkludert.map((t) => ({ text: t, included: true })),
-                ...(p.ikke ?? []).map((t) => ({ text: t, included: false })),
-              ]}
-            />
-          </Avslor>
-        ))}
-      </div>
-      <Avslor trinn={1}>
-        <dl class="kv">
-          {loepende.map((r) => (
-            <div>
-              <dt><strong class="body-strong">{r.navn}</strong><br /><span class="small muted">{r.tekst}</span></dt>
-              <dd class="nowrap">{r.pris}</dd>
-            </div>
-          ))}
-        </dl>
-      </Avslor>
-      <Avslor trinn={2}>
-        <ul class="small faint" style="margin: 0; padding-left: var(--space-5); display: grid; gap: var(--space-1)">
-          {prisvilkaar.map((v) => <li>{v}</li>)}
-        </ul>
-      </Avslor>
-    </div>
-  </Scene>
-
-  <!-- 08 Om -->
-  <Scene n={8} eyebrow="Om" tittel="Ingen mellomledd">
-    <div class="grid-2">
-      <Avslor class="stack">
-        {/*
-          «Utviklermiljø» sto her og i heroen. Enhetsregisteret sier
-          enkeltpersonforetak, sektorkode 8200 «Personlig næringsdrivende», ingen
-          registrerte ansatte – et oppslag som tar tjue sekunder, og over
-          halvparten av nordmenn mener en seriøsitetssjekk skal ta under ti
-          minutter. Ordet satte opp en forventning oppslaget river ned.
-
-          Enmannsforetak er ingen svakhet i dette markedet; flere av
-          konkurrentene er det og skjuler det dårligere. Sprekken mellom ordet og
-          oppslaget var svakheten. Setningen under sier det samme som før om hva
-          vi gjør, bare uten å love et miljø som ikke er registrert noe sted.
-        */}
-        <p class="body-lg muted">
-          KodeKonsulentene er ett enkeltpersonforetak i Oslo med sikkerhet som spesialfelt.
-          Vi bygger nettsiden, systemet bak og appen oppå – uten å sette ut noe til noen.
-        </p>
-        <p class="muted">
-          Vi holder antallet prosjekter lavt med vilje, slik at du snakker med utvikleren
-          som faktisk skriver koden og ingenting forsvinner i et ledd. Hvordan vi jobber,
-          hva ting koster, og hva som skjer hvis vi ikke kan fullføre, står i{" "}
-          <a class="kk-link" href="/handbok">håndboken</a>.
-        </p>
-        <Button variant="ghost" href="/om">Mer om oss</Button>
-      </Avslor>
-      <Avslor trinn={1}>
-        <Lagstabel id="om-stabel" />
-      </Avslor>
-    </div>
-  </Scene>
-
-  <!-- 09 FAQ -->
-  <Scene n={9} eyebrow="Spørsmål" tittel="Det folk spør om først" bred lav>
-    <Avslor>
-      <Faq items={faq} />
-    </Avslor>
-  </Scene>
-
-  <!-- 10 Kontakt -->
-  <ContactBlock n={10} />
-</Base>
-
-<style>
-  /* Hero-en har sidens eneste kort ingen konkurrent kan kopiere: terminalen
-     kjører en EKTE skanning av adressen du skriver inn, uten å forlate siden.
-     Den var usynlig – ingenting koblet feltet til terminalen. Denne linjen gjør
-     koblingen eksplisitt, og prikken i aksentfargen leser som «dette er levende».
-     Ingen påstand og ingen tall her, bare en bruksanvisning. */
-  /*
-    PRISANKERET.
-
-    Tallet er det eneste som skal lese som et tall – derfor `mono-stat`, som er
-    husets stil for live-tall, og ikke display-fonten. Brandboken: «Tall og tid
-    før adjektiver … i mono eller mono-stat; aldri i display-fontene.»
-
-    Ingen aksentfarge her. Heroen har allerede aksenten på «systemer» i h1, på
-    primærknappen og på Sjekk-knappen i URL-feltet. En fjerde ville brutt
-    regelen om én aksentdetalj, og tallet trenger den ikke: det står i `ink`
-    mot `bg`, altså sidens høyeste kontrast, mens teksten rundt er `ink-muted`.
-    Størrelsen gjør jobben, ikke fargen.
-
-    Ingen ramme, ingen flate. Et prisanker i et kort ville lest som en
-    reklameboks midt i heroen; her leser det som en opplysning.
-  */
-  .hero__pris {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--space-2) var(--space-3);
-    margin: var(--space-5) 0 0;
-    color: var(--ink-muted);
-  }
-  .hero__pris-tall {
-    color: var(--ink);
-    white-space: nowrap;
-  }
-  /* Teksten skal kunne brekke ved siden av tallet uten å dra raden bredere enn
-     spalten. `min-inline-size: 0` fordi et flex-barn ellers ikke krymper under
-     sin egen innholdsbredde. */
-  .hero__pris-tekst {
-    flex: 1 1 18ch;
-    min-inline-size: 0;
-  }
-  /* Målt 103x18 px: under trykkmålet på 24x24. Lenken står inne i en setning,
-     så SC 2.5.8 har et unntak for den – men den er en av to veier videre fra
-     heroen, og et unntak er ikke en grunn til å la den være liten på telefon.
-     Loddrett utfylling på et inline-element utvider treffflaten uten å endre
-     linjeboksen, så raden står nøyaktig som før: 18 + 2 x 4 = 26 px. */
-  .hero__pris-tekst a { padding-block: var(--space-1); }
-  .hero__mva {
-    margin: var(--space-2) 0 0;
-    color: var(--ink-faint);
-  }
-
-  .hero__live {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    color: var(--ink-muted);
-    margin-top: var(--space-2);
-  }
-  .hero__live-prikk {
-    flex: none;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--accent);
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .hero__live-prikk { animation: hero-puls 2.4s ease-in-out infinite; }
-  }
-  @keyframes hero-puls { 50% { opacity: 0.35; } }
-
-  /* Prisene er sidens ene typografiske topp. Resten av seksjonstitlene står i
-     display-lg via Scene; denne ene går til Mega. Brandboken: «én detalj per
-     skjerm» – derfor nøyaktig én slik på hele forsiden. */
-  .priser__mega { margin-bottom: var(--space-6); }
-</style>
-
-{/* Den globale akt2-regelen laa her: ugjennomsiktig flate bak prosesskortene
-    fordi filmen bak dem maalte 3,70:1. Den er fjernet sammen med bakgrunnen –
-    ingen tekst ligger over klippet lenger, saa regelen var doed kode. */}
-
-<style is:global>
-  /*
-    FLATER MED EGEN KARAKTER.
-
-    Maalt mot kundens referanse (jeton.com) hadde vi FLERE skriftstoerrelser enn den
-    (16 mot 10) og NI GANGER saa mange animasjoner (9 mot 1). Det som manglet var
-    ikke bevegelse eller typografi: referansen bader flaten i mettet farge og har
-    tolv store bilder, mens vi hadde nesten svart overalt og aksenten brukt sju
-    ganger paa hele forsiden. Ti like moerke seksjoner leses som en liste.
-
-    Grepet er aa bytte HELE tokensettet paa en seksjon, ikke bare bakgrunnen. Da
-    foelger hvert eneste barn med av seg selv – kort, hairlines, dempet tekst,
-    knapper – fordi alt leser var(--ink), var(--line) og var(--bg-raised). En
-    bakgrunn alene ville gitt moerk tekst paa moerke kort.
-
-    Verdiene under er de SAMME som det verifiserte lyse temaet. Kontrasten er
-    derfor riktig ved konstruksjon, ikke ved flaks, og den holder i begge temaer –
-    flaten er lys uansett hva brukeren har valgt.
-
-    is:global, ikke scoped: Scene.astro rendrer seksjonselementet, saa en scoped
-    regel herfra faar index-sidens scope-id mens elementet bare baerer Scenes.
-    Den fellen gjorde maskeoverstyringen paa /systemer til doed CSS, og en
-    forrige verifikasjon av scenestreken var feil av samme grunn.
-  */
-  .flate--motsatt {
-    --bg: #f5f6f7;
-    --bg-raised: #ffffff;
-    /* Lysere enn det lyse temaets #e9ecef med vilje: Slepesammenligningens
-       «0 feil» i --ok maalte 4,42:1 mot den, altsaa under AA. Mot hvitt er den
-       5,07:1. Et eksisterende brudd forsvinner som bieffekt. */
-    --bg-sunken: #ffffff;
-    --line: #dde1e6;
-    --line-strong: #767f89;
-    --ink: #14171b;
-    /* Moerkere enn det lyse temaets #4f5861. Nokkeltall-etiketten ligger i en
-       Avslor som toner inn, og MIDT i den fasen maalte Lighthouse 3,53:1 mot den
-       lyse flaten – i ro er den 7:1. Kravet gjelder sluttilstanden, men en feil
-       kunden ser i rapporten er en feil. Moerkere farge taaler hele fasen. */
-    --ink-muted: #30373e;
-    --ink-faint: #4a535c;
-    --accent: #b6e62a;
-    --on-accent: #14171b;
-    --accent-text: #3d6600;
-    --accent-soft: #eef9cf;
-    --ok: #0b7a6b;
-    --warn: #8a5b00;
-    --fail: #b42318;
-    /* --link maa settes eksplisitt. tokens.css har `--link: var(--ink)` paa :root,
-       og en custom property loeses der den DEKLARERES – saa verdien laases til
-       rotens --ink og arves som en fast farge. En seksjon som bytter --ink faar
-       ikke med seg lenkefargen. Maalt paa kontaktseksjonen: --ink=#14171b mens
-       --link=#e9ecef, altsaa 1,18:1. */
-    --link: var(--ink);
-    --focus: #14171b;
-    background: var(--bg);
-    color: var(--ink);
-  }
-
-  /*
-    MAALT FEIL FOERST: flaten var hardkodet lys. I LYST tema er sidebakgrunnen
-    allerede #f5f6f7, altsaa noeyaktig samme verdi – bruddet forsvant, og halve
-    poenget med aa veksle var borte for alle som kjoerer lyst tema. Verifisert med
-    computed style i begge temaer foer og etter.
-
-    Flaten er derfor MOTSATT av temaet, ikke lys. Navnet sier hva den gjoer.
-  */
-  [data-theme="light"] .flate--motsatt {
-    --bg: #0b0d10;
-    --bg-raised: #13161b;
-    --bg-sunken: #060708;
-    --line: #23282f;
-    --line-strong: #5c6670;
-    --ink: #e9ecef;
-    --ink-muted: #9aa4ae;
-    --ink-faint: #7b8591;
-    --accent: #c8f24a;
-    --on-accent: #0b0d10;
-    --accent-text: #c8f24a;
-    --accent-soft: #1d2a08;
-    --ok: #5fe3c0;
-    --warn: #f3b63f;
-    --fail: #ff7b72;
-    /* --link maa settes eksplisitt. tokens.css har `--link: var(--ink)` paa :root,
-       og en custom property loeses der den DEKLARERES – saa verdien laases til
-       rotens --ink og arves som en fast farge. En seksjon som bytter --ink faar
-       ikke med seg lenkefargen. Maalt paa kontaktseksjonen: --ink=#14171b mens
-       --link=#e9ecef, altsaa 1,18:1. */
-    --link: var(--ink);
-    --focus: #c8f24a;
-  }
-
-  /*
-    Den mettede flaten. Sidens ENE roep, og det staar paa prisene – der det faktisk
-    selger. Brandboken sier «en aksentdetalj per skjerm»; her er aksenten hele
-    flaten i stedet for en strek, og det er forskjellen paa en detalj og et grep.
-
-    Aksenten inverteres inne i flaten: --accent blir naer-svart og --on-accent blir
-    lime, saa primaerknappen blir en moerk flekk paa limegroenn i stedet for aa
-    forsvinne i den. Kortene blir hvite, slik referansen gjoer det – mettet felt,
-    rene paneler.
-  */
-  .flate--aksent {
-    --bg: #c8f24a;
-    --bg-raised: #ffffff;
-    --bg-sunken: #bce63a;
-    --line: #8fb52c;
-    --line-strong: #4e6a12;
-    --ink: #14171b;
-    --ink-muted: #2b3139;
-    --ink-faint: #39404a;
-    /* Invertert: moerk knapp med lime tekst paa en lime flate. */
-    --accent: #14171b;
-    --on-accent: #c8f24a;
-    /* Kan ikke vaere lime paa lime. Merkepillen blir hvit med moerkegroenn tekst. */
-    --accent-text: #2d4a00;
-    --accent-soft: #ffffff;
-    /* Samme felle som over: --link laases til rotens --ink og foelger ikke med. */
-    --link: var(--ink);
-    --ok: #0b7a6b;
-    --warn: #7a4f00;
-    --fail: #9e1f15;
-    --focus: #14171b;
-    background: var(--bg);
-    color: var(--ink);
-  }
-
-
-  /* ------------------------------------------------- bryt rutenettet ---- */
-  /*
-    Forsiden sto helt oppreist paa rutenett innenfor margene. Kortene fikk derfor
-    samme vekt og leste som en liste.
-
-    Raden ble broetet paa TO maater samtidig: en permanent loddrett forskyvning
-    (margin) OG en vridning som kjoerer paa scroll. Forskyvningen er fjernet.
-    Eieren har meldt den fire ganger – «legg de paa en linje» – og maalingen gir
-    ham rett: 48 px mellom kort 2 og naboene er ikke dybde, det er en rad som
-    ikke staar i linje. Vridningen staar igjen, og den ALENE bryter rutenettet:
-    den leses som papir som ligger oppa hverandre, ikke som et rutenett i uorden.
-
-    Degraderingen gaar fortsatt mot «synlig og rett»: faller animasjonen bort –
-    Firefox, redusert bevegelse, JS av – staar kortene rett og i linje.
-
-    Transformen ligger paa KORTET inni, ikke paa .avslor-wrapperen. Avslor eier
-    allerede sin egen animasjon paa opacity; en animation-name her ville erstattet
-    den og slaatt av inntoningen.
-  */
-  @media (min-width: 861px) {
-    /* Alle kort i begge rader deler oeverste kant. Rangeringen i prisraden
-       trenger ikke vaere loddrett; det anbefalte kortet skiller seg ut paa
-       merkelapp, lys flate og invertert knapp. */
-    .tjenester-rad > *,
-    .priser-rad > * { margin-block-start: 0; }
-  }
-
-  /* Bunnene sto like skjevt som toppene, og av en annen grunn: .avslor er en
-     vanlig blokk, saa kortet inni fikk SIN EGEN hoeyde i stedet for radens.
-     Maalt paa 1440: tjenestekortene 288/316/288 px i celler paa 364, prisekortene
-     496/464/464 – altsaa 76 og 32 px sprik i underkant.
-
-     display:grid gjoer kortet til et rutenettsbarn, og et rutenettsbarn strekkes
-     til cellen som standard. .kk-svc og .kk-price har begge en 1fr-rad midt i
-     malen nettopp for aa ta imot den plassen, saa knappen og lenken havner i
-     bunnen slik komponenten alltid var tegnet for. Ingen hoeyde settes her. */
-  .tjenester-rad > .avslor,
-  .priser-rad > .avslor { display: grid; }
-
-  @media (prefers-reduced-motion: no-preference) {
-    @supports (animation-timeline: view()) {
-      /* Langformer, aldri stenografi: lightningcss slaar `animation` +
-         `animation-timeline` sammen til en ugyldig form som BEGGE nettlesere
-         forkaster uten aa si fra. Den fellen har kostet oss to animasjoner. */
-      .tjenester-rad .kk-svc,
-      .priser-rad .kk-price {
-        animation-name: rett-seg-opp;
-        animation-duration: 1ms;
-        animation-timing-function: linear;
-        animation-fill-mode: both;
-        animation-timeline: view();
-        animation-range: entry 25% cover 30%;
-      }
-      /* Lik --dybde paa alle kort i samme rad. Ulike verdier (54/30/70) ga ulik
-         fart gjennom det samme omraadet, og mens man scrollet laa kortene opptil
-         40 px fra hverandre i overkant selv om de staar likt i ro. Prisraden ble
-         utliknet til 44 foerst; tjenesteraden foelger den naa.
-
-         Bare VINKELEN varierer. Den skiller kortene fra hverandre uten aa roere
-         linjen de deler. */
-      .tjenester-rad > :nth-child(1) .kk-svc { --vri: -2.2deg; --dybde: 44px; }
-      .tjenester-rad > :nth-child(2) .kk-svc { --vri: 1.6deg;  --dybde: 44px; }
-      .tjenester-rad > :nth-child(3) .kk-svc { --vri: -1.1deg; --dybde: 44px; }
-      .priser-rad > :nth-child(1) .kk-price { --vri: -1.4deg; --dybde: 44px; }
-      .priser-rad > :nth-child(2) .kk-price { --vri: 0.9deg;  --dybde: 44px; }
-      .priser-rad > :nth-child(3) .kk-price { --vri: -0.7deg; --dybde: 44px; }
-
-      @keyframes rett-seg-opp {
-        from { transform: translateY(var(--dybde, 40px)) rotate(var(--vri, -1.5deg)); }
-        to   { transform: none; }
-      }
-    }
-  }
-
-
-  /* ------------------------------------------------ blo ut over kanten ---- */
-  /*
-    Maalt blodning forbi skjermkanten: vi 8, jeton 388, osmo 1966. Alt vaart sto
-    oppreist paa rutenett innenfor margene. Loekkepanelet er det riktige stedet
-    aa bryte ut: det er det eneste store elementet uten tekst i seg, saa
-    fullbredde kan ikke klippe noe som skal leses.
-
-    Teknikken er den samme som ScrollHistorie allerede bruker i produksjon
-    (`width: 100vw` + negativ marg), ikke en ny oppfinnelse. Verifisert at den
-    ikke gir sidelengs drag paa seks bredder – den globale `overflow-x: clip`
-    SKJULER slikt i stedet for aa avsloere det, saa det maa maales.
-  */
-  .loope-fullbredde {
-    width: 100vw;
-    margin-inline: calc(50% - 50vw);
-    border-radius: 0;
-    border-inline: 0;
-  }
-
-  /* Haarlinjen mellom scener er skillet mellom to flater her, ikke en strek paa
-     en flate. Den ville tegnet en lysere strek midt i overgangen. */
-  .flate .scene__strek { opacity: 0; }
-</style>
+  <Rapport />
+  <Arbeid />
+  <Garanti />
+  <Tjenester />
+  <Prisliste />
+  <Prosess prototypedato={prototypedato} lanseringsuke={lanseringsuke} />
+  <Hvem />
+  <Sporsmal liste={sporsmaal} />
+  <Kontakt />
+</MalV2>

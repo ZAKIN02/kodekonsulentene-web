@@ -1,0 +1,159 @@
+---
+// Kontakt: booking og et kort skjema. Skjemaet sender en vanlig POST til
+// /api/kontakt, som svarer med omdirigering – det virker uten JavaScript.
+// Fakta fra src/data/firma.ts. Tekst ordrett fra
+// docs/design/tekst/forside.md del 11.
+import { firma, bookUrl } from "../../data/firma";
+---
+
+<section class="kontakt rytme-vanlig" id="kontakt" aria-labelledby="kontakt-tittel">
+  <div class="felt">
+    <h2 id="kontakt-tittel">Snakk med den som koder</h2>
+    <p class="kontakt__ingress">
+      20 minutter på telefon, ingen presentasjon. Du får en ærlig vurdering av om du trenger det
+      du tror du trenger.
+    </p>
+
+    <div class="rutenett">
+      <div class="book">
+        <h3>Book direkte</h3>
+        <p>
+          Velg et ledig tidspunkt i kalenderen. Du får en bekreftelse med lenke – ingen e-post
+          fram og tilbake.
+        </p>
+        <a class="knapp" href={bookUrl}>Book 20 minutter</a>
+        <dl class="fakta">
+          <div>
+            <dt>E-post</dt>
+            <dd><a href={`mailto:${firma.epost}`}>{firma.epost}</a></dd>
+          </div>
+          <div>
+            <dt>Svartid</dt>
+            <dd>{firma.svartid}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <form class="skjema" method="post" action="/api/kontakt">
+        <h3>Eller skriv kort</h3>
+        <div class="felt-gruppe">
+          <label for="k-navn">Navn</label>
+          <input id="k-navn" name="navn" type="text" autocomplete="name" required />
+        </div>
+        <div class="felt-gruppe">
+          <label for="k-epost">E-post</label>
+          <input id="k-epost" name="epost" type="email" autocomplete="email" required />
+        </div>
+        <div class="felt-gruppe">
+          <label for="k-nettside">Nettside i dag</label>
+          <input
+            id="k-nettside"
+            name="nettside"
+            type="text"
+            inputmode="url"
+            aria-describedby="k-nettside-hint"
+          />
+          <p class="hint" id="k-nettside-hint">Har du ingen ennå, la feltet stå tomt.</p>
+        </div>
+        <div class="felt-gruppe">
+          <label for="k-melding">Hva tar tid i dag?</label>
+          <textarea id="k-melding" name="melding" rows="4" required></textarea>
+        </div>
+        <button class="knapp" type="submit">Send meldingen</button>
+        <p class="personvern">
+          Jeg bruker opplysningene bare til å svare deg, og sletter dem etter seks måneder hvis
+          det ikke blir et oppdrag. Se <a href="/personvern">personvernerklæringen</a>.
+        </p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<style>
+  .kontakt__ingress {
+    margin-top: var(--rom-3);
+    max-width: var(--maal-brod);
+  }
+
+  .rutenett {
+    display: grid;
+    gap: var(--rom-8) var(--spalteluke);
+    margin-top: var(--rom-7);
+  }
+
+  @media (min-width: 1024px) {
+    .rutenett {
+      grid-template-columns: repeat(12, 1fr);
+    }
+    .book {
+      grid-column: 1 / 6;
+    }
+    .skjema {
+      grid-column: 7 / 13;
+    }
+  }
+
+  .book p {
+    margin-top: var(--rom-3);
+    max-width: var(--maal-brod);
+  }
+
+  .book .knapp {
+    margin-top: var(--rom-5);
+  }
+
+  .fakta {
+    margin-top: var(--rom-6);
+  }
+
+  .fakta div {
+    display: flex;
+    gap: var(--rom-4);
+    padding-block: var(--rom-2);
+  }
+
+  .fakta dt {
+    font-weight: 700;
+    min-width: 6rem;
+  }
+
+  .felt-gruppe {
+    margin-top: var(--rom-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--rom-2);
+  }
+
+  .felt-gruppe label {
+    font-weight: 500;
+  }
+
+  .skjema input,
+  .skjema textarea {
+    min-height: 56px;
+    padding: var(--rom-3) var(--rom-4);
+    background: var(--felt);
+    color: var(--tekst);
+    border: var(--kant-2) solid var(--kant-kontroll);
+    border-radius: var(--radius-ark);
+    font: inherit;
+  }
+
+  .skjema textarea {
+    resize: vertical;
+  }
+
+  .hint {
+    font-size: var(--tekst-liten);
+  }
+
+  .skjema .knapp {
+    margin-top: var(--rom-5);
+  }
+
+  .personvern {
+    margin-top: var(--rom-4);
+    max-width: var(--maal-brod);
+    font-size: var(--tekst-liten);
+  }
+</style>

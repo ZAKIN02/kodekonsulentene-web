@@ -1,0 +1,30 @@
+---
+// Garantien (briefen del 6 punkt 11, designsystem v2 7.9): ett felt i full
+// bredde på refleksfargen. Står her og ingen andre steder på siden.
+// Tekst ordrett fra docs/design/tekst/forside.md del 5.
+---
+
+<section class="garanti rytme-tett">
+  <div class="felt">
+    <p>
+      Du ser en klikkbar prototype av forsiden din før du har betalt noe. Sier du nei til
+      prototypen, koster det ingenting.
+    </p>
+  </div>
+</section>
+
+<style>
+  .garanti {
+    background: var(--refleksflate);
+    color: var(--tekst-pa-refleks);
+    border-radius: var(--radius-0);
+  }
+
+  .garanti p {
+    font-size: var(--tekst-h2);
+    font-weight: 700;
+    line-height: 1.1;
+    text-wrap: balance;
+    max-width: 28ch;
+  }
+</style>

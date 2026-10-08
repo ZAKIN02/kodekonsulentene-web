@@ -1,0 +1,99 @@
+---
+// Slik går det (briefen del 6 punkt 10, designsystem v2 7.13): ekte datoer
+// regnet fra dagens dato i index.astro sitt frontmatter. Datoen er
+// rekkefølgen, så ingen numre vises. Tekst ordrett fra
+// docs/design/tekst/forside.md del 8.
+interface Props {
+  prototypedato: string;
+  lanseringsuke: number;
+}
+const { prototypedato, lanseringsuke } = Astro.props;
+
+const steg = [
+  {
+    navn: "Samtale",
+    naar: "20 minutter",
+    tekst: "Vi går gjennom hva som tar tid i bedriften i dag. Du får et prisspenn på telefonen.",
+  },
+  {
+    navn: "Prototype",
+    naar: prototypedato,
+    tekst: "Booker du i dag, er prototypen klar 72 timer etter samtalen.",
+  },
+  {
+    navn: "Bygging",
+    naar: "2–3 uker",
+    tekst: "Ukentlig oppdatering mens siden bygges.",
+  },
+  {
+    navn: "Lansering",
+    naar: `uke ${lanseringsuke}`,
+    tekst:
+      "Deretter overvåkning, sikkerhetsoppdateringer og månedsrapport med ytelse og oppetid.",
+  },
+];
+---
+
+<section class="prosess bunn-ark rytme-vanlig" aria-labelledby="prosess-tittel">
+  <div class="felt">
+    <h2 id="prosess-tittel">Slik går det</h2>
+    <p class="prosess__ingress">Datoene under er regnet fra i dag.</p>
+    <ol class="steg">
+      {steg.map((s) => (
+        <li>
+          <p class="steg__naar">
+            <span class="steg__navn">{s.navn}</span>
+            <span class="steg__tid">{s.naar}</span>
+          </p>
+          <p class="steg__tekst">{s.tekst}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .prosess__ingress {
+    margin-top: var(--rom-3);
+  }
+
+  .steg {
+    display: grid;
+    gap: var(--rom-6) var(--spalteluke);
+    margin-top: var(--rom-7);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 768px) {
+    .steg {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .steg li {
+    border-top: var(--kant-1) solid var(--tekst);
+    padding-top: var(--rom-4);
+  }
+
+  .steg__naar {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .steg__navn {
+    font-weight: 700;
+    font-size: var(--tekst-h3);
+    line-height: 1.25;
+  }
+
+  /* Datoen i 700, hva som skjer i 400 (v2 7.13). */
+  .steg__tid {
+    margin-top: var(--rom-1);
+    font-weight: 700;
+  }
+
+  .steg__tekst {
+    margin-top: var(--rom-3);
+  }
+</style>

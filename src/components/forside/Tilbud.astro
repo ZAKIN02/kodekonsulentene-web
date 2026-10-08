@@ -1,0 +1,130 @@
+---
+// Første skjerm: tilbudet (briefen del 6 punkt 1, designsystem v2 7.4).
+// Overskrift og ett stort adressefelt. Skjemaet sender en vanlig GET til
+// /sjekk med parameteren `url` – samme som dagens UrlCheck – så det virker
+// uten JavaScript. Tekst ordrett fra docs/design/tekst/forside.md del 1.
+---
+
+<section class="tilbud" aria-labelledby="tilbud-tittel">
+  <div class="felt">
+    <h1 id="tilbud-tittel">Gratis befaring av nettsiden din</h1>
+    <p class="tilbud__ingress">
+      Rapport på 30 sekunder: cookies, sikkerhet, fart og om org.nr. står på siden.
+    </p>
+    <form class="sjekk" method="get" action="/sjekk">
+      <label class="usynlig" for="adresse">Nettadresse</label>
+      <input
+        id="adresse"
+        name="url"
+        type="text"
+        inputmode="url"
+        autocomplete="url"
+        spellcheck="false"
+        placeholder="dinbedrift.no"
+        required
+        pattern="[^ ]+\.[^ ]+"
+        aria-describedby="adresse-hint adresse-feil"
+      />
+      <button class="knapp" type="submit">Start befaringen</button>
+      <p class="sjekk__feil" id="adresse-feil">
+        Det ser ikke ut som en nettadresse. Prøv formen dinbedrift.no.
+      </p>
+    </form>
+    <p class="tilbud__hint" id="adresse-hint">
+      Ingen innlogging. Du velger selv om rapporten skal sendes på e-post.
+    </p>
+    <p class="tilbud__book"><a href="/kontakt">Eller book 20 minutter</a></p>
+  </div>
+</section>
+
+<style>
+  /* Første skjerm slutter ca. 64 px over folden, så scenekanten stikker opp
+     (tilbud + hode ≈ 100svh - 64px; 64 + 48 + 24 = 136 dekker begge). */
+  .tilbud {
+    display: flex;
+    align-items: center;
+    min-height: calc(100svh - var(--rom-8) - var(--rom-7) - var(--rom-5));
+    padding-block: var(--rom-7) var(--rom-8);
+  }
+
+  .tilbud > .felt {
+    width: 100%;
+  }
+
+  /* H1 i karakterfonten, over hele innholdsbredden (v2 3.2). */
+  h1 {
+    font-family: var(--font-karakter);
+    font-weight: 800;
+    font-stretch: 112%;
+    font-size: var(--tekst-display);
+    line-height: 0.92;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .tilbud__ingress {
+    margin-top: var(--rom-5);
+    font-size: var(--tekst-ingress);
+    line-height: 1.4;
+    max-width: var(--maal-ingress);
+  }
+
+  /* Felt og knapp er én enhet: mobil under hverandre, desktop side om side
+     (felt spalte 1–6, knapp 7–9, v2 4.2). */
+  .sjekk {
+    display: grid;
+    gap: var(--rom-3);
+    margin-top: var(--rom-6);
+  }
+
+  .sjekk input {
+    min-height: 56px;
+    padding-inline: var(--rom-4);
+    background: var(--felt);
+    color: var(--tekst);
+    border: var(--kant-2) solid var(--kant-kontroll);
+    border-radius: var(--radius-ark);
+    font: inherit;
+  }
+
+  .sjekk input:user-invalid {
+    border-color: var(--mangel);
+  }
+
+  .sjekk__feil {
+    display: none;
+    color: var(--mangel);
+    font-size: var(--tekst-liten);
+    font-weight: 500;
+  }
+
+  .sjekk:has(input:user-invalid) .sjekk__feil {
+    display: block;
+  }
+
+  @media (min-width: 1024px) {
+    .sjekk {
+      grid-template-columns: repeat(12, 1fr);
+      column-gap: var(--spalteluke);
+    }
+    .sjekk input {
+      grid-column: 1 / 7;
+    }
+    .sjekk .knapp {
+      grid-column: 7 / 10;
+    }
+    .sjekk__feil {
+      grid-column: 1 / 7;
+    }
+  }
+
+  .tilbud__hint {
+    margin-top: var(--rom-4);
+    max-width: var(--maal-brod);
+    font-size: var(--tekst-liten);
+  }
+
+  .tilbud__book {
+    margin-top: var(--rom-6);
+  }
+</style>

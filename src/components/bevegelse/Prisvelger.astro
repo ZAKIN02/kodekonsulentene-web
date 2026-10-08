@@ -1,0 +1,308 @@
+---
+// Prisvelgeren (øyeblikk 5): prislista ER velgeren. Hver rad er en radioknapp,
+// og valget spoler scenens video mykt til pakkens stoppunkt – objektet bygger
+// seg opp eller ned, og prisen følger valget. Bare currentTime-søk, aldri
+// avspilling, aldri lyd. Videoen hentes først ved interaksjon eller nærhet
+// (samme strategi som Scene). Uten JavaScript, med redusert bevegelse eller
+// Save-Data er dette en vanlig prisliste med posterbildet som stillramme.
+//
+// Egenskaper:
+//   navn     (string, påkrevd)  Mappenavn under public/scener/ – samme filer som Scene:
+//                               <navn>-1080.mp4/webm, <navn>-mobil.mp4/webm, poster.avif, poster-mobil.avif
+//   etikett  (string, påkrevd)  Tekst i <legend>, f.eks. «Velg pakke».
+//   pakker   (Pakke[], påkrevd) Radene. Tekst og priser kommer fra bygger (src/data/priser.ts) – aldri skrevet av her.
+//     Pakke: { id: string;      verdi på radioknappen
+//              navn: string;    pakkenavn, f.eks. «Start»
+//              pris: string;    ferdig formatert pris, f.eks. «14 900 kr»
+//              tekst: string;   én linje om hva pakken er
+//              stopp: number;   stoppunkt i videoen, i sekunder
+//              merke?: string } valgfri merkelapp, f.eks. «Anbefalt»
+//   gruppe   (string, standard «prisvelger»)  name på radiogruppen.
+//   statusMal (string, standard «Valgt: {navn}. Illustrasjonen viser hva som er med.»)
+//                               Leses opp ved valg. {navn} byttes med pakkenavnet.
+//   bakgrunn (string, standard '#080809')  Bakgrunn bak videoen, lik klippenes kant.
+//
+// Første pakke i lista er valgt ved innlasting (designsystem 7.8: Start).
+interface Pakke {
+  id: string;
+  navn: string;
+  pris: string;
+  tekst: string;
+  stopp: number;
+  merke?: string;
+}
+interface Props {
+  navn: string;
+  etikett: string;
+  pakker: Pakke[];
+  gruppe?: string;
+  statusMal?: string;
+  bakgrunn?: string;
+}
+const {
+  navn,
+  etikett,
+  pakker,
+  gruppe = 'prisvelger',
+  statusMal = 'Valgt: {navn}. Illustrasjonen viser hva som er med.',
+  bakgrunn = '#080809',
+} = Astro.props;
+const base = `/scener/${navn}`;
+---
+
+<div class="prisvelger" data-prisvelger data-statusmal={statusMal} style={`--scene-bakgrunn: ${bakgrunn}`}>
+  <div class="prisvelger__flate" aria-hidden="true">
+    <picture>
+      <source media="(max-width: 767px)" srcset={`${base}/poster-mobil.avif`} type="image/avif" />
+      <img src={`${base}/poster.avif`} alt="" width="1920" height="1080" decoding="async" loading="lazy" />
+    </picture>
+    <video muted playsinline preload="none" data-mobil={`${base}/${navn}-mobil`} data-desktop={`${base}/${navn}-1080`}
+    ></video>
+  </div>
+  <fieldset class="prisvelger__valg">
+    <legend class="prisvelger__etikett">{etikett}</legend>
+    {
+      pakker.map((p, i) => (
+        <label class="prisvelger__rad">
+          <input type="radio" name={gruppe} value={p.id} checked={i === 0} data-stopp={p.stopp} data-navn={p.navn} />
+          <span class="prisvelger__navn">
+            {p.navn}
+            {p.merke && <span class="prisvelger__merke">{p.merke}</span>}
+          </span>
+          <span class="prisvelger__pris">{p.pris}</span>
+          <span class="prisvelger__linje">{p.tekst}</span>
+        </label>
+      ))
+    }
+  </fieldset>
+  <p class="prisvelger__status" role="status"></p>
+</div>
+
+<script>
+  // Én kjøring for alle [data-prisvelger]. Ved redusert bevegelse eller
+  // Save-Data gjøres ingenting: radioknappene virker, posterbildet er
+  // stillrammen, ingen video hentes.
+  const redusert = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const tilkobling = Reflect.get(navigator, 'connection');
+  const spar = Boolean(tilkobling && tilkobling.saveData);
+
+  if (!redusert && !spar) {
+    for (const rot of document.querySelectorAll<HTMLElement>('[data-prisvelger]')) {
+      const video = rot.querySelector('video');
+      const status = rot.querySelector<HTMLElement>('.prisvelger__status');
+      const mal = rot.dataset.statusmal ?? '';
+      if (!video) continue;
+
+      const valgt = () => rot.querySelector<HTMLInputElement>('input:checked');
+
+      // Myk spoling: currentTime drives fra nåværende tid til stoppunktet med
+      // inn-ut-kurve (tilnærmet --inn-ut) over --tid-inn. Aldri play(), aldri lyd.
+      let spoling = 0;
+      const spolTil = (maal: number) => {
+        if (!Number.isFinite(video.duration)) return;
+        const slutt = Math.min(maal, Math.max(0, video.duration - 0.05));
+        const start = video.currentTime;
+        if (Math.abs(slutt - start) < 0.02) return;
+        const raa = parseFloat(getComputedStyle(rot).getPropertyValue('--tid-inn'));
+        const varighet = Number.isFinite(raa) ? raa : 560;
+        const t0 = performance.now();
+        const id = ++spoling;
+        if (varighet <= 0) {
+          video.currentTime = slutt;
+          return;
+        }
+        const innUt = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+        const steg = (naa: number) => {
+          if (id !== spoling) return;
+          const p = Math.min(1, (naa - t0) / varighet);
+          if (!video.seeking) video.currentTime = start + (slutt - start) * innUt(p);
+          if (p < 1) requestAnimationFrame(steg);
+        };
+        requestAnimationFrame(steg);
+      };
+
+      // Videoen hentes først når velgeren er nær skjermen OG brukeren har vist
+      // intensjon (rulling, berøring, tastatur eller et valg) – som i Scene.
+      let naer = false;
+      let villet = false;
+      const last = () => {
+        if (!naer || !villet || video.src) return;
+        const stor = matchMedia('(min-width: 768px)').matches;
+        const mp4 = video.canPlayType('video/mp4; codecs="avc1.42E01E"') !== '';
+        const fil = stor ? video.dataset.desktop : video.dataset.mobil;
+        video.src = `${fil}.${mp4 ? 'mp4' : 'webm'}`;
+        video.preload = 'auto';
+        video.load();
+      };
+      const intensjoner = ['scroll', 'wheel', 'touchstart', 'keydown', 'pointerdown'];
+      const intensjon = () => {
+        villet = true;
+        for (const n of intensjoner) removeEventListener(n, intensjon);
+        last();
+      };
+      for (const n of intensjoner) addEventListener(n, intensjon, { passive: true });
+      const vakt = new IntersectionObserver(
+        (treff) => {
+          if (!treff.some((t) => t.isIntersecting)) return;
+          vakt.disconnect();
+          naer = true;
+          last();
+        },
+        { rootMargin: '150% 0px' },
+      );
+      vakt.observe(rot);
+
+      video.addEventListener('loadeddata', () => rot.setAttribute('data-klar', ''));
+      video.addEventListener('loadedmetadata', () => {
+        // Første ramme etter lasting: hopp rett til valgt stoppunkt, uten myk
+        // spoling – det finnes ikke noe synlig utgangspunkt å spole fra.
+        const i = valgt();
+        if (i && Number.isFinite(video.duration)) {
+          video.currentTime = Math.min(Number(i.dataset.stopp ?? 0), Math.max(0, video.duration - 0.05));
+        }
+      });
+
+      rot.addEventListener('change', (h) => {
+        const i = h.target;
+        if (!(i instanceof HTMLInputElement) || i.type !== 'radio') return;
+        villet = true;
+        last();
+        if (status && mal) status.textContent = mal.replace('{navn}', i.dataset.navn ?? i.value);
+        spolTil(Number(i.dataset.stopp ?? 0));
+      });
+      // iOS lar ikke siden søke i videoen før den har vært startet én gang.
+      addEventListener(
+        'touchstart',
+        () => {
+          video.play().then(() => video.pause()).catch(() => {});
+        },
+        { once: true, passive: true },
+      );
+    }
+  }
+</script>
+
+<style>
+  .prisvelger {
+    position: relative;
+  }
+  .prisvelger__flate {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: clip;
+    border-radius: var(--radius-scene, 24px);
+    background: var(--scene-bakgrunn, #080809);
+  }
+  .prisvelger__flate img,
+  .prisvelger__flate video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .prisvelger__flate video {
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .prisvelger[data-klar] .prisvelger__flate video {
+    opacity: 1;
+  }
+  @media (max-width: 767px) {
+    .prisvelger__flate {
+      aspect-ratio: 3 / 4;
+    }
+  }
+
+  .prisvelger__valg {
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+  .prisvelger__etikett {
+    padding: var(--rom-4, 16px) 0 var(--rom-2, 8px);
+    font-size: var(--tekst-liten, 0.9375rem);
+    font-weight: 500;
+  }
+  .prisvelger__rad {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    column-gap: var(--rom-4, 16px);
+    align-items: baseline;
+    padding: var(--rom-4, 16px);
+    border-top: var(--kant-1, 1px) solid currentColor;
+    cursor: pointer;
+  }
+  /* Smale skjermer: prisen legger seg under navnet, aldri vannrett rulling. */
+  @media (max-width: 479px) {
+    .prisvelger__rad {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+    .prisvelger__pris {
+      grid-column: 2;
+      justify-self: start;
+    }
+  }
+  /* Radioknappen: 24 px ring, prikk i blekk ved valg, i begge temaer. */
+  .prisvelger__rad input {
+    appearance: none;
+    margin: 0;
+    width: 24px;
+    height: 24px;
+    align-self: center;
+    border: var(--kant-2, 2px) solid var(--kant-kontroll, #111315);
+    border-radius: var(--radius-rund, 50%);
+    background: transparent;
+    cursor: pointer;
+  }
+  .prisvelger__rad input:checked {
+    border-color: var(--blekk, #111315);
+    background: radial-gradient(circle, var(--blekk, #111315) 0 38%, transparent 42%);
+  }
+  .prisvelger__rad:hover {
+    box-shadow: inset var(--kant-2, 2px) 0 0 var(--tekst, #111315);
+  }
+  .prisvelger__rad:has(input:checked) {
+    background: var(--refleksflate, #c8f24a);
+    color: var(--tekst-pa-refleks, #111315);
+    box-shadow: inset 0 0 0 var(--kant-2, 2px) var(--kant-refleks, #111315);
+  }
+  .prisvelger__rad:has(input:focus-visible) {
+    outline: var(--kant-2, 2px) solid var(--fokus, #2443e0);
+    outline-offset: var(--fokus-avstand, 2px);
+  }
+  .prisvelger__navn {
+    font-size: var(--tekst-h3, 1.3125rem);
+    font-weight: 700;
+  }
+  .prisvelger__merke {
+    margin-left: var(--rom-2, 8px);
+    padding: var(--rom-1, 4px) var(--rom-2, 8px);
+    background: var(--refleksflate, #c8f24a);
+    color: var(--tekst-pa-refleks, #111315);
+    border-radius: var(--radius-ark, 2px);
+    font-size: var(--tekst-liten, 0.9375rem);
+    font-weight: 500;
+  }
+  .prisvelger__pris {
+    justify-self: end;
+    font-size: var(--tekst-pris, 1.75rem);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .prisvelger__linje {
+    grid-column: 2 / -1;
+    font-size: var(--tekst-brod, 1.125rem);
+  }
+  /* Statuslinja er bare for skjermlesere. */
+  .prisvelger__status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    margin: 0;
+  }
+</style>

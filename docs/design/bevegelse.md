@@ -257,3 +257,77 @@ aldri av seg selv. Lyd styres av brukeren via `controls`.
   `<dialog>` og komponenten.
 - Knappeteksten skal fortelle hva som spilles av hvis det er flere reels på
   samme side.
+
+## Prisvelger (øyeblikk 5)
+
+`src/components/bevegelse/Prisvelger.astro`
+
+Prislista ER velgeren (designsystem 7.8): hver rad er en radioknapp, og valget
+spoler scenens video mykt til pakkens stoppunkt – objektet bygger seg opp eller
+ned, og prisen følger valget. Bare `currentTime`-søk med inn-ut-kurve over
+`--tid-inn`; aldri avspilling, aldri lyd. Videoen hentes først når velgeren er
+nær skjermen og brukeren har vist intensjon (rulling, berøring, tastatur eller
+et valg) – samme strategi som Scene. Egen komponent, ikke en utvidelse av
+Scene: Scene er rullestyrt og holder skjermen fast, prisvelgeren er valgstyrt
+og fester ingenting.
+
+### Egenskaper
+
+| Egenskap | Type | Påkrevd | Betydning |
+|---|---|---|---|
+| `navn` | `string` | ja | Mappenavn under `public/scener/` – samme filer som Scene (`<navn>-1080.mp4/webm`, `<navn>-mobil.mp4/webm`, `poster.avif`, `poster-mobil.avif`). Hero-videoen er A→B (kaos → ordnet, 6 s). |
+| `etikett` | `string` | ja | Tekst i `<legend>`, f.eks. «Velg pakke». |
+| `pakker` | `Pakke[]` | ja | Radene, i rekkefølge. Første pakke er valgt ved innlasting. `Pakke`: `{ id, navn, pris, tekst, stopp, merke? }` der `stopp` er stoppunktet i sekunder (f.eks. 0 / 3 / 6) og `pris` er ferdig formatert fra `src/data/priser.ts` – komponenten kjenner ingen priser selv. |
+| `gruppe` | `string` | nei (`'prisvelger'`) | `name` på radiogruppen. |
+| `statusMal` | `string` | nei («Valgt: {navn}. Illustrasjonen viser hva som er med.») | Leses opp (`role="status"`) ved valg; `{navn}` byttes med pakkenavnet. |
+| `bakgrunn` | `string` | nei (`'#080809'`) | Bakgrunn bak videoen, lik klippenes kant. |
+
+### Eksempel
+
+```astro
+---
+import Prisvelger from '../components/bevegelse/Prisvelger.astro';
+import { pakker } from '../data/priser';
+// pakker[n] har navn, pris (ferdig formatert), prefiks? («fra»), beskrivelse og anbefalt?.
+const stopp = [0, 3, 6]; // kaos → midt → ordnet i hero-videoen (6 s)
+---
+<Prisvelger
+  navn="hero"
+  etikett="Velg pakke"
+  pakker={pakker.map((p, i) => ({
+    id: p.navn.toLowerCase(),
+    navn: p.navn,
+    pris: p.prefiks ? `${p.prefiks} ${p.pris}` : p.pris,
+    tekst: p.beskrivelse,
+    stopp: stopp[i],
+    merke: p.anbefalt ? 'Anbefalt' : undefined,
+  }))}
+/>
+```
+
+Kolofonen «Illustrasjon laget med KI» legger `bygger` rett under komponenten.
+
+### Uten JavaScript
+
+En vanlig prisliste med Start valgt og posterbildet som stillbilde. Ingen video
+hentes. Radioknappene er vanlige HTML-kontroller.
+
+### Med redusert bevegelse eller Save-Data
+
+Skriptet trekker seg helt: valg virker (radene skifter tilstand), men ingen
+video hentes og ingenting spoler – posterbildet er stillrammen hele tiden.
+
+### Å vite
+
+- Tilstandene fra designsystem 7.8 er bygget inn: valgt rad fylles med
+  `--refleksflate` med ring og prikk i `--blekk` i begge temaer, pekt-på gir
+  venstrekant, fokusring rundt raden. Prisene står høyrejustert med `tnum`;
+  under 480 px legger prisen seg under navnet (ingen vannrett rulling).
+- Spolekurven i JavaScript er easeInOutCubic, en tilnærming av `--inn-ut`.
+  Varigheten leses fra `--tid-inn` (560 ms, 0 ved redusert bevegelse).
+- Lastes videoen først ved et valg, hoppes det rett til stoppunktet uten myk
+  spoling (det finnes ikke noe synlig utgangspunkt å spole fra).
+- Maks én komponent som bruker hero-videoen trenger ikke gjelde: Prisvelger
+  holder aldri skjermen fast og teller ikke som scenen på siden.
+- iOS krever én berøring før siden får spole; komponenten håndterer det, men
+  det er ikke testet på ekte iPhone.

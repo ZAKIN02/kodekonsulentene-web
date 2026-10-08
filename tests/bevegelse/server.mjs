@@ -18,6 +18,7 @@ const port = Number(process.env.PORT ?? 4330);
 // Generer testsidene før serveren svarer.
 await import('./lag-testside.mjs');
 await import('./lag-testside-oyeblikk.mjs');
+await import('./lag-testside-prisvelger.mjs');
 
 const typer = {
   '.html': 'text/html; charset=utf-8',

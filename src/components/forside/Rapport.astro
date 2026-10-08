@@ -8,6 +8,7 @@
 // Påskriftene i høyre spalte på desktop er pålagt av designsystem v2 4.2 og
 // 7.6: en målelinje peker inn på raden og gjentar den målte verdien i
 // arbeidstegningsspråket. De er aria-hidden, siden verdien står i raden.
+import Loft from "../bevegelse/Loft.astro";
 import { loepende, prisenhet } from "../../data/priser";
 
 const lovsjekkPris = loepende.find((r) => r.navn === "Lovsjekk-pakke")?.pris ?? "MANGLER: pris";
@@ -24,7 +25,7 @@ const rader = [
   <div class="felt rutenett">
     <article class="ark">
       <header class="ark__hode">
-        <h2 id="rapport-tittel">Befaringsrapport</h2>
+        <Loft id="rapport-tittel" tekst="Befaringsrapport" />
         <p class="ark__emne">kodekonsulentene.no</p>
       </header>
       <p class="ark__ingress">

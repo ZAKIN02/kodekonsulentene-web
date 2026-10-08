@@ -3,12 +3,13 @@
 // /api/kontakt, som svarer med omdirigering – det virker uten JavaScript.
 // Fakta fra src/data/firma.ts. Tekst ordrett fra
 // docs/design/tekst/forside.md del 11.
+import Loft from "../bevegelse/Loft.astro";
 import { firma, bookUrl } from "../../data/firma";
 ---
 
 <section class="kontakt rytme-vanlig" id="kontakt" aria-labelledby="kontakt-tittel">
   <div class="felt">
-    <h2 id="kontakt-tittel">Snakk med den som koder</h2>
+    <Loft id="kontakt-tittel" tekst="Snakk med den som koder" />
     <p class="kontakt__ingress">
       20 minutter på telefon, ingen presentasjon. Du får en ærlig vurdering av om du trenger det
       du tror du trenger.

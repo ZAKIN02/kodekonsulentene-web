@@ -2,13 +2,14 @@
 // Hvem jeg er (briefen del 6 punkt 7): portrett, navn og første person.
 // Portrett og navn mangler fra eier og står som plassholdere – aldri KI.
 // Tekst ordrett fra docs/design/tekst/forside.md del 9.
+import Loft from "../bevegelse/Loft.astro";
 ---
 
 <section class="hvem rytme-pause" aria-labelledby="hvem-tittel">
   <div class="felt rutenett">
     <div class="plass portrett">MANGLER: portrett av eier – ekte foto, ikke KI</div>
     <div class="tekst">
-      <h2 id="hvem-tittel">Hvem jeg er</h2>
+      <Loft id="hvem-tittel" tekst="Hvem jeg er" />
       <p>
         KodeKonsulentene er mitt enkeltpersonforetak i Oslo, med sikkerhet som spesialfelt. Jeg
         bygger nettsiden, systemet bak og appen oppå – og setter ikke ut noe til noen.

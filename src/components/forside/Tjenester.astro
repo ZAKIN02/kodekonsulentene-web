@@ -1,6 +1,7 @@
 ---
 // Det jeg bygger (designsystem v2 7.12): tre store tekstlenker, ikke kort og
 // ikke nummerert. Tekst ordrett fra docs/design/tekst/forside.md del 6.
+import Loft from "../bevegelse/Loft.astro";
 const tjenester = [
   {
     href: "/nettsider",
@@ -22,7 +23,7 @@ const tjenester = [
 
 <section class="tjenester rytme-pause" aria-labelledby="tjenester-tittel">
   <div class="felt">
-    <h2 id="tjenester-tittel">Tre ting jeg gjør</h2>
+    <Loft id="tjenester-tittel" tekst="Tre ting jeg gjør" />
     <p class="tjenester__ingress">
       Og én ting jeg ikke gjør: selge deg noe du ikke trenger. Trenger du bare en lovsjekk, er
       det det du får.

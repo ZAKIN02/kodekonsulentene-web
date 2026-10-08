@@ -2,6 +2,7 @@
 // Spørsmål (designsystem v2 7.14): <details> og <summary> med et pluss som
 // roteres 45° når svaret åpnes. Teksten kommer fra index.astro, som også
 // bygger FAQPage-markupen av den samme lista – én kilde.
+import Loft from "../bevegelse/Loft.astro";
 import type { Sporsmaal } from "../../data/faq";
 
 interface Props {
@@ -12,7 +13,7 @@ const { liste } = Astro.props;
 
 <section class="faq bunn-ark rytme-tett" aria-labelledby="faq-tittel">
   <div class="felt">
-    <h2 id="faq-tittel">Det folk spør om først</h2>
+    <Loft id="faq-tittel" tekst="Det folk spør om først" />
     <div class="liste">
       {liste.map((f) => (
         <details>

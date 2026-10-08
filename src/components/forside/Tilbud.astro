@@ -3,11 +3,13 @@
 // Overskrift og ett stort adressefelt. Skjemaet sender en vanlig GET til
 // /sjekk med parameteren `url` – samme som dagens UrlCheck – så det virker
 // uten JavaScript. Tekst ordrett fra docs/design/tekst/forside.md del 1.
+// Overskriften løftes inn med Loft (øyeblikk 2).
+import Loft from "../bevegelse/Loft.astro";
 ---
 
 <section class="tilbud" aria-labelledby="tilbud-tittel">
   <div class="felt">
-    <h1 id="tilbud-tittel">Gratis befaring av nettsiden din</h1>
+    <Loft niva={1} id="tilbud-tittel" tekst="Gratis befaring av nettsiden din" />
     <p class="tilbud__ingress">
       Rapport på 30 sekunder: cookies, sikkerhet, fart og om org.nr. står på siden.
     </p>
@@ -51,8 +53,9 @@
     width: 100%;
   }
 
-  /* H1 i karakterfonten, over hele innholdsbredden (v2 3.2). */
-  h1 {
+  /* H1 i karakterfonten, over hele innholdsbredden (v2 3.2).
+     :global fordi overskriften rendres av Loft-komponenten. */
+  .tilbud :global(h1) {
     font-family: var(--font-karakter);
     font-weight: 800;
     font-stretch: 112%;

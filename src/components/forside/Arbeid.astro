@@ -1,28 +1,33 @@
 ---
 // Arbeid (briefen del 6 punkt 8, designsystem v2 7.11): ekte arbeid i store
-// flater. Appene mangler fra eier og står som grå plassholdere – ingenting
-// diktes opp. Demo-caset beholder den ærlige merkelappen sin.
+// flater. Appene mangler fra eier – CaseVideo (øyeblikk 3) viser selv en
+// «MANGLER: skjermopptak»-plassholder til opptakene ligger i /opptak/.
+// Reelen (øyeblikk 6) står etter demo-caset og viser plassholder til eier
+// leverer filmen i /film/reel. Demo-caset beholder den ærlige merkelappen sin.
 // Tekst ordrett fra docs/design/tekst/forside.md del 4.
+import Loft from "../bevegelse/Loft.astro";
+import CaseVideo from "../bevegelse/CaseVideo.astro";
+import Reel from "../bevegelse/Reel.astro";
 ---
 
 <section class="arbeid bunn-ark rytme-vanlig" aria-labelledby="arbeid-tittel">
   <div class="felt">
-    <h2 id="arbeid-tittel">Hva jeg har bygget</h2>
+    <Loft id="arbeid-tittel" tekst="Hva jeg har bygget" />
     <p class="arbeid__ingress">
       Problem, løsning, resultat. Står det et tall her, er det målt – ikke anslått.
     </p>
 
     <div class="apper">
-      <article class="app">
+      <article class="app" data-case>
         <p class="merkelapp">App</p>
-        <div class="plass app__media">MANGLER: skjermopptak</div>
+        <CaseVideo opptak="/opptak/app-1" poster="/opptak/app-1-poster.avif" />
         <h3>MANGLER: navn på app nummer én, fra eier</h3>
         <p>MANGLER: problem og løsning i to setninger, fra eier</p>
         <p class="app__tall">MANGLER: nedlastinger og vurdering i App Store, dokumentert av eier</p>
       </article>
-      <article class="app">
+      <article class="app" data-case>
         <p class="merkelapp">App</p>
-        <div class="plass app__media">MANGLER: skjermopptak</div>
+        <CaseVideo opptak="/opptak/app-2" poster="/opptak/app-2-poster.avif" />
         <h3>MANGLER: navn på app nummer to, fra eier</h3>
         <p>MANGLER: problem og løsning, fra eier</p>
         <p class="app__tall">MANGLER: brukertall, dokumentert av eier</p>
@@ -42,6 +47,10 @@
       </p>
       <p><a href="/caser">Se caset</a></p>
     </article>
+
+    <div class="reel">
+      <Reel film="/film/reel" tittel="Film: appene og sidene i bruk" knapp="Spill av filmen" />
+    </div>
 
     <p class="pilot">
       Jeg tar inn to til tre pilotprosjekter til redusert pris mot at jeg får bruke tallene som
@@ -70,8 +79,7 @@
     }
   }
 
-  .app__media {
-    aspect-ratio: 16 / 10;
+  .app :global(.casevideo) {
     margin-top: var(--rom-3);
   }
 
@@ -104,6 +112,11 @@
 
   .demo p:not(.merkelapp) {
     margin-top: var(--rom-3);
+  }
+
+  .reel {
+    margin-top: var(--rom-7);
+    max-width: var(--maal-brod);
   }
 
   .pilot {

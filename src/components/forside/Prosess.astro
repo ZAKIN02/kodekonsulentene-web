@@ -3,6 +3,8 @@
 // regnet fra dagens dato i index.astro sitt frontmatter. Datoen er
 // rekkefølgen, så ingen numre vises. Tekst ordrett fra
 // docs/design/tekst/forside.md del 8.
+import Loft from "../bevegelse/Loft.astro";
+
 interface Props {
   prototypedato: string;
   lanseringsuke: number;
@@ -36,7 +38,7 @@ const steg = [
 
 <section class="prosess bunn-ark rytme-vanlig" aria-labelledby="prosess-tittel">
   <div class="felt">
-    <h2 id="prosess-tittel">Slik går det</h2>
+    <Loft id="prosess-tittel" tekst="Slik går det" />
     <p class="prosess__ingress">Datoene under er regnet fra i dag.</p>
     <ol class="steg">
       {steg.map((s) => (

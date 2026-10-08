@@ -1,10 +1,13 @@
 ---
 // Prisvelgeren og prislista (briefen del 6 punkt 9, designsystem v2 7.8):
-// prislista ER prisvelgeren – hver pakke er en radioknapp, så hver pris står
-// bare én gang på siden. Foreløpig statisk: radioknappene kobles til video i
-// bølge 3.2. Uten JavaScript er dette en vanlig prisliste med Start valgt.
+// prislista ER prisvelgeren. Velgeren er Prisvelger-komponenten (øyeblikk 5):
+// valget spoler hero-videoen mykt til pakkens stoppunkt 0/3/6 s – objektet
+// bygger seg opp eller ned. Uten JavaScript er det en vanlig prisliste med
+// Start valgt og posterbildet som stillbilde.
 // Alle beløp leses fra src/data/priser.ts og skrives aldri av.
 // Tekst ordrett fra docs/design/tekst/forside.md del 7.
+import Loft from "../bevegelse/Loft.astro";
+import Prisvelger from "../bevegelse/Prisvelger.astro";
 import { pakker, loepende, prisvilkaar } from "../../data/priser";
 
 const pris = (navn: string) => pakker.find((p) => p.navn === navn);
@@ -17,33 +20,29 @@ const drift = rad("Drift og vedlikehold");
 const timepris = rad("Timepris");
 
 // Manusets forkortede pakkelinjer; prisene kommer fra dataene over.
-const velger = [
+// Stoppunktene 0/3/6 s er kaos → midt → ordnet i hero-videoen.
+const velgerPakker = [
   {
-    id: "pakke-start",
+    id: "start",
     navn: "Start",
     pris: start?.pris ?? "MANGLER: pris",
-    prefiks: "",
-    linje: "For deg som trenger å finnes, bli ringt og bestå lovkravene.",
-    valgt: true,
-    merke: "",
+    tekst: "For deg som trenger å finnes, bli ringt og bestå lovkravene.",
+    stopp: 0,
   },
   {
-    id: "pakke-bedrift",
+    id: "bedrift",
     navn: "Bedrift",
     pris: bedrift?.pris ?? "MANGLER: pris",
-    prefiks: "",
-    linje: "Du endrer innholdet selv, og siden synes i lokale søk. Pakken de fleste trenger.",
-    valgt: false,
+    tekst: "Du endrer innholdet selv, og siden synes i lokale søk. Pakken de fleste trenger.",
+    stopp: 3,
     merke: "Anbefalt",
   },
   {
-    id: "pakke-system",
+    id: "system",
     navn: "System",
-    pris: system?.pris ?? "MANGLER: pris",
-    prefiks: system?.prefiks ?? "",
-    linje: "Kundeportal, app eller kobling mot systemene du allerede betaler for.",
-    valgt: false,
-    merke: "",
+    pris: `${system?.prefiks ?? "fra"} ${system?.pris ?? "MANGLER: pris"}`,
+    tekst: "Kundeportal, app eller kobling mot systemene du allerede betaler for.",
+    stopp: 6,
   },
 ];
 
@@ -105,27 +104,13 @@ const vilkaar = prisvilkaar.slice(0, 3);
 ---
 
 <section class="priser rytme-vanlig" aria-labelledby="priser-tittel">
-  <div class="felt rutenett">
+  <div class="felt">
     <div class="ark">
-      <h2 id="priser-tittel">Prisene står her</h2>
+      <Loft id="priser-tittel" tekst="Prisene står her" />
       <p class="priser__ingress">Fordi du skal kunne regne på det før du ringer.</p>
 
-      <fieldset class="velger">
-        <legend>Velg pakke</legend>
-        {velger.map((v) => (
-          <label class="pakke">
-            <input type="radio" name="pakke" value={v.navn} checked={v.valgt} />
-            <span class="pakke__navn">
-              {v.navn}
-              {v.merke && <span class="merkelapp">{v.merke}</span>}
-            </span>
-            <span class="pakke__pris">
-              {v.prefiks && <span class="pakke__prefiks">{v.prefiks} </span>}{v.pris}
-            </span>
-            <span class="pakke__linje">{v.linje}</span>
-          </label>
-        ))}
-      </fieldset>
+      <Prisvelger navn="hero" etikett="Velg pakke" bakgrunn="#080809" pakker={velgerPakker} />
+      <p class="kolofon">Illustrasjon laget med KI</p>
 
       <div class="inkludert">
         {lister.map((l) => (
@@ -163,42 +148,10 @@ const vilkaar = prisvilkaar.slice(0, 3);
 
       <p class="hele"><a href="/priser">Se hele prislisten</a></p>
     </div>
-
-    <figure class="illustrasjon">
-      <img
-        src="/scener/hero/poster.avif"
-        alt=""
-        width="1920"
-        height="1080"
-        loading="lazy"
-        decoding="async"
-      />
-      <figcaption>Illustrasjon laget med KI</figcaption>
-    </figure>
   </div>
 </section>
 
 <style>
-  .rutenett {
-    display: grid;
-    gap: var(--rom-6) var(--spalteluke);
-  }
-
-  @media (min-width: 1024px) {
-    .rutenett {
-      grid-template-columns: repeat(12, 1fr);
-      align-items: start;
-    }
-    .ark {
-      grid-column: 1 / 9;
-    }
-    .illustrasjon {
-      grid-column: 9 / 13;
-      position: sticky;
-      top: var(--rom-6);
-    }
-  }
-
   .ark {
     background: var(--ark);
     border-radius: var(--radius-ark);
@@ -210,126 +163,38 @@ const vilkaar = prisvilkaar.slice(0, 3);
     max-width: var(--maal-brod);
   }
 
-  .velger {
+  /* Prisvelgeren (øyeblikk 5) stiles her utenfra: komponenten endres ikke.
+     Desktop: radene i venstre spalte, videoflaten til høyre (v2 4.2). */
+  .ark :global(.prisvelger) {
     margin-top: var(--rom-6);
-    padding: 0;
-    border: none;
   }
 
-  .velger legend {
-    padding: 0;
-    font-weight: 500;
-    margin-bottom: var(--rom-3);
-  }
-
-  /* Hver rad er en radioknapp (7.8). Start er valgt ved innlasting. */
-  .pakke {
-    position: relative;
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    grid-template-areas:
-      "ring navn pris"
-      "ring linje pris";
-    column-gap: var(--rom-4);
-    align-items: center;
-    padding: var(--rom-4);
-    border-top: var(--kant-1) solid var(--tekst);
-    cursor: pointer;
-  }
-
-  .pakke:last-of-type {
-    border-bottom: var(--kant-1) solid var(--tekst);
-  }
-
-  .pakke:hover {
-    box-shadow: inset var(--kant-2) 0 0 var(--tekst);
-  }
-
-  /* Ringen: 24 px, kant i kontrollfargen, prikk i blekk når valgt. */
-  .pakke input {
-    grid-area: ring;
-    appearance: none;
-    width: 24px;
-    height: 24px;
-    margin: 0;
-    border: var(--kant-2) solid var(--kant-kontroll);
-    border-radius: var(--radius-rund);
-    background: transparent;
-    cursor: pointer;
-  }
-
-  .pakke:has(input:checked) {
-    background: var(--refleksflate);
-    color: var(--tekst-pa-refleks);
-    box-shadow: inset 0 0 0 var(--kant-2) var(--kant-refleks);
-  }
-
-  /* Ring og prikk i blekk i begge temaer når raden er valgt (kritikerfunn). */
-  .pakke input:checked {
-    border-color: var(--blekk);
-    background: radial-gradient(circle, var(--blekk) 0 6px, transparent 7px);
-  }
-
-  .pakke:has(input:focus-visible) {
-    outline: var(--kant-2) solid var(--fokus);
-    outline-offset: var(--fokus-avstand);
-  }
-
-  .pakke input:focus-visible {
-    outline: none;
-  }
-
-  .pakke__navn {
-    grid-area: navn;
-    display: inline-flex;
-    align-items: center;
-    gap: var(--rom-3);
-    font-size: var(--tekst-h3);
-    font-weight: 700;
-    line-height: 1.25;
-  }
-
-  .pakke__pris {
-    grid-area: pris;
-    text-align: right;
-    font-family: var(--font-karakter);
-    font-weight: 700;
-    font-stretch: 75%;
-    font-size: var(--tekst-pris);
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-  }
-
-  .pakke__prefiks {
-    font-family: var(--font-tekst);
-    font-weight: 500;
-    font-size: var(--tekst-liten);
-  }
-
-  .pakke__linje {
-    grid-area: linje;
-    max-width: var(--maal-brod);
-  }
-
-  @media (max-width: 767px) {
-    .pakke {
-      grid-template-areas:
-        "ring navn navn"
-        "ring pris pris"
-        "ring linje linje";
+  @media (min-width: 1024px) {
+    .ark :global(.prisvelger) {
+      display: grid;
+      grid-template-columns: 8fr 4fr;
+      column-gap: var(--spalteluke);
       align-items: start;
     }
-    .pakke input {
-      margin-top: var(--rom-1);
+    .ark :global(.prisvelger__valg) {
+      grid-column: 1;
+      grid-row: 1;
     }
-    .pakke__pris {
-      text-align: left;
-      margin-top: var(--rom-2);
+    .ark :global(.prisvelger__flate) {
+      grid-column: 2;
+      grid-row: 1;
     }
-    .pakke__linje {
-      margin-top: var(--rom-2);
-    }
+  }
+
+  /* Prisene i karakterfonten, slik v2 3.1 krever (Archivo 700, bredde 75). */
+  .ark :global(.prisvelger__pris) {
+    font-family: var(--font-karakter);
+    font-stretch: 75%;
+    line-height: 1;
+  }
+
+  .kolofon {
+    margin-top: var(--rom-2);
   }
 
   .inkludert {
@@ -416,17 +281,5 @@ const vilkaar = prisvilkaar.slice(0, 3);
 
   .hele {
     margin-top: var(--rom-6);
-  }
-
-  .illustrasjon img {
-    width: 100%;
-    height: auto;
-    border-radius: var(--radius-ark);
-    background: var(--scene-bunn);
-  }
-
-  .illustrasjon figcaption {
-    margin-top: var(--rom-2);
-    font-size: var(--tekst-liten);
   }
 </style>

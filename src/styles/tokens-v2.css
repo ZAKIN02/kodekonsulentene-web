@@ -1,0 +1,138 @@
+/* Tokens for designsystem v2 «Befaring» (docs/design/designsystem-v2.md del 9).
+   Oppdrag f2-bygger-tokens. Gamle sider bruker fortsatt tokens.css – denne fila
+   lastes bare av de nye sidene.
+
+   Tema: følger prefers-color-scheme (avgjort av dirigenten ved f2).
+   Lyst er standard på :root, mørkt ligger under media-spørringen.
+   Komponentene bruker rolletokens og skalaene, aldri råfargene eller hex. */
+
+:root {
+  /* Råfarger. Brukes bare i denne fila. */
+  --betong: #E9EAE6;
+  --papir: #FBFBF9;
+  --blekk: #111315;
+  --refleks: #C8F24A;
+  --refleks-trykk: #B4DC3A;
+  --snorbla: #2443E0;
+  --mangelrod: #B3301B;
+  --plass-lys: #565B61;
+  --scene: #080809;
+  --blakopi: #12285C;
+  --blakopi-ark: #1B3672;
+  --krittbla: #A8B8FF;
+  --signalrod: #FF9B85;
+  --plass-mork: #B4BCD6;
+
+  /* Roller, lyst tema (standard) */
+  --bunn: var(--betong);
+  --ark: var(--papir);
+  --tekst: var(--blekk);
+  --lenke: var(--snorbla);
+  --maalelinje: var(--snorbla);
+  --fokus: var(--snorbla);
+  --mangel: var(--mangelrod);
+  --felt: var(--papir);
+  --tekst-plass: var(--plass-lys);
+  --kant-kontroll: var(--blekk);
+
+  /* Roller, like i begge temaer */
+  --refleksflate: var(--refleks);
+  --refleksflate-trykk: var(--refleks-trykk);
+  --tekst-pa-refleks: var(--blekk);
+  --kant-refleks: var(--blekk);
+  --scene-bunn: var(--scene);
+  --scene-tekst: var(--papir);
+  --scene-lenke: var(--krittbla);
+
+  /* Fonter */
+  --font-tekst: "Schibsted Grotesk", "Schibsted Grotesk reserve", system-ui, sans-serif;
+  --font-karakter: "Archivo", "Archivo reserve", "Arial Narrow", sans-serif;
+  --font-kode: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Typeskala */
+  --tekst-liten: 0.9375rem;
+  --tekst-brod: 1.125rem;
+  --tekst-ingress: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+  --tekst-h3: 1.3125rem;
+  --tekst-h2: clamp(1.75rem, 1.2rem + 2.2vw, 2.75rem);
+  --tekst-pris: clamp(1.75rem, 1.3rem + 1.8vw, 3rem);
+  --tekst-tall: clamp(3rem, 2rem + 4vw, 6rem);
+  --tekst-display: clamp(2.75rem, 1rem + 7.5vw, 8.5rem);
+  --maal-brod: 66ch;
+  --maal-ingress: 34ch;
+
+  /* Rom */
+  --rom-1: 4px;  --rom-2: 8px;  --rom-3: 12px; --rom-4: 16px; --rom-5: 24px;
+  --rom-6: 32px; --rom-7: 48px; --rom-8: 64px; --rom-9: 96px; --rom-10: 160px;
+  --rytme-tett: 48px;
+  --rytme-vanlig: 64px;
+  --rytme-pause: 96px;
+  --sidekant: clamp(20px, 5vw, 72px);
+  --bredde-side: 1296px;
+  --spalteluke: 24px;
+
+  /* Kanter og radius */
+  --kant-1: 1px;
+  --kant-2: 2px;
+  --kant-tusj: 3px;
+  --fokus-avstand: 2px;
+  --maalelinje-bredde: 1.5px;
+  --maalelinje-hylse: 1px;
+  --radius-0: 0;
+  --radius-ark: 2px;
+  --radius-scene: 24px;
+  --radius-rund: 50%;
+
+  /* Bevegelse (navn som i briefen del 8) */
+  --ut: cubic-bezier(0.16, 1, 0.3, 1);
+  --inn-ut: cubic-bezier(0.65, 0, 0.35, 1);
+  --tid-svar: 160ms;
+  --tid-svar-lang: 240ms;
+  --tid-inn: 560ms;
+  --tid-inn-trinn: 70ms;
+  --tid-side: 320ms;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --rytme-tett: 64px;
+    --rytme-vanlig: 96px;
+    --rytme-pause: 160px;
+    --spalteluke: 32px;
+  }
+}
+
+/* Mørkt tema: blåkopi. Følger systemet; uten systempreferanse vises lyst. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bunn: var(--blakopi);
+    --ark: var(--blakopi-ark);
+    --tekst: var(--papir);
+    --lenke: var(--krittbla);
+    --maalelinje: var(--krittbla);
+    --fokus: var(--krittbla);
+    --mangel: var(--signalrod);
+    --felt: var(--blakopi-ark);
+    --tekst-plass: var(--plass-mork);
+    --kant-kontroll: var(--papir);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --tid-svar: 0ms;
+    --tid-svar-lang: 0ms;
+    --tid-inn: 0ms;
+    --tid-inn-trinn: 0ms;
+    --tid-side: 0ms;
+  }
+}
+
+/* Save-Data kan ikke leses i CSS. `bevegelse` setter data-spar="1" på <html>. */
+[data-spar="1"] {
+  --tid-svar: 0ms;
+  --tid-svar-lang: 0ms;
+  --tid-inn: 0ms;
+  --tid-inn-trinn: 0ms;
+  --tid-side: 0ms;
+}

@@ -199,8 +199,47 @@ const t = timepris();
   </div>
 </form>
 
+<style>
+  /* ── blødningen har fått et sted å blø ──────────────────────────────────────
+   *
+   * `.prisvelg__linjer div` i interaksjon.css har `padding-inline: 8px` og
+   * `margin-inline: -8px`. Det er riktig gjort: uthevingen – flaten i
+   * `accent-soft` og streken i `accent-text` – skal rekke forbi teksten, ellers
+   * ser den ut som en feil i stedet for et svar.
+   *
+   * Men raden blødde ut av <dl>-en. Målt på 390 px med berøringskontekst:
+   * `dl.kv.prisvelg__linjer` er 292 px bred (x 49–341), raden 308 px (x 41–349),
+   * altså 8 px forbi forelderen i hver ende. Ingenting ble klippet – det er
+   * 25 px kortpolstring utenfor – men et barn som stikker ut av forelderen er
+   * en overflyt som venter på en smalere skjerm.
+   *
+   * Rettingen flytter ikke én piksel tekst. Blødningen gjentas oppover kjeden
+   * til et ledd som HAR polstring å blø inn i: raden blør ut av <dl>-en,
+   * <dl>-en blør ut av `.prisvelg__regnet`, og den blør inn i de 24 pikslene
+   * `.prisvelg__svar` allerede har. Hvert ledd får samme `padding-inline` som
+   * den negative margen, så innholdsboksen står nøyaktig der den stod.
+   *
+   * Målt etter: raden 41–349, <dl> 41–349, `.prisvelg__regnet` 41–349,
+   * `.prisvelg__svar` 24–366. Null piksler forbi noen forelder.
+   *
+   * Spesifisiteten er med vilje to klasser: `.kv { margin: 0 }` i site.css og
+   * `.prisvelg__linjer { margin: 0 }` i interaksjon.css er begge én klasse, og
+   * rekkefølgen mellom arkene skal ikke avgjøre utfallet. */
+  .prisvelg__linjer.kv,
+  .prisvelg__regnet[data-prisvelg-regnet] {
+    padding-inline: var(--space-2);
+    margin-inline: calc(var(--space-2) * -1);
+  }
+</style>
+
 <script>
   import { beregn, formaterKr, type Integrasjon, type Valg } from "../lib/priskalkyle";
+  // Enheten hentes, den skrives ikke. Her sto «eks. mva.» i den meldingen
+  // `role="status"` leser opp – på et foretak som IKKE er mva-registrert
+  // (Brønnøysund: `registrertIMvaregisteret: false` for 936374336). Det får
+  // prisen til å se 25 % høyere ut enn den er, på den ene flaten der prisen er
+  // hele poenget. `prisenhet` er utledet av `firma.mva` og snur av seg selv.
+  import { prisenhet } from "../data/priser";
 
   /**
    * Samme `beregn()` som på /verktoy/priskalkulator og i testene. Importert, ikke
@@ -262,7 +301,7 @@ const t = timepris();
       if (utPakke) utPakke.textContent = `${e.pakke}-pakken`;
       utSpenn.textContent = spenn;
       if (utHvorfor) utHvorfor.textContent = e.pakkeBegrunnelse;
-      if (melding) melding.textContent = `${e.pakke}-pakken, ${spenn} eks. mva.`;
+      if (melding) melding.textContent = `${e.pakke}-pakken, ${spenn} – ${prisenhet}.`;
 
       // Linjene bygges om i sin helhet. Færre enn ti rader, så det er billigere
       // enn å holde orden på hvilke som skal bort.

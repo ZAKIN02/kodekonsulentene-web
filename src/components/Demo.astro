@@ -33,11 +33,42 @@ interface Props {
   kilde?: string;
 }
 const { smal, bred, stor, plakat, tekst, kilde, spill = false } = Astro.props;
+
+/**
+ * ── DET SMALE TRINNET ────────────────────────────────────────────────────────
+ *
+ * Manifestet slås opp HER, ikke sendes inn som props, og det er en bevisst
+ * innrømmelse: de åtte sidene som bruker Demo sender hvert felt for seg
+ * (`smal={opptak.dmarc.smal}` og så videre), og `src/pages/` eies av en annen
+ * agent i denne runden. Et nytt prop måtte vært lagt til åtte kallsteder.
+ *
+ * Oppslaget går på `smal`, som er den eneste stien som alltid er med og som er
+ * unik per opptak. Finnes det ikke noe smalt opptak for den stien – flyt,
+ * skjema, rontgen, uu-sjekk, cookie-sjekk, og det historiske klippet på
+ * /verktoy – faller alt tilbake til dagens oppførsel: stillbildet og knappen.
+ */
+import opptak from "../data/opptak.json";
+type Smalfilm = { film: string; plakat: string; bredde: number; hoyde: number; tekst: string; kilde?: string };
+const oppslag = Object.values(opptak as Record<string, { smal?: string; mobil?: Smalfilm }>)
+  .find((o) => o.smal === smal);
+const mobil = oppslag?.mobil;
 ---
-<figure class="demo" data-demo data-demo-spill={spill ? "" : undefined}>
+<figure
+  class="demo"
+  data-demo
+  data-demo-spill={spill ? "" : undefined}
+  style={mobil ? `--demo-smal-forhold: ${mobil.bredde} / ${mobil.hoyde}` : undefined}
+>
   <div class="demo__ramme">
     <video data-demo-video muted playsinline preload="none" poster={plakat} width="1920" height="1080">
-      <source data-smal={smal} data-bred={bred} data-stor={stor} type="video/mp4" />
+      <source
+        data-smal={smal}
+        data-bred={bred}
+        data-stor={stor}
+        data-mobil={mobil?.film}
+        data-mobil-plakat={mobil?.plakat}
+        type="video/mp4"
+      />
     </video>
   </div>
   {/* Knappen finnes bare paa smal skjerm, og skriptet slaar den paa. Uten
@@ -47,8 +78,19 @@ const { smal, bred, stor, plakat, tekst, kilde, spill = false } = Astro.props;
     Spill av i fullskjerm
   </button>
   <figcaption class="small">
-    {tekst}
-    {kilde && <span class="faint mono"> {kilde}</span>}
+    {/* Det smale opptaket viser ÉN detalj, ikke hele grensesnittet, og da må
+        bildeteksten si noe annet. Begge står i markupen og CSS velger – da er
+        begge med når CSS er av, og det er riktigere enn å gjette i skriptet. */}
+    <span class="demo__tekst demo__tekst--bred">
+      {tekst}
+      {kilde && <span class="faint mono"> {kilde}</span>}
+    </span>
+    {mobil && (
+      <span class="demo__tekst demo__tekst--smal">
+        {mobil.tekst}
+        {mobil.kilde && <span class="faint mono"> {mobil.kilde}</span>}
+      </span>
+    )}
   </figcaption>
 </figure>
 
@@ -64,8 +106,23 @@ const { smal, bred, stor, plakat, tekst, kilde, spill = false } = Astro.props;
   .demo figcaption { color: var(--ink-muted); }
 
   .demo__helskjerm { display: none; }
+  .demo__tekst--smal { display: none; }
   @media (max-width: 640px) {
     .demo__helskjerm:not([hidden]) { display: inline-flex; justify-self: start; }
+
+    /* RAMMA MÅ VITE FORHOLDET FØR FILA KOMMER, ellers hopper siden.
+       `width`/`height` på <video> er 1920x1080, altså 16:9. Det smale opptaket
+       er 816x612, altså 4:3. Uten dette ville ramma stått 16:9 til fila var
+       lastet og så krympet – en layoutforskyvning på hver eneste telefon, på
+       et nettsted som selger at det ikke skjer. Variabelen settes i markupen,
+       fra det ffprobe faktisk målte – aldri skrevet for hånd. */
+    .demo[style*="--demo-smal-forhold"] .demo__ramme video {
+      aspect-ratio: var(--demo-smal-forhold);
+      height: auto;
+    }
+    /* Finnes det et smalt opptak, hører den smale bildeteksten til det. */
+    .demo[style*="--demo-smal-forhold"] .demo__tekst--bred { display: none; }
+    .demo[style*="--demo-smal-forhold"] .demo__tekst--smal { display: inline; }
   }
   /* Fullskjerm skal fylle skjermen, ikke staa som et lite kort midt i svart.
      `object-fit: contain` beholder bildeforholdet. */
@@ -113,6 +170,17 @@ const { smal, bred, stor, plakat, tekst, kilde, spill = false } = Astro.props;
     // Knappen vises foerst naar vi vet at den virker. `webkitEnterFullscreen`
     // er Safari paa iPhone sin eneste vei inn: der kan BARE <video> gaa i
     // fullskjerm, ikke et vilkaarlig element.
+    // Det smale opptaket, hvis scenen har ett. Det er et EGET opptak, tatt opp
+    // i et 320 px vindu med innholdsspalten som utsnitt – ikke en nedskalering
+    // av det brede. Regnestykket står i scripts/opptak.mjs.
+    const smalFilm = kilde.dataset.mobil || null;
+    const smalPlakat = kilde.dataset.mobilPlakat || null;
+
+    // Plakaten byttes med det samme, FOER noen ruller hit. Markupen bærer den
+    // brede plakaten fordi den er riktig for de fleste og for en skrivebords-
+    // leser uten JavaScript; her settes den smale der den hoerer hjemme.
+    if (SMAL.matches && smalPlakat) film.poster = smalPlakat;
+
     const helskjerm = rot.querySelector<HTMLButtonElement>("[data-demo-helskjerm]");
     type IOSVideo = HTMLVideoElement & { webkitEnterFullscreen?: () => void };
     const kanHelskjerm =
@@ -124,7 +192,8 @@ const { smal, bred, stor, plakat, tekst, kilde, spill = false } = Astro.props;
         // Kilden settes FOER play(), ellers spiller vi av et <source> uten src
         // og feiler stille. Samme rekkefoelge som i loekken under.
         if (!kilde.src) {
-          kilde.src = kilde.dataset.bred ?? kilde.dataset.smal ?? "";
+          kilde.src =
+            (SMAL.matches && smalFilm) || kilde.dataset.bred || kilde.dataset.smal || "";
           film.load();
         }
         film.controls = true;
@@ -141,10 +210,41 @@ const { smal, bred, stor, plakat, tekst, kilde, spill = false } = Astro.props;
       });
     }
 
-    // Verken spoling eller loekke paa smal skjerm: stillbildet staar.
-    // Her kommer ogsaa de to vilkaarene som knappen over med vilje staar
-    // utenfor – ingenting skal starte av seg selv.
-    if (SMAL.matches || redusert || spar) continue;
+    // Ingenting skal starte av seg selv for den som har bedt om mindre
+    // bevegelse eller mindre data. Knappen over staar med vilje utenfor begge:
+    // et trykk er en handling brukeren selv har valgt.
+    if (redusert || spar) continue;
+
+    /**
+     * SMAL SKJERM MED EGET OPPTAK: det gaar i loekke, og det er NYTT.
+     *
+     * Foer hadde telefonen bare stillbildet, fordi klippet var 1920 px vist i
+     * 314–342 px – 0,197x, der 16 px grensesnittekst blir 3,1 px. Et klipp
+     * ingen kan lese er verre enn et stillbilde: stillbildet kan i det minste
+     * knipe-zoomes, et klipp i loekke skifter under fingeren.
+     *
+     * Det smale opptaket er tatt opp i et 320 px vindu med innholdsspalten som
+     * utsnitt, altsaa 272 CSS px vist i 314,6 – 1,157x. Da er 12 px kildetekst
+     * 13,9 px paa skjermen, og klippet er ikke lenger en flekk. Derfor gaar det.
+     *
+     * Fila er ogsaa lettere enn den telefonen ellers ville faatt: 71 til 275 kB
+     * mot 294 til 846 for 960-trinnet. Den hentes foerst naar ramma naermer seg.
+     */
+    if (SMAL.matches) {
+      if (!smalFilm) continue; // ingen smal variant: stillbildet staar, som foer
+      film.loop = true;
+      film.muted = true;
+      film.setAttribute("playsinline", "");
+      const ioM = new IntersectionObserver((poster) => {
+        if (!poster.some((p) => p.isIntersecting)) return;
+        ioM.disconnect();
+        kilde.src = smalFilm;
+        film.load();
+        film.play().catch(() => {});
+      }, { rootMargin: "60% 0px" });
+      ioM.observe(rot);
+      continue;
+    }
 
     // Løkke i stedet for spoling. Rekkefølgen er viktig: kilden må settes FØR
     // play(), ellers spiller vi av et <source> uten src og feiler stille.

@@ -17,7 +17,15 @@
     "bredde": 1920,
     "hoyde": 1080,
     "tekst": "Priskalkulatoren regner mens du velger. Den gir et spenn med gulv, ikke et tilbud – postene er de samme vi bruker når vi regner.",
-    "kilde": "6. oktober 2026"
+    "kilde": "6. oktober 2026",
+    "mobil": {
+      "film": "/opptak/priskalkulator-mobil-816.mp4",
+      "plakat": "/opptak/priskalkulator-mobil-poster.avif",
+      "bredde": 816,
+      "hoyde": 810,
+      "tekst": "Priskalkulatoren regner mens du velger, tatt opp i telefonformat. Tallet er summen verktøyet faktisk kom til – et spenn med gulv, ikke et tilbud.",
+      "kilde": "7. oktober 2026"
+    }
   },
   "dmarc": {
     "smal": "/opptak/dmarc-960.mp4",
@@ -27,7 +35,15 @@
     "bredde": 1920,
     "hoyde": 1080,
     "tekst": "DMARC-sjekken gjør ekte DNS-oppslag. Her mot nkom.no, og statusene er det DNS faktisk svarte.",
-    "kilde": "6. oktober 2026"
+    "kilde": "6. oktober 2026",
+    "mobil": {
+      "film": "/opptak/dmarc-mobil-816.mp4",
+      "plakat": "/opptak/dmarc-mobil-poster.avif",
+      "bredde": 816,
+      "hoyde": 990,
+      "tekst": "DMARC-sjekken gjør et ekte DNS-oppslag, her mot vårt eget domene. «Bør fikses» er det oppslaget faktisk svarte – vi står med p=none selv.",
+      "kilde": "7. oktober 2026"
+    }
   },
   "uu-sjekk": {
     "smal": "/opptak/uu-sjekk-960.mp4",
@@ -57,7 +73,15 @@
     "bredde": 1920,
     "hoyde": 1078,
     "tekst": "Lagstabelen på vår egen side, dratt fra hverandre. De fire lagene er det en nettside faktisk består av – og alle fire er med i det vi leverer.",
-    "kilde": "6. oktober 2026"
+    "kilde": "6. oktober 2026",
+    "mobil": {
+      "film": "/opptak/lagstabel-mobil-816.mp4",
+      "plakat": "/opptak/lagstabel-mobil-poster.avif",
+      "bredde": 816,
+      "hoyde": 816,
+      "tekst": "Lagstabelen dratt fra hverandre på telefon. De fire lagene er det en nettside faktisk består av, og alle fire er med i det vi leverer.",
+      "kilde": "7. oktober 2026"
+    }
   },
   "sammenlign": {
     "smal": "/opptak/sammenlign-960.mp4",
@@ -67,7 +91,15 @@
     "bredde": 1920,
     "hoyde": 1082,
     "tekst": "To ekte målinger fra vår egen sjekk, samme dag. Radene som skiller 50 fra 90 er navngitt – det er de fire tingene vi retter.",
-    "kilde": "6. oktober 2026"
+    "kilde": "6. oktober 2026",
+    "mobil": {
+      "film": "/opptak/sammenlign-mobil-816.mp4",
+      "plakat": "/opptak/sammenlign-mobil-poster.avif",
+      "bredde": 816,
+      "hoyde": 876,
+      "tekst": "To ekte målinger fra vår egen sjekk, samme dag. Den sjekkede siden er ikke navngitt – vi publiserer ikke navn på sider som kommer dårlig ut.",
+      "kilde": "7. oktober 2026"
+    }
   },
   "terminal": {
     "smal": "/opptak/terminal-960.mp4",
@@ -77,7 +109,15 @@
     "bredde": 1920,
     "hoyde": 1080,
     "tekst": "Terminalen på siden kjører de samme sjekkene som verktøyene. Her mot vårt eget domene, og tallene er det sjekken faktisk svarte – forbeholdet inkludert.",
-    "kilde": "6. oktober 2026"
+    "kilde": "6. oktober 2026",
+    "mobil": {
+      "film": "/opptak/terminal-mobil-816.mp4",
+      "plakat": "/opptak/terminal-mobil-poster.avif",
+      "bredde": 816,
+      "hoyde": 1230,
+      "tekst": "Terminalen på siden, kjørt mot vårt eget domene fra en telefon. Tallene er det sjekken faktisk svarte, forbeholdet inkludert.",
+      "kilde": "7. oktober 2026"
+    }
   },
   "flyt": {
     "smal": "/opptak/flyt-960.mp4",

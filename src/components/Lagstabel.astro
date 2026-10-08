@@ -95,6 +95,29 @@ import "../styles/interaksjon.css";
 <style>
   .stabel { margin: 0; display: grid; gap: var(--space-5); justify-items: center; }
 
+  /* ETIKETTENE SPRER SEG I PIKSLER, SCENEN MÅLES I PROSENT. Det går ikke opp på
+     en telefon, og det er målt: hver etikett flytter seg 69 px per lag, så den
+     nederste står 134 px under scenens midte når lagene er trukket helt fra
+     hverandre – uansett hvor bred skjermen er. Scenen er derimot `4 / 3` av
+     spalten, altså 204 px høy på 320 px og 257 på 390.
+
+       etikettenes bunn, i forhold til scenens bunn:  134 − høyde/2
+
+     På 320 px er det 43 px UNDER scenen, og kontrollen begynner 24 px under
+     den: «04 Integrasjoner» lå 19 px oppå knappen «Ta siden fra hverandre».
+     Målt på 320 og 360 px, i begge bevegelsestilstander. Det ble synlig først
+     da etiketten fikk brekke over to linjer – før det var den ene lange linjen
+     klippet bort sidelengs i stedet, så feilen byttet bare retning.
+
+     `min-height: 20rem` VAR FØRSTE FORSØK OG ER FEIL. Scenen er `width: 100%`
+     i en grid-celle som er `auto`, så cellen sizes av elementets max-content –
+     og med en definert minstehøyde regner Chromium max-content-BREDDEN ut av
+     forholdstallet. Målt: scenen ble 427 px bred inne i en 272 px figur, altså
+     155 px overflyt på nøyaktig den skjermen rettingen var til for.
+
+     Løsningen er å endre forholdstallet i stedet, under 480 px – som er der
+     `4 / 3` gir mindre enn de 316 px etikettene trenger (0,75 × 421). Over det
+     er figuren uendret. Se den siste mediaspørringen i dette arket. */
   .stabel__scene {
     position: relative;
     width: 100%;
@@ -284,15 +307,62 @@ import "../styles/interaksjon.css";
     .stabel__merke { grid-template-columns: var(--space-4) auto; }
   }
 
+  /* Enda strammere her: på 390px landet høyre kant nøyaktig på viewportkanten,
+     uten luft.
+
+     DEN FORRIGE RETTINGEN FLYTTET BOKSEN, IKKE TEKSTEN. `width: min(34%, 132px)`
+     ga 116,3 px på en 390 px skjerm (scenen er 342), og etiketten var dermed
+     innenfor skjermkanten. Men INNHOLDET var det ikke: målt min-content per
+     etikett, med berøringskontekst, både med og uten redusert bevegelse –
+
+       01 Design          101,7 px
+       02 Kode             89,7 px
+       03 Sikkerhet       121,9 px   →  5,6 px forbi boksen
+       04 Integrasjoner   150,8 px   → 34,5 px forbi boksen
+
+     Tallene er identiske i de to bevegelsestilstandene; dette er ren layout.
+     Etikettene overlevde bare fordi `overflow-x: clip` ligger globalt på siden:
+     på 390 px var det 24 px luft igjen til skjermkanten, på 360 px er det ikke
+     det, og da er «Integrasjoner» klippet midt i ordet.
+
+     150,8 px er 16 (lederstrek) + 12 (gap) + 122,8 (nummer + navn på ÉN linje).
+     Tre grep tar det ned, i den rekkefølgen de koster minst:
+
+       lederstrek 16 → 12 px   (space-4 → space-3)      −4
+       gap        12 →  8 px   (space-3 → space-2)      −4
+       tittelen får brytes                              −28 («04» faller av)
+
+     Da er min-content 12 + 8 + 94,8 = 114,8 px, og boksen er min(38%, 144px) =
+     130 px på 390. Nummeret og navnet står fortsatt på samme linje så lenge det
+     er plass – `flex-wrap` bryter først når det ikke er det, altså under ~330 px
+     skjerm. `min-width: 0` og `overflow-wrap` på navnet er sikkerhetsnettet:
+     uten dem kan et flex-element ikke krympe under sitt eget lengste ord, og
+     «Integrasjoner» ville stukket ut igjen på de smaleste telefonene. */
+  /* Se den lange begrunnelsen ved `.stabel__scene`. Kort: etikettene sprer seg
+     134 px under scenens midte i piksler, scenen er 3/4 av spalten i prosent,
+     og under 480 px skjerm møtes de ikke. Et kvadrat gir klaring hele veien –
+     målt på 320 / 360 / 390 / 430 px: nederste etikett står 15 til 61 px OVER
+     knappen, der den før lå 19 px oppå den. */
+  @media (max-width: 479.98px) {
+    .stabel__scene { aspect-ratio: 1 / 1; }
+  }
+
   @media (max-width: 560px) {
-    /* Enda strammere her: på 390px landet høyre kant nøyaktig på viewportkanten,
-       uten luft. Nå er det 24px igjen. */
     .stabel__merke {
       left: calc(50% + min(10%, 48px));
-      width: min(34%, 132px);
+      width: min(38%, 144px);
+      grid-template-columns: var(--space-3) auto;
+      column-gap: var(--space-2);
     }
+    .stabel__tittel { flex-wrap: wrap; }
     .stabel__lag { width: min(62%, 300px); }
-    .stabel__navn { font-size: 15px; line-height: 21px; }
+    .stabel__navn {
+      font-size: 15px;
+      line-height: 21px;
+      min-width: 0;
+      overflow-wrap: break-word;
+      hyphens: auto;
+    }
     .stabel__detalj { display: none; }
   }
 </style>

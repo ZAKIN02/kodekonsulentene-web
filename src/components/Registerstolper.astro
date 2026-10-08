@@ -105,13 +105,13 @@ const maks = Math.max(...rader.map((r) => r.andel), 1);
                 >{r.krav}</a>
                 {n && <span class="regstolper__niva mono-label">{n.niva}</span>}
               </th>
-              <td class="regstolper__navn">{n?.navn ?? "—"}</td>
-              <td class="regstolper__verdi">
+              <td class="regstolper__navn" data-kol="Krav">{n?.navn ?? "—"}</td>
+              <td class="regstolper__verdi" data-kol="Andel">
                 <span class="regstolper__stolpe" aria-hidden="true"></span>
                 <span class="regstolper__prosent mono">{prosent(r.andel)} %</span>
               </td>
-              <td class="regstolper__av mono">{tall(r.brot)} av {tall(r.vurdert)}</td>
-              <td class:list={["regstolper__sjekk", maskin && "regstolper__sjekk--ja"]}>
+              <td class="regstolper__av mono" data-kol="Brudd">{tall(r.brot)} av {tall(r.vurdert)}</td>
+              <td data-kol="Vi sjekker" class:list={["regstolper__sjekk", maskin && "regstolper__sjekk--ja"]}>
                 {maskin ? "Ja" : "Nei"}
               </td>
             </tr>
@@ -121,6 +121,21 @@ const maks = Math.max(...rader.map((r) => r.andel), 1);
     </tbody>
   </table>
   </div>
+  {/* ANTYDNINGEN. Rulleboksen over skjulte 139 px uten å si det med ett ord:
+      målt på 390 px er boksen 340 px og innholdet 479. De to siste kolonnene –
+      «Av vurderte» og «Målbar maskinelt» – lå utenfor kanten, og tallet som ER
+      dataen var kuttet midt i: «1 155» der det står «1 155 av 2 384».
+
+      Setningen står UTENFOR mediaspørringen i markupen og skjules med CSS, så
+      den forsvinner fra tilgjengelighetstreet sammen med flaten den beskriver –
+      `display: none` tar et element ut av treet. En skjermleser får hele
+      tabellen uansett og trenger ingen rullebeskjed; dette er for øyet.
+
+      Skyggene i CSS under gjør samme jobb uten ord, men de er en bakgrunn, og
+      bakgrunner forsvinner under tvungne farger. Da står setningen igjen. */}
+  <p class="small faint regstolper__rull">
+    Tabellen er bredere enn skjermen. Rull den sidelengs for de to siste kolonnene.
+  </p>
   {bunntekst && <figcaption class="small faint regstolper__bunn">{bunntekst}</figcaption>}
 </figure>
 
@@ -166,12 +181,42 @@ const maks = Math.max(...rader.map((r) => r.andel), 1);
      Derfor: ingen rulleboks der tabellen får plass, og der den ikke får plass
      står stolpene ferdig vokst i stedet. */
   @media (max-width: 52rem) {
-    .regstolper__rulle { overflow-x: auto; }
+    .regstolper__rulle {
+      overflow-x: auto;
+      /* RULLESKYGGER UTEN EN LINJE JAVASCRIPT.
+         Fire flater. De to første er dekkflater i boksens egen bakgrunnsfarge og
+         er festet til INNHOLDET (`local`), så de følger med når man drar. De to
+         siste er skyggene og er festet til BOKSEN (`scroll`), så de blir
+         stående. Står innholdet i enden, ligger dekkflaten nøyaktig oppå
+         skyggen og skjuler den. Skyggen finnes altså bare i den retningen det
+         faktisk er noe å dra til – den kan ikke komme til å lyve. */
+      background-image:
+        linear-gradient(to right, var(--bg-raised) 70%, transparent),
+        linear-gradient(to left, var(--bg-raised) 70%, transparent),
+        linear-gradient(to right, color-mix(in srgb, var(--ink) 26%, transparent), transparent),
+        linear-gradient(to left, color-mix(in srgb, var(--ink) 26%, transparent), transparent);
+      background-position: 0 0, 100% 0, 0 0, 100% 0;
+      background-repeat: no-repeat;
+      background-size: 20px 100%, 20px 100%, 14px 100%, 14px 100%;
+      background-attachment: local, local, scroll, scroll;
+    }
     /* Samme tilstand som ved redusert bevegelse: ferdig, synlig, i ro. */
     .regstolper__stolpe {
       animation: none !important;
       transform: scaleX(1) !important;
     }
+    .regstolper__rull { display: block; }
+    /* <caption> arver tabellens bredde, ikke rulleboksens. Tittelen ble derfor
+       brutt over 507 px og kuttet midt i et ord ved kanten – «De 12 kravene med
+       høyest andel ra|pporterte brudd» – og resten lå bak rullingen. Målt på
+       390 px: tekstens høyre kant lå på 440 px i en 340 px flate.
+       En `max-width` på captionboksen virker (målt i Chromium: 507,2 → 342) og
+       flytter ingenting annet; de 167 skjulte pikslene er uendret, fordi det er
+       tabellen og ikke tittelen som er bred. Nå slutter teksten på 323 px.
+       100vw minus to sidemarger er sidens egen tekstbredde her. Som MAKS-bredde
+       er den trygg: er margen en annen, blir tittelen litt smalere eller litt
+       bredere enn flaten, aldri bredere enn skjermen. */
+    .regstolper__caption { max-width: calc(100vw - var(--space-5) * 2); }
   }
   .regstolper__tabell {
     width: 100%;
@@ -308,6 +353,10 @@ const maks = Math.max(...rader.map((r) => r.andel), 1);
 
   .regstolper__bunn { margin: 0; max-width: 72ch; }
 
+  /* Rullebeskjeden finnes bare der det faktisk er noe å rulle. Over 52rem får
+     tabellen plass, og da ville setningen vært en usannhet i liten skrift. */
+  .regstolper__rull { display: none; margin: 0; max-width: 72ch; }
+
   /* ---------------------------------------------------------- stolpene vokser ---
 
      Standardtilstanden over er FERDIG UTVOKST. Alt som krymper noe står her inne.
@@ -408,25 +457,98 @@ const maks = Math.max(...rader.map((r) => r.andel), 1);
         passet. Kolonnen blir derfor stående – den er ikke i veien når de tre
         første får plass. */
   @media (max-width: 639.98px) {
-    .regstolper__th--krav { width: 5.4rem; }
-    .regstolper__th--verdi { width: 5.4rem; }
-    .regstolper__th--av { width: 6.4rem; }
-    .regstolper__th--sjekk { width: 3.4rem; }
-    /* Regnestykket, og det er grunnen til at tallet er 28 og ikke noe rundt:
-       de fire faste kolonnene er 20,6rem = 330 px. `min-width: 28rem` = 448 px
-       gir navnekolonnen de 118 pikslene den trenger for to ord på en linje – på
-       67 px brøt «Synstolking» midt i ordet og rant inn i prosentkolonnen.
-       Prosenten slutter da på 290 px, altså innenfor rulleboksen også på en
-       360 px skjerm (310 px boks). De to siste kolonnene ruller inn. */
-    .regstolper__tabell { min-width: 28rem; }
+    .regstolper__th--krav { width: 5.7rem; }
+    .regstolper__th--verdi { width: 6.7rem; }
+    .regstolper__th--av { width: 5.2rem; }
+    .regstolper__th--sjekk { width: 5.7rem; }
+    /* DE 31 PIKSLENE SOM RANT UT AV SINE EGNE CELLER.
+       `table-layout: fixed` gir cellen den bredden kolonnen er satt til, og bryr
+       seg ikke om at innholdet er bredere. Målt min-content per kolonne på
+       390 px, i en kopi av tabellen med `table-layout: auto`:
+
+         Krav                 98,7 px   mot  86,4 tildelt
+         Hva kravet heter    138,2 px   mot 118,4
+         Rapporterer brudd   113,8 px   mot  86,4   (drevet av min-width: 11ch)
+         Av vurderte         141,6 px   mot 102,4   («1 155 av 2 384», nowrap)
+         Målbar maskinelt     97,4 px   mot  54,4   («MASKINELT» er ett ord)
+
+       Tre av fem kolonner var for trange for sitt eget innhold. Summen av
+       overskytende var tabellens 31 px: teksten la seg over nabokolonnen og ut
+       av tabellen, og rulleboksen fikk 479 px innhold der tabellen selv er 448.
+
+       To grep tar bort det meste: polstringen fra 12 til 8 px i hver cellekant
+       (−8 px per kolonne, −40 i alt), og «Av vurderte» får brytes, så
+       «1 155 av 2 384» faller ned på to linjer i stedet for å rømme sidelengs.
+       Målt på nytt etterpå, per kolonne – og delt opp i hva TALLENE trenger og
+       hva OVERSKRIFTEN trenger, fordi de to er helt ulike her:
+
+                             overskrift   tall    satt til
+         Krav                      48,6   90,7     91,2
+         Hva kravet heter          65,0  130,2    134,4  (resten)
+         Rapporterer brudd        105,8   66,4    107,2
+         Av vurderte               81,3   58,0     83,2
+         Målbar maskinelt          89,4   41,2     91,2
+                                        sum       507,2
+
+       DEN ÆRLIGE BREDDEN ER 497 PX, OG DEN ER STØRRE ENN DEN VAR FØR.
+       `min-width` var 28rem = 448 px, altså 139 px skjult på en 340 px flate.
+       Men de 448 var ikke en tabell som fikk plass – det var en tabell der tre
+       av fem kolonner var for trange for sitt eget innhold, og teksten løste
+       det ved å legge seg utenfor cellen sin. Nå er `min-width` 31,7rem =
+       507,2 px, så 167 px er utenfor flaten i stedet for 139. Det er et
+       dårligere tall og et bedre bord: ingenting kolliderer, alt er nåbart, og
+       rulleskyggene under sier fra at det er mer.
+
+       Og det som betyr noe kommer først: Krav + navn + prosent er
+       91,2 + 134,4 + 107,2 = 332,8 px, altså innenfor de 340 som er synlige
+       uten å dra i det hele tatt. Tallet som ER dataen står i det første
+       skjermbildet. De to siste kolonnene er utdypning, og de ruller inn.
+
+       MERK at overskriftene er det som koster: «RAPPORTERER» alene krever
+       105,8 px, mens tallene i samme kolonne klarer seg med 66,4. Å la
+       overskriftene brekke midt i ordet ville gitt en tabell på 386 px og bare
+       52 px skjult – men «RAPPORTE-RER» i et tabellhode er en feil som ser ut
+       som en feil. Det er valgt bort med vilje. */
+    .regstolper__av { white-space: normal; }
+    .regstolper__verdi { min-width: 0; }
+    /* Regnestykket står i blokken over: de fire faste kolonnene er 23,3rem =
+       372,8 px, og navnekolonnen trenger 130,2. 31,7rem = 507,2 px gir den
+       134,4 og dermed luft til at «(forhåndsinnspilt)» får stå helt.
+       Tallet er ikke rundt fordi det er målt, ikke valgt. */
+    .regstolper__tabell { min-width: 31.7rem; }
     .regstolper__rad > *,
-    .regstolper__th { padding-inline: var(--space-3); }
+    .regstolper__th { padding-inline: var(--space-2); }
     /* Kolonneoverskriftene må få brytes her. Med nowrap rant «HVA KRAVET HETER»
        og «RAPPORTERER BRUDD» inn i hverandre i tabellhodet – målt på 390 px,
        mens radene under satt riktig. Overskriftene er korte nok til at to linjer
        ikke flytter noe. */
     .regstolper__th { white-space: normal; }
-    .regstolper__stolpe { right: var(--space-3); max-width: calc(100% - var(--space-3) * 2); }
+    .regstolper__stolpe { right: var(--space-2); max-width: calc(100% - var(--space-2) * 2); }
     .regstolper__navn { min-width: 0; }
   }
+
+  /* 167 px laa skjult i rulleboksen ved 390 px, uten synlig antydning om at det var
+     mer – samme feil som rapporttabellen paa /sikkerhet hadde, bare stoerre.
+     Under 720 px blir hver rad et kort med etiketten foran verdien, saa ingenting
+     avhenger av vannrett scroll. Stolpen beholder full bredde, for den ER tallet. */
+  @media (max-width: 720px) {
+    .regstolper__rulle { overflow-x: visible; }
+    /* min-width paa tabellen er det som TVINGER rulleboksen. Den slaar width: 100 %,
+       saa uten denne nullstillingen staar radkortene fortsatt 142 px utenfor. */
+    .regstolper__tabell, .regstolper__tabell tbody,
+    .regstolper__tabell tr, .regstolper__tabell td {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+    }
+    .regstolper__tabell thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+    .regstolper__tabell tr { padding-block: var(--space-3); border-bottom: var(--hairline) solid var(--line); }
+    .regstolper__tabell td { display: flex; gap: var(--space-3); justify-content: space-between; align-items: baseline; padding: var(--space-1) 0; border: 0; }
+    .regstolper__tabell td::before { content: attr(data-kol); color: var(--ink-muted); flex: 0 0 auto; }
+    .regstolper__navn { font-weight: 700; }
+    .regstolper__verdi { display: block; }
+    .regstolper__verdi::before { display: block; margin-block-end: var(--space-1); }
+  }
+
 </style>

@@ -4,6 +4,12 @@
 // Start-pakken mangler CMS.
 import Button from "./Button.astro";
 import Ikon from "./Ikon.astro";
+// Standardenheten HENTES, den skrives ikke. Den sto som strengen «eks. mva» mens
+// `firma.mva` er false – Brønnøysund svarer `registrertIMvaregisteret: false`, så
+// prisene våre er endelige. Alle kallsteder sender i dag `unit={prisenhet}`, så
+// strengen var usynlig; den var en felle for neste bruk. `prisenhet` snur av seg
+// selv den dagen omsetningen passerer 50 000 kr. Se src/data/priser.ts.
+import { prisenhet } from "../data/priser";
 export interface PriceFeature { text: string; included?: boolean }
 interface Props {
   name: string; price: string; prefix?: string; unit?: string; description?: string;
@@ -18,7 +24,7 @@ interface Props {
   nivaa?: 2 | 3;
 }
 const {
-  name, price, prefix, unit = "eks. mva", description, features,
+  name, price, prefix, unit = prisenhet, description, features,
   recommended = false, flagLabel = "Anbefalt", cta, href, class: cls, nivaa = 3,
 } = Astro.props;
 const Navn = nivaa === 2 ? "h2" : "h3";

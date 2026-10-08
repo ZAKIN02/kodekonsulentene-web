@@ -76,3 +76,12 @@ Dette er ikke juridisk rådgivning.
 - Etterarbeid: scripts/lag-scene.sh hero.
 - Innhold: ingen logoer, varemerker, personer eller navngitte kunstneres stil.
 - Kreditter brukt: ca. 76 totalt (estimat fra POST /estimate, inkludert forkastede bilder og std-utkast; 8,8 av dem i f3-produsent-endelig).
+
+## public/scener/naerbilder/
+- Type: KI-generert stillbilde (fire nærbilder, ett per lag: glass, kretskort, keramikk, aluminium). Merket på siden: «Illustrasjon laget med KI».
+- Plattform: Higgsfield (API), betalt konto. Vilkår punkt 4.4 lest 2026-10-08 (lest av brief, ikke åpnet på nytt av produsenten; eier bekrefter).
+- Bilder: Grok Imagine Image 2.0 (`xai/grok-imagine-image-2.0`), 2k (2816x1584), redigert med B.png som referanse, ett forsøk per bilde. Generert 2026-10-08. Kilder: assets/higgsfield/bilder/naer-<lag>.png.
+- Prompter: assets/higgsfield/prompter/ (stilkort, naerbilde-glass, -kretskort, -keramikk, -aluminium; del 9-prompten med ett ord byttet).
+- Etterarbeid: ffmpeg til AVIF (libaom, crf 32): <lag>.avif 2816x1584 og <lag>-1920.avif 1920x1080 (nedskalert, ikke oppskalert).
+- Innhold: ingen logoer, varemerker, personer, tekst eller navngitte kunstneres stil.
+- Kreditter brukt: ca. 5,8 (estimat).

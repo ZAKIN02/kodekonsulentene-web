@@ -101,3 +101,12 @@ En linje før hver generering og en etter. `est=` er prisanslag fra POST /estima
 - 2026-10-08 15:09:45Z START assets/higgsfield/bilder/C-fraA-6 | xai/grok-imagine-image-2.0 16:9 2k ref=assets/higgsfield/bilder/A.png,assets/higgsfield/bilder/B-justert.png | promptfil=bilde-C-v8.txt | est=1.6 | sum før=74.608 | merknad: C fra A forsøk 6 (siste): to referanser A og B-justert (viser fem porter), v8
   - resultat: assets/higgsfield/bilder/C-fraA-6.png | 2816x1584 | sum etter=76.208
 - 2026-10-08 f3: STOPP. Seks forsøk på C (C-fraA-1..6, Grok; ett Qwen-kall feilet med «temporarily unavailable», est refundert) ga ingen bilde som består kontrollen. Ingen video, sløyfe eller nærbilder generert. Sum est etter f3: 76.208.
+- 2026-10-08 15:11:27Z START assets/higgsfield/bilder/naer-glass-1 | xai/grok-imagine-image-2.0 16:9 2k ref=assets/higgsfield/bilder/B.png | promptfil=stilkort.txt,naerbilde-glass.txt | est=1.44 | sum før=76.208 | merknad: nærbilde glass forsøk 1, ordrett naerbilde.txt med stilkort, ref B.png
+  - resultat: assets/higgsfield/bilder/naer-glass-1.png | 2816x1584 | sum etter=77.648
+- 2026-10-08 15:11:59Z START assets/higgsfield/bilder/naer-kretskort-1 | xai/grok-imagine-image-2.0 16:9 2k ref=assets/higgsfield/bilder/B.png | promptfil=stilkort.txt,naerbilde-kretskort.txt | est=1.44 | sum før=77.648 | merknad: nærbilde kretskort forsøk 1, ordrett naerbilde.txt med stilkort, ref B.png
+  - resultat: assets/higgsfield/bilder/naer-kretskort-1.png | 2816x1584 | sum etter=79.088
+- 2026-10-08 15:12:37Z START assets/higgsfield/bilder/naer-keramikk-1 | xai/grok-imagine-image-2.0 16:9 2k ref=assets/higgsfield/bilder/B.png | promptfil=stilkort.txt,naerbilde-keramikk.txt | est=1.44 | sum før=79.088 | merknad: nærbilde keramikk forsøk 1, ordrett naerbilde.txt med stilkort, ref B.png
+  - resultat: assets/higgsfield/bilder/naer-keramikk-1.png | 2816x1584 | sum etter=80.528
+- 2026-10-08 15:13:08Z START assets/higgsfield/bilder/naer-aluminium-1 | xai/grok-imagine-image-2.0 16:9 2k ref=assets/higgsfield/bilder/B.png | promptfil=stilkort.txt,naerbilde-aluminium.txt | est=1.44 | sum før=80.528 | merknad: nærbilde aluminium forsøk 1, ordrett naerbilde.txt med stilkort, ref B.png
+  - resultat: assets/higgsfield/bilder/naer-aluminium-1.png | 2816x1584 | sum etter=81.968
+- 2026-10-08 f3-oppfølging: nærbildene godkjent ved Read, ett forsøk hver (naer-glass/kretskort/keramikk/aluminium-1 = naer-<lag>.png). Sum est etter: 81.968. Dirigenten har strøket C, klipp B og sløyfe.

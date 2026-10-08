@@ -40,3 +40,18 @@ Ikke kjørt `lag-scene.sh` på nytt, siden ingen nye klipp finnes. Bakgrunn mål
 1. C mangler. Forsiden går videre med A alene (eller A uten C-avslutning).
 2. Forslag til ny runde, eier må godkjenne kreditter: (a) vent på at Qwen edit kommer tilbake og prøv C fra A der (Qwen var best på å holde vinkelen, svakest på antall); (b) bygg C manuelt med ffmpeg/compositing av A-3 og B-justert (plater flyttet ned), som ikke er KI-generering; (c) lag C som første forsøk i Nano Banana Pro (`nano_banana_2`) hvis kontoen har den, som briefen forutsatte. Dette er ikke prøvd.
 3. C-fraA-3 er beste kandidat, men feiler på porttall.
+
+## Oppfølging: nærbilder (C, klipp B og sløyfe er strøket av dirigenten)
+
+Fire nærbilder, Grok Imagine Image 2.0, 2k (2816x1584), `--ref B.png`, stilkort + naerbilde.txt med ett ord byttet (promptfiler naerbilde-<lag>.txt). Ett forsøk per bilde, alle sett med Read. Brukt 5,8 kreditter (estimat); sum i loggen 82,0; rammen var 30.
+
+| Lag | Fil | Kontroll |
+|---|---|---|
+| Glass | `public/scener/naerbilder/glass.avif` | Frostet kant med lime-linje, kretskort synlig under. OK |
+| Kretskort | `kretskort.avif` | Kretskort over aluminiumskant, lime-søm. Brikker blanke, ingen tekst. OK |
+| Keramikk | `keramikk.avif` | Sekskantgitter, lime kantlinje. OK |
+| Aluminium | `aluminium.avif` | Børstet kant med fasetter, glass over. OK, glasset svever litt over kretskortet |
+
+Alle: ingen tekst, samme palett og lys som B, rolig mørk flate til venstre, ett lime-element. Størrelser: største variant 2816x1584 (44 til 67 kB), `-1920.avif` 1920x1080 (23 til 38 kB). Kilde-png i `assets/higgsfield/bilder/naer-<lag>.png` (pluss -1-filene). Lisenslogg og logg oppdatert.
+
+Merk: nærbildene viser en samlet plate, mens B er eksplodert; lagene vises derfor som tett stablet. De er ikke samme geometri som C ville hatt, og kan brukes uavhengig av hero.

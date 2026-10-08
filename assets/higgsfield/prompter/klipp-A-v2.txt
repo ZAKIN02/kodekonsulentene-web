@@ -1,0 +1,5 @@
+Locked-off static camera on a tripod; the camera does not move, zoom or reframe at any point. Silent product shot. Start exactly on the supplied start frame and end exactly on the supplied end frame.
+0.0 to 1.5 s: everything holds perfectly still.
+1.5 to 5.5 s: one continuous, slow, steady movement at constant speed. The aluminium base plate never moves. The five cables slowly loosen and straighten into a neat parallel row below the base plate. At the same time the three upper plates lift straight upward along one vertical axis, top plate first and the others following a moment later, each plate gently leveling out as it rises until all four plates are perfectly parallel and evenly spaced, exactly matching the end frame.
+5.5 to 6.0 s: everything holds perfectly still on the end frame.
+The plates are rigid solid objects: they keep their exact shape, thickness, size and material in every frame and never bend, melt or morph. Exactly four plates and five cables are visible in every frame; nothing appears or disappears. Lighting, reflections and the #0b0d10 background stay constant. No camera shake, no cuts, no text, no particles, no flicker.

@@ -46,3 +46,43 @@ En linje før hver generering og en etter. `est=` er prisanslag fra POST /estima
 - 2026-10-08 14:05:46Z IKKE FULLFØRT assets/higgsfield/bilder/A2-6 | status=failed This model is temporarily unavailable. Please try again later or contact support. | est=-1.2 (failed/nsfw refunderes)
 - 2026-10-08 14:05:50Z START assets/higgsfield/bilder/A2-5 | alibaba/qwen-image-3/edit 16:9 2k ref=assets/higgsfield/bilder/B-7.png | promptfil=bilde-A-fra-B7-v2.txt | est=1.2 | sum før=22.800 | merknad: A' forsøk 5: v2 (ny trekning)
 - 2026-10-08 14:05:55Z IKKE FULLFØRT assets/higgsfield/bilder/A2-5 | status=failed This model is temporarily unavailable. Please try again later or contact support. | est=-1.2 (failed/nsfw refunderes)
+- 2026-10-08 14:08:03Z START assets/higgsfield/bilder/B-grok-1 | xai/grok-imagine-image-2.0 16:9 2k ref=assets/higgsfield/bilder/A.png | promptfil=bilde-B-v4.txt | est=1.44 | sum før=22.800 | merknad: B testkall grok, prompt v4
+  - resultat: assets/higgsfield/bilder/B-grok-1.png | 2816x1584 | sum etter=24.240
+- 2026-10-08 14:08:35Z START assets/higgsfield/bilder/B-ideogram-1 | ideogram/v4.0 16:9 - ref=assets/higgsfield/bilder/A.png | promptfil=bilde-B-v4.txt | est=1.6 | sum før=24.240 | merknad: B testkall ideogram, prompt v4
+  - resultat: assets/higgsfield/bilder/B-ideogram-1.png | 2560x1440 | sum etter=25.840
+- 2026-10-08 14:09:25Z START assets/higgsfield/bilder/B-grok-2 | xai/grok-imagine-image-2.0 16:9 2k ref=assets/higgsfield/bilder/A.png | promptfil=bilde-B.txt | est=1.44 | sum før=25.840 | merknad: B grok forsøk 2: ordrett del-9-prompt
+  - resultat: assets/higgsfield/bilder/B-grok-2.png | 2816x1584 | sum etter=27.280
+- 2026-10-08 14:10:02Z START assets/higgsfield/bilder/B-grok-3 | xai/grok-imagine-image-2.0 16:9 2k ref=assets/higgsfield/bilder/A.png | promptfil=bilde-B-v6.txt | est=1.44 | sum før=27.280 | merknad: B grok forsøk 3: v6 = v4 + kablene foran/under forkant, ikke oppå bunnplaten
+  - resultat: assets/higgsfield/bilder/B-grok-3.png | 2816x1584 | sum etter=28.720
+- 2026-10-08 14:10:37Z START assets/higgsfield/bilder/C-grok-1 | xai/grok-imagine-image-2.0 16:9 2k ref=assets/higgsfield/bilder/B.png | promptfil=bilde-C.txt | est=1.44 | sum før=28.720 | merknad: C grok forsøk 1: ordrett del-9-prompt, redigering av B
+  - resultat: assets/higgsfield/bilder/C-grok-1.png | 2816x1584 | sum etter=30.160
+- 2026-10-08 14:11:09Z START assets/higgsfield/bilder/C-grok-2 | xai/grok-imagine-image-2.0 16:9 2k ref=assets/higgsfield/bilder/B.png | promptfil=bilde-C.txt | est=1.44 | sum før=30.160 | merknad: C grok forsøk 2: ordrett del-9-prompt, redigering av B
+  - resultat: assets/higgsfield/bilder/C-grok-2.png | 2816x1584 | sum etter=31.600
+- 2026-10-08 14:11:49Z START assets/higgsfield/bilder/C-grok-3 | xai/grok-imagine-image-2.0 16:9 2k ref=assets/higgsfield/bilder/B.png | promptfil=bilde-C-v2.txt | est=1.44 | sum før=31.600 | merknad: C grok forsøk 3: v2, tydelig at platene stables uten mellomrom, forsøk 1-2 flyttet ikke platene
+  - resultat: assets/higgsfield/bilder/C-grok-3.png | 2816x1584 | sum etter=33.040
+- 2026-10-08 14:12:20Z START assets/higgsfield/bilder/C-grok-4 | xai/grok-imagine-image-2.0 16:9 2k ref=assets/higgsfield/bilder/B.png | promptfil=bilde-C-v2.txt | est=1.44 | sum før=33.040 | merknad: C grok forsøk 4: v2, tydelig at platene stables uten mellomrom, forsøk 1-2 flyttet ikke platene
+  - resultat: assets/higgsfield/bilder/C-grok-4.png | 2816x1584 | sum etter=34.480
+- 2026-10-08 14:13:00Z START assets/higgsfield/bilder/A-mobil-1 | xai/grok-imagine-image-2.0 9:16 2k ref=assets/higgsfield/bilder/A.png | promptfil=bilde-A-mobil.txt | est=1.44 | sum før=34.480 | merknad: A mobil 9:16 forsøk 1 (grok, redigering av A.png)
+  - resultat: assets/higgsfield/bilder/A-mobil-1.png | 1584x2816 | sum etter=35.920
+- 2026-10-08 14:13:26Z START assets/higgsfield/bilder/A-mobil-2 | xai/grok-imagine-image-2.0 9:16 2k ref=assets/higgsfield/bilder/A.png | promptfil=bilde-A-mobil.txt | est=1.44 | sum før=35.920 | merknad: A mobil 9:16 forsøk 2 (grok, redigering av A.png)
+  - resultat: assets/higgsfield/bilder/A-mobil-2.png | 1584x2816 | sum etter=37.360
+- 2026-10-08 14:14:00Z START assets/higgsfield/bilder/B-mobil-1 | xai/grok-imagine-image-2.0 9:16 2k ref=assets/higgsfield/bilder/A-mobil.png | promptfil=bilde-B-v4.txt | est=1.44 | sum før=37.360 | merknad: B mobil 9:16 forsøk 1 (grok, v4, redigering av A-mobil)
+  - resultat: assets/higgsfield/bilder/B-mobil-1.png | 1584x2816 | sum etter=38.800
+- 2026-10-08 14:14:31Z START assets/higgsfield/bilder/B-mobil-2 | xai/grok-imagine-image-2.0 9:16 2k ref=assets/higgsfield/bilder/A-mobil.png | promptfil=bilde-B-v4.txt | est=1.44 | sum før=38.800 | merknad: B mobil 9:16 forsøk 2 (grok, v4, redigering av A-mobil)
+  - resultat: assets/higgsfield/bilder/B-mobil-2.png | 1584x2816 | sum etter=40.240
+- 2026-10-08 14:14:58Z START assets/higgsfield/bilder/B-mobil-3 | xai/grok-imagine-image-2.0 9:16 2k ref=assets/higgsfield/bilder/A-mobil.png | promptfil=bilde-B-v4.txt | est=1.44 | sum før=40.240 | merknad: B mobil 9:16 forsøk 3 (grok, v4, redigering av A-mobil)
+  - resultat: assets/higgsfield/bilder/B-mobil-3.png | 1584x2816 | sum etter=41.680
+- 2026-10-08 14:15:38Z START assets/higgsfield/bilder/B-grok-4 | xai/grok-imagine-image-2.0 16:9 2k ref=assets/higgsfield/bilder/A.png | promptfil=bilde-B-v4.txt | est=1.44 | sum før=41.680 | merknad: B grok forsøk 4: v4, ny trekning, søker kabler under forkant
+  - resultat: assets/higgsfield/bilder/B-grok-4.png | 2816x1584 | sum etter=43.120
+- 2026-10-08 14:16:10Z START assets/higgsfield/bilder/B-grok-5 | xai/grok-imagine-image-2.0 16:9 2k ref=assets/higgsfield/bilder/A.png | promptfil=bilde-B-v4.txt | est=1.44 | sum før=43.120 | merknad: B grok forsøk 5: v4, ny trekning, søker kabler under forkant
+  - resultat: assets/higgsfield/bilder/B-grok-5.png | 2816x1584 | sum etter=44.560
+- 2026-10-08 14:17:19Z START assets/higgsfield/raa/utkast-A-std-1 | kling-video/v3.0/std/image-to-video 6s cfg=std start=assets/higgsfield/bilder/A.png slutt=assets/higgsfield/bilder/B-justert.png | promptfil=klipp-A.txt | est=4.032 | sum før=44.560 | merknad: klipp A std-utkast 1, ordrett klipp-A, 16:9
+  - resultat: assets/higgsfield/raa/utkast-A-std-1.mp4 | 1280x720 | sum etter=48.592
+- 2026-10-08 14:18:36Z START assets/higgsfield/raa/utkast-A-std-2 | kling-video/v3.0/std/image-to-video 6s cfg=std start=assets/higgsfield/bilder/A.png slutt=assets/higgsfield/bilder/B-justert.png | promptfil=klipp-A-v2.txt | est=4.032 | sum før=48.592 | merknad: klipp A std-utkast 2: forsøk 1 var bra men ferdig for tidlig (~3.5 s). Endret: hold 0-1.5 s, bevegelse 1.5-5.5 s (Kling ~1.5 s foran)
+  - resultat: assets/higgsfield/raa/utkast-A-std-2.mp4 | 1280x720 | sum etter=52.624
+- 2026-10-08 14:20:00Z START assets/higgsfield/raa/hero-A | kling-video/v3.0/pro/image-to-video 6s cfg=std start=assets/higgsfield/bilder/A.png slutt=assets/higgsfield/bilder/B-justert.png | promptfil=klipp-A-v2.txt | est=5.376 | sum før=52.624 | merknad: klipp A pro 16:9, prompt v2 fra std-utkast 2
+  - resultat: assets/higgsfield/raa/hero-A.mp4 | 1920x1080 | sum etter=58.000
+- 2026-10-08 14:23:00Z START assets/higgsfield/raa/utkast-mobil-A-std-1 | kling-video/v3.0/std/image-to-video 6s cfg=std start=assets/higgsfield/bilder/A-mobil.png slutt=assets/higgsfield/bilder/B-mobil.png | promptfil=klipp-A-v2.txt | est=4.032 | sum før=58.000 | merknad: klipp A mobil std-utkast 1, 9:16, prompt v2
+  - resultat: assets/higgsfield/raa/utkast-mobil-A-std-1.mp4 | 720x1280 | sum etter=62.032
+- 2026-10-08 14:24:18Z START assets/higgsfield/raa/hero-mobil-A | kling-video/v3.0/pro/image-to-video 6s cfg=std start=assets/higgsfield/bilder/A-mobil.png slutt=assets/higgsfield/bilder/B-mobil.png | promptfil=klipp-A-v2.txt | est=5.376 | sum før=62.032 | merknad: klipp A mobil pro 9:16, prompt v2
+  - resultat: assets/higgsfield/raa/hero-mobil-A.mp4 | 1080x1920 | sum etter=67.408

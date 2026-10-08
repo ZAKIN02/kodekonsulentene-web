@@ -27,6 +27,9 @@ const API = "https://api.higgsfield.ai";
 
 const MODELLER = {
   bilde: { ny: "alibaba/qwen-image-3/text-to-image", rediger: "alibaba/qwen-image-3/edit" },
+  // Alternative bildemodeller (--modell grok|ideogram). Samme endepunkt for ny og redigering.
+  grok: "xai/grok-imagine-image-2.0",
+  ideogram: "ideogram/v4.0",
   video: {
     std: "kling-video/v3.0/std/image-to-video",
     pro: "kling-video/v3.0/pro/image-to-video",
@@ -131,11 +134,23 @@ const ramme = Number(flagg.ramme ?? 100);
 let slug, input, beskrivelse;
 if (kommando === "bilde") {
   if (!flagg.prompt) throw new Error("--prompt mangler");
-  input = { prompt: promptTekst(flagg.prompt), aspect_ratio: flagg.aspect ?? "16:9", resolution: flagg.res ?? "2k" };
-  if (input.resolution === "1k") throw new Error("1k er ikke tillatt");
-  if (flagg.ref) { slug = MODELLER.bilde.rediger; input.image_urls = [await lastOpp(nokkel, flagg.ref)]; }
-  else slug = MODELLER.bilde.ny;
-  beskrivelse = `${slug} ${input.aspect_ratio} ${input.resolution} ref=${flagg.ref ?? "-"}`;
+  const prompt = promptTekst(flagg.prompt), aspect_ratio = flagg.aspect ?? "16:9", resolution = flagg.res ?? "2k";
+  if (resolution === "1k") throw new Error("1k er ikke tillatt");
+  const ref = flagg.ref ? await lastOpp(nokkel, flagg.ref) : null;
+  if (flagg.modell === "grok") {
+    slug = MODELLER.grok;
+    input = { prompt, aspect_ratio, resolution, quality: "medium" };
+    if (ref) input.image_urls = [ref];
+  } else if (flagg.modell === "ideogram") {
+    slug = MODELLER.ideogram; // ingen resolution-felt; oppløsningen måles etterpå
+    input = { prompt, aspect_ratio, rendering_speed: "QUALITY" };
+    if (ref) { input.image_url = ref; input.image_weight = Number(flagg.vekt ?? 80); }
+  } else {
+    input = { prompt, aspect_ratio, resolution };
+    if (ref) { slug = MODELLER.bilde.rediger; input.image_urls = [ref]; }
+    else slug = MODELLER.bilde.ny;
+  }
+  beskrivelse = `${slug} ${aspect_ratio} ${input.resolution ?? "-"} ref=${flagg.ref ?? "-"}`;
 } else {
   slug = MODELLER.video[flagg.nivaa ?? "pro"];
   if (!slug) throw new Error("--nivaa må være std, pro eller 4k");

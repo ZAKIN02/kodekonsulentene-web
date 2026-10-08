@@ -1,57 +1,60 @@
-# f1-produsent-utkast: DELVIS. Skriptet er laget, men ingen bildepar består kontrollen
+# f1-produsent-utkast: DELVIS. Klipp A i begge formater og hero-scenen er levert. C og klipp B mangler.
 
-Dato: 8. oktober 2026. Estimert forbruk: 22,8 av 100 kreditter (alle 22 Qwen-kall à 1,2 kr, to feilet og er trukket fra). Ingen video generert. Saldo kan ikke leses via API. Eier må lese den i console.higgsfield.ai.
+Dato: 8. oktober 2026. Estimert forbruk: 67,4 av 100 kreditter (sum av POST /estimate i loggen, feilede kall trukket fra). Saldo kan ikke leses via API. Eier må lese den i console.higgsfield.ai.
 
 ## Gjort
 
-- `scripts/produksjon.mjs` finnes og er brukt. Kommandoer: `bilde`, `video`, `sum`, `--kun-estimat`. Den leser nøkkelen selv, kaller `/estimate`, nekter å starte over rammen, laster ned med en gang, måler med ffprobe og skriver loggen. `video` er skrevet, men ikke kjørt.
-- Promptfilene fra del 9 ligger ordrett i `assets/higgsfield/prompter/`. Versjonsfiler: `bilde-A-v2/v3`, `bilde-B-v2/v3/v4/v5`, `bilde-A-fra-B7`, `bilde-A-fra-B7-v2`. Originalene er urørt.
-- Logg: `assets/higgsfield/logg.md`, med hvert forsøk, hva som ble endret og hvorfor.
+- `scripts/produksjon.mjs`: `bilde`, `video`, `sum`, `--kun-estimat`, `--modell qwen|grok|ideogram`. Estimat før, ramme-sjekk, nedlasting, ffprobe og logg.
+- Prompter: del 9 ordrett i `assets/higgsfield/prompter/`, pluss versjonsfiler (bilde-A-v2/v3, bilde-B-v2..v5, bilde-C-v2, bilde-A-mobil, klipp-A-v2 m.fl.). Hvert forsøk og hver endring står i `assets/higgsfield/logg.md`.
+- Lisenslogg ført i `assets/LICENSES.md`.
 
-## Målt
+## Modellvalg for B (oppfølgingen)
 
-- Alle bilder er 2048 × 1152 (Qwen, `2k`, 16:9). Over kravet 1920 × 1080.
-- Stilkort + bilde-A er 3 550 tegn. Det gikk gjennom uten feil.
+Qwen holdt ikke antallet i 12 redigeringer av A (se forrige versjon: 5 plater, 6 til 7 porter og kabler). Testkall med lik prompt (v4), alle mot A.png:
 
-## Bilde A: bestått, med forbehold
+| Modell | Resultat |
+|---|---|
+| Ideogram 4.0 | Rearrangerte ikke: ga i praksis A tilbake. Forkastet. |
+| Grok Imagine Image 2.0 | 4 plater, 5 porter, 5 kabler, samme lys og utsnitt. Valgt. |
 
-`A-3.png` (kopiert til `A.png`) har fire plater, fem porter, lyst venstre tredjedel og ingen tekst. Forsøk 1 (ordrett) hadde fem plater, forsøk 2 seks porter. Forbehold: kabelknuten gjør at jeg ikke kan telle fem kabler sikkert. Frem til B består er `A.png` foreløpig.
+Fem Grok-forsøk på B (grok-1 til -5): grok-1 er beste. Grok-2 til -5 hadde seks kabler eller to bunnplater. B.png = B-grok-1. Avvik fra prompten: kablene ligger på bunnplatens overside og ikke under forkanten. Bunnplaten lå 55 px lavere enn i A i overlegget. Jeg flyttet B 55 px opp med ffmpeg (`B-justert.png`, crop og smear-fylling nederst, ingen oppskalering). Overlegget etterpå viser bunnplate og porter sammenfallende.
 
-## Bilde B: ikke bestått etter 12 forsøk
+Mobil (9:16): A-mobil-2 er recomposert fra A med Grok (4 plater, 5 porter). B-mobil-3 er redigert fra den: 4 plater, 5 porter, 5 kabler hengende under forkanten, bunnplaten sammenfaller i overlegg uten justering.
 
-Redigering av A med Qwen Image 3 holder ikke antallet. Tabell over de viktigste trekningene (plater / porter / kabler):
+## Klipp A (Kling 3.0)
 
-| Fil | Prompt | Resultat |
+| Fil | Oppløsning | Rammer | Poeng (0 til 3 per kriterium) |
+|---|---|---|---|
+| `raa/hero-A.mp4` (16:9) | 1920 × 1080 | 145 | ca. 16/18: objekt 3, start/slutt 3, jevnhet 2, lys 3, renhet 3, helhet 2 |
+| `raa/hero-mobil-A.mp4` (9:16) | 1080 × 1920 | 145 | ca. 14/18: objekt 3, start/slutt 3, jevnhet 2, lys 3, renhet 2, helhet 1. Toppplaten stiger litt over sluttposisjonen midtveis og setter seg. |
+
+- `pro` gir 1080p. 4k-endepunktet ble ikke brukt.
+- Draft 1 (std, klipp-A ordrett) var bra, men bevegelsen var ferdig etter 3,5 s. Draft 2 (klipp-A-v2: hold 0 til 1,5 s, bevegelse 1,5 til 5,5 s) fikk jevnere fordeling. Samme prompt i pro for begge formater.
+- Poengene er mine og ikke uavhengig vurdert. Rammer sett: hver tolvte ramme, første og siste.
+- Kjente feil: i 16:9 holder klippet stille de siste ca. 1,7 s. Kablene krysser kort bak keramikkplaten midtveis.
+
+## Hero-scenen
+
+`scripts/lag-scene.sh hero` kjørte uten feil:
+
+| Fil | Størrelse | Mål i del 9 |
 |---|---|---|
-| B-1 | ordrett | 5 / 7 / 6, kablene allerede plugget, løs kontakt på kretskortet |
-| B-2 | v2 (tellesetning) | 4 / 6 / 6, keramikkplaten bøyd |
-| B-3 | v3 (nummererte porter) | 5 (to kretskort) / 5 / 6 |
-| B-4 til B-6 | v2, ny trekning | 6, 5 og 5 plater, 5 til 7 kabler |
-| B-7 | v4 (kort prompt) | **4 / 5 / 5**, men bunnplaten er flyttet og 22 % smalere, motivet er sentrert, og venstre tredjedel berøres av keramikkplaten |
-| B-8 | v4 | 4 / 6 / 5, kameraet flatt fra siden |
-| B-9 til B-12 | v5 (låst posisjon) | 5, 4, 4 og 5 plater, 5 til 6 porter |
+| hero-1080.mp4 (1920×1080) | 1 885 kB | under 2,5 MB, ok |
+| hero-mobil.mp4 (1080×1920) | 1 669 kB | under 2,5 MB, ok |
+| hero-1080.webm / hero-mobil.webm | 1 315 / 1 161 kB | ingen mål |
+| poster.avif / poster-mobil.avif | 18 / 17 kB | under 120 kB, ok |
 
-B-7 er det eneste bildet med riktig antall. Det består ikke overleggskontrollen mot A-3: bunnplate, utsnitt og vinkel er ikke like. Klipp mellom dem ville fått flyttende bunnplate, som er en feil etter del 9. Jeg har derfor ikke laget B.png, C eller mobilvarianter, og ikke brukt kreditter på video.
+Bakgrunnsfarge i hjørnet av første ramme er målt til `#080809`, ikke `#0b0d10`. Scenens CSS-bakgrunn bør settes til målt verdi (del 9).
 
-Omvendt retning (kaos redigert fra B-7, `A2-1` til `A2-4`) ga rotete stabler med fem plater eller seks porter, og plater som svever i stedet for å ligge.
+## Ikke levert
 
-Qwen ber om seks porter og seks kabler selv når A har fem og prompten sier fem. Dette er samme mønster som `docs/akt.md` regel 8b: modellen komponerer om og teller ikke.
+- Bilde C (16:9): fire Grok-forsøk (ordrett x2, v2 x2) flyttet ikke platene ned. Grok beholdt plater som svever og la bare til lime-lys. Ikke prøvd med Qwen.
+- Klipp B (B til C) og sløyfe: ingen C, derfor ikke laget. Heroen har bare klipp A (6 s, kaos til oppstilt). Mangler: sammenføyd system.
+- Bilde A er ikke strammet opp: A-3 er godtatt som den står, kabelknuten kan ikke telles. Dirigenten godtok dette.
+- Mobil C ikke forespurt.
 
-## Feil underveis
+## Åpne punkter
 
-Qwen-redigering svarte «temporarily unavailable» på to kall mot slutten (A2-5 og A2-6). Begge er logget som refundert (est=-1,2).
-
-## Ikke gjort
-
-- Ingen video, ingen `lag-scene.sh hero`, ingen `public/scener/hero/`. Kravene 3 og 4 i «FERDIG NÅR» er ikke oppfylt.
-- Ikke ført i `assets/LICENSES.md`, fordi ingenting er lagt i `public/`.
-- Ikke testet om `pro` gir 1080p.
-
-## Forslag til neste oppdrag (dirigent velger)
-
-1. Bygg B av modellens egne piksler med ffmpeg (akt.md regel 8c): plater klippet ut av A-3 og flyttet loddrett, bunnplaten identisk. Gratis og eksakt, men kablene må løses separat.
-2. Be eier godkjenne en annen redigeringsmodell for B og C (Grok Imagine Image 2.0 eller Ideogram 4.0 er i kontoens katalog). Qwen er prøvd 19 ganger uten et brukbart par.
-3. Forenkle motivet: færre porter og kabler i alle tre bildene, i tråd med tabellen «Deler bøyer seg» i del 9 («færre kabler»). Det krever en beslutning fra designleder, fordi tallet fem er en del av fortellingen.
-4. Skal B-7 brukes, må A bygges rundt det: samme base, plassert med ffmpeg, uten oppskalering.
-
-Restramme: ca. 77 kreditter.
+1. C mangler. Neste steg: be Grok om C fra B-justert i flere små trinn, eller bygg C med ffmpeg (plater flyttet ned, akt.md 8c).
+2. Heroen har bare klipp A. Avgjør om A→B holder for første skjerm, eller bestill C og klipp B.
+3. Restramme: ca. 32 kreditter.

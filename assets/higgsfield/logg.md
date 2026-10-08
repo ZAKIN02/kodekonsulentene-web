@@ -1,0 +1,48 @@
+# Higgsfield-logg
+
+En linje før hver generering og en etter. `est=` er prisanslag fra POST /estimate (kreditter); negative est= er refusjon ved feil. Saldo kan ikke leses via API; eier leser den i console.higgsfield.ai.
+
+- 2026-10-08 13:44:24Z START assets/higgsfield/bilder/A-1 | alibaba/qwen-image-3/text-to-image 16:9 2k ref=- | promptfil=stilkort.txt,bilde-A.txt | est=1.2 | sum før=0.000 | merknad: A forsøk 1, ordrett
+  - resultat: assets/higgsfield/bilder/A-1.png | 2048x1152 | sum etter=1.200
+- 2026-10-08 13:46:19Z START assets/higgsfield/bilder/A-2 | alibaba/qwen-image-3/text-to-image 16:9 2k ref=- | promptfil=stilkort.txt,bilde-A-v2.txt | est=1.2 | sum før=1.200 | merknad: A forsøk 2: forsøk 1 hadde fem plater (to keramikk). Endret: tellesetning om én keramikkplate
+  - resultat: assets/higgsfield/bilder/A-2.png | 2048x1152 | sum etter=2.400
+- 2026-10-08 13:47:49Z START assets/higgsfield/bilder/A-3 | alibaba/qwen-image-3/text-to-image 16:9 2k ref=- | promptfil=stilkort.txt,bilde-A-v3.txt | est=1.2 | sum før=2.400 | merknad: A forsøk 3: forsøk 2 hadde fire plater men seks porter. Endret: tellesetning om fem porter/kabler
+  - resultat: assets/higgsfield/bilder/A-3.png | 2048x1152 | sum etter=3.600
+- 2026-10-08 13:49:10Z START assets/higgsfield/bilder/B-1 | alibaba/qwen-image-3/edit 16:9 2k ref=assets/higgsfield/bilder/A.png | promptfil=bilde-B.txt | est=1.2 | sum før=3.600 | merknad: B forsøk 1 ordrett, redigering av A
+  - resultat: assets/higgsfield/bilder/B-1.png | 2048x1152 | sum etter=4.800
+- 2026-10-08 13:50:22Z START assets/higgsfield/bilder/B-2 | alibaba/qwen-image-3/edit 16:9 2k ref=assets/higgsfield/bilder/A.png | promptfil=bilde-B-v2.txt | est=1.2 | sum før=4.800 | merknad: B forsøk 2: forsøk 1 hadde fem plater, sju porter, seks kabler. Endret: tellesetning
+  - resultat: assets/higgsfield/bilder/B-2.png | 2048x1152 | sum etter=6.000
+- 2026-10-08 13:51:29Z START assets/higgsfield/bilder/B-3 | alibaba/qwen-image-3/edit 16:9 2k ref=assets/higgsfield/bilder/A.png | promptfil=bilde-B-v3.txt | est=1.2 | sum før=6.000 | merknad: B forsøk 3: forsøk 2 hadde seks porter/kabler og bøyd keramikkplate. Endret: nummerert fem og stive rette plater
+  - resultat: assets/higgsfield/bilder/B-3.png | 2048x1152 | sum etter=7.200
+- 2026-10-08 13:52:53Z START assets/higgsfield/bilder/B-4 | alibaba/qwen-image-3/edit 16:9 2k ref=assets/higgsfield/bilder/A.png | promptfil=bilde-B-v2.txt | est=1.2 | sum før=7.200 | merknad: B forsøk 4: samme prompt som forsøk 2 (v2), ny trekning, ingen endring
+  - resultat: assets/higgsfield/bilder/B-4.png | 2048x1152 | sum etter=8.400
+- 2026-10-08 13:53:57Z START assets/higgsfield/bilder/B-5 | alibaba/qwen-image-3/edit 16:9 2k ref=assets/higgsfield/bilder/A.png | promptfil=bilde-B-v2.txt | est=1.2 | sum før=8.400 | merknad: B forsøk 5: samme prompt som forsøk 2 (v2), ny trekning, ingen endring
+  - resultat: assets/higgsfield/bilder/B-5.png | 2048x1152 | sum etter=9.600
+- 2026-10-08 13:55:00Z START assets/higgsfield/bilder/B-6 | alibaba/qwen-image-3/edit 16:9 2k ref=assets/higgsfield/bilder/A.png | promptfil=bilde-B-v2.txt | est=1.2 | sum før=9.600 | merknad: B forsøk 6: samme prompt som forsøk 2 (v2), ny trekning, ingen endring
+  - resultat: assets/higgsfield/bilder/B-6.png | 2048x1152 | sum etter=10.800
+- 2026-10-08 13:56:22Z START assets/higgsfield/bilder/B-7 | alibaba/qwen-image-3/edit 16:9 2k ref=assets/higgsfield/bilder/A.png | promptfil=bilde-B-v4.txt | est=1.2 | sum før=10.800 | merknad: B forsøk 7: kort prompt v4 (færre ord, tall først). Endret: hele prompten forenklet
+  - resultat: assets/higgsfield/bilder/B-7.png | 2048x1152 | sum etter=12.000
+- 2026-10-08 13:57:19Z START assets/higgsfield/bilder/B-8 | alibaba/qwen-image-3/edit 16:9 2k ref=assets/higgsfield/bilder/A.png | promptfil=bilde-B-v4.txt | est=1.2 | sum før=12.000 | merknad: B forsøk 8: kort prompt v4 (færre ord, tall først). Endret: hele prompten forenklet
+  - resultat: assets/higgsfield/bilder/B-8.png | 2048x1152 | sum etter=13.200
+- 2026-10-08 13:58:23Z START assets/higgsfield/bilder/B-9 | alibaba/qwen-image-3/edit 16:9 2k ref=assets/higgsfield/bilder/A.png | promptfil=bilde-B-v5.txt | est=1.2 | sum før=13.200 | merknad: B forsøk 9: v5 = v4 + låst posisjon/størrelse til bunnplate, høyre 60 prosent. B-7 hadde riktig antall men flyttet bunnplate og sentrert motiv
+  - resultat: assets/higgsfield/bilder/B-9.png | 2048x1152 | sum etter=14.400
+- 2026-10-08 13:59:10Z START assets/higgsfield/bilder/B-10 | alibaba/qwen-image-3/edit 16:9 2k ref=assets/higgsfield/bilder/A.png | promptfil=bilde-B-v5.txt | est=1.2 | sum før=14.400 | merknad: B forsøk 10: v5 = v4 + låst posisjon/størrelse til bunnplate, høyre 60 prosent. B-7 hadde riktig antall men flyttet bunnplate og sentrert motiv
+  - resultat: assets/higgsfield/bilder/B-10.png | 2048x1152 | sum etter=15.600
+- 2026-10-08 14:00:02Z START assets/higgsfield/bilder/B-11 | alibaba/qwen-image-3/edit 16:9 2k ref=assets/higgsfield/bilder/A.png | promptfil=bilde-B-v5.txt | est=1.2 | sum før=15.600 | merknad: B forsøk 11: v5 = v4 + låst posisjon/størrelse til bunnplate, høyre 60 prosent. B-7 hadde riktig antall men flyttet bunnplate og sentrert motiv
+  - resultat: assets/higgsfield/bilder/B-11.png | 2048x1152 | sum etter=16.800
+- 2026-10-08 14:00:54Z START assets/higgsfield/bilder/B-12 | alibaba/qwen-image-3/edit 16:9 2k ref=assets/higgsfield/bilder/A.png | promptfil=bilde-B-v5.txt | est=1.2 | sum før=16.800 | merknad: B forsøk 12: v5 = v4 + låst posisjon/størrelse til bunnplate, høyre 60 prosent. B-7 hadde riktig antall men flyttet bunnplate og sentrert motiv
+  - resultat: assets/higgsfield/bilder/B-12.png | 2048x1152 | sum etter=18.000
+- 2026-10-08 14:02:03Z START assets/higgsfield/bilder/A2-1 | alibaba/qwen-image-3/edit 16:9 2k ref=assets/higgsfield/bilder/B-7.png | promptfil=bilde-A-fra-B7.txt | est=1.2 | sum før=18.000 | merknad: A' forsøk 1: kaos redigert fra B-7 (omvendt retning) fordi B-redigering av A-3 ga feil antall i 12 trekninger
+  - resultat: assets/higgsfield/bilder/A2-1.png | 2048x1152 | sum etter=19.200
+- 2026-10-08 14:02:50Z START assets/higgsfield/bilder/A2-2 | alibaba/qwen-image-3/edit 16:9 2k ref=assets/higgsfield/bilder/B-7.png | promptfil=bilde-A-fra-B7.txt | est=1.2 | sum før=19.200 | merknad: A' forsøk 2: kaos redigert fra B-7 (omvendt retning) fordi B-redigering av A-3 ga feil antall i 12 trekninger
+  - resultat: assets/higgsfield/bilder/A2-2.png | 2048x1152 | sum etter=20.400
+- 2026-10-08 14:03:38Z START assets/higgsfield/bilder/A2-3 | alibaba/qwen-image-3/edit 16:9 2k ref=assets/higgsfield/bilder/B-7.png | promptfil=bilde-A-fra-B7.txt | est=1.2 | sum før=20.400 | merknad: A' forsøk 3: kaos redigert fra B-7 (omvendt retning) fordi B-redigering av A-3 ga feil antall i 12 trekninger
+  - resultat: assets/higgsfield/bilder/A2-3.png | 2048x1152 | sum etter=21.600
+- 2026-10-08 14:04:47Z START assets/higgsfield/bilder/A2-4 | alibaba/qwen-image-3/edit 16:9 2k ref=assets/higgsfield/bilder/B-7.png | promptfil=bilde-A-fra-B7-v2.txt | est=1.2 | sum før=21.600 | merknad: A' forsøk 4: v2 ligger på bunnplaten, ikke svevende, mildere kaos
+  - resultat: assets/higgsfield/bilder/A2-4.png | 2048x1152 | sum etter=22.800
+- 2026-10-08 14:05:34Z START assets/higgsfield/bilder/A2-5 | alibaba/qwen-image-3/edit 16:9 2k ref=assets/higgsfield/bilder/B-7.png | promptfil=bilde-A-fra-B7-v2.txt | est=1.2 | sum før=22.800 | merknad: A' forsøk 5: v2 ligger på bunnplaten, ikke svevende, mildere kaos
+- 2026-10-08 14:05:40Z IKKE FULLFØRT assets/higgsfield/bilder/A2-5 | status=failed This model is temporarily unavailable. Please try again later or contact support. | est=-1.2 (failed/nsfw refunderes)
+- 2026-10-08 14:05:40Z START assets/higgsfield/bilder/A2-6 | alibaba/qwen-image-3/edit 16:9 2k ref=assets/higgsfield/bilder/B-7.png | promptfil=bilde-A-fra-B7-v2.txt | est=1.2 | sum før=22.800 | merknad: A' forsøk 6: v2 ligger på bunnplaten, ikke svevende, mildere kaos
+- 2026-10-08 14:05:46Z IKKE FULLFØRT assets/higgsfield/bilder/A2-6 | status=failed This model is temporarily unavailable. Please try again later or contact support. | est=-1.2 (failed/nsfw refunderes)
+- 2026-10-08 14:05:50Z START assets/higgsfield/bilder/A2-5 | alibaba/qwen-image-3/edit 16:9 2k ref=assets/higgsfield/bilder/B-7.png | promptfil=bilde-A-fra-B7-v2.txt | est=1.2 | sum før=22.800 | merknad: A' forsøk 5: v2 (ny trekning)
+- 2026-10-08 14:05:55Z IKKE FULLFØRT assets/higgsfield/bilder/A2-5 | status=failed This model is temporarily unavailable. Please try again later or contact support. | est=-1.2 (failed/nsfw refunderes)

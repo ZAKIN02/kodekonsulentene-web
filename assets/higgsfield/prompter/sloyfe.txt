@@ -1,0 +1,1 @@
+Locked-off static camera, no camera movement. The object does not move at all. A single soft band of light sweeps slowly once across the slab from left to right and leaves, so that the last frame is identical to the first. Silent. No text, no particles, no flicker.

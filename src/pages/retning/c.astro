@@ -1,0 +1,426 @@
+---
+// Prototype for retning C «Prislista» (fase 1, oppdrag f1-bygger-c).
+// Frittstående side: ingen felles maler, stiler eller tokens. Verdiene under
+// er hentet fra retning C-planen i docs/design/retning.md, teksten ordrett fra
+// docs/design/tekst/retning-c.md. Siden har noindex og lenkes ikke fra menyen.
+import Scene from '../../components/bevegelse/Scene.astro';
+import PrisVelger from '../../components/retning-c/PrisVelger.astro';
+import Prisliste from '../../components/retning-c/Prisliste.astro';
+import { hovedmeny } from '../../data/navigasjon.ts';
+import { firma, orgnrVist } from '../../data/firma.ts';
+
+const tittel = 'KodeKonsulentene – nettsider og systemer i Oslo';
+const beskrivelse =
+  'Nettside til fast pris: 14 900 kr, endelig pris. Du ser en klikkbar prototype før du betaler. Nettsider og systemer for norske småbedrifter i Oslo.';
+---
+
+<!doctype html>
+<html lang="nb">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <meta name="color-scheme" content="light dark" />
+    <title>{tittel}</title>
+    <meta name="description" content={beskrivelse} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link
+      rel="preload"
+      href="/fonts/schibsted-grotesk-700_800-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+  </head>
+  <body>
+    <a class="hopp" href="#innhold">Til innholdet</a>
+
+    <header class="topp">
+      <a class="topp__logo" href="/retning/c">KodeKonsulentene</a>
+      <nav class="topp__nav" aria-label="Hovedmeny">
+        <ul class="topp__liste">
+          {
+            hovedmeny.map((lenke) => (
+              <li>
+                <a href={lenke.href}>{lenke.label}</a>
+              </li>
+            ))
+          }
+        </ul>
+        <details class="topp__meny">
+          <summary>Meny</summary>
+          <ul class="topp__liste topp__liste--mobil">
+            {
+              hovedmeny.map((lenke) => (
+                <li>
+                  <a href={lenke.href}>{lenke.label}</a>
+                </li>
+              ))
+            }
+          </ul>
+        </details>
+      </nav>
+    </header>
+
+    <main id="innhold">
+      <section class="hero">
+        <h1 class="hero__tittel">
+          <span class="linje"
+            ><span class="linje__inn"
+              >Nettside <span data-hero-prefiks></span><span data-hero-pris>14&nbsp;900</span> kr.</span
+            ></span
+          >
+          <span class="linje"><span class="linje__inn">Du ser den før du betaler.</span></span>
+        </h1>
+        <p class="hero__prisenhet">
+          Endelig pris – foretaket er ikke mva-registrert, så det kommer ingen mva på toppen.
+        </p>
+
+        <PrisVelger />
+
+        <div class="hero__handling">
+          <a class="knapp" href="/kontakt">Book 20 minutter</a>
+          <a class="hero__sjekk" href="/sjekk">Eller sjekk nettsiden din gratis</a>
+        </div>
+      </section>
+
+      <Prisliste />
+
+      <div class="scenerom">
+        <Scene
+          navn="test"
+          etikett="Det jeg bygger i hver pakke"
+          hoppTil="arbeid"
+          steg={[
+            {
+              tittel: 'Hver pakke er samme bygg',
+              tekst: 'Design, kode, sikkerhet og integrasjoner. Spørsmålet er hvor mye du trenger.',
+            },
+            {
+              tittel: 'Start',
+              tekst: 'De to første lagene: en side som står støtt og består lovkravene.',
+            },
+            {
+              tittel: 'Bedrift',
+              tekst: 'Flere rom: tekster du endrer selv, kunder som finner deg i nabolaget, og analyse uten cookie-banner.',
+            },
+            {
+              tittel: 'System',
+              tekst: 'Hele bygget: booking, Vipps-betaling og kobling rett inn i regnskapet.',
+            },
+          ]}
+        />
+        <p class="scenerom__kolofon">Illustrasjon laget med KI</p>
+      </div>
+
+      <section id="arbeid" class="arbeid" aria-label="Arbeid">
+        <div class="arbeid__plassholder">MANGLER: skjermbilder av appene (caser)</div>
+      </section>
+    </main>
+
+    <footer class="bunn">
+      <p>{firma.foretaksnavn}, org.nr. {orgnrVist}, {firma.adresse}</p>
+      <p>
+        <a href={`mailto:${firma.epost}`}>{firma.epost}</a>
+        <a href="/personvern">Personvern</a>
+        <a href="/vilkar">Salgsvilkår</a>
+      </p>
+    </footer>
+
+    <script>
+      // Bytter tallet i overskriften når besøkende velger pakke.
+      // Uten JavaScript viser overskriften Start-prisen, og radene står som
+      // en vanlig prisliste.
+      const pris = document.querySelector('[data-hero-pris]');
+      const prefiks = document.querySelector('[data-hero-prefiks]');
+      for (const radio of document.querySelectorAll<HTMLInputElement>('input[name="pakke"]')) {
+        radio.addEventListener('change', () => {
+          if (!pris || !prefiks) return;
+          pris.textContent = (radio.dataset.pris ?? '').replace(' ', ' ');
+          prefiks.textContent = radio.dataset.prefiks ? `${radio.dataset.prefiks} ` : '';
+        });
+      }
+    </script>
+
+    <style is:global>
+      /* Retning C «Prislista»: fire farger, én fontfamilie, venstrejustert
+         typografi på ark. Verdier fra docs/design/retning.md (retning C). */
+      @font-face {
+        font-family: 'Schibsted Grotesk';
+        src: url('/fonts/schibsted-grotesk-700_800-latin.woff2') format('woff2');
+        font-weight: 700 800;
+        font-display: swap;
+      }
+
+      :root {
+        /* Farger */
+        --ark: #f7f8f5;
+        --stempel: #1e2a5e;
+        --refleks: #c8f24a;
+        --mangel: #b3301b;
+        --plassholder: #d6d6d2;
+        --bunn: var(--ark);
+        --tekst: var(--stempel);
+        /* Fontroller. Schibsted Grotesk 400 er ikke selvhostet ennå; brødtekst
+           bruker nærmeste systemfont (åpent punkt i rapporten). */
+        --font-tittel: 'Schibsted Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --font-tekst: system-ui, -apple-system, 'Segoe UI', sans-serif;
+        /* Typografisk skala */
+        --tekst-enorm: clamp(3rem, 1.4rem + 6.6vw, 6.75rem);
+        --tekst-stor: clamp(2rem, 1.25rem + 3vw, 3.5rem);
+        --tekst-mellom: 1.125rem;
+        --tekst-brod: 1.0625rem;
+        --tekst-liten: 1rem;
+        /* Avstander */
+        --rom-1: 0.5rem;
+        --rom-2: 0.75rem;
+        --rom-3: 1.25rem;
+        --rom-4: 2rem;
+        --rom-5: 3.25rem;
+        --rom-6: 5rem;
+        --rom-7: 8rem;
+        /* Bevegelse */
+        --ut: cubic-bezier(0.16, 1, 0.3, 1);
+        --t-inn: 600ms;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bunn: var(--stempel);
+          --tekst: var(--ark);
+          --mangel: #ff8a73;
+          --plassholder: #39426e;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        background: var(--bunn);
+        color: var(--tekst);
+        font-family: var(--font-tekst);
+        font-size: 100%;
+        line-height: 1.6;
+      }
+      body {
+        margin: 0;
+        padding-inline: clamp(1.25rem, 4vw, 4rem);
+        font-size: var(--tekst-brod);
+      }
+      a {
+        color: inherit;
+        text-underline-offset: 0.15em;
+      }
+      :focus-visible {
+        outline: 3px solid var(--tekst);
+        outline-offset: 2px;
+      }
+
+      .hopp {
+        position: absolute;
+        left: 1rem;
+        top: 1rem;
+        z-index: 4;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+        background: var(--bunn);
+      }
+      .hopp:focus {
+        width: auto;
+        height: auto;
+        clip-path: none;
+        padding: 0.5rem 0.75rem;
+      }
+
+      /* Toppen */
+      .topp {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--rom-3);
+        padding-block: var(--rom-3);
+      }
+      .topp__logo {
+        font-family: var(--font-tittel);
+        font-weight: 800;
+        font-size: var(--tekst-mellom);
+        text-decoration: none;
+      }
+      .topp__liste {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--rom-3);
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .topp__liste a {
+        text-decoration: none;
+        display: inline-block;
+        padding-block: 0.25rem;
+      }
+      .topp__liste a:hover {
+        text-decoration: underline;
+      }
+      .topp__meny {
+        display: none;
+        position: relative;
+      }
+      .topp__meny summary {
+        cursor: pointer;
+        list-style: none;
+        font-family: var(--font-tittel);
+        font-weight: 700;
+        padding: 0.5rem 0;
+      }
+      .topp__meny summary::-webkit-details-marker {
+        display: none;
+      }
+      .topp__liste--mobil {
+        position: absolute;
+        right: 0;
+        z-index: 3;
+        flex-direction: column;
+        gap: 0;
+        min-width: 12rem;
+        padding: var(--rom-2) var(--rom-3);
+        background: var(--bunn);
+        border: 2px solid var(--tekst);
+      }
+      .topp__liste--mobil a {
+        display: block;
+        padding-block: 0.5rem;
+      }
+      @media (max-width: 767px) {
+        .topp__liste:not(.topp__liste--mobil) {
+          display: none;
+        }
+        .topp__meny {
+          display: block;
+        }
+      }
+
+      /* Første skjerm */
+      .hero {
+        padding-block: clamp(2rem, 6svh, 3.5rem) var(--rom-6);
+      }
+      .hero__tittel {
+        margin: 0;
+        font-family: var(--font-tittel);
+        font-weight: 800;
+        font-size: var(--tekst-enorm);
+        line-height: 1.02;
+        letter-spacing: -0.02em;
+      }
+      .hero__tittel [data-hero-pris] {
+        font-variant-numeric: tabular-nums;
+      }
+      .linje {
+        display: block;
+        overflow: hidden;
+      }
+      .linje__inn {
+        display: inline-block;
+        transform: translateY(110%);
+        animation: linje-inn var(--t-inn) var(--ut) forwards;
+      }
+      .linje:nth-child(2) .linje__inn {
+        animation-delay: 120ms;
+      }
+      @keyframes linje-inn {
+        to {
+          transform: translateY(0);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .linje__inn {
+          transform: none;
+          animation: none;
+        }
+      }
+      .hero__prisenhet {
+        margin: var(--rom-3) 0 var(--rom-4);
+        max-width: 34rem;
+      }
+      .hero__handling {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--rom-3) var(--rom-4);
+        margin-block-start: var(--rom-4);
+      }
+      .knapp {
+        display: inline-block;
+        padding: 0.875rem 1.75rem;
+        background: var(--refleks);
+        color: var(--stempel);
+        border: 2px solid var(--stempel);
+        font-family: var(--font-tittel);
+        font-weight: 700;
+        font-size: var(--tekst-mellom);
+        text-decoration: none;
+      }
+      .knapp:focus-visible {
+        outline-color: var(--tekst);
+      }
+      @media (max-width: 767px) {
+        .knapp {
+          width: 100%;
+          text-align: center;
+        }
+      }
+
+      /* Scenen. Full bredde: hever sidens innrykk, så flaten kan åpne seg
+         helt ut til kantene. */
+      .scenerom {
+        margin-block-start: var(--rom-6);
+        margin-inline: calc(-1 * clamp(1.25rem, 4vw, 4rem));
+      }
+      .scenerom__kolofon {
+        margin: var(--rom-2) 0 0;
+        padding-inline: clamp(1.25rem, 4vw, 4rem);
+        font-size: var(--tekst-liten);
+      }
+
+      /* Plassholder for casene */
+      .arbeid {
+        padding-block: var(--rom-6);
+      }
+      .arbeid__plassholder {
+        display: grid;
+        place-items: center;
+        aspect-ratio: 16 / 9;
+        background: var(--plassholder);
+        color: var(--stempel);
+        font-family: var(--font-tittel);
+        font-weight: 700;
+      }
+      @media (prefers-color-scheme: dark) {
+        .arbeid__plassholder {
+          color: var(--ark);
+        }
+      }
+
+      /* Footer */
+      .bunn {
+        padding-block: var(--rom-4) var(--rom-5);
+        border-top: 2px solid var(--tekst);
+      }
+      .bunn p {
+        margin: 0 0 var(--rom-1);
+        max-width: 60rem;
+      }
+      .bunn a {
+        display: inline-block;
+        padding-block: 0.125rem;
+      }
+      .bunn p + p {
+        display: flex;
+        gap: var(--rom-3);
+      }
+    </style>
+  </body>
+</html>

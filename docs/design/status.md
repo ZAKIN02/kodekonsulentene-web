@@ -1,9 +1,16 @@
 # Status for redesignet
 
 Oppdatert: 8. oktober 2026
-Fase 0 ferdig. Venter på: eier (PORT 0)
+Fase 1, bølge 1.1 pågår. Venter på: produsent, designleder, bevegelse
 
 ## Beslutninger fra eier
+- 8. okt PORT 0: GODKJENT – «Fortsett med alle fasene, ikke kom tilbake før alt er komplett.»
+  Kredittramme: 100 i fase 1, hard stopp ved 500 totalt (briefens forslag, eier ga ikke eget tall).
+  Qwen Image 3 som bildemodell: JA, «men den må være av bra kvalitet».
+  Produsenten lager eget produksjonsskript: JA.
+  Portvalgene (retning, lys/mørk, jeg/vi, myk rulling, peker-etikett) er delegert til dirigenten.
+  Saldo ikke oppgitt; logges per generering, eier leser console.higgsfield.ai.
+  Merge/publisering krever fortsatt eksplisitt GODKJENT ved PORT 3.
 - 8. okt: Higgsfield kjøres via API-et, ikke CLI-en. Nøkkel i ~/.config/kodekonsulentene/higgsfield.env,
   forhåndsbetalt saldo (fylt på 7. okt). Rørledningen er scripts/scene.mjs + @higgsfield/client,
   prøvd i drift med tre publiserte klipp. Briefens del 9-prompter brukes, men gjennom denne veien.

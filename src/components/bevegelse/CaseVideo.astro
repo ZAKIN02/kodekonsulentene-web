@@ -1,0 +1,129 @@
+---
+// Case-video (øyeblikk 3): ekte skjermopptak som spiller når pekeren er over casen
+// (desktop) eller kortet er i syne (mobil). Videoen har ingen src og laster ingenting
+// før det skjer. Uten JavaScript, med redusert bevegelse eller Save-Data står posteren.
+// Mangler opptaket på disk, vises en plassholder med «MANGLER: skjermopptak».
+//
+// Egenskaper:
+//   opptak (string, påkrevd)  Sti under public/ uten endelse, f.eks. "/opptak/booking".
+//                             Forventer <opptak>.mp4 og/eller <opptak>.webm.
+//   poster (string, påkrevd)  Sti til posterbilde under public/, f.eks. "/opptak/booking-poster.avif".
+//   bredde (number, standard 1920)  Bredde i kilden. Gir aspect-ratio og hindrer CLS.
+//   hoyde  (number, standard 1080)  Høyde i kilden.
+//
+// Avspilling styres av nærmeste forelder med data-case (eller <a>): pekeren over
+// den (eller fokus i den) starter opptaket på desktop. Finnes ingen slik forelder,
+// lyttes det på selve komponenten.
+import { existsSync } from 'node:fs';
+import path from 'node:path';
+
+interface Props {
+  opptak: string;
+  poster: string;
+  bredde?: number;
+  hoyde?: number;
+}
+const { opptak, poster, bredde = 1920, hoyde = 1080 } = Astro.props;
+
+const iPublic = (sti: string) => path.join(process.cwd(), 'public', sti);
+const harMp4 = existsSync(iPublic(`${opptak}.mp4`));
+const harWebm = existsSync(iPublic(`${opptak}.webm`));
+const harPoster = existsSync(iPublic(poster));
+const finnes = (harMp4 || harWebm) && harPoster;
+---
+
+{
+  finnes ? (
+    <div class="casevideo" data-casevideo style={`aspect-ratio: ${bredde} / ${hoyde}`}>
+      <video
+        muted
+        playsinline
+        loop
+        preload="none"
+        poster={poster}
+        width={bredde}
+        height={hoyde}
+        aria-hidden="true"
+        tabindex="-1"
+        data-mp4={harMp4 ? `${opptak}.mp4` : null}
+        data-webm={harWebm ? `${opptak}.webm` : null}
+      />
+    </div>
+  ) : (
+    <div class="casevideo casevideo--mangler" style={`aspect-ratio: ${bredde} / ${hoyde}`}>
+      <p>MANGLER: skjermopptak</p>
+    </div>
+  )
+}
+
+<script>
+  // Én kjøring for alle [data-casevideo] på siden. Redusert bevegelse og
+  // Save-Data: ingenting lastes, posteren står.
+  const redusert = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const tilkobling = Reflect.get(navigator, 'connection');
+  const spar = Boolean(tilkobling && tilkobling.saveData);
+
+  if (!redusert && !spar) {
+    const kanPeke = matchMedia('(hover: hover) and (pointer: fine)').matches;
+    for (const boks of document.querySelectorAll('[data-casevideo]')) {
+      const video = boks.querySelector('video');
+      if (!video) continue;
+      const last = () => {
+        if (video.src) return;
+        const mp4 = video.dataset.mp4 && video.canPlayType('video/mp4; codecs="avc1.42E01E"') !== '';
+        const fil = mp4 ? video.dataset.mp4 : (video.dataset.webm ?? video.dataset.mp4);
+        if (!fil) return;
+        video.src = fil;
+      };
+      const spill = () => {
+        last();
+        video.play().catch(() => {});
+      };
+      const stopp = () => {
+        if (video.src) video.pause();
+      };
+      // Laster opptaket ikke: posteren står (poster-attributtet beholdes ved feil).
+      video.addEventListener('error', stopp);
+
+      if (kanPeke) {
+        const vert = boks.closest('a, [data-case]') ?? boks;
+        vert.addEventListener('pointerenter', spill);
+        vert.addEventListener('pointerleave', stopp);
+        vert.addEventListener('focusin', spill);
+        vert.addEventListener('focusout', stopp);
+      } else {
+        new IntersectionObserver(
+          (treff) => {
+            for (const t of treff) (t.isIntersecting ? spill : stopp)();
+          },
+          { threshold: 0.4 },
+        ).observe(boks);
+      }
+    }
+  }
+</script>
+
+<style>
+  .casevideo {
+    position: relative;
+    overflow: clip;
+    border-radius: var(--radius-ark, 2px);
+    background: var(--scene-bunn, #080809);
+  }
+  .casevideo video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .casevideo--mangler {
+    display: grid;
+    place-items: center;
+  }
+  .casevideo--mangler p {
+    margin: 0;
+    padding: var(--rom-4, 16px);
+    color: var(--scene-tekst, #fbfbf9);
+    font-size: var(--tekst-liten, 0.9375rem);
+  }
+</style>

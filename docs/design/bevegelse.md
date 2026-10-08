@@ -4,6 +4,11 @@ Kontrakten `bygger` bruker. Én oppføring per komponent. Kildekoden ligger i
 `src/components/bevegelse/`, testene i `tests/bevegelse/`
 (`npx playwright test --config tests/bevegelse/playwright.config.ts`).
 
+Komponentene bruker bevegelsestokens fra `src/styles/tokens-v2.css` (`--ut`,
+`--tid-inn`, `--tid-inn-trinn`, `--tid-svar-lang`, rolletokens for scenefarger)
+med innebygde reserveverdier, så de virker også på sider som ennå ikke laster
+tokens-v2. Last tokens-v2 der det går.
+
 ## Scene
 
 `src/components/bevegelse/Scene.astro`
@@ -98,3 +103,157 @@ JavaScript. Stillbilde og vanlig rulling.
   `#080809` er målt bakgrunn i de ekte klippene (revisors måling).
 - Tekst over video skal holde 4,5:1 – kontroller mot de ekte klippene når de
   kommer; mørke klipp er en forutsetning.
+
+## Loft (øyeblikk 2)
+
+`src/components/bevegelse/Loft.astro`
+
+Overskrift som løftes inn linje for linje, én gang, når den kommer i syne.
+CSS-maske (overflow-klipp per linje) og `transform` – ingen bibliotek, ingen
+GSAP. Én linje bruker `--tid-inn` (560 ms) med kurven `--ut`; linjene under
+forsinkes `--tid-inn-trinn` (70 ms) per linje. Etter animasjonen settes
+overskriften tilbake til ren tekst, så markering, søk og linjebryting er som
+normalt. Brukes bare på h1 og h2 (fast inntoning gjelder bare overskrifter –
+brødtekst, kort og bilder står stille).
+
+### Egenskaper
+
+| Egenskap | Type | Påkrevd | Betydning |
+|---|---|---|---|
+| `tekst` | `string` | ja | Overskriftsteksten. Linjedelingen følger nettleserens egen bryting. |
+| `niva` | `1 \| 2` | nei (`2`) | Overskriftsnivå: `1` gir `<h1>`, `2` gir `<h2>`. |
+| `klasse` | `string` | nei | Ekstra klassenavn, f.eks. typografiklasse fra designsystemet. |
+| `id` | `string` | nei | `id` på overskriften, f.eks. som ankermål. |
+
+### Eksempel
+
+```astro
+---
+import Loft from '../components/bevegelse/Loft.astro';
+---
+<Loft niva={1} tekst="Gratis befaring av nettsiden din" />
+<Loft tekst="Vi tar siden fra hverandre lag for lag" id="rapport-tittel" />
+```
+
+### Uten JavaScript
+
+Overskriften er vanlig servert tekst og står stille, fullt synlig. Oppdelingen
+i linjer skjer først i nettleseren, så ingenting er skjult uten JavaScript.
+
+### Med redusert bevegelse eller Save-Data
+
+Skriptet trekker seg før det gjør noe: teksten deles aldri opp og står stille,
+fullt synlig. I tillegg nuller CSS-en overgangen under
+`prefers-reduced-motion`, som dobbel sikring.
+
+### Å vite
+
+- Mens animasjonen kjører har overskriften `aria-label` med hele teksten, så
+  skjermlesere ikke leser ord for ord. Etter animasjonen fjernes den.
+- Linjeklassene (`.loft__linje`, `.loft__skyv`) lages i JavaScript og er derfor
+  globale (`<style is:global>`), prefikset med `loft__`.
+- Overskriften animeres når 20 % av den er i syne, og aldri mer enn én gang
+  (heller ikke ved baklengs rulling).
+
+## CaseVideo (øyeblikk 3)
+
+`src/components/bevegelse/CaseVideo.astro`
+
+Case-kortets video: ekte skjermopptak som spiller når pekeren er over casen
+eller fokus er i den (desktop), eller når kortet er i syne (mobil, uten
+pekerstøtte). `<video muted playsinline loop preload="none">` med posterbilde –
+videoen har ingen `src` og laster ingenting før avspilling trengs. Mangler
+opptaket eller posteren på disk ved bygging, vises en mørk plassholderflate med
+teksten «MANGLER: skjermopptak» i stedet (ingen video, ingen 404).
+
+### Egenskaper
+
+| Egenskap | Type | Påkrevd | Betydning |
+|---|---|---|---|
+| `opptak` | `string` | ja | Sti under `public/` uten endelse, f.eks. `/opptak/booking`. Forventer `.mp4` og/eller `.webm`. Nettleseren velger selv format. |
+| `poster` | `string` | ja | Sti til posterbilde under `public/`, f.eks. `/opptak/booking-poster.avif`. |
+| `bredde` | `number` | nei (`1920`) | Bredde i kilden. Gir `aspect-ratio` og hindrer CLS. |
+| `hoyde` | `number` | nei (`1080`) | Høyde i kilden. |
+
+### Eksempel
+
+```astro
+---
+import CaseVideo from '../components/bevegelse/CaseVideo.astro';
+---
+<a href="/caser/booking" data-case>
+  <CaseVideo opptak="/opptak/booking" poster="/opptak/booking-poster.avif" />
+  <h3>Booking for frisører</h3>
+</a>
+```
+
+`bygger` må legge komponenten inni casens lenke (eller et element med
+`data-case`): avspillingen styres av pekeren over og fokus i nærmeste slike
+forelder. Finnes ingen, lyttes det på selve komponenten.
+
+### Uten JavaScript
+
+Posterbildet står (via `poster`-attributtet), ingen video lastes, casen er en
+vanlig lenke.
+
+### Med redusert bevegelse eller Save-Data
+
+Skriptet trekker seg helt: ingen video lastes uansett peker eller rulling,
+posteren står. Laster opptaket ikke (nettverksfeil), står også posteren.
+
+### Å vite
+
+- Videoen er `aria-hidden` og utenfor tab-rekkefølgen – casens tittel og lenke
+  bærer innholdet.
+- Desktop/mobil avgjøres med `(hover: hover) and (pointer: fine)`, ikke
+  skjermbredde. På mobil spiller opptaket fra 40 % synlighet og stopper utenfor.
+- Opptaket spiller i løkke uten lyd. Filene må være minst 1080p (del 12).
+
+## Reel (øyeblikk 6)
+
+`src/components/bevegelse/Reel.astro`
+
+«Spill av» åpner filmen i et `<dialog>`-element med `<video controls>`.
+Videoen får `src` og lastes først ved klikk – før det hentes ingenting.
+Dialogen åpnes med `opacity` og `transform: scale(0.98)` → 1 på
+`--tid-svar-lang` (240 ms) med kurven `--ut`. Lukkeknappen får fokus når
+dialogen åpnes; Esc, lukkeknappen og klikk utenfor lukker; videoen pauses og
+fokus går tilbake til «Spill av». Mangler filmen på disk ved bygging, vises en
+plassholderflate med «MANGLER: skjermopptak» i stedet for knappen.
+
+### Egenskaper
+
+| Egenskap | Type | Påkrevd | Betydning |
+|---|---|---|---|
+| `film` | `string` | ja | Sti under `public/` uten endelse, f.eks. `/film/reel`. Forventer `.mp4` og/eller `.webm`. |
+| `tittel` | `string` | ja | Tilgjengelig navn på dialogen (`aria-label`), f.eks. «Film: slik jobber vi». |
+| `poster` | `string` | nei | Posterbilde som vises i dialogen før avspilling. |
+| `knapp` | `string` | nei («Spill av») | Knappeteksten. |
+
+### Eksempel
+
+```astro
+---
+import Reel from '../components/bevegelse/Reel.astro';
+---
+<Reel film="/film/reel" poster="/film/reel-poster.avif" tittel="Film: slik jobber vi" />
+```
+
+### Uten JavaScript
+
+«Spill av» er en vanlig lenke rett til videofila – nettleseren spiller den
+selv. Med JavaScript får lenken `role="button"` og åpner dialogen i stedet.
+
+### Med redusert bevegelse eller Save-Data
+
+Åpningsanimasjonen er nullet (`--tid-svar-lang: 0ms` fra tokens, pluss
+`animation: none` under `prefers-reduced-motion` i komponenten). Selve dialogen
+og filmen virker som før: avspilling er et aktivt valg fra brukeren og starter
+aldri av seg selv. Lyd styres av brukeren via `controls`.
+
+### Å vite
+
+- `bygger` trenger ingen egen lukkelogikk – Esc og fokusflyt håndteres av
+  `<dialog>` og komponenten.
+- Knappeteksten skal fortelle hva som spilles av hvis det er flere reels på
+  samme side.

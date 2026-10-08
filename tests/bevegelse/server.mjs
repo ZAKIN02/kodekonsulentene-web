@@ -15,8 +15,9 @@ const sideMappe = path.join(rot, '.design', 'arbeid', 'bevegelse', 'side');
 const publicMappe = path.join(rot, 'public');
 const port = Number(process.env.PORT ?? 4330);
 
-// Generer testsiden før serveren svarer.
+// Generer testsidene før serveren svarer.
 await import('./lag-testside.mjs');
+await import('./lag-testside-oyeblikk.mjs');
 
 const typer = {
   '.html': 'text/html; charset=utf-8',
@@ -31,6 +32,7 @@ const finnFil = (url) => {
   const ren = decodeURIComponent(new URL(url, 'http://x').pathname);
   if (ren.includes('..')) return null;
   if (ren === '/' || ren === '/index.html') return path.join(sideMappe, 'index.html');
+  if (ren.endsWith('.html')) return path.join(sideMappe, ren);
   return path.join(publicMappe, ren);
 };
 

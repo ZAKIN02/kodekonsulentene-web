@@ -1,0 +1,158 @@
+---
+// Reel (øyeblikk 6): «Spill av» åpner filmen i en dialog. Videoen lastes først ved
+// klikk – før det hentes ingenting. Esc og lukkeknappen lukker; fokus går tilbake
+// til knappen. Uten JavaScript er knappen en vanlig lenke rett til filmen.
+// Mangler filmen på disk, vises en plassholder med «MANGLER: skjermopptak».
+//
+// Egenskaper:
+//   film   (string, påkrevd)  Sti under public/ uten endelse, f.eks. "/film/reel".
+//                             Forventer <film>.mp4 og/eller <film>.webm.
+//   tittel (string, påkrevd)  Tilgjengelig navn på dialogen, f.eks. «Film: slik jobber vi».
+//   poster (string, valgfri)  Sti til posterbilde under public/. Vises i dialogen før avspilling.
+//   knapp  (string, standard «Spill av»)  Knappeteksten.
+import { existsSync } from 'node:fs';
+import path from 'node:path';
+
+interface Props {
+  film: string;
+  tittel: string;
+  poster?: string;
+  knapp?: string;
+}
+const { film, tittel, poster, knapp = 'Spill av' } = Astro.props;
+
+const iPublic = (sti: string) => path.join(process.cwd(), 'public', sti);
+const harMp4 = existsSync(iPublic(`${film}.mp4`));
+const harWebm = existsSync(iPublic(`${film}.webm`));
+const finnes = harMp4 || harWebm;
+---
+
+{
+  finnes ? (
+    <div class="reel" data-reel>
+      <a class="reel__knapp" href={harMp4 ? `${film}.mp4` : `${film}.webm`} data-reel-apne>
+        {knapp}
+      </a>
+      <dialog class="reel__dialog" aria-label={tittel}>
+        <button class="reel__lukk" type="button" data-reel-lukk>
+          Lukk
+        </button>
+        <video
+          controls
+          playsinline
+          preload="none"
+          poster={poster}
+          data-mp4={harMp4 ? `${film}.mp4` : null}
+          data-webm={harWebm ? `${film}.webm` : null}
+        />
+      </dialog>
+    </div>
+  ) : (
+    <div class="reel reel--mangler">
+      <p>MANGLER: skjermopptak</p>
+    </div>
+  )
+}
+
+<script>
+  for (const reel of document.querySelectorAll('[data-reel]')) {
+    const knapp = reel.querySelector<HTMLAnchorElement>('[data-reel-apne]');
+    const dialog = reel.querySelector('dialog');
+    const video = reel.querySelector('video');
+    const lukk = reel.querySelector('[data-reel-lukk]');
+    if (!knapp || !dialog || !video || !lukk) continue;
+
+    // Lenken oppfører seg som knapp når JavaScript kjører.
+    knapp.setAttribute('role', 'button');
+
+    const apne = (hendelse: Event) => {
+      hendelse.preventDefault();
+      if (!video.src) {
+        const mp4 = video.dataset.mp4 && video.canPlayType('video/mp4; codecs="avc1.42E01E"') !== '';
+        const fil = mp4 ? video.dataset.mp4 : (video.dataset.webm ?? video.dataset.mp4);
+        if (!fil) return;
+        video.src = fil;
+        video.preload = 'auto';
+      }
+      dialog.showModal();
+      video.play().catch(() => {});
+    };
+    knapp.addEventListener('click', apne);
+    knapp.addEventListener('keydown', (h) => {
+      if (h.key === ' ') apne(h);
+    });
+    lukk.addEventListener('click', () => dialog.close());
+    // Esc gir close-hendelsen fra nettleseren selv. Fokus går automatisk
+    // tilbake til elementet som åpnet dialogen.
+    dialog.addEventListener('close', () => video.pause());
+    dialog.addEventListener('click', (h) => {
+      if (h.target === dialog) dialog.close();
+    });
+  }
+</script>
+
+<style>
+  .reel__knapp {
+    display: inline-block;
+    min-height: 24px;
+  }
+  .reel__dialog {
+    padding: 0;
+    border: none;
+    background: var(--scene-bunn, #080809);
+    border-radius: var(--radius-scene, 24px);
+    width: min(60rem, calc(100vw - 2 * var(--rom-5, 24px)));
+    overflow: clip;
+  }
+  .reel__dialog::backdrop {
+    background: rgb(0 0 0 / 0.6);
+  }
+  .reel__dialog[open] {
+    animation: reel-inn var(--tid-svar-lang, 240ms) var(--ut, cubic-bezier(0.16, 1, 0.3, 1));
+  }
+  @keyframes reel-inn {
+    from {
+      opacity: 0;
+      transform: scale(0.98);
+    }
+  }
+  .reel__dialog video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--scene-bunn, #080809);
+  }
+  .reel__lukk {
+    position: absolute;
+    top: var(--rom-3, 12px);
+    right: var(--rom-3, 12px);
+    z-index: 1;
+    min-height: 24px;
+    padding: var(--rom-1, 4px) var(--rom-3, 12px);
+    background: var(--scene-bunn, #080809);
+    color: var(--scene-tekst, #fbfbf9);
+    border: 1px solid var(--scene-tekst, #fbfbf9);
+    border-radius: var(--radius-ark, 2px);
+    font: inherit;
+    font-size: var(--tekst-liten, 0.9375rem);
+    cursor: pointer;
+  }
+  .reel--mangler {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 9;
+    background: var(--scene-bunn, #080809);
+    border-radius: var(--radius-scene, 24px);
+  }
+  .reel--mangler p {
+    margin: 0;
+    padding: var(--rom-4, 16px);
+    color: var(--scene-tekst, #fbfbf9);
+    font-size: var(--tekst-liten, 0.9375rem);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reel__dialog[open] {
+      animation: none;
+    }
+  }
+</style>

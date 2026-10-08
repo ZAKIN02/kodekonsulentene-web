@@ -1,0 +1,124 @@
+---
+// Overskrift som løftes inn linje for linje, én gang, når den kommer i syne (øyeblikk 2).
+// CSS-maske (overflow-klipp per linje) og transform – ingen bibliotek.
+// Uten JavaScript, med redusert bevegelse eller Save-Data står teksten stille og fullt synlig.
+// Etter animasjonen settes teksten tilbake til ren tekst, så markering og linjebryting er som normalt.
+//
+// Egenskaper:
+//   tekst   (string, påkrevd)  Overskriftsteksten. Linjedelingen følger nettleserens egen bryting.
+//   niva    (1 | 2, standard 2) Overskriftsnivå. Fast inntoning gjelder bare h1 og h2.
+//   klasse  (string, valgfri)   Ekstra klassenavn, f.eks. for typografi fra designsystemet.
+//   id      (string, valgfri)   id på overskriften, f.eks. som ankermål.
+interface Props {
+  tekst: string;
+  niva?: 1 | 2;
+  klasse?: string;
+  id?: string;
+}
+const { tekst, niva = 2, klasse, id } = Astro.props;
+const Tag = niva === 1 ? 'h1' : 'h2';
+---
+
+<Tag class:list={['loft', klasse]} id={id} data-loft>{tekst}</Tag>
+
+<script>
+  // Én kjøring for alle [data-loft] på siden. Trekker seg helt ved redusert
+  // bevegelse eller Save-Data: da står overskriften som ren tekst fra serveren.
+  const redusert = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const tilkobling = Reflect.get(navigator, 'connection');
+  const spar = Boolean(tilkobling && tilkobling.saveData);
+
+  if (!redusert && !spar && 'IntersectionObserver' in window) {
+    const loeft = (el: HTMLElement) => {
+      // Del i ord, les linjene (offsetTop leses inne i rAF), pakk hver linje i
+      // en maske (overflow: clip) med en indre flate som skyves opp.
+      const hel = el.textContent ?? '';
+      const ord = hel.split(/\s+/).filter(Boolean);
+      if (ord.length === 0) return;
+      el.setAttribute('aria-label', hel.trim());
+      el.textContent = '';
+      const spenn = ord.map((o) => {
+        const s = document.createElement('span');
+        s.textContent = o;
+        return s;
+      });
+      spenn.forEach((s, i) => {
+        el.append(s);
+        if (i < spenn.length - 1) el.append(' ');
+      });
+      const linjer: HTMLElement[][] = [];
+      let forrigeTopp = -1;
+      for (const s of spenn) {
+        if (s.offsetTop !== forrigeTopp) {
+          linjer.push([]);
+          forrigeTopp = s.offsetTop;
+        }
+        linjer[linjer.length - 1].push(s);
+      }
+      el.textContent = '';
+      linjer.forEach((linje, i) => {
+        const maske = document.createElement('span');
+        maske.className = 'loft__linje';
+        const flate = document.createElement('span');
+        flate.className = 'loft__skyv';
+        flate.style.setProperty('--linje', String(i));
+        flate.textContent = linje.map((s) => s.textContent).join(' ');
+        maske.append(flate);
+        el.append(maske);
+      });
+      // Neste ramme: fjern forskyvningen, så overgangen kjører.
+      requestAnimationFrame(() => el.setAttribute('data-vis', ''));
+      // Når siste linje er framme: tilbake til ren tekst. Fallback-tid dekker
+      // tilfellet der overgangstiden er 0 ms og transitionend aldri kommer.
+      let igjen = linjer.length;
+      const ferdig = () => {
+        if (el.hasAttribute('data-ferdig')) return;
+        el.setAttribute('data-ferdig', '');
+        el.removeAttribute('aria-label');
+        el.textContent = hel;
+      };
+      el.addEventListener('transitionend', () => {
+        igjen -= 1;
+        if (igjen <= 0) ferdig();
+      });
+      setTimeout(ferdig, 700 + linjer.length * 70 + 300);
+    };
+
+    const vakt = new IntersectionObserver(
+      (treff) => {
+        for (const t of treff) {
+          if (!t.isIntersecting) continue;
+          vakt.unobserve(t.target);
+          requestAnimationFrame(() => loeft(t.target as HTMLElement));
+        }
+      },
+      { threshold: 0.2 },
+    );
+    for (const el of document.querySelectorAll('[data-loft]:not([data-ferdig])')) vakt.observe(el);
+  }
+</script>
+
+<style is:global>
+  /* Globale navn fordi linjene lages i JavaScript og ikke får Astros scoping. */
+  .loft__linje {
+    display: block;
+    overflow: clip;
+  }
+  .loft__skyv {
+    display: block;
+    transform: translateY(115%);
+    transition: transform var(--tid-inn, 560ms) var(--ut, cubic-bezier(0.16, 1, 0.3, 1));
+    transition-delay: calc(var(--linje, 0) * var(--tid-inn-trinn, 70ms));
+  }
+  [data-loft][data-vis] .loft__skyv {
+    transform: none;
+  }
+  /* Belte og bukseseler: skriptet trekker seg ved redusert bevegelse,
+     og CSS-en står stille også på sider uten tokens-v2. */
+  @media (prefers-reduced-motion: reduce) {
+    .loft__skyv {
+      transition: none;
+      transform: none;
+    }
+  }
+</style>

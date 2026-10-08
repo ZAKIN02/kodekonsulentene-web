@@ -70,7 +70,7 @@ const base = `/scener/${navn}`;
 </script>
 
 <script>
-  for (const scene of document.querySelectorAll('[data-scene]')) {
+  for (const scene of document.querySelectorAll<HTMLElement>('[data-scene]')) {
     const video = scene.querySelector('video');
     const redusert = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const tilkobling = Reflect.get(navigator, 'connection');

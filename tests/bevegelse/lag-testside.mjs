@@ -9,6 +9,7 @@
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { transformSync } from 'esbuild';
 
 const rot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const kilde = path.join(rot, 'src', 'components', 'bevegelse', 'Scene.astro');
@@ -24,7 +25,9 @@ const taUt = (fil, start, slutt) => {
 };
 
 const inlineSkript = taUt(astro, '<script is:inline>', '</script>');
-const skript = taUt(astro, '<script>', '</script>');
+// Hovedskriptet står som TypeScript i komponenten (astro check er streng).
+// esbuild fjerner bare typene – samme transpilering som Astro selv bruker.
+const skript = transformSync(taUt(astro, '<script>', '</script>'), { loader: 'ts' }).code;
 const stil = taUt(astro, '<style>', '</style>');
 
 // Props som i brukseksempelet i briefens del 8, med navn="test" for testvideoene.

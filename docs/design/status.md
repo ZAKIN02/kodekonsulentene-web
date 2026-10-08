@@ -1,7 +1,18 @@
 # Status for redesignet
 
 Oppdatert: 8. oktober 2026
-Fase 1, bølge 1.3 pågår. Venter på: bygger-a, bygger-b, bygger-c og produsent (oppfølging B/C-bilder)
+Fase 2, bølge 2.1 pågår. Venter på: designleder og tekstforfatter
+
+## PORT 1 (delegert avgjørelse, dirigenten, 8. okt)
+- GODKJENT retning A «Befaring», med C sin typografiske prisliste (inngår i A-planen).
+  Grunnlag: kritiker (A vinner mobil, B sist), måling (B bryter vektbudsjettet hardest som video-hero),
+  brief del 6 (A anbefalt), del 3 (kunden leser på mobil).
+- Lyst som standard. «Jeg». Myk rulling: AV. Peker-etikett: AV. Kredittramme resten: opp til 500 totalt.
+- Hero i fase 1 har bare klipp A→B. Bilde C, klipp B, sløyfe og nærbilder bestilles i fase 3 med ny taktikk
+  (C som redigering av A: «rydd bunken til én flukt plate»).
+- Strukturfunn til fase 2/3: videolasting utsettes til første rulling (700 kB-budsjettet), plate/slør-regel
+  for tekst over video, CLS fra scene__tekst reserveres bort, scenebakgrunn settes til målt #080809,
+  lovpålagt footer på alle nye sider, Archivo + Schibsted 400 selvhostes som woff2.
 
 ## Beslutninger fra eier
 - 8. okt PORT 0: GODKJENT – «Fortsett med alle fasene, ikke kom tilbake før alt er komplett.»

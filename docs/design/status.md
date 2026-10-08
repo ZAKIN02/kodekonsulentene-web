@@ -1,7 +1,7 @@
 # Status for redesignet
 
 Oppdatert: 8. oktober 2026
-Fase 1, bølge 1.1 pågår. Venter på: produsent, designleder, bevegelse
+Fase 1, bølge 1.3 pågår. Venter på: bygger-a, bygger-b, bygger-c og produsent (oppfølging B/C-bilder)
 
 ## Beslutninger fra eier
 - 8. okt PORT 0: GODKJENT – «Fortsett med alle fasene, ikke kom tilbake før alt er komplett.»
@@ -28,6 +28,13 @@ Ramme: ikke satt. Brukt: 0. Saldo sist: ukjent – higgsfield-CLI er ikke instal
 | f0-kartlegger-referanser | kartlegger | Referansestudien | DELVIS, godtatt | docs/design/referanser.md |
 | f0-revisor-utgangsmaaling | revisor | Utgangsmåling av produksjon | FERDIG, 10/10 krav | docs/design/rapporter/f0-revisor-utgangsmaaling.md |
 | f0-produsent-saldo | produsent | Modell- og saldosjekk via API | FERDIG | docs/design/rapporter/f0-produsent-saldo.md |
+| f1-produsent-utkast | produsent | Bilder og klipp til hero-scenen | DELVIS, oppfølging pågår (ny redigeringsmodell) | docs/design/rapporter/f1-produsent-utkast.md |
+| f1-designleder-retninger | designleder | Retningsplaner A/B/C | FERDIG | docs/design/retning.md |
+| f1-bevegelse-scene | bevegelse | Scene.astro + 12 tester | FERDIG | docs/design/rapporter/f1-bevegelse-scene.md |
+| f1-tekst-retninger | tekstforfatter | Manus for A/B/C | FERDIG | docs/design/tekst/ |
+| f1-bygger-a | bygger | Prototype retning A | PÅGÅR | docs/design/rapporter/f1-bygger-a.md |
+| f1-bygger-b | bygger | Prototype retning B | PÅGÅR | docs/design/rapporter/f1-bygger-b.md |
+| f1-bygger-c | bygger | Prototype retning C | PÅGÅR | docs/design/rapporter/f1-bygger-c.md |
 
 ## Låste filer
 - (fylles fra kartlegging.md)

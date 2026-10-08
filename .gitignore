@@ -20,3 +20,4 @@ test-results/
 # Den ble sporet ved et uhell gjennom brede `git add`: 789,6 MB og 1771 mediefiler.
 # Hele mappa er bevisst utenfor, ikke bare enkelte filtyper paa toppnivaa.
 .skudd/
+.design/

@@ -1,0 +1,19 @@
+---
+/**
+ * De tidlige klassene for «film»-sider som ikke er forsiden (eies av A1, felles).
+ *
+ * Samme skript som Intro.astro, minus inngangen (html.wow-inngang, filmen som toner inn fra
+ * svart): den hører bare til forsiden (wow-undersider.md del 3, punkt 4). Må stå først i <body>,
+ * før innholdet tegnes, så startstilene i wow-bevegelse.css gjelder fra første maling og ingen
+ * overskrift hopper når bunten kommer.
+ *  - html.wow-js: bevegelsen starter (fjernes etter 4 s hvis bunten ikke har satt wow-klar, og da
+ *    settes wow-sent, så siden aldri blir stående skjult)
+ *  - html.wow-spar ved Save-Data: kapitler viser stillbilder
+ *
+ * Endres Intro.astro sitt skript, skal denne følge med (samme oppførsel, samme klasser).
+ * CSP: inline og uten variabler; sikkerhet.mjs leser hashen ut av bygget.
+ * Uten JavaScript settes ingenting, og alt står synlig.
+ */
+---
+
+<script is:inline>(function(){var d=document.documentElement;d.classList.add("wow-js");try{var c=navigator.connection;if(c&&c.saveData)d.classList.add("wow-spar")}catch(e){}setTimeout(function(){if(!d.classList.contains("wow-klar")){d.classList.remove("wow-js");d.classList.add("wow-sent")}},4000)})();</script>

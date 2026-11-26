@@ -1,0 +1,332 @@
+---
+/**
+ * ScrollWorld (data-scroll-world). Eies av bevegelse; styres av src/scripts/wow/scroll-world.ts,
+ * stiler i src/styles/wow-bevegelse.css («ScrollWorld»). Historien: `film` i src/data/historie.ts.
+ *
+ * Runde 4, historien C «Lampa» (docs/design/historie-manus.md del 5). En forteller viser deg en
+ * gate full av grønne lys og nekter å tro på ett eneste av dem, til filmen innrømmer at gata står
+ * på pulten vår, og at det eneste som er målt, er siden du leser nå.
+ *  - Filmen er segmenter som spilles etter hverandre med rullingen: klipp forover, klipp baklengs
+ *    (retning -1) og stillbilder (type "still", med zoom). Sømmen ut av hvert segment er et hardt
+ *    kutt (standard) eller en kort krysstoning (`som: "toning"`), og et klipp kan stå på én ramme
+ *    mens rullingen går videre (`hold`). Se historie.ts og src/scripts/wow/som.ts.
+ *  - Én plate nede til venstre med fortellerlinjene, én om gangen, og ÉN lampe ved teksten.
+ *    Hul ring = ikke målt. Fylt grønn med dato = målt. Den tennes første gang når de fire
+ *    målingene har låst seg på pulten. Gråtonen i bildet er uavhengig av lampa: den viser hva
+ *    vi bygger (grått til det grønne lyset), lampa viser hva som er bevist.
+ *  - Panelet med målingene blir radene i rapporten (Befaring.astro, data-sw-rapport, overgang.ts).
+ * Teknikken er tilpasset fra oso95/scroll-world (MIT), se scroll-world.ts.
+ *
+ * Egenskaper:
+ *   film?: FilmKapittel[]  Standard: `film` fra historie.ts. Se historie.ts for modellen.
+ *   tekst?: Partial<FilmTekst>  Standard: filmTekst fra historie.ts (etikett, ikkeMalt, kolofon,
+ *                          hopp, hoppTil, dinSide, dinSideStatus, overgang).
+ *   mappe?: string         Der filene ligger under public/. Standard /media/wow/scroll-world.
+ *   etikett?: string       aria-label for seksjonen (overstyrer tekst.etikett).
+ *   kapitler?, kobling?    Fra runde 3. Godtas og ignoreres, så index.astro virker til den er ryddet.
+ *   <slot />               Heroen (H1, ingress, adressefelt). H1 vises ved første maling og spilles
+ *                          ikke inn (LCP). Glir opp og ut over de første 12vh.
+ *
+ * Klippene kodes med scripts/kod-rullefilm.sh (H.264, GOP 8, uten B-ramer, moov først; 16:9 i
+ * 1080p og 9:16 i 720p). Motoren (rullefilm.ts) leser antall ramer fra fila, så klippene kan være
+ * så lange de vil.
+ *
+ * Filene (public/media/wow/scroll-world/): klipp `<kilde>.mp4` og `<kilde>-m.mp4` (9:16),
+ * stillbilder `<kilde>.webp` og `-m.webp` (og `.avif` når den finnes). hero(.avif/.webp) er siste ramme
+ * i dive-4 og heroens LCP-bilde: forhåndslast den med filmForhandslast() fra
+ * src/scripts/wow/film-filer.ts. Mangler en fil: plassholder i `astro dev`
+ * (.design/arbeid/bevegelse/scroll-world/), ellers segmentets `reserve` eller kapittelets
+ * `bildeReserve`.
+ *
+ * Uten JavaScript, ved redusert bevegelse og Save-Data: ingen video. Heroen står over pulten, og hvert
+ * kapittel er en statisk blokk med sitt stillbilde og alle linjene i rekkefølge, så historien kan
+ * leses som et manus. Lampa står hul ved hver blokk og fylt med dato ved pulten. Målingene står i
+ * rapporten. Ingen lyd, rullingen låses aldri, og hopp-lenken treffes først.
+ */
+import { filmTekst, maltDato, maltAdresse, delVerdi, malinger, film as standardFilm, type FilmKapittel, type FilmTekst, type Segment } from "../../data/historie";
+import { finnFil, type FilFunn } from "../../scripts/wow/film-filer";
+import { somBredde, holdAndel } from "../../scripts/wow/som";
+
+interface Props {
+  film?: FilmKapittel[];
+  tekst?: Partial<FilmTekst>;
+  mappe?: string;
+  etikett?: string;
+  kapitler?: unknown;
+  kobling?: number;
+}
+
+const { film = standardFilm, tekst: tekstInn = {}, mappe = "/media/wow/scroll-world" } = Astro.props;
+const tekst: FilmTekst = { ...filmTekst, ...tekstInn };
+const etikett = Astro.props.etikett ?? tekst.etikett;
+
+// Samme spørring som MOBIL_KLIPP i scroll-world.ts: stående skjerm får 9:16-filene.
+const MOBIL = "(max-aspect-ratio: 4/5)";
+const dev = import.meta.env.DEV;
+const finn = (navn: string): FilFunn | null => finnFil(navn, mappe, dev);
+
+/** Stillbilde i to formater, med avif der den finnes. */
+function bilde(kilde: string | undefined, reserve?: string) {
+  for (const k of [kilde, reserve]) {
+    if (!k) continue;
+    const d = finn(`${k}.webp`);
+    if (!d) continue;
+    const m = finn(`${k}-m.webp`) ?? d;
+    return { d: d.url, m: m.url, avif: finn(`${k}.avif`)?.url ?? null, avifM: finn(`${k}-m.avif`)?.url ?? null, plassholder: d.plassholder };
+  }
+  return null;
+}
+
+const klem = (x: number, a: number, b: number) => Math.min(b, Math.max(a, x));
+
+type Seg = {
+  type: "klipp" | "still";
+  kilde: string;
+  klipp: string | null;
+  klippM: string | null;
+  bilde: ReturnType<typeof bilde>;
+  vekt: number;
+  retning: 1 | -1;
+  kart: { g: number; p: number; r: number } | null;
+  zoom: [number, number][] | null;
+  gra: [number, number] | null;
+  maal: [number, number] | null;
+  /** Sømmen ut av segmentet slik historien sier den; regnes om til bredde når naboene er kjent. */
+  somValg: Segment["som"];
+  /** [ved, andel av segmentets rulling], eller null. */
+  hold: [number, number] | null;
+  linjer: NonNullable<Segment["linjer"]>;
+  kapittel: number;
+};
+
+/** Velger segmentet eller reserven, og regner "gronn" og "hake" om til andeler av segmentet. */
+function lagSeg(s: Segment, kapittel: number): Seg {
+  const type = s.type ?? "klipp";
+  const finnes = type === "klipp" ? finn(`${s.kilde}.mp4`) : finn(`${s.kilde}.webp`);
+  const brukt: Segment = !finnes && s.reserve ? s.reserve : s;
+  const t = brukt.type ?? "klipp";
+  const kart =
+    t === "klipp" && brukt.gronnVed != null
+      ? { g: klem(brukt.gronnVed, 0.05, 0.95), p: klem(brukt.problemAndel ?? 0.4, 0.2, 0.7), r: klem(brukt.ro ?? 0.42, 0, 0.7) }
+      : null;
+  const maal = brukt.maalinger ?? null;
+  let gra: [number, number] | null = null;
+  if (brukt.gra) {
+    const [fra, til] = brukt.gra;
+    const tilAndel = til === "gronn" ? (kart?.p ?? 1) : til === "hake" ? (maal ? maal[0] + (maal[1] - maal[0]) / 4 : 1) : til;
+    gra = [fra, tilAndel];
+  }
+  const klipp = t === "klipp" ? finn(`${brukt.kilde}.mp4`) : null;
+  const vekt = Math.max(0.2, brukt.lengde);
+  const holdA = t === "klipp" ? holdAndel(brukt.hold?.lengde, vekt) : 0;
+  const dyk = /^dive-(\d)$/.exec(brukt.kilde);
+  const posterNavn = brukt.poster ?? (t === "still" ? brukt.kilde : dyk && (brukt.retning ?? 1) === 1 ? `poster-${dyk[1]}` : undefined);
+  return {
+    type: t,
+    kilde: brukt.kilde,
+    klipp: klipp?.url ?? null,
+    klippM: t === "klipp" ? (finn(`${brukt.kilde}-m.mp4`)?.url ?? klipp?.url ?? null) : null,
+    bilde: posterNavn ? bilde(posterNavn, t === "still" ? film[kapittel].bildeReserve : undefined) : null,
+    vekt,
+    retning: brukt.retning ?? 1,
+    kart,
+    zoom: brukt.zoom ?? null,
+    gra,
+    maal,
+    somValg: brukt.som,
+    hold: holdA > 0 ? [klem(brukt.hold!.ved, 0, 1), holdA] : null,
+    linjer: brukt.linjer ?? [],
+    kapittel,
+  };
+}
+
+const segmenter: Seg[] = film.flatMap((k, i) => k.segmenter.map((s) => lagSeg(s, i)));
+// Bredden på sømmen etter hvert segment (0 = hardt kutt), holdt under 40 % av naboene.
+const som = segmenter.map((s, i) => (i < segmenter.length - 1 ? somBredde(s.somValg, s.vekt, segmenter[i + 1].vekt) : 0));
+const kapLengde = film.map((_, i) => segmenter.filter((s) => s.kapittel === i).reduce((a, s) => a + s.vekt, 0));
+
+// Linjene i rekkefølge, med segmentet og andelen de tar over platen ved.
+const linjer = segmenter.flatMap((s, si) =>
+  s.linjer.map((l) => ({
+    ...l,
+    s: si,
+    ved: l.ved === "gronn" ? (s.kart?.p ?? 0) : klem(l.ved, 0, 0.999),
+  })),
+);
+const maalSeg = segmenter.findIndex((s) => s.maal);
+
+const data = JSON.stringify({
+  segmenter: segmenter.map(({ type, klipp, klippM, vekt, retning, kart, zoom, gra, maal, hold, bilde: b }, i) => ({
+    type,
+    klipp,
+    klippM,
+    vekt,
+    retning,
+    kart,
+    zoom,
+    gra,
+    maal,
+    poster: !!b,
+    // Bare med når de er satt, så data-attributtet er uendret for en film uten toning og hold.
+    ...(som[i] > 0 ? { som: som[i] } : {}),
+    ...(hold ? { hold } : {}),
+  })),
+  linjer: linjer.map((l) => ({ s: l.s, ved: l.ved, stille: !!l.stille, puls: !!l.puls })),
+  kapitler: film.map((_, i) => segmenter.findIndex((s) => s.kapittel === i)),
+});
+
+const harSlot = Astro.slots.has("default");
+const statiskBilde = (k: FilmKapittel) => bilde(k.bilde, k.bildeReserve);
+const statiskeLinjer = (i: number) => linjer.filter((l) => segmenter[l.s].kapittel === i && !l.stille && l.tekst);
+const malt = (i: number) => segmenter.some((s) => s.kapittel === i && s.maal);
+---
+
+<section class="sw" data-scroll-world={data} aria-label={etikett}>
+  {
+    film.map((k, i) => (
+      <div
+        class:list={["sw__kapittel", i === 0 && "sw__kapittel--hero", i === film.length - 1 && "sw__kapittel--siste"]}
+        id={`sw-${k.id}`}
+        data-sw-kapittel={i}
+        style={`--sw-lengde: ${kapLengde[i].toFixed(3)}`}
+      >
+        {i === 0 && harSlot && (
+          <>
+            <div class="sw__tekstramme">
+              <div class="sw__tekst" data-sw-tekst>
+                <slot />
+              </div>
+            </div>
+            {tekst.hopp && (
+              <a class="sw__hopp" href={tekst.hoppTil}>
+                {tekst.hopp}
+              </a>
+            )}
+          </>
+        )}
+        <div class:list={["sw__blokk", i === 0 && "sw__blokk--hero"]}>
+          {i > 0 && statiskBilde(k) && (
+            <figure class="sw__blokk-bilde">
+              <picture>
+                {statiskBilde(k)!.m !== statiskBilde(k)!.d && <source media={MOBIL} srcset={statiskBilde(k)!.m} type="image/webp" />}
+                <img src={statiskBilde(k)!.d} alt="" width="1920" height="1080" loading="lazy" decoding="async" />
+              </picture>
+              <figcaption class="sw__kolofon">{tekst.kolofon}</figcaption>
+            </figure>
+          )}
+          <div class="sw__blokk-tekst">
+            {/* Lampa: hul ved hver blokk, fylt med dato ved pulten (manus C). */}
+            <p class="sw__lampe-rad" data-gronn={malt(i) ? "" : undefined}>
+              <span class="sw__lampe" aria-hidden="true"><span class="wow-hake sw__lampe-gronn" /></span>
+              <span class="sw__lampe-tekst">{malt(i) ? maltDato : tekst.ikkeMalt}</span>
+            </p>
+            {statiskeLinjer(i).map((l) => (
+              <>
+                {l.tittel && (
+                  <h2 class="sw__tittel">
+                    {l.href ? <a href={l.href} data-hover="strek">{l.tittel}</a> : l.tittel}
+                  </h2>
+                )}
+                <p class="sw__linje-fast">{l.tekst}</p>
+              </>
+            ))}
+          </div>
+        </div>
+      </div>
+    ))
+  }
+
+  <div class="sw__spor">
+    <div class="sw__ramme">
+      <div class="sw__lerret" data-sw-lerret aria-hidden="true">
+        {
+          segmenter.map((s, i) => (
+            <div class="sw__lag" data-sw-lag={i} data-sw-type={s.type}>
+              {s.bilde && (
+                <picture>
+                  {s.bilde.avifM && s.bilde.avifM !== s.bilde.avif && <source media={MOBIL} srcset={s.bilde.avifM} type="image/avif" />}
+                  {s.bilde.m !== s.bilde.d && <source media={MOBIL} srcset={s.bilde.m} type="image/webp" />}
+                  {s.bilde.avif && <source srcset={s.bilde.avif} type="image/avif" />}
+                  <img
+                    class="sw__poster"
+                    src={s.bilde.d}
+                    alt=""
+                    width="1920"
+                    height="1080"
+                    decoding={i === 0 ? "sync" : "async"}
+                    loading={i === 0 ? "eager" : "lazy"}
+                    fetchpriority={i === 0 ? "high" : undefined}
+                  />
+                </picture>
+              )}
+            </div>
+          ))
+        }
+      </div>
+      {/* Gråtonen: to lag over filmen, bare opasitet animeres. Uavhengig av lampa. */}
+      <div class="sw__gra" data-sw-gra aria-hidden="true"></div>
+      <div class="sw__gra sw__gra--mork" aria-hidden="true"></div>
+      <div class="sw__slor" aria-hidden="true"></div>
+      <div class="sw__slor sw__slor--hero" data-sw-slor-hero aria-hidden="true"></div>
+      <div class="sw__slutt" data-sw-slutt aria-hidden="true"></div>
+      <div class="sw__inngang" aria-hidden="true"></div>
+      <p class="sw__kolofon sw__kolofon--hero" data-sw-kolofon-hero>{tekst.kolofon}</p>
+
+      <div class="sw__nede">
+        <div class="sw__plate" data-sw-plate>
+          <div class="sw__plate-rute">
+            {/* Én lampe ved teksten. Status står også som tekst (skjermleser og når den er fylt: datoen). */}
+            <span class="sw__lampe sw__lampe--plate" data-sw-lampe aria-hidden="true"><span class="wow-hake sw__lampe-gronn" /></span>
+            <div class="sw__linjer">
+              {
+                linjer.map((l, j) => (
+                  <div class="sw__linje" data-sw-linje={j}>
+                    {l.tittel && (
+                      <h2 class="sw__tittel">
+                        {l.href ? <a href={l.href} data-hover="strek">{l.tittel}</a> : l.tittel}
+                      </h2>
+                    )}
+                    {l.tekst && <p class="sw__fortelling">{l.tekst}</p>}
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+          <p class="sw__plate-fot">
+            <span class="sw__lampe-status" data-sw-lampe-status>
+              <span class="sw__status-ikke">{tekst.ikkeMalt}</span>
+              <span class="sw__status-malt">{maltDato}</span>
+            </span>
+            <span class="sw__kolofon">{tekst.kolofon}</span>
+          </p>
+        </div>
+
+        {
+          maalSeg >= 0 && (
+            <div class="sw__maalinger" data-sw-maalinger aria-hidden="true">
+              <p class="sw__maalinger-hode" data-sw-maal-hode>
+                <span class="sw__maalinger-adresse">{maltAdresse}</span>
+                <span>{maltDato}</span>
+              </p>
+              <ol class="sw__maalinger-liste" role="list">
+                {malinger.map((m, j) => (
+                  <li class="sw__maaling" data-sw-maaling={j} data-status={m.status}>
+                    <span class="sw__maaling-status" data-maal-del={`${j}:status`}><span class="wow-hake sw__maaling-hake" /></span>
+                    <span class="sw__maaling-navn">
+                      <span class="wow-maalt__navn" data-maal-del={`${j}:navn`}>{m.etikett}</span>
+                      {m.forbehold && <span class="sw__maaling-forbehold" data-maal-del={`${j}:forbehold`}>{m.forbehold}</span>}
+                    </span>
+                    <span class="sw__maaling-spor" data-maal-del={`${j}:spor`}><span class="sw__maaling-linje" data-sw-linje-maal /></span>
+                    <span class="wow-maalt__verdi sw__maaling-verdi" data-maal-del={`${j}:verdi`}>
+                      {delVerdi(m.verdi).for && <span class="wow-maalt__enhet">{delVerdi(m.verdi).for}</span>}{delVerdi(m.verdi).stor}{delVerdi(m.verdi).etter && <span class="wow-maalt__enhet">{delVerdi(m.verdi).etter}</span>}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</section>

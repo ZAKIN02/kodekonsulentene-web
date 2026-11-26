@@ -1,33 +1,31 @@
 ---
-import Base from "../layouts/Base.astro";
-import Storflate from "../components/Storflate.astro";
-import Snitt from "../components/Snitt.astro";
-import { snitt } from "../data/flyter";
-import opptak from "../data/opptak.json";
-import Demo from "../components/Demo.astro";
-import Scene from "../components/Scene.astro";
-import Mega from "../components/Mega.astro";
-import Avslor from "../components/Avslor.astro";
-import KodeBygg from "../components/KodeBygg.astro";
-import Button from "../components/Button.astro";
-import Terminal from "../components/Terminal.astro";
-import ProcessSteps from "../components/ProcessSteps.astro";
-import ContactBlock from "../components/ContactBlock.astro";
-import { prosess } from "../data/prosess";
+/**
+ * /nettsider i wow-drakten (wow-undersider.md del 1.3 og del 4, wow-r8-B1).
+ * Rekkefølge: kapittel 1 (bakeriet) → KodeBygg (sidens eget øyeblikk) → fire krav, med ekte
+ * måling og dato der det finnes en, og ekte skjermbilder → prosess → pris → kontakt.
+ *
+ * Ute fra v1: Snitt (de fire kravene sier det samme), Storflate (KI utenfor et kapittel),
+ * opptaket av lagstabelen (erstattet av ekte skjermbilder), terminalutsnittet og seksjonen
+ * «Hva det er bygget av». Den siste venter på faktasjekk (planens åpne punkt 3: «Hosting
+ * Cloudflare» og «0 kB JS på forsiden» stemmer ikke med nettstedet i dag), se rapporten.
+ */
+import MalWow from "../layouts/MalWow.astro";
+import { Seksjon, Kravrader, Prosess, Prisliste, Kontaktblokk, Ramme } from "../components/wow/side";
+import Kapittel from "../components/wow/Kapittel.astro";
+import KodeBygg from "../components/wow/tjeneste/KodeBygg.astro";
+import { kapittelForhandslast } from "../scripts/wow/kapittel-klipp";
 import { tjeneste } from "../data/schema";
 import { bookUrl } from "../data/firma";
 import { pakker, prisenhet, mvaSetning } from "../data/priser";
-
-import "../styles/scener.css";
+import { tjenester, malinger, maltDato, maltDatoIso } from "../data/historie";
 
 /**
  * Markupen kom fra `tjeneste()` i src/data/schema.ts, ikke skrevet her.
  *
  * Den som sto her før hadde `provider: { "@type": "ProfessionalService", name:
  * "KodeKonsulentene" }` – en NY foretaksnode uten `@id`. Google så da to
- * virksomheter på samme side: den ekte med org.nr. og en navnløs kopi. Nettopp
- * den tvetydigheten er det vi forsøker å få bort, siden «kodekonsulent» også er
- * en stilling i helsevesenet. Nå peker `provider` på `/#foretak`.
+ * virksomheter på samme side: den ekte med org.nr. og en navnløs kopi. Nå peker
+ * `provider` på `/#foretak`.
  */
 const schema = tjeneste({
   type: "Utvikling av nettsider",
@@ -37,246 +35,152 @@ const schema = tjeneste({
   sti: "/nettsider",
   pakker: ["Start", "Bedrift"],
 });
+
+/**
+ * Målingen bak et krav, når det finnes en: verdien og datoen fra historie.ts (samme kilde som
+ * filmen og befaringsrapporten på forsiden). Finnes ikke raden, står kravet uten måling.
+ */
+/** historie.ts sier «mangler» der lampa heter «brudd». */
+const lampe = (s: "bestatt" | "mangler" | "ikke-sjekket") => (s === "mangler" ? ("brudd" as const) : s);
+const maalt = (etikett: string) => {
+  const m = malinger.find((x) => x.etikett === etikett);
+  return m ? { verdi: m.verdi, status: lampe(m.status), dato: maltDato, datoIso: maltDatoIso } : undefined;
+};
+
+const krav = [
+  {
+    tittel: "Rask på mobil",
+    tekst:
+      "Lighthouse 95 eller bedre på alle fire kategorier, målt på mobil. Største innhold malt under 2,5 sekunder. Vi viser tallet for vår egen side i footeren, så du kan sjekke at vi holder det vi selger.",
+  },
+  {
+    tittel: "Funnet lokalt",
+    tekst:
+      "Google Bedriftsprofil satt opp riktig, samme navn, adresse og telefon overalt, og egne landingssider per tjeneste og bydel. Strukturert data slik at både Google og ChatGPT kan sitere deg.",
+  },
+  {
+    tittel: "Lovlig fra dag én",
+    tekst:
+      "Org.nr. og foretaksnavn på siden, adresse og kontaktinfo etter ehandelsloven § 8, personvernerklæring, og WCAG 2.2 AA – strengere enn de 35 kravene private virksomheter må oppfylle.",
+    maaling: maalt("Lovpålagt informasjon"),
+  },
+  {
+    /* «Banneret som halvparten av besøkende lukker uten å lese» er fjernet (v1): et kvantifisert
+       funn uten kilde. Hjemmelen er kontrollert mot Lovdata og står i src/data/kilder.ts. */
+    tittel: "Uten cookie-banner",
+    tekst:
+      "Vi setter ingen cookies. Da er det ingenting å samtykke til, og du slipper banneret helt. Det er også den enkleste måten å overholde ekomloven § 3-15.",
+    maaling: maalt("Cookies før samtykke"),
+  },
+];
 ---
-<Base
+
+<MalWow
   tittel="Nettsider til fast pris i Oslo"
   beskrivelse={`Nettside til fast pris i Oslo: Lighthouse 95+, lokal SEO, WCAG 2.2 AA og cookieløs analyse. ${pakker[0].navn} ${pakker[0].pris}, ${pakker[1].navn} ${pakker[1].pris} – ${prisenhet}.`}
   schema={[schema]}
+  bevegelse="film"
+  forhandslast={kapittelForhandslast(1, "skrubb")}
 >
-  <Scene lav>
-    <Mega som="h1" merke="Nettsider" n={1} tekst="En nettside som faktisk blir funnet" aksent="funnet" />
-    <Avslor trinn={1}>
-      <p class="scene__ingress body-lg">De fleste småbedriftssider er for trege på mobil, bryter cookie-reglene og mangler org.nr. Det er tre ting som koster kunder, og alle tre er løsbare.</p>
-    </Avslor>
-
-    <Avslor trinn={2}>
-      {/* Tegning med EKTE navn, hentet ordrett fra det som allerede står på siden.
-          Brandboken rangerer diagram over generert materiale: det forklarer hva
-          kunden får, og koster 0 kB. */}
-      <Snitt snitt={snitt.nettside} nivaa={2} />
-    </Avslor>
-
-    <Avslor>
-    <div class="row">
-      <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
-      <Button variant="ghost" href="/sjekk">Sjekk siden du har i dag</Button>
-    </div>
-    </Avslor>
-  </Scene>
-
-  {/* Det vi selger, vist én gang i stedet for påstått fem ganger.
-      Her, rett etter overskriften, fordi det er sidens eneste innhold som
-      forklarer HVA en nettside er for den som ikke har bygget en. Den står
-      bevisst IKKE i en Avslor: avdekkingen er scroll-drevet og beveger seg bare
-      mens noen scroller, og KodeBygg har sin egen tidsdrevne sekvens som spiller
-      av seg selv når blokken er i syne. To lag bevegelse på samme element ville
-      dessuten gjort at koden sto halvgjennomsiktig mens den ble skrevet. */}
-  <Scene n={2} eyebrow="Slik blir den til" tittel="Fra kode til ferdig side" ingress="Til venstre står en ekte fil fra dette nettstedet, linje for linje. Til høyre står den samme fila rendret. Du trenger ikke lese koden – se hvor hver linje havner.">
-    <KodeBygg />
-  </Scene>
-
-
-  {/* Full styrke, kant til kant. Dekker du teksten: et tomt skjelett faar fire plater
-      som daler ned ett felt om gangen, og til slutt staar en hel flate. Det er
-      bokstavelig talt det vi selger.
-
-      Levert paa to bestillinger. Runde 1 ble forkastet fordi platene VIPPET mens de
-      falt. Rotaarsaken var vaar egen, ikke modellens: rammeparet var geometrisk
-      umulig INNE I BILDERAMMEN – panelet tok 574 av 1152 piksler, saa det var 432 px
-      luft igjen mens en plate er 513 px hoey. En flat plate fikk ikke plass til aa
-      sveve fritt, saa bilderedigereren krympet og vred platene for aa faa dem inn.
-      Kling interpolerte deretter trofast mellom to rammer som var uenige om baade
-      vinkel og stoerrelse.
-
-      Klippet er ogsaa bestilt BAKLENGS og snudd: modellen utfoerer «loeft platene ut»
-      paalitelig, men «senk platene ned» feilet i fire varianter. */}
-  <Storflate
-    smal="/scener/skjelett-1280.mp4"
-    bred="/scener/skjelett-1920.mp4"
-    stor="/scener/skjelett-2560.mp4"
-    plakat="/scener/skjelett-poster.avif"
-    tittel="Fra skjelett til ferdig."
-    tekst="En nettside er ikke én ting. Den bygges felt for felt, og først når alt sitter er den noe."
-    hoyde={64}
+  <Kapittel
+    nummer={1}
+    tittel="En nettside som faktisk blir funnet"
+    ingress="De fleste småbedriftssider er for trege på mobil, bryter cookie-reglene og mangler org.nr. Det er tre ting som koster kunder, og alle tre er løsbare."
+    problem={tjenester.nettsider.problem}
+    losning={tjenester.nettsider.losning}
+    handlinger={[
+      { tekst: "Book 20 minutter", href: bookUrl, type: "primar" },
+      { tekst: "Sjekk siden du har i dag", href: "/sjekk", type: "lenke" },
+    ]}
   />
-  <Scene n={3} eyebrow="Hva du får" tittel="Fire krav vi setter selv">
-    {/* Karakteren paa denne sida er LAG, og kortene ligger derfor i et eget plan
-        som vandrer mens du scroller. Men de ligger i SAMME plan.
 
-        Foer sto de paa 18 / -14 / 12 / -20. Vekslende fortegn var ment som to
-        plan; i praksis var det to kort SIDE OM SIDE som dro 32 px fra hverandre
-        i overkant mens man scrollet – maalt paa 1440, 1024 og 390. En rad som
-        ikke deler oeverste kant leses ikke som dybde, den leses som en feil.
+  {/* Det vi selger, vist én gang i stedet for påstått. Sekvensen er tidsdrevet og starter når
+      blokken kommer i syne (se KodeBygg). */}
+  <Seksjon
+    id="slik-blir-den-til"
+    tittel="Fra kode til ferdig side"
+    ingress="Til venstre står en ekte fil fra dette nettstedet, linje for linje. Til høyre står den samme fila rendret. Du trenger ikke lese koden – se hvor hver linje havner."
+    storrelse="stor"
+  >
+    <KodeBygg />
+  </Seksjon>
 
-        Samme fortegn og samme utslag paa alle fire: hele rutenettet er ETT lag
-        som flytter seg mot teksten rundt. Det er dybden siden skal ha, og den
-        koster ingen linjer. Verdien 18 er den samme som prisekortene fikk. */}
-    <div class="grid-2">
-      <Avslor trinn={0} fra="dybde" dybde={18} as="div" class="card">
-        <h3 class="heading">Rask på mobil</h3>
-        <p class="muted">
-          Lighthouse 95 eller bedre på alle fire kategorier, målt på mobil. Største innhold
-          malt under 2,5 sekunder. Vi viser tallet for vår egen side i footeren, så du kan
-          sjekke at vi holder det vi selger.
-        </p>
-      </Avslor>
-      <Avslor trinn={1} fra="dybde" dybde={18} as="div" class="card">
-        <h3 class="heading">Funnet lokalt</h3>
-        <p class="muted">
-          Google Bedriftsprofil satt opp riktig, samme navn, adresse og telefon overalt, og
-          egne landingssider per tjeneste og bydel. Strukturert data slik at både Google og
-          ChatGPT kan sitere deg.
-        </p>
-      </Avslor>
-      <Avslor trinn={2} fra="dybde" dybde={18} as="div" class="card">
-        <h3 class="heading">Lovlig fra dag én</h3>
-        <p class="muted">
-          Org.nr. og foretaksnavn på siden, adresse og kontaktinfo etter ehandelsloven § 8,
-          personvernerklæring, og WCAG 2.2 AA – strengere enn de 35 kravene private
-          virksomheter må oppfylle.
-        </p>
-      </Avslor>
-      <Avslor trinn={3} fra="dybde" dybde={18} as="div" class="card">
-        <h3 class="heading">Uten cookie-banner</h3>
-        {/*
-          «BANNERET SOM HALVPARTEN AV BESØKENDE LUKKER UTEN Å LESE» ER FJERNET.
+  <Seksjon id="krav" tittel="Fire krav vi setter selv" storrelse="tjeneste" tone="flate">
+    <Kravrader rader={krav} />
+  </Seksjon>
 
-          Det er et kvantifisert funn om folks atferd – halvparten – og vi har
-          ingen kilde til det. Ikke en måling av vår egen, ikke en undersøkelse
-          vi kan vise til. Det lyder sant, og det er nettopp derfor det er farlig:
-          et tall ingen etterprøver er et tall ingen oppdager er oppdiktet.
-
-          Setningen er ikke erstattet med et annet tall. Poenget – at et banner du
-          ikke trenger er et banner du slipper – holder uten, og hjemmelen under
-          er kontrollert mot Lovdata og står i src/data/kilder.ts.
-        */}
-        <p class="muted">
-          Vi bruker cookieløs analyse. Da er det ingenting å samtykke til, og du slipper
-          banneret helt. Det er også den enkleste måten å overholde ekomloven § 3-15.
-        </p>
-      </Avslor>
-    </div>
-
-    {/* Flyttet ned fra aapningsscenen. Over folden kostet det 294 kB av sidens 420 –
-        Demo henter 60 % av skjermhoeyden i forkant, saa 1074 px ned var innenfor
-        rekkevidde. Her ligger det utenfor, OG det staar riktigere: beviset kommer
-        etter de fire kravene det beviser, ikke foer. */}
-    <Avslor trinn={2}>
-      <Demo
-        smal={opptak.lagstabel.smal}
-        bred={opptak.lagstabel.bred}
-        stor={opptak.lagstabel.stor}
-        plakat={opptak.lagstabel.plakat}
-        tekst={opptak.lagstabel.tekst}
-        kilde={opptak.lagstabel.kilde}
+  {/* Ekte skjermbilder av sider vi har bygget (public/media/wow/ekte/), samme par som på
+      forsiden. Lenket til siden det store bildet viser. Ikke KI, og merkes derfor ikke. */}
+  <div class="wow-rute nett-arbeid">
+    <a class="nett-arbeid__flater" href="/bransjer/klinikker">
+      <Ramme
+        type="nettleser"
+        bilde="klinikker-d"
+        adresse="kodekonsulentene.no/bransjer/klinikker"
+        alt="Skjermbilde av bransjesiden for klinikker på kodekonsulentene.no."
+        sizes="(min-width: 1024px) 60vw, 80vw"
+        class="nett-arbeid__stor"
+        avdekk
       />
-    </Avslor>
-  </Scene>
-
-  <Scene n={4} class="flate--varm" eyebrow="Teknisk" tittel="Hva det er bygget av" ingress="Du trenger ikke å bry deg om dette. Det står her fordi noen spør, og fordi du skal kunne ta det med deg til en annen utvikler.">
-    <Avslor>
-    {/* `teknisk-rad` finnes bare for aa kunne naa <dl class="kv"> under uten aa
-        skrive en regel som gjelder hele nettstedet. Se <style> nederst. */}
-    <div class="grid-2 teknisk-rad">
-      <Terminal
-        skriv
-        title="~/din-side"
-        lines={[
-          { type: "cmd", text: "npm run build" },
-          { type: "out", text: "astro build · 14 sider · 0 kB JS på forsiden" },
-          { type: "cmd", text: "sjekk --budsjett" },
-          { type: "ok", text: "0 cookies · 0 wcag-feil · 6/6 headere" },
-          { type: "cmd", text: "curl -I din-side.no | grep -ci 'content-security'" },
-          { type: "ok", text: "1" },
-        ]}
-        label="Terminalutsnitt: Astro-bygg med fjorten sider og null kilobyte JavaScript på forsiden, null cookies, null WCAG-feil, seks av seks sikkerhetsheadere, og Content-Security-Policy satt."
+      <Ramme
+        type="telefon"
+        bilde="handverkere-m"
+        alt="Skjermbilde av bransjesiden for håndverkere på mobil."
+        sizes="(min-width: 1024px) 16vw, 26vw"
+        class="nett-arbeid__liten"
+        parallax="-0.14"
       />
-      <dl class="kv">
-        <div><dt>Rammeverk</dt><dd>Astro</dd></div>
-        <div><dt>Hosting</dt><dd>Cloudflare</dd></div>
-        <div><dt>Innhold</dt><dd>Markdown eller Sanity</dd></div>
-        <div><dt>Analyse</dt><dd>Plausible, cookieløs</dd></div>
-        <div><dt>Skjema</dt><dd>E-post + CRM</dd></div>
-        <div><dt>Booking</dt><dd>Cal.com</dd></div>
-        <div><dt>Eierskap</dt><dd>Ditt Git-repo</dd></div>
-      </dl>
-    </div>
-    </Avslor>
-  </Scene>
-
-  {/* Scenefilmen laa bak «Fire krav» og ble hentet foer brukeren scrollet:
-      442 kB av sidens 568. Den er dessuten det MINST forklarende mediet her –
-      snittegningen navngir lagene for 0 kB, og opptaket beviser dem. Brandboken
-      rangerer generert materiale lavest, saa den bakker naa prosess-seksjonen
-      lenger ned i stedet, der den er bakgrunn og ingen venter paa den. */}
-  <div class="scenefilm-ramme">
-  <Scene n={5} eyebrow="Prosess" tittel="Fra samtale til lansering">
-    <ProcessSteps steps={prosess} />
-  </Scene>
+    </a>
   </div>
 
-  <Scene n={6} eyebrow="Pris" tittel={`${pakker[0].pris} eller ${pakker[1].pris}`} ingress={`Start-pakken er for deg som trenger å finnes og bli ringt. Bedrift er for deg som skal rangere lokalt og endre teksten selv. ${mvaSetning}`}>
-    <Button variant="primary" href="/priser">Se hele prislisten</Button>
-  </Scene>
+  <Prosess tittel="Fra samtale til lansering" />
 
-  <ContactBlock n={7} />
-</Base>
+  <Prisliste
+    variant="kort"
+    pakker={["Start", "Bedrift"]}
+    id="priser-nettsider"
+    gruppe="pakke-nettsider"
+    tittel={`${pakker[0].pris} eller ${pakker[1].pris}`}
+    ingress={`Start-pakken er for deg som trenger å finnes og bli ringt. Bedrift er for deg som skal rangere lokalt og endre teksten selv. ${mvaSetning}`}
+  />
+
+  <Kontaktblokk />
+</MalWow>
+
 <style>
-  /* <dl> har 1em marg i nettleserens egen stilmal, og .kv i site.css nullstiller
-     den ikke. I et rutenett med to spalter betyr det at lista starter 16 px under
-     naboen sin – maalt her og paa /status: terminalpanelet oeverst paa 1513,5 og
-     noekkellista paa 1529,5. To bokser side om side som ikke deler oeverste kant.
-
-     Dette er en SCOPED regel med vilje: baade .teknisk-rad og .kv staar i denne
-     fila, saa scopingen naar begge. Den riktige kuren er `.kv { margin: 0 }` i
-     site.css, som eies av en annen agent akkurat naa; det staar i rapporten. */
-  .teknisk-rad > .kv { margin-block: 0; }
-</style>
-<style is:global>
-  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
-     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
-     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
-     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
-  .scene:first-of-type .mega .ord,
-  .scene:first-of-type .mega-blokk,
-  /* Bare FØRSTE avdekking i første scene, ikke hele scenen.
-     Regelen fantes for at innhold over folden ikke skal ligge usynlig og vente på
-     en scroll som aldri kommer. Men `.scene:first-of-type .avslor` traff ALLE
-     avdekkinger i scenen – og /caser og /handbok er én eneste scene, så den slo av
-     all bevegelse på hele siden. Målt: 0 bevegelsesøyeblikk, 5,5 skjermhøyder uten
-     at ett element endrer seg. */
-  /* Treffer på HVA elementet er, ikke hvor det tilfeldigvis står.
-     `> .avslor` traff ingenting fordi .avslor ligger i .scene__inner, og
-     `:first-of-type` gjelder tagg og ikke klasse. Begge varianter var stille døde:
-     skjemaet på /verktoy/cookie-sjekk sto på 0,56 opasitet ved innlasting –
-     sidens primære handling, halvgjennomsiktig til du scrollet. */
-  .scene:first-of-type .avslor:has(.scene__ingress),
-  .scene:first-of-type .avslor:has(form) {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
+  .nett-arbeid {
+    padding-top: var(--wow-seksjon);
   }
-</style>
-<style is:global>
-  /* Filmen dempes i stedet for å maskeres bort.
-
-     Scenetittelen bryter ut til 1320 px over 1200 px bredde (se
-     .scene__head .stortekst i scener.css). Å skyve masken langt nok ut til å
-     klarere den krevde 72 %, og da var filmen praktisk talt usynlig – den
-     løste kontrasten ved å fjerne grunnen til at den var der. Lavere opasitet
-     med standardmasken gir filmen tilbake over hele høyre halvdel og består
-     likevel AA.
-
-     Målt 6. oktober 2026 på /nettsider, verste tekst i rammen:
-       opasitet 0,85 maske 62 %  ->  2,75:1  stryker
-       opasitet 0,85 maske 72 %  ->  7,16:1  består, men filmen er borte
-       opasitet 0,45 maske 52 %  ->  3,86:1  stryker
-       opasitet 0,35 maske 46 %  ->  5,32:1  består, filmen synlig  <- valgt
-
-     is:global er IKKE valgfritt. .scenefilm ligger inne i SceneFilm.astro og
-     får dén komponentens scope-id, mens .scenefilm-ramme får sidens. En vanlig
-     <style> kompilerer til en selektor som krever sidens id på begge, og
-     matcher da ingenting. Verifisert: med vanlig <style> ga maske 46 % og
-     maske 92 % nøyaktig samme måling, fordi ingen av dem ble brukt. */
-  .scenefilm-ramme .scenefilm { opacity: 0.35; }
+  /* Et stort nettleservindu og en telefon forskjøvet over hjørnet, som på forsiden. */
+  .nett-arbeid__flater {
+    position: relative;
+    display: block;
+    grid-column: 1 / -1;
+    padding-bottom: var(--wow-rom-5);
+  }
+  .nett-arbeid__flater:focus-visible {
+    outline: var(--wow-kant-2) solid var(--wow-fokus);
+    outline-offset: var(--wow-fokus-avstand);
+    border-radius: var(--wow-radius-m);
+  }
+  .nett-arbeid__flater :global(.nett-arbeid__stor) {
+    margin-right: 14%;
+  }
+  .nett-arbeid__flater :global(.nett-arbeid__liten) {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 28%;
+  }
+  @media (min-width: 1024px) {
+    .nett-arbeid__flater {
+      grid-column: 2 / 12;
+    }
+    .nett-arbeid__flater :global(.nett-arbeid__stor) {
+      margin-right: 16%;
+    }
+    .nett-arbeid__flater :global(.nett-arbeid__liten) {
+      width: 22%;
+    }
+  }
 </style>

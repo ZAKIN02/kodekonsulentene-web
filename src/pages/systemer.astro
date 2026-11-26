@@ -1,22 +1,24 @@
 ---
-import Base from "../layouts/Base.astro";
-import Scene from "../components/Scene.astro";
-import Mega from "../components/Mega.astro";
-import Avslor from "../components/Avslor.astro";
-import Button from "../components/Button.astro";
-import Terminal from "../components/Terminal.astro";
-import Flyt from "../components/Flyt.astro";
-import ContactBlock from "../components/ContactBlock.astro";
+/**
+ * /systemer i wow-drakten (wow-undersider.md del 1.3 og del 4, wow-r8-B1).
+ * Rekkefølge: kapittel 2 (kontoret) → «Hvordan det ser ut i praksis» (sidens bevis: flyten med
+ * ekte systemnavn og ekte skjermbilder) → «Det vi kobler oftest» → pris → kontakt.
+ * Ute fra v1: terminalutsnittet (pynt; flyten sier det samme).
+ */
+import MalWow from "../layouts/MalWow.astro";
+import { Seksjon, Prosa, Flyt, Prisliste, Kontaktblokk, Ramme } from "../components/wow/side";
+import Kapittel from "../components/wow/Kapittel.astro";
+import Rader from "../components/wow/tjeneste/Rader.astro";
+import { kapittelForhandslast } from "../scripts/wow/kapittel-klipp";
 import { bookUrl } from "../data/firma";
 import { flyter } from "../data/flyter";
 import { tjeneste } from "../data/schema";
 import { pakker, prisenhet, mvaSetning } from "../data/priser";
+import { tjenester } from "../data/historie";
 
 /* Systemprisen sto skrevet av i metabeskrivelsen, med «eks. mva» på et foretak
    som ikke kan fakturere mva. Hentes nå fra prislisten. */
 const systemPris = pakker.find((p) => p.navn === "System")?.pris ?? "";
-
-import "../styles/scener.css";
 
 /**
  * TO TREDJEPARTSFAKTA STO HER UTEN KILDE OG UTEN DATO.
@@ -71,195 +73,159 @@ const schema = tjeneste({
   pakker: ["System"],
 });
 ---
-<Base
+
+<MalWow
   tittel="Systemer og integrasjoner"
   beskrivelse={`Booking, Vipps, Tripletex, Fiken, PowerOffice og BankID koblet sammen til ett system, slik at ingen skriver samme tall to ganger. Fra ${systemPris} – ${prisenhet}.`}
   schema={[schema]}
+  bevegelse="film"
+  forhandslast={kapittelForhandslast(2, "skrubb")}
 >
-  <Scene lav>
-    <Mega som="h1" merke="Systemer" n={1} tekst="Få systemene du betaler for til å snakke sammen" aksent="sammen" />
-    <Avslor trinn={1}>
-      <p class="scene__ingress body-lg">De fleste småbedrifter har allerede booking, regnskap og betaling. Problemet er at ingen av dem vet om hverandre, så noen taster samme tall tre ganger.</p>
-    </Avslor>
+  <Kapittel
+    nummer={2}
+    tittel="Få systemene du betaler for til å snakke sammen"
+    ingress="De fleste småbedrifter har allerede booking, regnskap og betaling. Problemet er at ingen av dem vet om hverandre, så noen taster samme tall tre ganger."
+    problem={tjenester.systemer.problem}
+    losning={tjenester.systemer.losning}
+    handlinger={[
+      { tekst: "Book 20 minutter", href: bookUrl, type: "primar" },
+      { tekst: "Se hva som kan kobles", href: "#integrasjoner", type: "lenke" },
+    ]}
+  />
 
-    <div class="row">
-      <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
-      <Button variant="ghost" href="#integrasjoner">Se hva som kan kobles</Button>
-    </div>
-  </Scene>
-
-  <Scene n={2} eyebrow="Typisk" tittel="Hvordan det ser ut i praksis" id="eksempel">
-    <div class="grid-2">
-      {/*
-        HER STO ET KUNDEFORLØP SOM IKKE FINNES.
-
-        Teksten var: «En klinikk med fire behandlere brukte to timer i uken på å
-        ringe tilbake om ledige timer, og en halv dag i måneden på å avstemme
-        Vipps mot regnskapet.» Fire behandlere, to timer, en halv dag – tre tall
-        om en navngitt kundetype, i fortid, uten et eneste forbehold.
-
-        Det finnes ingen slik kunde. Den står ikke i src/data/caser.ts, der alle
-        oppdrag ligger, og det nærmeste er `booking-demo`, som der er merket
-        «Ikke et levert oppdrag» og har type «Demo» nettopp for at ingen skal tro
-        noe annet. /caser slår selv fast regelen i klartekst: «Konsept er merket
-        konsept» og «Et anslag presentert som en måling er en løgn med desimaler».
-        Denne siden brøt begge.
-
-        Rettingen er ikke å mykne tallene – da hadde de fortsatt vært oppdiktet.
-        Avsnittet beskriver nå flyten systemet er bygget for, i presens, uten tall
-        vi ikke har målt, og det sier rett ut at det er et eksempel. Kommer det en
-        ekte klinikk med målt tidsbruk, hører den hjemme i caser.ts med tallene
-        sine – og da kan den siteres her.
-      */}
-      <div class="stack">
-        <p class="body-lg muted">
+  <Seksjon id="eksempel" tittel="Hvordan det ser ut i praksis" storrelse="stor">
+    {/*
+      HER STO ET KUNDEFORLØP SOM IKKE FINNES (v1): «En klinikk med fire behandlere brukte to timer
+      i uken …». Det finnes ingen slik kunde i src/data/caser.ts. Avsnittet beskriver flyten
+      systemet er bygget for, i presens, uten tall vi ikke har målt, og sier rett ut at det er et
+      eksempel. Kommer det en ekte klinikk med målt tidsbruk, hører den hjemme i caser.ts.
+    */}
+    <div class="sys-praksis">
+      <Prosa>
+        <p>
           Et eksempel, ikke en kunde: en klinikk tar timebestillinger på telefon i
           åpningstiden, ringer tilbake om ledige timer, og avstemmer Vipps mot regnskapet
           for hånd etterpå.
         </p>
-        <p class="muted">
+        <p>
           Med et system: kunden booker og betaler selv, timen havner i behandlerens
           kalender, betalingen havner som ordre i Fiken, og påminnelsen går ut på SMS
           24 timer før. Ingen taster noe. Det er dette vi mener med «system» – ikke en
           nettside med et skjema på.
         </p>
-        <p class="small faint">
+        <p class="wow-notat">
           Dette er flyten i demoen vår, ikke et levert oppdrag. Vi har ikke målt tidsbruk
           hos en klinikk, og setter derfor ingen tall på hva det sparer. Hva vi har levert,
-          og hva som er øvelse, står på <a class="kk-link" href="/caser">caser</a>.
+          og hva som er øvelse, står på <a href="/caser">caser</a>.
         </p>
-        <Button variant="ghost" href="/bransjer/klinikker">Se bransjesiden for klinikker</Button>
+        <p><a href="/bransjer/klinikker">Se bransjesiden for klinikker</a></p>
+      </Prosa>
+      {/* Ekte skjermbilder (public/media/wow/ekte/), samme par som på forsiden. */}
+      <div class="sys-flater">
+        <Ramme
+          type="nettleser"
+          bilde="systemer-flyt"
+          adresse="kodekonsulentene.no/systemer"
+          alt="Skjermbilde av flyten fra booking til regnskap: kunde, booking, Vipps, Fiken og SMS."
+          sizes="(min-width: 1024px) 46vw, 80vw"
+          class="sys-flater__stor"
+          avdekk
+        />
+        <Ramme
+          type="telefon"
+          bilde="systemer-m"
+          alt="Den samme flyten på mobil, steg for steg fra kunde til SMS-påminnelse."
+          sizes="(min-width: 1024px) 13vw, 26vw"
+          class="sys-flater__liten"
+          parallax="-0.14"
+        />
       </div>
-      {/*
-        Terminalen tegnet tidligere hele flyten med ASCII-piler – nøyaktig det
-        Flyt-figuren under gjør, bare uleselig. To fremstillinger av samme flyt i
-        samme seksjon er støy, så terminalen beholder bare poenget.
-      */}
-      <Terminal
-        skriv
-        title="~/flyt"
-        lines={[
-          { type: "cmd", text: "echo $MANUELLE_STEG" },
-          { type: "ok", text: "0" },
-        ]}
-        label="Terminalutsnitt: antall manuelle steg i flyten er null."
-      />
     </div>
 
-    {/*
-      Figuren, ikke et bilde av aluminiumsplater. Boksene bærer navnene på
-      systemene vi faktisk kobler, så en klinikkeier ser på to sekunder hva hun
-      får kjøpt. Koster 0 kB JavaScript.
-    */}
-    <Flyt flyt={flyter.systemer} />
-  </Scene>
-
-  {/* HER STO ET GENERERT KLIPP BAK DENNE SEKSJONEN, OG DET ER FJERNET MED VILJE.
-      systemer-klippet lå på 85 % opasitet bak «Det vi kobler oftest», med masken
-      satt til 62 % – altså sluppet fram i en smal stripe helt til høyre. Opptak i
-      headless Chrome viser at det i praksis var en mørk flekk i ytterkanten.
-
-      Og det sto nesten stille. Målt med .skudd/klipp-endring.mjs-metrikken endret
-      det seg 5,83 av 255 fra første til siste ramme, og 78 % av den endringen lå i
-      FØRSTE kvartal – klippet var ferdig etter to av åtte sekunder, mens prosjektets
-      egen regel sier at poenget skal ligge rundt 50 % av tidslinjen.
-
-      Det som faktisk forklarer denne seksjonen står rett over den: Flyt-figuren
-      «Fra booking til regnskap», med Kunde, Booking, Vipps, Fiken og SMS i bokser.
-      Ekte navn, en pakke som reiser gjennom kjeden i løkke, 0 kB JavaScript. Det er
-      andreplassen i brandbokens rangering, og den slår et nedtonet motiv i kanten. */}
-  <Scene n={3} eyebrow="Integrasjoner" tittel="Det vi kobler oftest" id="integrasjoner">
-    {/* Rutenettet brytes her. Seks like kort i to rette kolonner leses som en
-        tabell; litt helning leses som ting som ligger oppa hverandre.
-        Vinkelen kommer fra indeksen, saa den er stabil mellom bygg.
-
-        trinn var k % 3 – stilt for et tre-kolonners rutenett, mens .grid-2 har to.
-        Med trappen levende kom rad to inn hoeyre-foer-venstre.
-
-        `dybde` sto her og vekslet 14 / -10 per kort. Den var DOED: `--dybde` leses
-        bare av keyframes for fra="dybde", og gesten her er "skjev". Maalt 0 px
-        forskjell med og uten. Den er fjernet, ikke fordi den gjorde skade, men
-        fordi en verdi som ser ut til aa virke er verre enn ingen: bytter noen
-        gesten til "dybde" senere, spretter raden 24 px ut av linje uten at noen
-        har roert tallet. Vil man ha dybde her, maa begge kortene i en rad ha
-        SAMME verdi – ellers slutter raden aa dele oeverste kant.
-
-        Vinkelen kommer fra Avslors eget vokabular, ikke fra egen CSS her.
-        En egen regel ville dessuten vaert doed: kortene baerer Avslors scope-id. */}
-    <div class="grid-2 kobling-rutenett">
-      {integrasjoner.map((i, k) => (
-        <Avslor
-          trinn={k % 2}
-          fra="skjev"
-          skjev={[-1.4, 1.1, -0.8, 1.5, -1.2, 0.7][k] ?? 0}
-          as="div"
-          class="card"
-        >
-          <h3 class="subheading">{i.navn}</h3>
-          <p class="muted">{i.verdi}</p>
-          <p class="mono faint">{i.teknisk}</p>
-          {/* Står det et gebyr eller et abonnementskrav i teknisk-linjen, skal
-              leseren kunne åpne siden det er lest fra. Et tredjepartstall uten
-              lenke og dato er et tall vi ber noen stole på. */}
-          {"kilde" in i && i.kilde && (
-            <p class="small faint">
-              Kilde: <a class="kk-link" href={i.kilde.url} rel="nofollow">{i.kilde.tekst}</a>
-            </p>
-          )}
-        </Avslor>
-      ))}
+    {/* Figuren med navnene på systemene vi faktisk kobler. */}
+    <div class="sys-flyt">
+      <Flyt flyt={flyter.systemer} />
     </div>
-  </Scene>
+  </Seksjon>
 
-  <Scene n={4} class="flate--varm" eyebrow="Pris" tittel={`System fra ${systemPris}`} ingress={`Prisen følger antall integrasjoner og hvor mye som må holdes i orden etterpå. Du får fast pris før vi begynner, og 40 % faktureres ved oppstart. ${mvaSetning}`}>
-    <div class="row">
-      <Button variant="primary" href="/kontakt">Beskriv behovet</Button>
-      <Button variant="ghost" href="/priser">Se hele prislisten</Button>
-    </div>
-  </Scene>
+  <Seksjon id="integrasjoner" tittel="Det vi kobler oftest" storrelse="tjeneste" tone="flate">
+    {/* Står det et gebyr eller et abonnementskrav i den tekniske linja, skal leseren kunne åpne
+        siden det er lest fra: kilden står med lenke og dato i raden. */}
+    <Rader
+      rader={integrasjoner.map((i) => ({
+        tittel: i.navn,
+        tekst: i.verdi,
+        detalj: i.teknisk,
+        kilde: "kilde" in i ? i.kilde : undefined,
+      }))}
+    />
+  </Seksjon>
 
-  <ContactBlock n={5} />
-</Base>
-<style is:global>
-  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
-     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
-     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
-     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
-  .scene:first-of-type .mega .ord,
-  .scene:first-of-type .mega-blokk,
-  /* Bare FØRSTE avdekking i første scene, ikke hele scenen.
-     Regelen fantes for at innhold over folden ikke skal ligge usynlig og vente på
-     en scroll som aldri kommer. Men `.scene:first-of-type .avslor` traff ALLE
-     avdekkinger i scenen – og /caser og /handbok er én eneste scene, så den slo av
-     all bevegelse på hele siden. Målt: 0 bevegelsesøyeblikk, 5,5 skjermhøyder uten
-     at ett element endrer seg. */
-  /* Treffer på HVA elementet er, ikke hvor det tilfeldigvis står.
-     `> .avslor` traff ingenting fordi .avslor ligger i .scene__inner, og
-     `:first-of-type` gjelder tagg og ikke klasse. Begge varianter var stille døde:
-     skjemaet på /verktoy/cookie-sjekk sto på 0,56 opasitet ved innlasting –
-     sidens primære handling, halvgjennomsiktig til du scrollet. */
-  .scene:first-of-type .avslor:has(.scene__ingress),
-  .scene:first-of-type .avslor:has(form) {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
+  <Prisliste
+    variant="kort"
+    pakker={["System"]}
+    valgt="system"
+    id="priser-systemer"
+    gruppe="pakke-systemer"
+    tittel={`System fra ${systemPris}`}
+    ingress={`Prisen følger antall integrasjoner og hvor mye som må holdes i orden etterpå. Du får fast pris før vi begynner, og 40 % faktureres ved oppstart. ${mvaSetning}`}
+  />
+  <div class="wow-rute sys-etter-pris">
+    <a class="wow-lenke" href="/kontakt">Beskriv behovet</a>
+  </div>
+
+  <Kontaktblokk />
+</MalWow>
+
+<style>
+  .sys-praksis {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--wow-rom-7) var(--wow-luke);
   }
-
+  /* Et stort nettleservindu og en telefon forskjøvet over hjørnet, som på forsiden. */
+  .sys-flater {
+    position: relative;
+    padding-bottom: var(--wow-rom-5);
+  }
+  .sys-flater :global(.sys-flater__stor) {
+    margin-right: 14%;
+  }
+  .sys-flater :global(.sys-flater__liten) {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 28%;
+  }
+  .sys-flyt {
+    margin-top: var(--wow-rom-8);
+  }
+  .sys-etter-pris {
+    padding-top: var(--wow-rom-5);
+  }
+  .sys-etter-pris > * {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+  @media (min-width: 1024px) {
+    .sys-praksis {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      align-items: start;
+    }
+    .sys-praksis > :global(.wow-prosa) {
+      grid-column: 1 / 6;
+    }
+    .sys-flater {
+      grid-column: 6 / 13;
+    }
+    .sys-flater :global(.sys-flater__stor) {
+      margin-right: 0;
+      margin-left: 20%;
+    }
+    .sys-flater :global(.sys-flater__liten) {
+      right: auto;
+      left: 0;
+      width: 24%;
+    }
+  }
 </style>
-
-{/*
-  Maskeoverstyringen laa her som en scoped <style>-regel og var DOED CSS:
-  .scenefilm--venstre baerer SceneFilms scope-id mens .scenefilm-ramme baerer denne
-  sidens, saa en regel som krever begge matcher ingenting. Bevis: maske 46 % og 92 %
-  ga identisk maaling.
-
-  Hele SceneFilm-blokken er naa borte fra denne siden – klippet sto nesten stille og
-  forklarte ingenting – saa masken har ingenting aa overstyre lenger. Notatet staar
-  igjen fordi feilen er lett aa gjenta: en scoped regel kan ikke naa et barn med en
-  annen scope-id, og den feiler STILLE.
-
-  Da regelen ble fjernet foerste gang, ble en forvillet kroellparentes staaende igjen
-  i en ellers tom <style>-blokk. Den brakk hele bygget: lightningcss stoppet paa
-  «Unexpected token Ident». En tom style-blokk med bare en parentes i er ikke synlig
-  som feil foer noen bygger.
-*/}

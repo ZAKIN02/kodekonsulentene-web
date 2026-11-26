@@ -13,7 +13,7 @@ import { readdirSync } from "node:fs";
 import { firma, PLASSHOLDER_ORGNR } from "../src/data/firma.ts";
 import { erGyldigOrgnr } from "../src/lib/sjekk.ts";
 import { pakker, loepende } from "../src/data/priser.ts";
-import { SIKKERHETSHEADERE, TEMA_SCRIPT } from "../sikkerhet.mjs";
+import { SIKKERHETSHEADERE, lagSikkerhetsheadere } from "../sikkerhet.mjs";
 
 describe("FØR LANSERING – disse skal feile til ekte verdier er fylt inn", () => {
   test("org.nr. er ikke lenger plassholder (se docs/sjekklister/lansering.md)", () => {
@@ -72,12 +72,15 @@ describe("sikkerhetsheadere", () => {
     assert.ok(!scriptSrc.includes("unsafe-eval"), "script-src har 'unsafe-eval'.");
   });
 
-  test("CSP inneholder en hash som matcher temaskriptet", () => {
-    // Uten dette ville nettleseren blokkert temaskriptet, og siden ville blinket hvitt
-    // i mørkt tema ved hver sidelasting.
-    const csp = SIKKERHETSHEADERE["content-security-policy"];
-    assert.match(csp, /script-src [^;]*'sha256-[A-Za-z0-9+/=]+'/);
-    assert.ok(TEMA_SCRIPT.includes("kk-tema"), "temaskriptet ser ikke ut som forventet");
+  test("CSP slipper bare gjennom inline-skript med hash fra bygget", () => {
+    // Temaskriptet og hashen for det er fjernet (bare mørkt tema, eier 24. nov. 2026). Uten
+    // hasher er script-src bare 'self'. Hashene som server.mjs leser ut av bygget, skal komme
+    // med i headeren – ellers blokkerer nettleseren Astros inline-skript, helt stille.
+    const uten = /script-src ([^;]+)/.exec(SIKKERHETSHEADERE["content-security-policy"])?.[1];
+    assert.equal(uten, "'self'");
+    const hash = "'sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA='";
+    const med = /script-src ([^;]+)/.exec(lagSikkerhetsheadere([hash])["content-security-policy"])?.[1];
+    assert.equal(med, `'self' ${hash}`);
   });
 
   test("CSP låser frame-ancestors og object-src", () => {

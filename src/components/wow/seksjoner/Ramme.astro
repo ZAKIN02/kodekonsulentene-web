@@ -1,0 +1,49 @@
+---
+// Ramme rundt et ekte skjermbilde: nettleservindu eller telefon, tegnet i CSS.
+// Bildene ligger i public/media/wow/ekte/ og er tatt med Playwright av sider
+// og verktøy på dette nettstedet (.skudd/wow/ekte.mjs, konvertert med
+// .skudd/wow/konverter.mjs). De er ekte og KI-merkes ikke.
+//
+// Nettleser: 1920×1200 og 960×600 (16:10). Telefon: 1170×2532 og 585×1266
+// (390×844 ved 3x). Rammen bærer bare data-attributter; bevegelse eier effekten.
+interface Props {
+  bilde: string;
+  type: "nettleser" | "telefon";
+  /** Vises i adressefeltet på nettleserrammen. */
+  adresse?: string;
+  alt: string;
+  sizes: string;
+  class?: string;
+  /** data-parallax på rammen. Negativ = foran. */
+  parallax?: string;
+  /** data-reveal="clip" på skjermflaten. */
+  avdekk?: boolean;
+  /** data-hover="zoom" på skjermflaten: bildet skaleres litt ved hover (bevegelse). */
+  zoom?: boolean;
+}
+const { bilde, type, adresse, alt, sizes, class: klasse, parallax, avdekk = false, zoom = false } = Astro.props;
+const stor = type === "nettleser" ? { w: 1920, h: 1200 } : { w: 1170, h: 2532 };
+const liten = type === "nettleser" ? { w: 960, h: 600 } : { w: 585, h: 1266 };
+const sti = `/media/wow/ekte/${bilde}`;
+const srcset = (fmt: string) => `${sti}-${liten.w}.${fmt} ${liten.w}w, ${sti}.${fmt} ${stor.w}w`;
+---
+
+<div class:list={["wow-ramme", `wow-ramme--${type}`, klasse]} data-parallax={parallax}>
+  {type === "nettleser" && (
+    <div class="wow-ramme__linje" aria-hidden="true">
+      <span class="wow-ramme__prikker"><i></i><i></i><i></i></span>
+      {adresse && <span class="wow-ramme__adresse">{adresse}</span>}
+    </div>
+  )}
+  <div
+    class="wow-ramme__skjerm"
+    data-reveal={avdekk ? "clip" : undefined}
+    data-hover={zoom ? "zoom" : undefined}
+  >
+    <picture>
+      <source type="image/avif" srcset={srcset("avif")} sizes={sizes} />
+      <source type="image/webp" srcset={srcset("webp")} sizes={sizes} />
+      <img src={`${sti}-${liten.w}.webp`} alt={alt} width={stor.w} height={stor.h} loading="lazy" decoding="async" />
+    </picture>
+  </div>
+</div>

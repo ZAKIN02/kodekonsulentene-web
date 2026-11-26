@@ -1,0 +1,94 @@
+---
+/**
+ * Brødsmuler (wow-undersider.md del 3). Leddene er de samme som BreadcrumbList-markupen MalWow
+ * legger i <head>: begge bygges av brodsmuler() i src/data/schema.ts, så det synlige og det
+ * strukturerte ikke kan si noe ulikt. Sidens tittel leses fra MalWow (Astro.locals); `tittel`
+ * overstyrer.
+ *
+ *   <Brodsmuler />
+ *
+ * Siste ledd er siden du står på: tekst med aria-current="page", ingen lenke.
+ * Rendrer ingenting på forsiden.
+ */
+import { brodsmuler } from "../../../data/schema";
+import { firma } from "../../../data/firma";
+
+interface Props {
+  tittel?: string;
+}
+const tittel =
+  Astro.props.tittel ?? ((Astro.locals as Record<string, unknown>).wowSidetittel as string | undefined) ?? "";
+const liste = brodsmuler(Astro.url.pathname, tittel) as
+  | { itemListElement: { name: string; item?: string }[] }
+  | null;
+// Lenkene skal virke lokalt og i forhåndsvisning, så de gjøres relative til nettstedet.
+const sti = (url: string) => {
+  const u = new URL(url);
+  return u.origin === new URL(firma.url).origin ? u.pathname : url;
+};
+const ledd = liste?.itemListElement ?? [];
+---
+
+{ledd.length > 0 && (
+  <nav class="wow-brodsmuler" aria-label="Brødsmuler">
+    <ol role="list">
+      {ledd.map((l) =>
+        l.item ? (
+          <li><a href={sti(l.item)}>{l.name}</a></li>
+        ) : (
+          <li><span aria-current="page">{l.name}</span></li>
+        ),
+      )}
+    </ol>
+  </nav>
+)}
+
+<style>
+  .wow-brodsmuler ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 var(--wow-rom-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+  }
+  .wow-brodsmuler li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--wow-rom-2);
+    min-width: 0;
+  }
+  /* Skillet er en skråstrek tegnet som kant, ikke et tegn i teksten (skjermlesere leser lista).
+     Det står ETTER leddet, så en lang tittel som går over på ny linje, ikke får skråstreken
+     først på linja (mobil, /verktoy/dmarc og /verktoy/priskalkulator). */
+  .wow-brodsmuler li:not(:last-child)::after {
+    content: "";
+    flex-shrink: 0;
+    width: var(--wow-kant-1);
+    height: 0.9em;
+    background: var(--wow-linje-sterk);
+    rotate: 20deg;
+  }
+  .wow-brodsmuler a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--wow-trykkflate);
+    color: var(--wow-tekst-dempet);
+    text-decoration: underline;
+    text-decoration-color: var(--wow-linje-sterk);
+    text-underline-offset: 0.2em;
+    transition: color var(--wow-tid-kort) var(--wow-kurve);
+  }
+  .wow-brodsmuler a:hover {
+    color: var(--wow-tekst);
+  }
+  .wow-brodsmuler [aria-current] {
+    padding-block: var(--wow-rom-1);
+    color: var(--wow-tekst);
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+  }
+</style>

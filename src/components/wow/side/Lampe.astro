@@ -1,0 +1,28 @@
+---
+/**
+ * Lampa i rapportspråket (wow-undersider.md del 0 og 3). Samme markup som verktøyskriptene lager
+ * i nettleseren (lampeHtml i maaling.ts); stilen ligger i wow.css.
+ *
+ *   bestatt       fylt refleks med hake
+ *   bor           ring i feilfarge, uten fyll («Bør fikses»)
+ *   brudd         fylt feilfarge med kryss
+ *   ikke-sjekket  stiplet ring («Din side: ikke sjekket»)
+ *   venter        grå og litt mindre, som i filmen før målingen låser seg
+ *
+ * Fargen bærer aldri status alene: ordet står ved lampa, eller `etikett` gir skjermlesertekst.
+ * Størrelsen følger font-size der den står.
+ *
+ *   <Lampe status="bestatt" />                         ved siden av et ord som sier det samme
+ *   <Lampe status="ikke-sjekket" etikett="Ikke sjekket" />   alene
+ */
+import { lampeHtml, type LampeStatus } from "./maaling";
+
+interface Props {
+  status: LampeStatus;
+  /** Skjermlesertekst. Uten den er lampa skjult for skjermlesere. */
+  etikett?: string;
+}
+const { status, etikett } = Astro.props;
+---
+
+<Fragment set:html={lampeHtml(status, etikett)} />

@@ -1,0 +1,170 @@
+---
+/**
+ * Lab: Kapittel (bølge A2) – kapittelklippet som toppbilde, slik undersidene får det.
+ * /lab/kapittel/nettsider, /systemer, /apper-og-ai, /om (skrubb) og /handverkere, /klinikker (still).
+ *
+ * Står på egne ben (ikke MalWow, som A1 bygger om nå), men med samme hode, stiler og
+ * filminngang (scripts/wow/index.ts) som MalWow gir «film»-sidene, og med forhåndslasting fra
+ * kapittelForhandslast(). Teksten er hentet fra sidene og historie.ts slik de står 18. nov. 2026;
+ * bransjesidenes problem og løsning er setninger som allerede står på sidene (wow-undersider.md
+ * del 4). Kapittel har ingen tekst selv: siden gir problem og løsning som props.
+ * Tester: tests/wow/kapittel.spec.ts. `noindex`, lenkes ikke fra noe.
+ */
+import "../../../styles/fonter-v2.css";
+import "../../../styles/tokens-wow.css";
+import "../../../styles/wow.css";
+import "../../../styles/wow-bevegelse.css";
+import Hode from "../../../components/wow/seksjoner/Hode.astro";
+import Kapittel from "../../../components/wow/Kapittel.astro";
+import { kapittelForhandslast, type KapittelNummer, type KapittelModus } from "../../../scripts/wow/kapittel-klipp";
+
+interface Side {
+  side: string;
+  nummer: KapittelNummer;
+  modus: KapittelModus;
+  tittel: string;
+  ingress: string;
+  problem: string;
+  losning: string;
+  andre: { tekst: string; href: string };
+}
+
+export function getStaticPaths() {
+  const sjekk = { tekst: "Sjekk siden du har i dag", href: "/sjekk" };
+  const sider: Side[] = [
+    {
+      side: "nettsider",
+      nummer: 1,
+      modus: "skrubb",
+      tittel: "En nettside som faktisk blir funnet",
+      ingress: "De fleste småbedriftssider er for trege på mobil, bryter cookie-reglene og mangler org.nr.",
+      problem: "Kunden står utenfor med mobilen, men siden din laster ikke.",
+      losning: "En rask side, så kunden bestiller rett fra mobilen.",
+      andre: sjekk,
+    },
+    {
+      side: "systemer",
+      nummer: 2,
+      modus: "skrubb",
+      tittel: "Få systemene du betaler for til å snakke sammen",
+      ingress: "De fleste småbedrifter har allerede booking, regnskap og betaling. Ingen av dem vet om hverandre.",
+      problem: "Booking, betaling og regnskap ligger i hvert sitt program.",
+      losning: "Vi kobler dem sammen, så ingen skriver samme tall to ganger.",
+      andre: sjekk,
+    },
+    {
+      side: "apper-og-ai",
+      nummer: 3,
+      modus: "skrubb",
+      tittel: "Få leverandører tar både nettside og app",
+      ingress: "Vi gjør begge deler selv, slik at nettsiden, systemet bak og appen oppå henger sammen fra start.",
+      problem: "Dagens jobber står på lapper i bilen, og én av dem er borte.",
+      losning: "Jobbene i en app på telefonen, fra oss som bygde nettsiden.",
+      andre: sjekk,
+    },
+    {
+      side: "om",
+      nummer: 4,
+      modus: "skrubb",
+      tittel: "Du snakker med den som koder",
+      ingress: "Det er hele forskjellen mellom oss og et byrå.",
+      problem: "Her måler vi. Vi foreslår ingenting før tallene er klare.",
+      losning: "Fire målinger av denne siden, med samme sjekk som du får.",
+      andre: sjekk,
+    },
+    {
+      side: "handverkere",
+      nummer: 3,
+      modus: "still",
+      tittel: "Slutt å kjøre på befaring du ikke ville tatt",
+      ingress: "Forespørsler du må ringe tilbake på for å finne ut om de er noe verdt, koster en befaring hver.",
+      problem: "De fleste håndverkersider er et telefonnummer og et skjema.",
+      losning: "Befaringsforespørsel med bilder fra kunden, tilbud samme dag og ordre rett i Tripletex eller Fiken.",
+      andre: { tekst: "Se hvordan det virker", href: "#demo" },
+    },
+    {
+      side: "klinikker",
+      nummer: 2,
+      modus: "still",
+      tittel: "Timer som bestilles mens dere er stengt",
+      ingress: "Noen må avbryte en behandling for å ta telefonen.",
+      problem: "Telefonbestilling betyr at dere bare kan selge timer i åpningstiden.",
+      losning: "Timebestilling, Vipps-betaling, SMS-påminnelse og medlemsregister.",
+      andre: { tekst: "Se hvordan det virker", href: "#demo" },
+    },
+  ];
+  return sider.map((s) => ({ params: { side: s.side }, props: s }));
+}
+
+const s = Astro.props as Side;
+const forhandslast = kapittelForhandslast(s.nummer, s.modus);
+---
+
+<!doctype html>
+<html lang="nb" class="wow">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lab: Kapittel {s.nummer} ({s.side})</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/archivo-var-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/schibsted-grotesk-var-latin.woff2" as="font" type="font/woff2" crossorigin />
+    {forhandslast.map((l) => <link rel="preload" as="image" href={l.href} type={l.type} media={l.media} fetchpriority="high" />)}
+  </head>
+  <body class="wow-kropp">
+    <a class="wow-hopp" href="#innhold">Hopp til innhold</a>
+    <Hode />
+    <main id="innhold">
+      <Kapittel
+        nummer={s.nummer}
+        modus={s.modus}
+        tittel={s.tittel}
+        ingress={s.ingress}
+        problem={s.problem}
+        losning={s.losning}
+        handlinger={[{ tekst: "Book 20 minutter", href: "#kontakt" }, s.andre]}
+      />
+      <section class="lab-seksjon wow-rute" id="demo" aria-labelledby="demo-tittel">
+        <h2 class="lab-h2" id="demo-tittel">Seksjon 2</h2>
+        <p class="lab-tekst">
+          Her starter sidens eget bevis. Tab fra siste handling i heroen skal lande på
+          <a class="wow-lenke" href="#kontakt" id="forste-etter">denne lenken</a>.
+        </p>
+      </section>
+      <section class="lab-seksjon lab-seksjon--hoy wow-rute" id="kontakt" aria-labelledby="kontakt-tittel">
+        <h2 class="lab-h2" id="kontakt-tittel">Kontakt</h2>
+        <p class="lab-tekst">Plassholder for Kontaktblokk i laben.</p>
+      </section>
+    </main>
+    <script>
+      import "../../../scripts/wow/index.ts";
+    </script>
+  </body>
+</html>
+
+<style>
+  .lab-seksjon {
+    padding-block: var(--wow-seksjon-tett, var(--wow-rom-9));
+    background: var(--wow-bunn);
+    color: var(--wow-tekst);
+  }
+
+  .lab-seksjon--hoy {
+    min-height: 100svh;
+    background: var(--wow-flate);
+  }
+
+  .lab-h2 {
+    margin: 0 0 var(--wow-rom-4);
+    font-family: var(--wow-font-display);
+    font-size: var(--wow-tekst-tjeneste);
+    text-transform: uppercase;
+  }
+
+  .lab-tekst {
+    max-width: var(--wow-maal-brod);
+    font-size: var(--wow-tekst-brod);
+  }
+</style>

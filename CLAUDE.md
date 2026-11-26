@@ -24,7 +24,13 @@ Skal du skrive tekst, bygge UI, lage et tilbud eller lansere: bruk skillene i
 - Alle verdier gjennom tokens i `src/styles/tokens.css`. Aldri en hardkodet farge, avstand eller radius.
 - Rekkefølgen på forsiden er fast og står i `docs/sidemonstre.md`. Eyebrow-nummeret følger rekkefølgen.
 - **Legg aldri til en komponent som ikke kan plasseres i en blokk i `docs/sidemonstre.md`.**
-- Forbudt: bento-rutenett, mesh-gradienter, glassmorphism, AI-genererte bilder, stockfoto, 3D, WebGL, scroll-jacking.
+- **Opphevet av eier 18. nov 2026:** forbudene mot myk rulling (scroll-jacking), 3D, WebGL,
+  AI-genererte bilder/video og 5 kB-taket på JavaScript. Målet er en «wow»-opplevelse på nivå med
+  syntaxstudio.no. Bruk etablerte bibliotek (Lenis, GSAP + ScrollTrigger + SplitText, number-flow,
+  Embla, @lucide/astro) i stedet for å håndskrive animasjon. Se `docs/design/opensource-kartlegging.md`.
+- Fortsatt krav: `prefers-reduced-motion` skrur av myk rulling og tunge effekter, all tekst er ekte
+  tekst for skjermlesere, Lighthouse mobil ≥ 90 på ytelse og ≥ 95 på resten, LCP ≤ 2,5 s.
+- Fortsatt forbudt: stockfoto og bento-rutenett som fyllstoff.
 
 **Innhold**
 - Alle priser fra `src/data/priser.ts`. Skriv aldri av en pris.

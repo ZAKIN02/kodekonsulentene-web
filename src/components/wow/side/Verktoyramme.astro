@@ -1,0 +1,117 @@
+---
+/**
+ * Toppdelen på verktøysidene (wow-undersider.md del 1.8): brødsmuler, H1, ingress, skjemaet og
+ * resultatområdet. Skjemaet står i første skjerm på 390 × 844.
+ *
+ *   <Verktoyramme tittel="Sjekk nettsiden din" ingress="Fem ting, svar i klartekst …">
+ *     <UrlFelt slot="skjema" id="url-sjekk" knapp="Kjør sjekken" hint="…" />
+ *     <p slot="noscript">Sjekken trenger JavaScript …</p>
+ *     <Fragment slot="resultat"> (tomt, eller server-rendret resultat) </Fragment>
+ *   </Verktoyramme>
+ *
+ * Resultatområdet har aria-live="polite" og id `resultatId` (standard «resultat», som i dag).
+ * Tom tilstand: ingenting under feltet bortsett fra hintet; den fjerde lampa i UrlFelt er
+ * tom-tilstanden. Laster: Rapportark med radene i «venter». Resultat: Rapportark med én Maaling
+ * per rad, og fokus på rapportens tittel. Skriptet hører til siden, ikke hit.
+ *
+ * Slotten `side` står til høyre på desktop (priskalkulatoren: resultatet ved skjemaet, festet).
+ * Standardslotten står under resultatet i full bredde.
+ */
+import Brodsmuler from "./Brodsmuler.astro";
+import { tittelKlasser } from "./tittel";
+
+interface Props {
+  tittel: string;
+  ingress: string;
+  resultatId?: string;
+  brodsmuler?: boolean;
+  /** 1 (standard): rammen er sidens toppdel. 2 bare i komponentkatalogen (/lab/wow-side). */
+  niva?: 1 | 2;
+}
+const { tittel, ingress, resultatId = "resultat", brodsmuler = true, niva = 1 } = Astro.props;
+const H = niva === 2 ? "h2" : "h1";
+const harSide = Astro.slots.has("side");
+---
+
+<header class:list={["wow-verktoy", harSide && "wow-verktoy--side"]}>
+  <div class="wow-rute wow-verktoy__rute">
+    {brodsmuler && <div class="wow-verktoy__smuler"><Brodsmuler /></div>}
+    <div class="wow-verktoy__hode">
+      <H id={niva === 1 ? "side-tittel" : undefined} class:list={tittelKlasser("tjeneste", tittel)} data-split-inngang>{tittel}</H>
+      <p class="wow-verktoy__ingress">{ingress}</p>
+    </div>
+    <div class="wow-verktoy__skjema">
+      <slot name="skjema" />
+      {Astro.slots.has("noscript") && (
+        <noscript><div class="wow-verktoy__noscript"><slot name="noscript" /></div></noscript>
+      )}
+    </div>
+    {harSide && <div class="wow-verktoy__side"><slot name="side" /></div>}
+    <div class="wow-verktoy__resultat" id={resultatId} aria-live="polite">
+      <slot name="resultat" />
+    </div>
+  </div>
+  <slot />
+</header>
+
+<style>
+  .wow-verktoy {
+    padding-top: calc(var(--wow-hode-hoyde) + var(--wow-rom-6));
+  }
+  .wow-verktoy__rute {
+    row-gap: var(--wow-rom-5);
+  }
+  .wow-verktoy__smuler {
+    margin-bottom: calc(-1 * var(--wow-rom-3));
+  }
+  .wow-verktoy__hode {
+    display: grid;
+    gap: var(--wow-rom-4);
+  }
+  .wow-verktoy__ingress {
+    max-width: var(--wow-maal-ingress);
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-brod);
+    text-wrap: pretty;
+  }
+  .wow-verktoy__noscript {
+    margin-top: var(--wow-rom-4);
+    padding: var(--wow-rom-4) var(--wow-rom-5);
+    border: var(--wow-kant-1) solid var(--wow-linje-sterk);
+    border-radius: var(--wow-radius-s);
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+  }
+  /* Står alltid i DOM-en (aria-live må finnes før innholdet kommer), men tar ingen plass tom. */
+  .wow-verktoy__resultat:has(*) {
+    margin-top: var(--wow-rom-5);
+  }
+  @media (min-width: 768px) {
+    .wow-verktoy__hode,
+    .wow-verktoy__skjema,
+    .wow-verktoy__smuler {
+      grid-column: 1 / 11;
+    }
+  }
+  @media (min-width: 1024px) {
+    .wow-verktoy__hode,
+    .wow-verktoy__skjema,
+    .wow-verktoy__smuler {
+      grid-column: 1 / 9;
+    }
+    .wow-verktoy--side .wow-verktoy__hode,
+    .wow-verktoy--side .wow-verktoy__skjema {
+      grid-column: 1 / 8;
+    }
+    .wow-verktoy--side .wow-verktoy__skjema {
+      grid-row: 3;
+    }
+    .wow-verktoy__side {
+      grid-column: 8 / 13;
+      grid-row: 2 / span 2;
+      align-self: start;
+      position: sticky;
+      top: calc(var(--wow-hode-hoyde) + var(--wow-rom-5));
+    }
+  }
+</style>

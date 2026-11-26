@@ -47,7 +47,9 @@ const FONTER = {
 /** Leses fra tokens.css, ikke skrevet av på nytt. Ett sted å endre farge. */
 function tokens() {
   const css = readFileSync("src/styles/tokens.css", "utf8");
-  const blokk = css.slice(css.indexOf(":root"), css.indexOf('[data-theme="light"]'));
+  // Første blokk i fila er fargene (mørkt, det eneste temaet). Lyst tema er fjernet (wow-r8).
+  const start = css.indexOf(":root");
+  const blokk = css.slice(start, css.indexOf("}", start));
   const ut = {};
   for (const m of blokk.matchAll(/--([a-z-]+):\s*([^;]+);/g)) ut[m[1]] = m[2].trim();
   return ut;

@@ -1,0 +1,532 @@
+---
+/**
+ * Lovbruddet, spilt av som en sekvens (wow-r8-B1, portert fra src/components/SamtykkeSekvens.astro,
+ * som står urørt). Står på /sikkerhet rett under toppdelen.
+ *
+ * HVA DEN VISER
+ * Ekomloven § 3-15 (LOV-2024-12-13-76, «Bruk av informasjonskapsler mv.», i kraft 1. januar 2025)
+ * forbyr å lagre eller skaffe seg tilgang til opplysninger i sluttbrukerens utstyr uten samtykke.
+ * Verifisert mot Lovdata 6. oktober 2026: https://lovdata.no/lov/2024-12-13-76/§3-15
+ *
+ * Venstre spor er en REKONSTRUKSJON av et typisk forløp, ikke en måling av en navngitt side.
+ * Domenet er oppdiktet og ligger på .example (RFC 2606). docs/metode-skanning.md er bindende: vi
+ * publiserer aldri navn på en side som kommer dårlig ut. Cookienavn, sporernavn og kategorier er
+ * fra sporerregisteret vårt (services/skanner/sporere.mjs), og feltnavnene er de skanneren
+ * returnerer (services/skanner/skann.mjs, skannCookies()).
+ *
+ * Høyre spor er ikke rekonstruert. Det er vår egen måling, lest fra src/data/maalinger.json.
+ *
+ * ENDRET I DRAKTEN (innholdet er det samme): midtprikkene mellom verdier er blitt komma, og
+ * merkelappene står i setningsform. Monospace bare på det som er navn fra nettleseren og
+ * skanneren (cookienavn, vertsnavn, feltnavn). Status bæres av ikon og ord, ikke av farge alene.
+ *
+ * DEGRADERING – LES DENNE FØR DU ENDRER NOE
+ * Utgangstilstanden i CSS er FERDIG FORTALT: alle rader synlige, begge dommene satt. Bare
+ * [data-klar], som skriptet setter før figuren kan komme i syne, skjuler noe, og bare [data-gaar]
+ * spiller det fram. Uten JavaScript, ved redusert bevegelse og i et helsides skjermbilde står
+ * poenget der, lesbart.
+ *
+ * WCAG 2.2.2: sekvensen er ferdig på under fem sekunder og spilles én gang, når figuren kommer i
+ * syne. «Spill sekvensen igjen» er brukerstyrt og vises bare når JavaScript kjører.
+ * Alle tider er regnet av --wow-tid-* (og er derfor 0 ved redusert bevegelse).
+ */
+import maalinger from "../../../data/maalinger.json";
+import { Lampe } from "../side";
+
+interface Props {
+  class?: string;
+}
+const { class: cls } = Astro.props;
+
+const { andelProsent: andel, utvalg, oss } = maalinger;
+
+const norskDato = (iso: string) =>
+  new Intl.DateTimeFormat("nb-NO", { day: "numeric", month: "long", year: "numeric" })
+    .format(new Date(`${iso}T12:00:00Z`));
+
+/**
+ * Tidspunktene er forløpet, ikke en måling: de sier «rett etter hverandre, før noen rakk å gjøre
+ * noe». U+00A0 mellom tall og enhet, så «730 dager» og «3 kall» aldri deles over to linjer.
+ */
+const brudd = [
+  { tid: "0,31", navn: "_ga", felt: "førstepart, 730 dager", sporer: "Google Analytics" },
+  { tid: "0,74", navn: "_gid", felt: "førstepart, 1 dag", sporer: "Google Analytics" },
+  { tid: "1,18", navn: "_fbp", felt: "førstepart, 90 dager", sporer: "Meta Pixel" },
+  { tid: "1,62", navn: "connect.facebook.net", felt: "tredjepart, 3 kall", sporer: "Meta Pixel" },
+];
+
+/** Samme klokkeslett, vår egen side. Ingenting skjer, og det er hele poenget. */
+const riktig = [
+  { tid: "0,31", navn: "ingen cookie satt", felt: "cookies: 0" },
+  { tid: "0,74", navn: "ingen lagring", felt: "localStorage: 0" },
+  { tid: "1,18", navn: "ingen sporer", felt: "sporere: 0" },
+  { tid: "1,62", navn: "ingen tredjepart", felt: "ukjenteTredjeparter: 0" },
+];
+const merker = ["0 s", "0,5", "1,0", "1,5", "2,0"];
+---
+
+<figure class:list={["sam", cls]} data-samtykke>
+  <div class="sam__spor">
+    {/* spor 1: bruddet */}
+    <section class="sam__panel sam__panel--brudd" aria-labelledby="sam-brudd-tittel">
+      <header class="sam__topp">
+        <p class="sam__vert" id="sam-brudd-tittel">
+          <Lampe status="brudd" />
+          <code>rorleggervakta.example</code>
+        </p>
+        <p class="sam__hint">oppdiktet domene</p>
+      </header>
+
+      <div class="sam__akse" aria-hidden="true">
+        <span class="sam__spenn"><span class="sam__fyll"></span></span>
+        <span class="sam__merker">{merker.map((m) => <span>{m}</span>)}</span>
+      </div>
+
+      <div class="sam__logg">
+        <span class="sam__naal" aria-hidden="true"></span>
+        <ol class="sam__rader" role="list">
+          {brudd.map((r, i) => (
+            <li class="sam__rad" style={`--i:${i}`}>
+              <span class="sam__tid">{r.tid} s</span>
+              <span class="sam__ikon" aria-hidden="true">
+                <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="8" cy="8" r="6.25" /><path d="M5.8 5.8l4.4 4.4M10.2 5.8l-4.4 4.4" stroke-linecap="round" />
+                </svg>
+              </span>
+              <code class="sam__navn">{r.navn}</code>
+              <span class="sam__detalj">
+                <span class="sam__felt">{r.felt}</span>
+                <span class="sam__sporer">{r.sporer}</span>
+              </span>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      {/* Banneret er kulissen som ALDRI blir rørt: alt over er allerede lagret mens dette
+          fortsatt står og venter. */}
+      <div class="sam__banner">
+        <p class="sam__banner-tekst">Vi bruker informasjonskapsler</p>
+        <p class="sam__banner-knapper" aria-hidden="true">
+          <span class="sam__knapp">Avvis</span>
+          <span class="sam__knapp sam__knapp--fyll">Godta alle</span>
+        </p>
+        <p class="sam__uberort">uberørt, 0 klikk</p>
+      </div>
+
+      <p class="sam__dom">
+        <span class="sam__dom-tall">3 cookies, 2 sporere</span>
+        <span class="sam__dom-ord">lagret før noen klikket, ekomloven § 3-15</span>
+      </p>
+    </section>
+
+    {/* spor 2: riktig */}
+    <section class="sam__panel sam__panel--ok" aria-labelledby="sam-ok-tittel">
+      <header class="sam__topp">
+        <p class="sam__vert" id="sam-ok-tittel">
+          <Lampe status="bestatt" />
+          <code>{oss.url}</code>
+        </p>
+        <p class="sam__hint">cookie-skanning {norskDato(oss.maalt)}</p>
+      </header>
+
+      <div class="sam__akse" aria-hidden="true">
+        <span class="sam__spenn"><span class="sam__fyll"></span></span>
+        <span class="sam__merker">{merker.map((m) => <span>{m}</span>)}</span>
+      </div>
+
+      <div class="sam__logg">
+        <span class="sam__naal" aria-hidden="true"></span>
+        <ol class="sam__rader" role="list">
+          {riktig.map((r, i) => (
+            <li class="sam__rad" style={`--i:${i}`}>
+              <span class="sam__tid">{r.tid} s</span>
+              <span class="sam__ikon" aria-hidden="true">
+                <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M3.4 8.4l3 3 6.2-7" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+              <span class="sam__navn">{r.navn}</span>
+              <span class="sam__detalj"><code class="sam__felt">{r.felt}</code></span>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <div class="sam__banner sam__banner--tom">
+        <p class="sam__banner-tekst">Ingen banner</p>
+        <p class="sam__uberort">ingenting å samtykke til</p>
+      </div>
+
+      <p class="sam__dom">
+        <span class="sam__dom-tall">{oss.cookiesForSamtykke} cookies, 0 sporere</span>
+        <span class="sam__dom-ord">ingenting lagret, ingen banner nødvendig</span>
+      </p>
+    </section>
+  </div>
+
+  <figcaption class="sam__fot">
+    <p>
+      Ekomloven § 3-15 krever samtykke <em>før</em> noe lagres på utstyret ditt, ikke etterpå.
+      Venstre side er en rekonstruksjon av et typisk forløp på et oppdiktet domene –
+      vi publiserer ikke navn på sider som kommer dårlig ut. Høyre side er vår egen
+      forside, målt {norskDato(oss.maalt)}. Av {utvalg.svarte} tilfeldig trukne
+      småbedriftssider vi skannet samme dag, lagret {andel.settercookiesForSamtykke} %
+      minst én cookie før noen hadde sagt ja.
+    </p>
+    <button type="button" class="wow-knapp wow-knapp--strek wow-knapp--liten sam__spill" data-samtykke-spill hidden>
+      <span class="wow-knapp__tekst">Spill sekvensen igjen</span>
+    </button>
+  </figcaption>
+</figure>
+
+<style>
+  .sam {
+    /* Rød for bruddet, refleks for vår egen side. Radbunnene er de samme fargene tynnet ut mot
+       panelet. Kontrast mot --wow-flate: feil 6,3:1, refleks 13,6:1, dempet 7,4:1. */
+    --sam-farge: var(--wow-feil);
+    /* Tidsplanen. Spor 1 går først (0–2,5 s), så spor 2 (2,8–4,8 s). */
+    --sam-steg: calc(var(--wow-tid-svar) * 1.4);
+    --sam-start: 0ms;
+    --sam-sveip: calc(var(--wow-tid-lang) * 3.5);
+    display: grid;
+    gap: var(--wow-rom-5);
+    margin: 0;
+  }
+  .sam__spor {
+    display: grid;
+    gap: var(--wow-luke);
+  }
+  @media (min-width: 1024px) {
+    .sam__spor {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .sam__panel {
+    container-type: inline-size;
+    position: relative;
+    display: grid;
+    gap: var(--wow-rom-4);
+    align-content: start;
+    min-width: 0;
+    padding: var(--wow-rom-5);
+    overflow: hidden;
+    background: var(--wow-flate);
+    border-radius: var(--wow-radius-m);
+  }
+  /* Regnes på raden, ikke på figuren: en egendefinert verdi som bruker var(), låses der den står. */
+  .sam__rad {
+    --sam-rad-bunn: color-mix(in srgb, var(--sam-farge) 12%, var(--wow-flate));
+  }
+  .sam__panel--ok {
+    --sam-farge: var(--wow-refleks);
+    --sam-start: calc(var(--wow-tid-lang) * 4);
+    --sam-steg: var(--wow-tid-svar);
+    --sam-sveip: calc(var(--wow-tid-lang) * 2);
+  }
+  .sam__topp {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--wow-rom-1) var(--wow-rom-4);
+  }
+  .sam__vert {
+    display: flex;
+    align-items: center;
+    gap: var(--wow-rom-3);
+    min-width: 0;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+  .sam code {
+    font-family: var(--wow-font-kode);
+    font-size: 0.92em;
+  }
+  .sam__hint {
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+  }
+
+  /* aksen */
+  .sam__akse {
+    display: grid;
+    gap: var(--wow-rom-1);
+  }
+  .sam__spenn {
+    position: relative;
+    display: block;
+    height: var(--wow-kant-2);
+    overflow: hidden;
+    background: var(--wow-linje);
+  }
+  .sam__fyll {
+    position: absolute;
+    inset: 0;
+    background: var(--sam-farge);
+    transform-origin: left center;
+  }
+  .sam__merker {
+    display: flex;
+    justify-content: space-between;
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-mikro);
+  }
+
+  /* loggen */
+  .sam__logg {
+    position: relative;
+  }
+  /* Pynt: nåla som sveiper. Usynlig til sekvensen spiller. */
+  .sam__naal {
+    position: absolute;
+    inset-block: calc(-1 * var(--wow-rom-1));
+    inset-inline-start: 0;
+    width: var(--wow-kant-1);
+    background: var(--sam-farge);
+    opacity: 0;
+  }
+  .sam__rader {
+    display: grid;
+    gap: var(--wow-rom-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  /* Plasseringen er EKSPLISITT i begge oppsettene. Med automatisk plassering klemte
+     nowrap-kolonnene navnet til null bredde på smale skjermer (målt i v1 ved 320 px).
+       under 520 px i panelet: to linjer (tid, ikon, navn / hva det er og hvem som satte det)
+       520 px og opp:          én linje */
+  .sam__rad {
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr);
+    align-items: center;
+    gap: var(--wow-rom-1) var(--wow-rom-3);
+    min-width: 0;
+    padding: var(--wow-rom-2) var(--wow-rom-3);
+    background: var(--sam-rad-bunn);
+    border-radius: var(--wow-radius-s);
+    font-size: var(--wow-tekst-liten);
+    line-height: 1.4;
+  }
+  .sam__tid {
+    grid-area: 1 / 1;
+    color: var(--wow-tekst-dempet);
+  }
+  .sam__ikon {
+    grid-area: 1 / 2;
+    display: flex;
+    color: var(--sam-farge);
+  }
+  /* Navnet får brytes, men aldri avkortes: navnet ER meningen i raden. */
+  .sam__navn {
+    grid-area: 1 / 3;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .sam__detalj {
+    grid-area: 2 / 3;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0 var(--wow-rom-5);
+    min-width: 0;
+    color: var(--wow-tekst-dempet);
+  }
+  .sam__sporer {
+    color: var(--sam-farge);
+  }
+  @container (min-width: 520px) {
+    .sam__rad {
+      grid-template-columns: auto auto minmax(0, 1fr) auto;
+    }
+    .sam__detalj {
+      grid-area: 1 / 4;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+    }
+  }
+
+  /* banneret */
+  .sam__banner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--wow-rom-2) var(--wow-rom-3);
+    padding: var(--wow-rom-3) var(--wow-rom-4);
+    background: var(--wow-flate-hev);
+    border-radius: var(--wow-radius-s);
+    font-size: var(--wow-tekst-liten);
+  }
+  .sam__banner--tom .sam__banner-tekst {
+    color: var(--wow-tekst-dempet);
+  }
+  .sam__banner-knapper {
+    display: flex;
+    gap: var(--wow-rom-2);
+  }
+  .sam__knapp {
+    padding: var(--wow-rom-1) var(--wow-rom-3);
+    border: var(--wow-kant-1) solid var(--wow-linje-sterk);
+    border-radius: var(--wow-radius-pille);
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-mikro);
+  }
+  .sam__knapp--fyll {
+    border-color: var(--wow-tekst-dempet);
+    color: var(--wow-tekst);
+  }
+  .sam__uberort {
+    margin-left: auto;
+    color: var(--sam-farge);
+  }
+
+  /* dommen: sporets store linje */
+  .sam__dom {
+    display: grid;
+    gap: var(--wow-rom-1);
+    padding-top: var(--wow-rom-2);
+  }
+  .sam__dom-tall {
+    color: var(--sam-farge);
+    font-family: var(--wow-font-display);
+    font-size: var(--wow-tekst-h3);
+    font-weight: var(--wow-display-vekt);
+    font-stretch: var(--wow-display-bredde);
+    line-height: var(--wow-display-linje-smal);
+    text-transform: uppercase;
+  }
+  .sam__dom-ord {
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+  }
+
+  /* fot */
+  .sam__fot {
+    display: grid;
+    gap: var(--wow-rom-4);
+    justify-items: start;
+  }
+  .sam__fot p {
+    max-width: var(--wow-maal-brod);
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+    line-height: 1.5;
+  }
+  .sam__fot em {
+    color: var(--wow-tekst);
+    font-style: normal;
+    font-weight: 700;
+  }
+
+  /* ───────────── bevegelsen: skjuler først, spiller så fram. Bare med skriptet. ───────────── */
+  @media (prefers-reduced-motion: no-preference) {
+    .sam[data-klar] :is(.sam__rad, .sam__uberort, .sam__dom-tall, .sam__dom-ord) {
+      opacity: 0;
+    }
+    .sam[data-klar] .sam__fyll {
+      scale: 0 1;
+    }
+    .sam[data-gaar] :is(.sam__fyll, .sam__naal, .sam__rad, .sam__uberort, .sam__dom-tall, .sam__dom-ord) {
+      animation-timing-function: var(--wow-kurve);
+      animation-fill-mode: both;
+      animation-iteration-count: 1;
+    }
+    .sam[data-gaar] :is(.sam__fyll, .sam__naal) {
+      animation-duration: var(--sam-sveip);
+      animation-timing-function: linear;
+      animation-delay: calc(var(--sam-start) + var(--wow-tid-kort));
+    }
+    .sam[data-gaar] .sam__fyll {
+      animation-name: sam-fyll;
+    }
+    .sam[data-gaar] .sam__naal {
+      animation-name: sam-naal;
+    }
+    .sam[data-gaar] .sam__rad {
+      animation-name: sam-inn;
+      animation-duration: var(--wow-tid-svar);
+      animation-delay: calc(var(--sam-start) + var(--wow-tid-svar) * 1.6 + var(--i) * var(--sam-steg));
+    }
+    .sam[data-gaar] .sam__panel--ok .sam__rad {
+      animation-delay: calc(var(--sam-start) + var(--wow-tid-svar) + var(--i) * var(--sam-steg));
+    }
+    .sam[data-gaar] .sam__uberort {
+      animation-name: sam-inn;
+      animation-duration: var(--wow-tid-svar);
+      animation-delay: calc(var(--sam-start) + var(--sam-sveip) * 0.85);
+    }
+    .sam[data-gaar] .sam__dom-tall {
+      animation-name: sam-dom;
+      animation-duration: var(--wow-tid-svar);
+      animation-delay: calc(var(--sam-start) + var(--sam-sveip) + var(--wow-tid-kort));
+    }
+    .sam[data-gaar] .sam__dom-ord {
+      animation-name: sam-inn;
+      animation-duration: var(--wow-tid-svar);
+      animation-delay: calc(var(--sam-start) + var(--sam-sveip) + var(--wow-tid-svar));
+    }
+  }
+  @keyframes sam-fyll {
+    from { scale: 0 1; }
+    to { scale: 1 1; }
+  }
+  @keyframes sam-naal {
+    from { opacity: 0.9; translate: 0; }
+    92% { opacity: 0.9; }
+    to { opacity: 0; translate: 100cqw; }
+  }
+  @keyframes sam-inn {
+    from { opacity: 0; translate: 0 var(--wow-rom-2); }
+    to { opacity: 1; translate: 0; }
+  }
+  @keyframes sam-dom {
+    from { opacity: 0; scale: 0.96; }
+    to { opacity: 1; scale: 1; }
+  }
+</style>
+
+<script>
+  /**
+   * Sekvensen spiller én gang når figuren kommer i syne. data-klar (skjul) settes med en gang, og
+   * data-gaar (spill) når en firedel av figuren er synlig. Uten skriptet settes ingen av dem, og
+   * figuren står ferdig fortalt. Knappen spiller den om igjen.
+   */
+  const rot = document.querySelector<HTMLElement>("[data-samtykke]");
+  const knapp = document.querySelector<HTMLButtonElement>("[data-samtykke-spill]");
+  const rolig = matchMedia("(prefers-reduced-motion: reduce)");
+
+  if (rot && !rolig.matches && "IntersectionObserver" in window) {
+    rot.dataset.klar = "";
+    const start = () => {
+      delete rot.dataset.gaar;
+      // Ny stilberegning, ellers starter ingenting på nytt.
+      void rot.offsetWidth;
+      rot.dataset.gaar = "";
+    };
+    const io = new IntersectionObserver(
+      (poster) => {
+        if (!poster.some((p) => p.isIntersecting)) return;
+        io.disconnect();
+        start();
+      },
+      { threshold: 0.25 },
+    );
+    io.observe(rot);
+    // Sikkerhetsnett: fyrer ikke observeren, skal figuren stå synlig uansett.
+    setTimeout(() => {
+      if (rot.dataset.gaar === undefined) {
+        io.disconnect();
+        delete rot.dataset.klar;
+      }
+    }, 8000);
+
+    if (knapp) {
+      knapp.hidden = false;
+      knapp.addEventListener("click", start);
+      rolig.addEventListener("change", () => {
+        knapp.hidden = rolig.matches;
+      });
+    }
+  }
+</script>

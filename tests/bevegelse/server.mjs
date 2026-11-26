@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Liten statisk server for testene av Scene.astro. Port 4330.
 // - Serverer testsiden fra .design/arbeid/bevegelse/side/ på /
-// - Serverer public/ (testvideoene ligger i /scener/test/)
+// - Serverer public/. Testvideoene (/scener/test/) ligger i tests/bevegelse/fixtures/, ikke i
+//   public/: de skal ikke følge med til det publiserte nettstedet (eier 24. nov. 2026).
 // - Svarer 206 Partial Content på Range-forespørsler, slik nettleseren
 //   trenger for å spole i video. Produksjonsserveren (server.mjs i rota)
 //   må kontrolleres separat.
@@ -13,6 +14,7 @@ import { fileURLToPath } from 'node:url';
 const rot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const sideMappe = path.join(rot, '.design', 'arbeid', 'bevegelse', 'side');
 const publicMappe = path.join(rot, 'public');
+const fixturMappe = path.join(rot, 'tests', 'bevegelse', 'fixtures');
 const port = Number(process.env.PORT ?? 4330);
 
 // Generer testsidene før serveren svarer.
@@ -34,6 +36,7 @@ const finnFil = (url) => {
   if (ren.includes('..')) return null;
   if (ren === '/' || ren === '/index.html') return path.join(sideMappe, 'index.html');
   if (ren.endsWith('.html')) return path.join(sideMappe, ren);
+  if (ren.startsWith('/scener/test/')) return path.join(fixturMappe, ren);
   return path.join(publicMappe, ren);
 };
 

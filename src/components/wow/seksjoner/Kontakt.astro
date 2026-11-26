@@ -1,0 +1,218 @@
+---
+// Kontaktblokk (wow-briefen, blokk 10), gjenbrukbar: forsiden og alle undersidene bruker samme
+// komponent. Standardtekstene er ordrett fra docs/design/tekst/forside.md del 11; en underside gir
+// egen overskrift og ingress (fra sitt eget tekstmanus).
+//
+//   <Kontakt />                                         forsiden
+//   <Kontakt tittel="…" ingress="…" />                  underside med egen ordlyd
+//   <Kontakt id="kontakt-system" skjema={false} />      bare booking, uten skjema
+//   <Kontakt niva={1} tilstand="sendt" fakta="full" />  /kontakt: blokken er hele toppdelen
+//
+// Rekkefølge og Tab (revisor r4 punkt 5): overskrift og ingress står til venstre (festet på
+// desktop, som i Spørsmål), og alt man kan trykke på står i høyre spalte, ovenfra og ned:
+// (kvittering eller feil), booking, så skjemaet. E-post og svartid står på en egen rad UNDER
+// begge. Tab går bare nedover: booking → skjemaet → personvern → e-post.
+//
+// Bølge A1 (wow-undersider.md del 3): `niva` (1 på /kontakt), `idPrefiks`, `tilstand` (kvittering
+// og feil fra ?sendt=1 / ?feil=1 / ?feil=2, med lampe og role="status"), `fakta="full"` (telefon
+// når den er satt, og sted). Kvitterings- og feiltekstene er ordrett fra dagens /kontakt.
+//
+// Runde wow-r7 «Lampa» (historie-manus.md del 5, Kontakt), forsiden (`scene`): åpner med
+// fortellerens siste linje, «Stolen i verkstedet har stått tom hele filmen …», og knappen. Bildet
+// av pulten fra filmen, nå med en leirfigur i stolen (N3), glir inn fra høyre ved knappen (CSS
+// view-timeline, bare med full bevegelse; ellers står det). «Book direkte» står da i åpningen og
+// ikke en gang til i høyre spalte. H2 i 3,5rem i setningsform. Venstre og høyre spalte står i
+// eget rutenett (__par), så den festede venstre spalten aldri glir over e-post og svartid under.
+//
+// Skjemaet sender en vanlig POST til /api/kontakt med de samme feltnavnene som før (navn, epost,
+// nettside, melding), og virker uten JavaScript. Fakta fra src/data/firma.ts.
+import { firma, bookUrl } from "../../../data/firma";
+import Lampe from "../side/Lampe.astro";
+
+interface Props {
+  /** id på seksjonen; ankeret «Book 20 minutter» peker til. Standard «kontakt». */
+  id?: string;
+  /** Overskriften. Standard: forsidens. */
+  tittel?: string;
+  /** Ingressen under overskriften. Tom streng = ingen ingress. */
+  ingress?: string;
+  /** 1 når blokken er sidens toppdel (/kontakt). Standard 2. */
+  niva?: 1 | 2;
+  /** Prefiks på feltenes id-er. Standard «k» for id «kontakt», ellers id-en. */
+  idPrefiks?: string;
+  /** Vis «Book direkte» med knappen. */
+  book?: boolean;
+  /** Vis skjemaet «Eller skriv kort». */
+  skjema?: boolean;
+  /** Kvittering eller feil over skjemaet (fra query-parametrene på /kontakt). */
+  tilstand?: "sendt" | "feil-1" | "feil-2";
+  /** «full»: også telefon (når den er satt) og sted. Standard «kort»: e-post og svartid. */
+  fakta?: "kort" | "full";
+  /**
+   * Forsiden, runde wow-r7 «Lampa»: åpner med fortellerens siste linje og knappen, og bildet av
+   * pulten (N3) glir inn ved knappen. Bildene velges av siden (de finnes kanskje ikke ennå).
+   */
+  scene?: {
+    forteller: string;
+    bilde: { desktop: string; mobil: string; desktopAvif?: string; mobilAvif?: string };
+    kolofon: string;
+  };
+}
+
+const {
+  id = "kontakt",
+  tittel = "Snakk med den som koder",
+  ingress = "20 minutter på telefon, ingen presentasjon. Du får en ærlig vurdering av om du trenger det du tror du trenger.",
+  niva = 2,
+  idPrefiks,
+  book = true,
+  skjema = true,
+  tilstand,
+  fakta = "kort",
+  scene,
+} = Astro.props;
+
+// Feltene beholder id-ene fra før på forsiden (k-navn …); andre forekomster får sitt eget prefiks.
+const p = idPrefiks ?? (id === "kontakt" ? "k" : id);
+const Tittel = niva === 1 ? "h1" : "h2";
+const Under = niva === 1 ? "h2" : "h3";
+
+// `as string`: firma er `as const`, og et tomt nummer gir ellers typen never.
+const telefon = firma.telefon as string;
+
+const melding =
+  tilstand === "sendt"
+    ? { status: "bestatt" as const, tittel: "Takk – meldingen kom fram", tekst: `Vi svarer innen ${firma.svartid}, som regel raskere.` }
+    : tilstand === "feil-1"
+      ? { status: "brudd" as const, tittel: "Det stoppet opp", tekst: "Noe manglet i skjemaet. Fyll ut navn, en gyldig e-postadresse og hva du trenger hjelp til." }
+      : tilstand === "feil-2"
+        ? { status: "brudd" as const, tittel: "Det stoppet opp", tekst: `Skjemaet kom ikke fram. Send en e-post til ${firma.epost} i stedet, så svarer vi like raskt.` }
+        : null;
+---
+
+<section class:list={["wow-kontakt", niva === 1 && "wow-kontakt--topp", scene && "wow-kontakt--scene"]} id={id} aria-labelledby={`${id}-tittel`}>
+  {scene && (
+    <div class="wow-rute wow-kontakt__scene">
+      <div class="wow-kontakt__aapning">
+        <p class="wow-forteller wow-kontakt__forteller">{scene.forteller}</p>
+        {book && (
+          <>
+            <a class="wow-knapp wow-knapp--stor" href={bookUrl} data-magnetic>
+              <span class="wow-knapp__tekst" data-magnetic-tekst>Book 20 minutter</span>
+            </a>
+            <p class="wow-kontakt__book-tekst">
+              Velg et ledig tidspunkt i kalenderen. Du får en bekreftelse med lenke – ingen e-post fram
+              og tilbake.
+            </p>
+          </>
+        )}
+      </div>
+      <figure class="wow-kontakt__bilde">
+        <div class="wow-kontakt__bilde-ramme">
+          <picture>
+            {scene.bilde.mobilAvif && <source media="(max-aspect-ratio: 4/5)" type="image/avif" srcset={scene.bilde.mobilAvif} />}
+            <source media="(max-aspect-ratio: 4/5)" type="image/webp" srcset={scene.bilde.mobil} />
+            {scene.bilde.desktopAvif && <source type="image/avif" srcset={scene.bilde.desktopAvif} />}
+            <img src={scene.bilde.desktop} alt="" width="2048" height="1152" loading="lazy" decoding="async" />
+          </picture>
+        </div>
+        <figcaption class="wow-kolofon">{scene.kolofon}</figcaption>
+      </figure>
+    </div>
+  )}
+  <div class="wow-rute wow-kontakt__rute">
+    <div class="wow-kontakt__par">
+    <div class="wow-kontakt__venstre">
+      {scene ? (
+        <Tittel id={`${id}-tittel`} class="wow-setning wow-setning--seksjon">{tittel}</Tittel>
+      ) : (
+        <Tittel id={`${id}-tittel`} class="wow-stor" data-split={niva === 1 ? undefined : "lines"} data-split-inngang={niva === 1 ? "" : undefined}>{tittel}</Tittel>
+      )}
+      {ingress && <p class="wow-kontakt__ingress">{ingress}</p>}
+    </div>
+
+    <div class="wow-kontakt__hoyre">
+      {melding && (
+        <div class:list={["wow-kontakt__melding", `wow-kontakt__melding--${melding.status}`]} role="status">
+          <Lampe status={melding.status} />
+          <div>
+            <Under class="wow-kontakt__tittel">{melding.tittel}</Under>
+            <p>
+              {melding.tekst}
+              {tilstand === "sendt" && telefon && (
+                <> Haster det, ring <a class="wow-lenke" href={`tel:${telefon.replace(/\s/g, "")}`}>{telefon}</a>.</>
+              )}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {book && !scene && (
+        <div class="wow-kontakt__book">
+          <Under class="wow-kontakt__tittel">Book direkte</Under>
+          <p>
+            Velg et ledig tidspunkt i kalenderen. Du får en bekreftelse med lenke – ingen e-post fram
+            og tilbake.
+          </p>
+          <a class="wow-knapp wow-knapp--stor" href={bookUrl} data-magnetic>
+            <span class="wow-knapp__tekst" data-magnetic-tekst>Book 20 minutter</span>
+          </a>
+        </div>
+      )}
+
+      {skjema && (
+        <form class="wow-skjema" method="post" action="/api/kontakt">
+          <Under class="wow-kontakt__tittel">Eller skriv kort</Under>
+          <div class="wow-skjema__felt wow-skjema__felt--halv">
+            <label for={`${p}-navn`}>Navn</label>
+            <input id={`${p}-navn`} name="navn" type="text" autocomplete="name" required />
+          </div>
+          <div class="wow-skjema__felt wow-skjema__felt--halv">
+            <label for={`${p}-epost`}>E-post</label>
+            <input id={`${p}-epost`} name="epost" type="email" autocomplete="email" required />
+          </div>
+          <div class="wow-skjema__felt">
+            <label for={`${p}-nettside`}>Nettside i dag</label>
+            <input id={`${p}-nettside`} name="nettside" type="text" inputmode="url" aria-describedby={`${p}-nettside-hint`} />
+            <p class="wow-skjema__hint" id={`${p}-nettside-hint`}>Har du ingen ennå, la feltet stå tomt.</p>
+          </div>
+          <div class="wow-skjema__felt">
+            <label for={`${p}-melding`}>Hva tar tid i dag?</label>
+            <textarea id={`${p}-melding`} name="melding" rows="3" required></textarea>
+          </div>
+          <button class="wow-knapp" type="submit" data-magnetic>
+            <span class="wow-knapp__tekst" data-magnetic-tekst>Send meldingen</span>
+          </button>
+          <p class="wow-skjema__personvern">
+            Vi bruker opplysningene bare til å svare deg, og sletter dem etter seks måneder hvis det
+            ikke blir et oppdrag. Se <a class="wow-lenke" href="/personvern">personvernerklæringen</a>.
+          </p>
+        </form>
+      )}
+    </div>
+    </div>
+
+    <dl class="wow-kontakt__fakta">
+      <div>
+        <dt>E-post</dt>
+        <dd><a class="wow-lenke" href={`mailto:${firma.epost}`}>{firma.epost}</a></dd>
+      </div>
+      {fakta === "full" && telefon && (
+        <div>
+          <dt>Telefon</dt>
+          <dd><a class="wow-lenke" href={`tel:${telefon.replace(/\s/g, "")}`}>{telefon}</a></dd>
+        </div>
+      )}
+      <div>
+        <dt>Svartid</dt>
+        <dd>{firma.svartid}</dd>
+      </div>
+      {fakta === "full" && (
+        <div>
+          <dt>Sted</dt>
+          <dd>{firma.adresse}</dd>
+        </div>
+      )}
+    </dl>
+  </div>
+</section>

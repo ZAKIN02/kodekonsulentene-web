@@ -1,0 +1,237 @@
+---
+/**
+ * Lesekolonnen for artikler, håndbok, juridiske sider og /terminal (wow-undersider.md del 1.7).
+ * Archivo eier rammen (SideHode over), Schibsted eier kolonnen: 18–20 px, linje 1,65, 62 tegn.
+ * Ingenting her beveger seg uten handling.
+ *
+ *   <SideHode tittel={a.tittel} storrelse="tjeneste" bredde="les" brodsmuler meta="…" />
+ *   <Artikkelkropp kortSvar={a.ingress} innhold={[{ id: "krav", tittel: "Hvilke krav som gjelder" }]}
+ *                  kilder={[{ tittel: "Likestillings- og diskrimineringsloven § 18", url: "…", sjekket: "6. okt. 2026" }]}>
+ *     <UrlFelt slot="verktoy" id="url-artikkel" action="/verktoy/uu-sjekk" knapp="Sjekk siden" />
+ *     <h2 id="krav">Hvilke krav som gjelder</h2>
+ *     <p>…</p>
+ *     <Sporsmal slot="etter" liste={faq} storrelse="les" innfelt />
+ *   </Artikkelkropp>
+ *
+ * Rekkefølge (artikkelstrukturen i kodekonsulentene-seo): [meta] → kort svar (refleksstrek til
+ * venstre) → innholdsliste som <details> under 1280 px → verktøyet (slot «verktoy») → brødteksten
+ * (standardslotten) → slot «etter» (FAQ) → forfatterboks → kilder med «sist sjekket».
+ * Fra 1280 px står innholdslista festet i spalte 10–12.
+ *
+ * variant:  artikkel (standard: kort svar og forfatter)
+ *           handbok  (ingen forfatterboks som standard; innholdslista er påkrevd der)
+ *           juridisk (ingen forfatterboks; nummererte lister beholder nummeret)
+ *
+ * Brødteksten står i <Prosa> (Prosa.astro): p, h2, h3, ul, ol, table, blockquote, code, pre, a,
+ * strong, details og .wow-notat stiles der, ett sted for alle undersidene.
+ * Tabeller som er bredere enn kolonnen, ruller i seg selv (MalWow gjør dem tastaturnåbare).
+ */
+import Prosa from "./Prosa.astro";
+
+interface Props {
+  kortSvar?: string;
+  /** ISO-datoer. Gir meta-linja «Publisert … Innholdet er kontrollert mot kilden …» (ordrett som i dag). */
+  publisert?: string;
+  oppdatert?: string;
+  /** Datoene slik de skal leses (standard: ISO-datoen). */
+  publisertTekst?: string;
+  oppdatertTekst?: string;
+  innhold?: { id: string; tittel: string }[];
+  forfatter?: boolean;
+  kilder?: { tittel: string; url: string; sjekket?: string }[];
+  variant?: "artikkel" | "handbok" | "juridisk";
+  /** Overskriften på innholdslista. */
+  innholdTittel?: string;
+  /** Overskriften på kildelista. */
+  kilderTittel?: string;
+  /** Setning etter datoene i meta-linja, f.eks. «Dette er ikke juridisk rådgivning.» */
+  metaTillegg?: string;
+}
+const {
+  kortSvar,
+  publisert,
+  oppdatert,
+  publisertTekst = publisert,
+  oppdatertTekst = oppdatert,
+  innhold = [],
+  variant = "artikkel",
+  forfatter = variant === "artikkel",
+  kilder = [],
+  innholdTittel = "Innhold",
+  kilderTittel = "Kilder",
+  metaTillegg,
+} = Astro.props;
+const harInnhold = innhold.length > 0;
+---
+
+<div class:list={["wow-artikkel", `wow-artikkel--${variant}`, harInnhold && "wow-artikkel--innhold"]}>
+  <div class="wow-rute wow-artikkel__rute">
+    <div class="wow-artikkel__kolonne">
+      {publisert && oppdatert && (
+        <p class="wow-artikkel__meta">
+          Publisert <time datetime={publisert}>{publisertTekst}</time>. Innholdet er kontrollert mot kilden{" "}
+          <time datetime={oppdatert}>{oppdatertTekst}</time>.{metaTillegg && ` ${metaTillegg}`}
+        </p>
+      )}
+      {kortSvar && <p class="wow-artikkel__kortsvar">{kortSvar}</p>}
+
+      {harInnhold && (
+        <details class="wow-artikkel__innhold-smal">
+          <summary>{innholdTittel}</summary>
+          <ol role="list">
+            {innhold.map((i) => <li><a href={`#${i.id}`}>{i.tittel}</a></li>)}
+          </ol>
+        </details>
+      )}
+
+      {Astro.slots.has("verktoy") && <div class="wow-artikkel__verktoy"><slot name="verktoy" /></div>}
+
+      <Prosa>
+        <slot />
+      </Prosa>
+
+      {Astro.slots.has("etter") && <div class="wow-artikkel__etter"><slot name="etter" /></div>}
+
+      {forfatter && (
+        <p class="wow-artikkel__forfatter">
+          Skrevet av KodeKonsulentene, utviklermiljø i Oslo med sikkerhet som fagfelt.{" "}
+          <a class="wow-lenke" href="/om">Les om oss</a>.
+        </p>
+      )}
+
+      {kilder.length > 0 && (
+        <section class="wow-artikkel__kilder" aria-labelledby="kilder-tittel">
+          <h2 id="kilder-tittel" class="wow-les-h3">{kilderTittel}</h2>
+          <ol>
+            {kilder.map((k) => (
+              <li>
+                <a class="wow-lenke" href={k.url} rel="nofollow">{k.tittel}</a>
+                {k.sjekket && <span class="wow-artikkel__sjekket">, sist sjekket {k.sjekket}</span>}
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
+    </div>
+
+    {harInnhold && (
+      <nav class="wow-artikkel__innhold" aria-label={innholdTittel}>
+        <p class="wow-artikkel__innhold-tittel">{innholdTittel}</p>
+        <ol role="list">
+          {innhold.map((i) => <li><a href={`#${i.id}`}>{i.tittel}</a></li>)}
+        </ol>
+      </nav>
+    )}
+  </div>
+</div>
+
+<style>
+  .wow-artikkel {
+    padding-top: var(--wow-rom-6);
+  }
+  .wow-artikkel__kolonne {
+    display: grid;
+    gap: var(--wow-rom-6);
+    align-content: start;
+  }
+  .wow-artikkel__meta {
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+  }
+  /* Kort svar: den ene aksenten i kolonnen, en tynn refleksstrek til venstre. */
+  .wow-artikkel__kortsvar {
+    max-width: var(--wow-maal-brod);
+    padding-left: var(--wow-rom-5);
+    border-left: var(--wow-kant-2) solid var(--wow-refleks);
+    font-size: var(--wow-tekst-ingress);
+    line-height: 1.45;
+    text-wrap: pretty;
+  }
+
+  /* Innholdslista: <details> under 1280 px, festet i høyre marg over. */
+  .wow-artikkel__innhold-smal {
+    border-block: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .wow-artikkel__innhold-smal summary {
+    display: flex;
+    align-items: center;
+    min-height: var(--wow-trykkflate);
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .wow-artikkel__innhold-smal ol,
+  .wow-artikkel__innhold ol {
+    margin: 0;
+    padding: 0 0 var(--wow-rom-3);
+    list-style: none;
+  }
+  .wow-artikkel__innhold-smal a,
+  .wow-artikkel__innhold a {
+    display: flex;
+    align-items: center;
+    min-height: var(--wow-trykkflate);
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+    line-height: 1.3;
+    transition: color var(--wow-tid-kort) var(--wow-kurve);
+  }
+  .wow-artikkel__innhold-smal a:hover,
+  .wow-artikkel__innhold a:hover {
+    color: var(--wow-tekst);
+  }
+  .wow-artikkel__innhold {
+    display: none;
+  }
+  .wow-artikkel__innhold-tittel {
+    margin-bottom: var(--wow-rom-2);
+    font-size: var(--wow-tekst-liten);
+    font-weight: 600;
+  }
+
+  .wow-artikkel__etter {
+    display: grid;
+    gap: var(--wow-rom-6);
+  }
+  .wow-artikkel__forfatter {
+    max-width: var(--wow-maal-brod);
+    padding-top: var(--wow-rom-5);
+    border-top: var(--wow-kant-1) solid var(--wow-linje);
+    color: var(--wow-tekst-dempet);
+  }
+  .wow-artikkel__kilder ol {
+    display: grid;
+    gap: var(--wow-rom-3);
+    margin: var(--wow-rom-4) 0 0;
+    padding-left: var(--wow-rom-5);
+    font-size: var(--wow-tekst-liten);
+  }
+  .wow-artikkel__sjekket {
+    color: var(--wow-tekst-dempet);
+  }
+
+  @media (min-width: 768px) {
+    .wow-artikkel__kolonne {
+      grid-column: 1 / 11;
+    }
+  }
+  @media (min-width: 1024px) {
+    .wow-artikkel__kolonne {
+      grid-column: 3 / 10;
+    }
+  }
+  @media (min-width: 1280px) {
+    .wow-artikkel__innhold-smal {
+      display: none;
+    }
+    .wow-artikkel__innhold {
+      display: block;
+      grid-column: 10 / 13;
+      grid-row: 1;
+      align-self: start;
+      position: sticky;
+      top: calc(var(--wow-hode-hoyde) + var(--wow-rom-6));
+      padding-left: var(--wow-rom-5);
+      border-left: var(--wow-kant-1) solid var(--wow-linje);
+    }
+  }
+</style>

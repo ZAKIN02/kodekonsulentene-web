@@ -1,0 +1,81 @@
+---
+// Spørsmål (wow-briefen, blokk 9): <details> med myk høydeanimasjon (data-accordion, bare på
+// «film»; på «rolig» åpnes de uten animasjon eller med rolig.ts). Lista kommer fra siden, som også
+// bygger FAQPage-markupen av den samme lista – én kilde, identiske spørsmål.
+// Tekst ordrett fra docs/design/tekst/forside.md del 10.
+//
+// Bølge A1 (wow-undersider.md del 3): `tittel`, `id` og `storrelse`.
+//
+// Runde wow-r7 «Lampa» (historie-manus.md del 5, Spørsmål), forsiden (`rolig`): bevisst rolig, ingen
+// fortellerlinje. H2 står liten, og seksjonen åpner med det første spørsmålet, åpent og stort.
+// Der svaret bygger på en lov, en standard eller avtalen, står henvisningen fast ved svaret
+// (msc-grepet uten skript): det store er leddet, kilden står under. Bare henvisninger som står
+// ordrett i svaret; faktasjekker tar resten. Henvisningen gjentar svaret og er derfor ikke
+// skjult for skjermlesere, men står foran svaret som en egen kort linje.
+//
+//   <Sporsmal liste={sporsmaal} />                                    forsiden (som før)
+//   <Sporsmal liste={prisFaq} tittel="Om pris og binding" id="pris-faq" storrelse="tjeneste" />
+//   <Sporsmal liste={faq} storrelse="les" innfelt />                  i en Artikkelkropp
+//
+// storrelse:  stor (standard, Archivo, overskrift festet til venstre på desktop)
+//             tjeneste (Archivo i tjenestestørrelse, samme oppsett)
+//             les (Schibsted 700, én spalte; for lesesidene)
+// innfelt:    ingen egen seksjonsluft og ikke eget rutenett (står i en kolonne som har det).
+import type { Sporsmaal } from "../../../data/faq";
+import type { Henvisning } from "./fortelling";
+
+interface Props {
+  liste: (Sporsmaal & { henvisning?: Henvisning })[];
+  tittel?: string;
+  /** id på seksjonen. Overskriften får `${id}-tittel`; uten id «faq-tittel» (som før). */
+  id?: string;
+  storrelse?: "stor" | "tjeneste" | "les";
+  innfelt?: boolean;
+  /** Forsiden, runde wow-r7 «Lampa»: rolig. H2 liten, første spørsmål åpent og stort,
+   *  henvisningen fast ved svaret der den finnes. */
+  rolig?: boolean;
+}
+const STANDARD = "Det folk spør om først";
+const { liste, tittel = STANDARD, id, storrelse = "stor", innfelt = false, rolig = false } = Astro.props;
+const tittelId = id ? `${id}-tittel` : "faq-tittel";
+const tittelKlasse = rolig
+  ? "wow-faq__tittel-liten"
+  : storrelse === "les"
+    ? "wow-les-h2"
+    : storrelse === "tjeneste"
+      ? "wow-tittel wow-tittel--tjeneste"
+      : ["wow-stor", tittel === STANDARD && "wow-stor--smal"].filter(Boolean).join(" ");
+---
+
+<section
+  class:list={["wow-faq", storrelse === "les" && "wow-faq--les", innfelt && "wow-faq--innfelt", rolig && "wow-faq--rolig"]}
+  id={id}
+  aria-labelledby={tittelId}
+>
+  <div class:list={[!innfelt && "wow-rute"]}>
+    <div class="wow-faq__hode">
+      <h2 id={tittelId} class={tittelKlasse} data-split={storrelse === "les" || rolig ? undefined : "lines"}>
+        {tittel}
+      </h2>
+    </div>
+    <div class="wow-faq__liste">
+      {liste.map((f, i) => (
+        <details class="wow-faq__punkt" data-accordion open={rolig && i === 0}>
+          <summary class="wow-faq__sporsmal">
+            <span>{f.q}</span>
+            <span class="wow-faq__pluss" aria-hidden="true"></span>
+          </summary>
+          <div class:list={["wow-faq__svar", rolig && f.henvisning && "wow-faq__svar--henvisning"]}>
+            {rolig && f.henvisning && (
+              <p class="wow-faq__henvisning">
+                <span class="wow-faq__ledd">{f.henvisning.ledd}</span>
+                <span class="wow-faq__kilde">{f.henvisning.kilde}</span>
+              </p>
+            )}
+            <p>{f.a}</p>
+          </div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>

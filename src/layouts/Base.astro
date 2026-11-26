@@ -11,7 +11,6 @@ import Apning from "../components/Apning.astro";
 import { firma, erUferdig } from "../data/firma";
 import { footerLenker } from "../data/navigasjon";
 import { foretak, nettsted, brodsmuler } from "../data/schema";
-import { TEMA_SCRIPT } from "../../sikkerhet.mjs";
 
 interface Props {
   tittel: string;
@@ -123,10 +122,6 @@ const basisSchema = noindex
     <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
 
 
-    <!-- Temavalget settes før første maling. Teksten kommer fra lib/tema-script.ts,
-         som middleware.ts regner CSP-hashen av. Ikke skriv den av her. -->
-    <script is:inline set:html={TEMA_SCRIPT} />
-
     {basisSchema.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} is:inline />)}
     {!noindex && schema.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} is:inline />)}
   </head>
@@ -161,14 +156,9 @@ const basisSchema = noindex
     </div>
 
     <script>
-      // Tema: knappen i topbaren, valget huskes. Ingen cookie – localStorage er ikke sporing.
-      const toggle = document.querySelector<HTMLButtonElement>("[data-theme-toggle]");
-      toggle?.addEventListener("click", () => {
-        const lys = document.documentElement.dataset.theme === "light";
-        const neste = lys ? "dark" : "light";
-        document.documentElement.dataset.theme = neste;
-        try { localStorage.setItem("kk-tema", neste); } catch {}
-      });
+      // Bare mørkt tema (eier 24. nov. 2026). Temabryteren er borte, og valget som eldre besøk
+      // lagret, ryddes bort. Ingenting nytt lagres.
+      try { localStorage.removeItem("kk-tema"); } catch {}
     </script>
 
     <script>

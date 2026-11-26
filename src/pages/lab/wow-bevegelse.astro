@@ -1,0 +1,651 @@
+---
+/**
+ * Lab: wow-bevegelsen, én effekt per seksjon (src/scripts/wow/).
+ *
+ * Siden står på egne ben (ikke MalWow), så hver effekt kan måles isolert av
+ * testene i tests/wow/. Samme stiler og samme inngang som forsiden:
+ * tokens-wow.css, wow-bevegelse.css, Intro, Peker og scripts/wow/index.ts.
+ * Tall og priser leses fra src/data/priser.ts. `noindex`, lenkes ikke fra noe.
+ */
+import "../../styles/fonter-v2.css";
+import "../../styles/tokens-wow.css";
+import "../../styles/wow-bevegelse.css";
+import Intro from "../../components/wow/Intro.astro";
+import Peker from "../../components/wow/Peker.astro";
+import { pakker, loepende } from "../../data/priser";
+
+const tall = (pris: string) => Number(pris.replace(/\D/g, ""));
+const uten = (pris: string) => pris.replace(/\s*kr.*$/, "");
+const start = pakker[0];
+const lovsjekk = loepende.find((r) => r.navn === "Lovsjekk-pakke")!;
+
+const rader = [
+  { navn: "Cookies før samtykke", verdi: "0" },
+  { navn: "Sikkerhetsheadere", verdi: "6 av 6", tall: 6 },
+  { navn: "Org.nr. i bunnteksten", verdi: "Funnet" },
+  { navn: "Personvernerklæring", verdi: "Funnet" },
+];
+const bilder = ["bolt", "floke", "priser", "skjelett", "akt-tetting"];
+---
+
+<!doctype html>
+<html lang="nb">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lab: wow-bevegelse</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <a class="lab-hopp" href="#innhold">Hopp til innhold</a>
+    <Intro />
+    <Peker />
+
+    <header class="lab-hode">
+      <span>Lab: wow-bevegelse</span>
+      <nav aria-label="Snarveier">
+        <a href="#befaring">Befaring</a>
+        <a href="#karusell">Karusell</a>
+        <a href="#sporsmal">Spørsmål</a>
+      </nav>
+    </header>
+
+    <main id="innhold">
+      <section class="lab-hero" id="hero">
+        <p class="lab-merke">data-split="lines" data-split-inngang · data-reveal="fade" · data-magnetic</p>
+        <h1 class="lab-mega" data-split="lines" data-split-inngang id="hero-tittel">Ting som låser seg på plass</h1>
+        <p class="lab-ingress" data-reveal="fade" id="hero-ingress">
+          Hver effekt på denne siden står alene, så den kan ses og måles for seg. Rull sakte.
+        </p>
+        <div class="lab-knapper">
+          <a class="lab-knapp lab-knapp--fylt" href="#befaring" data-magnetic id="magnet"><span data-magnetic-tekst>Til befaringen</span></a>
+          <a class="lab-knapp" href="#sporsmal" data-magnetic data-peker="Les"><span data-magnetic-tekst>Til spørsmålene</span></a>
+        </div>
+      </section>
+
+      <section class="lab-seksjon" id="bokstaver">
+        <p class="lab-merke">data-split="chars"</p>
+        <h2 class="lab-stor" data-split="chars" id="bokstav-tittel">Bokstav for bokstav, Å og Ø med</h2>
+      </section>
+
+      <section class="lab-seksjon" id="klipp">
+        <p class="lab-merke">data-reveal="clip"</p>
+        <figure class="lab-bilde" data-reveal="clip" data-peker="Se" id="klipp-bilde">
+          <img src="/scener/bolt-poster.avif" alt="Stillbilde fra en av scenene på siden" width="1920" height="1080" loading="lazy" />
+        </figure>
+      </section>
+
+      <section class="lab-seksjon" id="parallakse">
+        <p class="lab-merke">data-parallax="0.2"</p>
+        <div class="lab-vindu">
+          <img src="/scener/floke-poster.avif" alt="" width="1920" height="1080" loading="lazy" data-parallax="0.2" id="parallakse-bilde" />
+        </div>
+      </section>
+
+      <section class="lab-seksjon" id="forskyvning">
+        <p class="lab-merke">data-stagger + data-reveal="fade"</p>
+        <ul class="lab-liste" data-stagger="0.1" id="stagger">
+          <li data-reveal="fade">Cookies</li>
+          <li data-reveal="fade">Sikkerhet</li>
+          <li data-reveal="fade">Fart</li>
+          <li data-reveal="fade">Org.nr.</li>
+        </ul>
+      </section>
+
+      <section class="lab-seksjon" id="tall">
+        <p class="lab-merke">data-count (number-flow, nb-NO)</p>
+        <dl class="lab-tall">
+          <div>
+            <dt>{start.navn}</dt>
+            <dd><span data-count={tall(start.pris)} id="tall-start">{uten(start.pris)}</span> kr</dd>
+          </div>
+          <div>
+            <dt>Rapport</dt>
+            <dd><span data-count="30" id="tall-sek">30</span> sek</dd>
+          </div>
+        </dl>
+        <div class="lab-velger" role="group" aria-label="Velg pakke">
+          {pakker.map((p) => (
+            <button type="button" class="lab-knapp" data-velg={tall(p.pris)}>{p.navn}</button>
+          ))}
+        </div>
+        <p class="lab-pris">
+          <span data-count={tall(start.pris)} id="tall-velger">{uten(start.pris)}</span> kr
+        </p>
+      </section>
+
+      <section class="lab-seksjon lab-seksjon--tett" id="band">
+        <p class="lab-merke">data-marquee="20"</p>
+        <div class="lab-band" data-marquee="20" id="marquee">
+          <span>Cookies</span><span>Sikkerhet</span><span>Fart</span><span>Org.nr.</span><span>Universell utforming</span>
+        </div>
+      </section>
+
+      <section class="lab-seksjon" id="skala">
+        <p class="lab-merke">data-scale-in</p>
+        <div class="lab-refleks" data-scale-in id="skala-flate">
+          <p class="lab-stor">Fast pris, skrevet ned før vi starter</p>
+        </div>
+      </section>
+
+      <section class="lab-seksjon" id="linje">
+        <p class="lab-merke">data-draw (scrub) og data-draw="inn"</p>
+        <div class="lab-lop">
+          <svg class="lab-lop__linje" viewBox="0 0 2 1000" preserveAspectRatio="none" aria-hidden="true">
+            <line x1="1" y1="0" x2="1" y2="1000" data-draw id="linje-scrub" />
+          </svg>
+          <ol>
+            <li>Befaring</li>
+            <li>Tilbud</li>
+            <li>Bygging</li>
+            <li>Lansering</li>
+          </ol>
+        </div>
+        <svg class="lab-hake" viewBox="0 0 24 24" aria-hidden="true" data-draw="inn" id="hake">
+          <path d="M4 12.5l5 5L20 6.5" />
+        </svg>
+      </section>
+
+      <section class="lab-befaring" id="befaring" data-pin="befaring" aria-labelledby="befaring-tittel">
+        <div class="lab-befaring__ramme">
+          <p class="lab-merke">data-pin="befaring"</p>
+          <h2 id="befaring-tittel" class="lab-h2">Befaringen</h2>
+          <p class="lab-adresse">Adresse: <span data-befaring-skriv="kunde.no" id="skriv">kunde.no</span></p>
+          <ol class="lab-rapport">
+            {rader.map((r, i) => (
+              <li class="lab-rapport__rad" data-befaring-steg={i + 1}>
+                <span>{r.navn}</span>
+                <span class="lab-rapport__maal" aria-hidden="true"><span data-befaring-fyll></span></span>
+                <span>{r.tall !== undefined ? <><span data-count={r.tall}>{r.tall}</span> av 6</> : r.verdi}</span>
+              </li>
+            ))}
+          </ol>
+          <div class="lab-rapport__pris" data-befaring-steg={rader.length + 1} data-befaring-lander>
+            Fast pris på utbedring: <strong>{lovsjekk.pris}</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="lab-seksjon" id="karusell">
+        <p class="lab-merke">data-karusell (Embla)</p>
+        <div data-karusell-ramme>
+          <div data-karusell aria-label="Bilder" id="karusell-rot">
+            <ul class="karusell__spor lab-spor">
+              {bilder.map((b) => (
+                <li class="karusell__lysbilde lab-lysbilde">
+                  <img src={`/scener/${b}-poster.avif`} alt="" width="1920" height="1080" loading="lazy" draggable="false" />
+                  <a href={`#${b}`}>{b}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div class="lab-karusell-kontroll">
+            <button type="button" class="lab-knapp" data-karusell-forrige>Forrige</button>
+            <button type="button" class="lab-knapp" data-karusell-neste>Neste</button>
+          </div>
+          <div class="lab-fremdrift" aria-hidden="true"><span data-karusell-fremdrift></span></div>
+        </div>
+      </section>
+
+      <section class="lab-seksjon" id="sporsmal">
+        <p class="lab-merke">data-accordion</p>
+        <div class="lab-faq">
+          <details data-accordion name="faq" id="faq-1">
+            <summary>Hva skjer uten JavaScript?</summary>
+            <div><p>Alt står synlig og ferdig. Startstilene settes bare når skriptet har sagt fra at det kjører.</p></div>
+          </details>
+          <details data-accordion name="faq">
+            <summary>Og med redusert bevegelse?</summary>
+            <div><p>Ingen myk rulling, ingen intro, ingen festing. Alt står ferdig fra start.</p></div>
+          </details>
+          <details data-accordion name="faq">
+            <summary>Kan jeg bruke tastaturet?</summary>
+            <div><p>Ja. Dette er vanlige details-elementer; skriptet animerer bare høyden.</p></div>
+          </details>
+        </div>
+      </section>
+
+      <footer class="lab-seksjon lab-slutt">Slutt på laben.</footer>
+    </main>
+
+    <script>
+      import "../../scripts/wow/index.ts";
+      // Prisvelger-simulering: bare data-count endres, tallet ruller selv.
+      for (const b of document.querySelectorAll<HTMLButtonElement>("[data-velg]")) {
+        b.addEventListener("click", () => {
+          const mal = document.getElementById("tall-velger");
+          if (mal) mal.dataset.count = b.dataset.velg;
+        });
+      }
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background: var(--wow-bunn);
+    color: var(--wow-tekst);
+    font-family: var(--wow-font-tekst);
+    font-size: var(--wow-tekst-brod);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  a {
+    color: var(--wow-lenke);
+  }
+
+  :focus-visible {
+    outline: var(--wow-kant-2) solid var(--wow-fokus);
+    outline-offset: var(--wow-fokus-avstand);
+  }
+
+  .lab-hopp {
+    position: absolute;
+    inset-block-start: var(--wow-rom-2);
+    inset-inline-start: var(--wow-rom-2);
+    z-index: var(--wow-lag-hopp);
+    padding: var(--wow-rom-3) var(--wow-rom-4);
+    background: var(--wow-refleks);
+    color: var(--wow-tekst-pa-refleks);
+    translate: 0 -200%;
+  }
+
+  .lab-hopp:focus {
+    translate: 0 0;
+  }
+
+  .lab-hode {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: var(--wow-lag-hode);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--wow-rom-4);
+    min-height: var(--wow-hode-hoyde);
+    padding-inline: var(--wow-marg);
+    background: var(--wow-slor-tung);
+    font-size: var(--wow-tekst-liten);
+  }
+
+  .lab-hode nav {
+    display: flex;
+    gap: var(--wow-rom-4);
+  }
+
+  .lab-hode a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--wow-trykkflate);
+    color: var(--wow-tekst);
+  }
+
+  .lab-merke {
+    margin: 0 0 var(--wow-rom-5);
+    color: var(--wow-tekst-svak);
+    font-size: var(--wow-tekst-mikro);
+  }
+
+  .lab-hero,
+  .lab-seksjon {
+    padding: var(--wow-seksjon) var(--wow-marg);
+  }
+
+  .lab-seksjon--tett {
+    padding-inline: 0;
+  }
+
+  .lab-seksjon--tett .lab-merke {
+    padding-inline: var(--wow-marg);
+  }
+
+  .lab-hero {
+    min-height: calc(100svh - var(--wow-hode-hoyde));
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .lab-mega,
+  .lab-stor,
+  .lab-h2 {
+    margin: 0;
+    font-family: var(--wow-font-display);
+    font-weight: var(--wow-display-vekt);
+    font-stretch: var(--wow-display-bredde);
+    line-height: var(--wow-display-linje);
+    letter-spacing: var(--wow-display-sperring);
+    text-transform: uppercase;
+  }
+
+  .lab-mega {
+    font-size: var(--wow-tekst-mega);
+    max-width: 14ch;
+  }
+
+  .lab-stor {
+    font-size: var(--wow-tekst-stor);
+    max-width: 16ch;
+  }
+
+  .lab-h2 {
+    font-size: var(--wow-tekst-tjeneste);
+  }
+
+  .lab-ingress {
+    max-width: var(--wow-maal-ingress);
+    margin: var(--wow-rom-6) 0 0;
+    font-size: var(--wow-tekst-ingress);
+    color: var(--wow-tekst-dempet);
+  }
+
+  .lab-knapper,
+  .lab-velger,
+  .lab-karusell-kontroll {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--wow-rom-4);
+    margin-top: var(--wow-rom-6);
+  }
+
+  .lab-knapp {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--wow-kontroll);
+    padding-inline: var(--wow-rom-6);
+    border: var(--wow-kant-1) solid var(--wow-linje-sterk);
+    border-radius: var(--wow-radius-pille);
+    background: transparent;
+    color: var(--wow-tekst);
+    font: inherit;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .lab-knapp:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  .lab-knapp--fylt {
+    border-color: var(--wow-refleks);
+    background: var(--wow-refleks);
+    color: var(--wow-tekst-pa-refleks);
+  }
+
+  .lab-bilde {
+    margin: 0;
+    overflow: hidden;
+    border-radius: var(--wow-radius-m);
+  }
+
+  .lab-vindu {
+    position: relative;
+    height: 70vh;
+    overflow: hidden;
+    border-radius: var(--wow-radius-m);
+  }
+
+  .lab-vindu img {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: -10%;
+    width: 100%;
+    height: 120%;
+    object-fit: cover;
+  }
+
+  .lab-liste {
+    display: grid;
+    gap: var(--wow-rom-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--wow-font-display);
+    font-weight: var(--wow-display-vekt);
+    font-stretch: var(--wow-display-bredde);
+    font-size: var(--wow-tekst-tjeneste);
+    line-height: var(--wow-display-linje);
+    text-transform: uppercase;
+  }
+
+  .lab-tall {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--wow-rom-8);
+    margin: 0;
+  }
+
+  .lab-tall dt {
+    color: var(--wow-tekst-dempet);
+  }
+
+  .lab-tall dd,
+  .lab-pris {
+    margin: 0;
+    font-family: var(--wow-font-display);
+    font-weight: var(--wow-display-vekt);
+    font-stretch: var(--wow-display-bredde);
+    font-size: var(--wow-tekst-tall);
+    line-height: 1;
+  }
+
+  .lab-pris {
+    margin-top: var(--wow-rom-6);
+    color: var(--wow-refleks);
+  }
+
+  .lab-band {
+    display: flex;
+    gap: var(--wow-rom-7);
+    padding-block: var(--wow-rom-5);
+    border-block: var(--wow-kant-1) solid var(--wow-linje);
+    font-family: var(--wow-font-display);
+    font-weight: var(--wow-display-vekt);
+    font-stretch: var(--wow-display-bredde);
+    font-size: var(--wow-tekst-tjeneste);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* Gruppene i båndet arver avstanden; siste ledd trenger den også før neste kopi. */
+  .lab-band .wow-marquee__gruppe {
+    gap: var(--wow-rom-7);
+    padding-inline-end: var(--wow-rom-7);
+  }
+
+  .lab-refleks {
+    padding: var(--wow-seksjon-tett) var(--wow-marg);
+    background: var(--wow-refleks);
+    color: var(--wow-tekst-pa-refleks);
+  }
+
+  .lab-lop {
+    position: relative;
+    padding-inline-start: var(--wow-rom-7);
+  }
+
+  .lab-lop__linje {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: var(--wow-kant-2);
+    height: 100%;
+    overflow: visible;
+  }
+
+  .lab-lop__linje line,
+  .lab-hake path {
+    fill: none;
+    stroke: var(--wow-refleks);
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .lab-lop ol {
+    display: grid;
+    gap: var(--wow-rom-9);
+    margin: 0;
+    padding: var(--wow-rom-6) 0;
+    list-style: none;
+    font-size: var(--wow-tekst-h3);
+  }
+
+  .lab-hake {
+    width: var(--wow-rom-9);
+    margin-top: var(--wow-rom-8);
+  }
+
+  .lab-hake path {
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .lab-befaring {
+    min-height: 100svh;
+    display: grid;
+    align-items: center;
+    padding: var(--wow-rom-8) var(--wow-marg);
+    background: var(--wow-flate);
+  }
+
+  .lab-befaring__ramme {
+    width: min(100%, 56rem);
+  }
+
+  .lab-adresse {
+    margin: var(--wow-rom-6) 0;
+    padding: var(--wow-rom-4) var(--wow-rom-5);
+    border: var(--wow-kant-1) solid var(--wow-linje-sterk);
+    border-radius: var(--wow-radius-s);
+    font-size: var(--wow-tekst-ingress);
+  }
+
+  .lab-rapport {
+    display: grid;
+    gap: var(--wow-rom-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .lab-rapport__rad {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--wow-rom-5);
+    padding-block: var(--wow-rom-3);
+    border-bottom: var(--wow-kant-1) solid var(--wow-linje);
+  }
+
+  @media (max-width: 40rem) {
+    .lab-rapport__rad {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .lab-rapport__maal {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+  }
+
+  .lab-rapport__rad[data-befaring-status="fylt"] > span:last-child {
+    color: var(--wow-refleks);
+  }
+
+  .lab-rapport__maal {
+    display: block;
+    height: var(--wow-kant-2);
+    background: var(--wow-linje);
+  }
+
+  .lab-rapport__maal span {
+    display: block;
+    height: 100%;
+    background: var(--wow-refleks);
+  }
+
+  .lab-rapport__pris {
+    margin-top: var(--wow-rom-6);
+    padding: var(--wow-rom-5) var(--wow-rom-6);
+    background: var(--wow-refleks);
+    color: var(--wow-tekst-pa-refleks);
+    font-size: var(--wow-tekst-ingress);
+  }
+
+  .lab-spor {
+    gap: var(--wow-luke);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .lab-lysbilde {
+    width: min(80vw, 34rem);
+  }
+
+  .lab-lysbilde img {
+    border-radius: var(--wow-radius-m);
+    user-select: none;
+  }
+
+  .lab-lysbilde a {
+    display: inline-block;
+    margin-top: var(--wow-rom-3);
+  }
+
+  .lab-fremdrift {
+    height: var(--wow-kant-2);
+    margin-top: var(--wow-rom-5);
+    background: var(--wow-linje);
+  }
+
+  .lab-fremdrift span {
+    display: block;
+    height: 100%;
+    background: var(--wow-tekst);
+    transform: scaleX(0);
+  }
+
+  .lab-faq {
+    max-width: var(--wow-maal-brod);
+  }
+
+  .lab-faq details {
+    border-bottom: var(--wow-kant-1) solid var(--wow-linje);
+  }
+
+  .lab-faq summary {
+    padding-block: var(--wow-rom-5);
+    font-size: var(--wow-tekst-h3);
+    cursor: pointer;
+  }
+
+  .lab-faq details > div > p {
+    margin: 0;
+    padding-bottom: var(--wow-rom-5);
+    color: var(--wow-tekst-dempet);
+  }
+
+  .lab-slutt {
+    min-height: 60vh;
+    color: var(--wow-tekst-svak);
+  }
+</style>

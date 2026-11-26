@@ -1,0 +1,146 @@
+---
+/**
+ * En flyt med ekte systemnavn (wow-undersider.md del 3, portert fra v1 Flyt.astro): leddene som
+ * bokser med en strek mellom, vannrett fra 1024 px og loddrett under. Data fra src/data/flyter.ts,
+ * uendret. Navnene i Schibsted, ingen monospace, ingen løpenummer (rekkefølgen bæres av <ol> og av
+ * streken). `tid` står over boksen når leddet har det.
+ *
+ *   <Flyt flyt={flyter.systemer} />
+ *   <Flyt flyt={flyter.klinikker} niva={2} />
+ *
+ * Kvitteringen («godkjent», «ordre ført») er det systemet faktisk gjør; den står som liten tekst i
+ * boksen. Ingen lampe: det er ikke en måling. Står stille (v1 hadde en løkke; på undersidene
+ * beveger ingenting seg uten at leseren har gjort noe, unntatt kapitlet). Beskrivelsen står som
+ * bildetekst, så meningen finnes i én setning også for den som ikke leser boksene.
+ */
+import type { Flyt } from "../../../data/flyter";
+
+interface Props {
+  flyt: Flyt;
+  niva?: 2 | 3;
+  /** Vis tittelen fra flyter.ts som overskrift over figuren. */
+  visTittel?: boolean;
+}
+const { flyt, niva = 3, visTittel = true } = Astro.props;
+const H = niva === 2 ? "h2" : "h3";
+const n = flyt.noder.length;
+---
+
+<figure class="wow-flyt" style={`--wow-flyt-antall: ${n}`}>
+  {visTittel && <H class="wow-flyt__tittel">{flyt.tittel}</H>}
+  <ol class="wow-flyt__ledd" role="list">
+    {flyt.noder.map((node) => (
+      <li class="wow-flyt__node">
+        {node.tid && <p class="wow-flyt__tid">{node.tid}</p>}
+        <div class="wow-flyt__boks">
+          <p class="wow-flyt__navn">{node.navn}</p>
+          {node.kvittering && <p class="wow-flyt__kvittering">{node.kvittering}</p>}
+        </div>
+        <p class="wow-flyt__detalj">{node.detalj}</p>
+      </li>
+    ))}
+  </ol>
+  <figcaption class="wow-flyt__beskrivelse">{flyt.beskrivelse}</figcaption>
+</figure>
+
+<style>
+  .wow-flyt {
+    display: grid;
+    gap: var(--wow-rom-5);
+    margin: 0;
+  }
+  .wow-flyt__tittel {
+    font-size: var(--wow-tekst-h3);
+    font-weight: 700;
+    line-height: 1.15;
+  }
+  .wow-flyt__ledd {
+    display: grid;
+    gap: var(--wow-rom-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .wow-flyt__node {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 12rem) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--wow-rom-2) var(--wow-rom-5);
+  }
+  .wow-flyt__tid {
+    grid-column: 1 / -1;
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+    font-weight: 600;
+  }
+  .wow-flyt__boks {
+    position: relative;
+    display: grid;
+    gap: var(--wow-rom-1);
+    padding: var(--wow-rom-3) var(--wow-rom-4);
+    background: var(--wow-flate-hev);
+    border: var(--wow-kant-1) solid var(--wow-linje-sterk);
+    border-radius: var(--wow-radius-s);
+  }
+  .wow-flyt__navn {
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .wow-flyt__kvittering {
+    padding-top: var(--wow-rom-1);
+    border-top: var(--wow-kant-1) solid var(--wow-linje);
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-mikro);
+  }
+  .wow-flyt__detalj {
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+  /* Under 360 px ble det 64 px igjen til detaljteksten ved siden av en boks på 12rem, og
+     «behandlerens» ga 12 px sidelengs rulling. Boksen og teksten deler bredden likt der. */
+  @media (max-width: 359px) {
+    .wow-flyt__node {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      column-gap: var(--wow-rom-4);
+    }
+    .wow-flyt__navn {
+      overflow-wrap: anywhere;
+      hyphens: auto;
+    }
+  }
+  /* Streken mellom boksene: loddrett på mobil (fra bunnen av boksen til neste). */
+  .wow-flyt__node:not(:last-child) .wow-flyt__boks::after {
+    content: "";
+    position: absolute;
+    left: var(--wow-rom-5);
+    top: 100%;
+    width: var(--wow-kant-2);
+    height: var(--wow-rom-5);
+    background: var(--wow-lenke);
+  }
+  .wow-flyt__beskrivelse {
+    max-width: var(--wow-maal-brod);
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+  }
+  @media (min-width: 1024px) {
+    .wow-flyt__ledd {
+      grid-template-columns: repeat(var(--wow-flyt-antall), minmax(0, 1fr));
+      gap: var(--wow-rom-6);
+      align-items: end;
+    }
+    .wow-flyt__node {
+      grid-template-columns: minmax(0, 1fr);
+      align-items: start;
+    }
+    .wow-flyt__node:not(:last-child) .wow-flyt__boks::after {
+      left: 100%;
+      top: 50%;
+      width: var(--wow-rom-6);
+      height: var(--wow-kant-2);
+    }
+  }
+</style>

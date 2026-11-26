@@ -1,0 +1,228 @@
+---
+// Mal for alle sidene i wow-uttrykket (docs/design/wow-brief.md og wow-undersider.md).
+// Det tekniske hodet er kopiert fra MalV2.astro/Base.astro: meta, OG, canonical og
+// strukturerte data følger samme mønster. Forskjellene er bevisste:
+//  - tokens-wow.css + wow.css; alltid mørkt (eiers avgjørelse 18. nov. 2026: ingen lys variant,
+//    derfor ingen TEMA_SCRIPT og ingen temaknapp).
+//  - To bevegelsesnivåer (wow-undersider.md del 0 og 1.2):
+//      bevegelse="film"  (standard) Lenis, GSAP, peker, overskrifter som løftes inn.
+//      bevegelse="rolig" les- og verktøysider: ingen Lenis, ingen GSAP, ingen peker, ingenting
+//                        som beveger seg uten at leseren har gjort noe.
+//    Malen rendrer BevegelseFilm eller BevegelseRolig, aldri begge. Astro tar bare med skriptet
+//    til komponenten som faktisk rendres, så en rolig side laster ikke GSAP-bunten (målt i bygget,
+//    se rapporten wow-a1-felles). wow-bevegelse.css og scripts/wow/ eies av bevegelse.
+//  - Intro (inngangen i filmen) bare på forsiden. Andre film-sider får FilmKlar, som setter de
+//    samme tidlige klassene uten inngangen. Rolige sider setter ingen av dem, så ingen startstil
+//    i wow-bevegelse.css skjuler noe der.
+//  - Overtatt fra Base.astro: artikkel-prop (og:type=article og datoene), /terminal.js (hentes
+//    først ved tastetrykk, se skriptet nederst) og snarveiene (skjulte ekstra, stil i
+//    wow-terminal.css), og skriptet som gjør sidelengs rullende tabeller nåbare med tastatur.
+import "../styles/fonter-v2.css";
+import "../styles/tokens-wow.css";
+import "../styles/wow.css";
+import "../styles/wow-bevegelse.css";
+import "../styles/wow-terminal.css";
+import Hode from "../components/wow/seksjoner/Hode.astro";
+import Bunn from "../components/wow/seksjoner/Bunn.astro";
+import Intro from "../components/wow/Intro.astro";
+import Peker from "../components/wow/Peker.astro";
+import FilmKlar from "../components/wow/side/FilmKlar.astro";
+import BevegelseFilm from "../components/wow/side/BevegelseFilm.astro";
+import BevegelseRolig from "../components/wow/side/BevegelseRolig.astro";
+import Snarveier from "../components/wow/side/Snarveier.astro";
+import { firma, erUferdig } from "../data/firma";
+import { foretak, nettsted, brodsmuler } from "../data/schema";
+
+interface Props {
+  tittel: string;
+  beskrivelse: string;
+  /** Settes bare på sider som ikke skal indekseres. */
+  noindex?: boolean;
+  /** Ekstra JSON-LD utover LocalBusiness, f.eks. FAQPage. */
+  schema?: Record<string, unknown>[];
+  /** Filnavn i /og/ uten endelse. Faller tilbake på forsidekortet. */
+  ogBilde?: string;
+  /** Forhåndslast av LCP-bildet (posteren i heroen, startbildet i et kapittel). */
+  forhandslast?: { href: string; type: string; media?: string }[];
+  /**
+   * «film» (standard): tjenester, bransjer, priser, caser, om, forsiden.
+   * «rolig»: artikler, håndbok, juridisk, verktøy, kontakt, status, terminal, 404.
+   */
+  bevegelse?: "film" | "rolig";
+  /**
+   * Bare på artikler. Gir `og:type=article` og de to datoene forhåndsvisningene leser. Datoene
+   * skal være de samme som i brødteksten og i Article-markupen – ikke «i dag».
+   */
+  artikkel?: { publisert: string; oppdatert: string };
+  /** Hvor «Book 20 min» i toppfeltet peker. Standard «#kontakt» (Kontaktblokken på siden). */
+  bookHref?: string;
+}
+
+const {
+  tittel,
+  beskrivelse,
+  noindex = erUferdig,
+  schema = [],
+  ogBilde = "forside",
+  forhandslast = [],
+  bevegelse = "film",
+  artikkel,
+  bookHref = "#kontakt",
+} = Astro.props;
+const ogUrl = new URL(`/og/${ogBilde}.png`, Astro.site ?? firma.url).href;
+const fullTittel =
+  tittel === firma.navn ? `${firma.navn} – ${firma.titteltillegg}` : `${tittel} – ${firma.navn}`;
+const kanonisk = new URL(Astro.url.pathname, Astro.site ?? firma.url).href;
+const forside = Astro.url.pathname === "/";
+const film = bevegelse === "film";
+
+// Brødsmuler (side/Brodsmuler.astro) leser sidens tittel herfra, så den ikke må gis to ganger.
+// Malen rendres før innholdet i slotten, så verdien finnes når brødsmulene rendres.
+(Astro.locals as Record<string, unknown>).wowSidetittel = tittel;
+
+const basisSchema = noindex
+  ? []
+  : [foretak(), nettsted(), brodsmuler(Astro.url.pathname, tittel)].filter(
+      (n): n is Record<string, unknown> => n !== null,
+    );
+---
+
+<!doctype html>
+<html lang="nb" class="wow" data-bevegelse={bevegelse}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTittel}</title>
+    <meta name="description" content={beskrivelse} />
+    <link rel="canonical" href={kanonisk} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+
+    <meta property="og:type" content={artikkel ? "article" : "website"} />
+    <meta property="og:site_name" content={firma.navn} />
+    <meta property="og:locale" content="nb_NO" />
+    <meta property="og:title" content={fullTittel} />
+    <meta property="og:description" content={beskrivelse} />
+    <meta property="og:url" content={kanonisk} />
+    <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={tittel} />
+    {artikkel && <meta property="article:published_time" content={artikkel.publisert} />}
+    {artikkel && <meta property="article:modified_time" content={artikkel.oppdatert} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTittel} />
+    <meta name="twitter:description" content={beskrivelse} />
+    <meta name="twitter:image" content={ogUrl} />
+    <meta name="twitter:image:alt" content={tittel} />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/logo/apple-touch-icon.png" />
+    <link rel="preload" href="/fonts/archivo-var-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/schibsted-grotesk-var-latin.woff2" as="font" type="font/woff2" crossorigin />
+    {forhandslast.map((l) => (
+      <link rel="preload" as="image" href={l.href} type={l.type} media={l.media} fetchpriority="high" />
+    ))}
+    <link rel="manifest" href="/manifest.webmanifest" />
+    {/* Verdien er --wow-bunn fra tokens-wow.css; meta kan ikke lese CSS-variabler. */}
+    <meta name="theme-color" content="#0A0B0C" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
+
+    {basisSchema.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} is:inline />)}
+    {!noindex && schema.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} is:inline />)}
+  </head>
+
+  <body class="wow-kropp">
+    <a class="wow-hopp" href="#innhold">Hopp til innhold</a>
+    {forside ? <Intro /> : film && <FilmKlar />}
+    {film && <Peker />}
+    <Hode bookHref={bookHref} />
+    <main id="innhold">
+      <slot />
+    </main>
+    <Bunn rull={film} />
+    <Snarveier />
+    {film ? <BevegelseFilm /> : <BevegelseRolig />}
+    <script>
+      // Terminalen (/terminal.js, 6 kB gzip) er en skjult ekstra (wow-undersider.md del 3). Den
+      // hentes først når noen trykker en tast som åpner den: «~» (eller «¨» på norsk tastatur),
+      // Ctrl/Cmd+K, eller pil opp (første tast i den skjulte sekvensen). Da sendes tasten videre
+      // til terminalen, så den åpner seg som før. Der terminalen står innfelt (/404, /terminal),
+      // hentes den med en gang. Slik holder «film»-sidene seg under 70 kB egen JS ved load.
+      // Hintet «Trykk ~ for terminal» er skjult i wow; inngangen står i bunnmenyen.
+      // Bare mørkt tema (eier 24. nov. 2026): valget v1-temabryteren lagret hos eldre besøk,
+      // ryddes bort. Ingenting nytt lagres.
+      try {
+        localStorage.removeItem("kk-tema");
+      } catch {}
+
+      let hentet: Promise<void> | null = null;
+      const hent = () =>
+        (hentet ??= new Promise<void>((ferdig) => {
+          const s = document.createElement("script");
+          s.src = "/terminal.js";
+          s.onload = () => ferdig();
+          document.head.append(s);
+        }));
+      if (document.querySelector("[data-kkterm-innfelt]")) void hent();
+      else {
+        const lytt = (e: KeyboardEvent) => {
+          const t = e.target;
+          if (t instanceof HTMLElement && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+          const kort = (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k";
+          if (!(e.key === "~" || e.key === "¨" || e.key === "ArrowUp" || kort)) return;
+          removeEventListener("keydown", lytt);
+          if (e.key !== "ArrowUp") e.preventDefault();
+          void hent().then(() =>
+            dispatchEvent(new KeyboardEvent("keydown", { key: e.key, metaKey: e.metaKey, ctrlKey: e.ctrlKey })),
+          );
+        };
+        addEventListener("keydown", lytt);
+      }
+    </script>
+    <script>
+      // Sidelengs rullende tabeller og kodeblokker uten noe å tabbe til inni, kan ikke leses med
+      // tastatur (axe `scrollable-region-focusable`). Overtatt fra Base.astro: tabindex settes på
+      // det som FAKTISK ruller, bare når ingenting inni kan få fokus, og fjernes igjen når bredden
+      // endres så det ikke lenger ruller. Ingen role="region": den ville tatt tabellrollen og
+      // koblingen mellom rad og kolonne fra skjermleseren.
+      // Verktøyene (cookie-sjekk, uu-sjekk, dmarc, priskalkulator) setter inn tabeller ETTER
+      // innlasting. Derfor merkes det på nytt hver gang noe legges til i <main>.
+      const merk = () => {
+        for (const el of document.querySelectorAll<HTMLElement>(
+          "main table, main figure, main pre, main [data-sidelengs]",
+        )) {
+          const kanRulle = el.scrollWidth > el.clientWidth + 1;
+          const harFokus = el.querySelector("a[href],button,input,select,textarea,[tabindex]");
+          if (kanRulle && !harFokus) {
+            if (!el.hasAttribute("tabindex")) {
+              el.tabIndex = 0;
+              el.dataset.wowRuller = "";
+            }
+          } else if (el.dataset.wowRuller !== undefined) {
+            el.removeAttribute("tabindex");
+            delete el.dataset.wowRuller;
+          }
+        }
+      };
+      merk();
+      let tid: ReturnType<typeof setTimeout> | undefined;
+      addEventListener("resize", () => {
+        clearTimeout(tid);
+        tid = setTimeout(merk, 150);
+      });
+      const main = document.querySelector("main");
+      if (main) {
+        // Én måling per bilde, uansett hvor mange noder skriptet satte inn. Bare childList:
+        // merk() endrer attributter, og de skal ikke starte en ny runde.
+        let venter = 0;
+        new MutationObserver(() => {
+          cancelAnimationFrame(venter);
+          venter = requestAnimationFrame(merk);
+        }).observe(main, { childList: true, subtree: true });
+      }
+    </script>
+  </body>
+</html>

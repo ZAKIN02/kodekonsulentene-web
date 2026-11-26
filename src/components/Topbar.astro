@@ -2,7 +2,6 @@
 import { hovedmeny } from "../data/navigasjon";
 import Button from "./Button.astro";
 import { bookUrl } from "../data/firma";
-import Ikon from "./Ikon.astro";
 const sti = Astro.url.pathname.replace(/\/$/, "") || "/";
 ---
 <header class="topbar">
@@ -13,7 +12,6 @@ const sti = Astro.url.pathname.replace(/\/$/, "") || "/";
         på /historie i produksjon. Usynlig lokalt, fordi fila da leses før første maling. */}
     <a class="topbar__logo" href="/" aria-label="KodeKonsulentene – til forsiden">
       <img src="/logo/kk-lockup-dark.svg" alt="" width="170" height="22" data-logo="dark" />
-      <img src="/logo/kk-lockup-light.svg" alt="" width="170" height="22" data-logo="light" />
     </a>
     {/* Paa telefon var menyen en vannrett scroller: fire lenker synlige, tre
         usynlige, og ingen antydning om at den kunne dras. Tre av sju sider fantes
@@ -44,22 +42,11 @@ const sti = Astro.url.pathname.replace(/\/$/, "") || "/";
         <a href={l.href} aria-current={sti === l.href || sti.startsWith(`${l.href}/`) ? "page" : undefined}>{l.label}</a>
       ))}
     </nav>
-    <button class="iconbtn" type="button" data-theme-toggle aria-label="Bytt mellom mørkt og lyst tema">
-      {/* data-icon MÅ bli stående: site.css bytter ikon med temaet via
-          `[data-icon="sun"]`/`[data-icon="moon"]`. 18 px er det CSS maler dem i.
-          Knappen har aria-label, så ikonene selv er dekorasjon. */}
-      <Ikon navn="moon" storrelse={18} data-icon="moon" />
-      <Ikon navn="sun" storrelse={18} data-icon="sun" />
-    </button>
     <Button variant="primary" href={bookUrl} class="topbar__cta">Book 20 min</Button>
   </div>
 </header>
 
 <style>
-  /* Logoen bytter med temaet. Begge er i markup, CSS velger – ingen flimring. */
-  .topbar__logo img[data-logo="light"] { display: none; }
-  :global(html[data-theme="light"]) .topbar__logo img[data-logo="dark"] { display: none; }
-  :global(html[data-theme="light"]) .topbar__logo img[data-logo="light"] { display: block; }
   @media (max-width: 560px) { .topbar__cta { display: none; } }
 
   /* Flytende pille.

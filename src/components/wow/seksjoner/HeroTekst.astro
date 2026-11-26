@@ -1,0 +1,54 @@
+---
+// Teksten og handlingen i heroen (kapittel 0 i filmen), lagt inn i
+// <ScrollWorld /> sin slot. Bevegelse eier ScrollWorld; dette er bare innholdet.
+//
+// Runde wow-r3 (kritiker r3 #4, #8, #22): H1 i spalte 1–7, så gata står fri
+// til høyre. Første skjerm har bare H1, ingress, adressefeltet og merknaden.
+//  - Målelisten (fire piller) er borte herfra: målingene er historiens slutt
+//    og låser seg i kapittel 4, og rapporten rett etter filmen viser dem utfylt.
+//  - «Eller book 20 minutter» er borte: «Book 20 min» står i toppfeltet.
+// Tekst fra docs/design/tekst/forside.md del 1, ingressen fra del 2 variant A
+// (dirigentens valg i runde 3). Ordet «virker» er det historien bygger videre på.
+//
+// Skjemaet sender en vanlig GET til /sjekk med parameteren `url`, så det
+// virker uten JavaScript.
+---
+
+<div class="wow-hero__innhold wow-rute">
+  <h1 id="hero-tittel" class="wow-mega wow-hero__tittel" data-split="lines">
+    Gratis befaring av nettsiden din
+  </h1>
+
+  <div class="wow-hero__handling">
+    <p class="wow-hero__ingress">
+      Skriv inn adressen. På 30 sekunder ser du hva som virker, og hva som ikke gjør det.
+    </p>
+
+    <form class="wow-sjekk" method="get" action="/sjekk">
+      <label class="wow-usynlig" for="adresse">Nettadresse</label>
+      <div class="wow-sjekk__rad">
+        <input
+          id="adresse"
+          name="url"
+          type="text"
+          inputmode="url"
+          autocomplete="url"
+          spellcheck="false"
+          placeholder="dinbedrift.no"
+          required
+          pattern="[^ ]+\.[^ ]+"
+          aria-describedby="adresse-hint adresse-feil"
+        />
+        <button class="wow-knapp" type="submit" data-magnetic>
+          <span class="wow-knapp__tekst" data-magnetic-tekst>Start befaringen</span>
+        </button>
+      </div>
+      <p class="wow-sjekk__feil" id="adresse-feil">
+        Det ser ikke ut som en nettadresse. Prøv formen dinbedrift.no.
+      </p>
+      <p class="wow-sjekk__hint" id="adresse-hint">
+        Ingen innlogging. Du velger selv om rapporten skal sendes på e-post.
+      </p>
+    </form>
+  </div>
+</div>

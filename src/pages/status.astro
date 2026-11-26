@@ -1,26 +1,26 @@
 ---
-import Base from "../layouts/Base.astro";
-import Scene from "../components/Scene.astro";
-import Mega from "../components/Mega.astro";
-import Avslor from "../components/Avslor.astro";
-import Nokkeltall from "../components/Nokkeltall.astro";
-import StatusBadge from "../components/StatusBadge.astro";
-import Terminal from "../components/Terminal.astro";
-import Button from "../components/Button.astro";
-import Horisont from "../components/Horisont.astro";
+/**
+ * /status i wow-drakten (wow-undersider.md del 1.9, «rolig»).
+ * Rekkefølge: H1 → tjenestene som målingsrader → forbeholdet om oppetid → ytelsesbudsjettet
+ * som rader → avviksløpet som steg → «Du trenger ikke melde fra» med to lenker.
+ *
+ * Siden brukes også som helsesjekk av Fly (http_service.checks → GET /status).
+ * Den er bevisst statisk og uten avhengigheter: svarer den ikke, er noe virkelig galt.
+ * Ingen egne skript, ingen bilder, ingen eksterne forespørsler.
+ */
+import MalWow from "../layouts/MalWow.astro";
+import { SideHode, Seksjon, Prosa, Maaling, Steg } from "../components/wow/side";
+import Handlinger from "../components/wow/side/Handlinger.astro";
 import { firma } from "../data/firma";
 
-import "../styles/scener.css";
-
-// Siden brukes også som helsesjekk av Fly (http_service.checks → /status).
-// Den er bevisst statisk og uten avhengigheter: svarer den ikke, er noe virkelig galt.
+// «Bestått» er samme ord som v1-merket (StatusBadge status="ok") viste. Hva det betyr her,
+// står i forbeholdet rett under radene: serveren svarer akkurat nå, det er ikke en oppetidsprosent.
 const tjenester = [
-  { navn: "kodekonsulentene.no", status: "ok" as const, note: "Nettsiden" },
-  { navn: "/api/sjekk", status: "ok" as const, note: "Nettsidesjekken" },
-  { navn: "/api/kontakt", status: "ok" as const, note: "Kontaktskjemaet" },
+  { navn: "kodekonsulentene.no", status: "bestatt" as const, note: "Nettsiden" },
+  { navn: "/api/sjekk", status: "bestatt" as const, note: "Nettsidesjekken" },
+  { navn: "/api/kontakt", status: "bestatt" as const, note: "Kontaktskjemaet" },
 ];
 
-// Samme tall som i budsjett-listen under, bare løftet fram som grafikk.
 // firma er `as const`, så firma.telefon har literal-typen "" mens feltet står tomt.
 // Ingressen under het «Ring ${firma.telefon}.», som ble til «Ring .» – en instruks
 // uten nummer, på siden som skal fortelle deg hva du gjør når noe er nede.
@@ -29,23 +29,18 @@ const avvikIngress = telefon
   ? `Ring ${telefon}. Kunder med driftsavtale får beskjed fra oss før de rekker å oppdage det selv.`
   : "Kunder med driftsavtale får beskjed fra oss før de rekker å oppdage det selv – du trenger ikke melde fra.";
 
-const budsjettTall = [
-  { value: "95", label: "Lighthouse, mobil – alle fire kategorier", accent: true },
-  { value: "2,5 s", label: "LCP, øvre grense" },
-  { value: "0", label: "Tredjepartsskript før samtykke" },
-  { value: "6", label: "Sikkerhetsheadere av 6" },
-];
-
 // Stegene er ikke nye løfter: de står allerede i håndboken og salgsvilkårene.
 // Her ligger de som en tidslinje fordi det er den rekkefølgen som betyr noe
 // for den som lurer på hva som skjer når noe faktisk ryker.
 const avviksloep = [
-  { nr: "00:00", tittel: "Overvåkningen slår ut", tekst: "Oppetid, sertifikat og ytelse sjekkes løpende. Varselet går til oss, ikke til deg." },
-  { nr: "Steg 2", tittel: "Vi ser på det først", tekst: "Er det vår feil, retter vi det uten å fakturere. Er det uklart hvem sin feil det er, retter vi først og tar diskusjonen etterpå." },
-  { nr: "5 dager", tittel: "Sårbarheter lappes", tekst: "Kjent sårbarhet i en avhengighet lappes innen fem arbeidsdager på driftsavtaler. Det er en frist, ikke en ambisjon." },
-  { nr: "Hver måned", tittel: "Du får rapporten", tekst: "Ytelse, oppetid og endringer siden sist. Og en gjenopprettingstest – en sikkerhetskopi du ikke har lest tilbake, er ikke en sikkerhetskopi." },
+  { naar: "00:00", navn: "Overvåkningen slår ut", tekst: "Oppetid, sertifikat og ytelse sjekkes løpende. Varselet går til oss, ikke til deg." },
+  { naar: "Steg 2", navn: "Vi ser på det først", tekst: "Er det vår feil, retter vi det uten å fakturere. Er det uklart hvem sin feil det er, retter vi først og tar diskusjonen etterpå." },
+  { naar: "5 dager", navn: "Sårbarheter lappes", tekst: "Kjent sårbarhet i en avhengighet lappes innen fem arbeidsdager på driftsavtaler. Det er en frist, ikke en ambisjon." },
+  { naar: "Hver måned", navn: "Du får rapporten", tekst: "Ytelse, oppetid og endringer siden sist. Og en gjenopprettingstest – en sikkerhetskopi du ikke har lest tilbake, er ikke en sikkerhetskopi." },
 ];
 
+// Grenser, ikke målinger: derfor rader uten lampe (wow-undersider.md del 1.9).
+// V1 løftet fire av disse fram en gang til som store tall. De står nå én gang.
 const budsjett = [
   ["Lighthouse, mobil", "≥ 95 på alle fire kategorier"],
   ["LCP", "≤ 2,5 s – målet er under 1 s"],
@@ -57,129 +52,117 @@ const budsjett = [
   ["Sikkerhetsheadere", "6 av 6"],
 ];
 ---
-<Base
+
+<MalWow
   tittel="Driftsstatus og ytelsesbudsjett"
   beskrivelse="Driftsstatus, ytelsesbudsjett og hva som overvåkes på kodekonsulentene.no og kundesider med driftsavtale. Denne siden er også helsesjekken serveren svarer på."
+  bevegelse="rolig"
+  bookHref="/kontakt"
 >
-  <Scene lav>
-    <Mega som="h1" merke="Status" n={1} tekst="Driftsstatus" />
-    <Avslor trinn={1}>
-      <p class="scene__ingress body-lg">Denne siden er også helsesjekken serveren svarer på. Får du opp denne teksten, står nettsiden.</p>
-    </Avslor>
+  <SideHode
+    tittel="Driftsstatus"
+    ingress="Denne siden er også helsesjekken serveren svarer på. Får du opp denne teksten, står nettsiden."
+    storrelse="tjeneste"
+  />
 
-    <div class="stack">
-      <dl class="kv">
-        {tjenester.map((t) => (
+  <div class="wow-rute status-tjenester">
+    <div class="status-tjenester__kolonne">
+      <ol class="wow-maalinger" role="list" aria-label="Tjenester">
+        {tjenester.map((t) => <Maaling navn={t.navn} status={t.status} merknad={t.note} />)}
+      </ol>
+      <Prosa>
+        <p class="wow-notat">
+          Merkene over sier at serveren svarer akkurat nå. De er ikke en oppetidsprosent,
+          og vi oppgir ingen før vi måler den over tid – et tall uten historikk er bare
+          en påstand.
+        </p>
+      </Prosa>
+    </div>
+  </div>
+
+  <Seksjon
+    id="budsjett"
+    tittel={"Ytelses\u00ADbudsjettet vi holder oss til"}
+    ingress="Dette er ikke mål. Det er grenser. Går en leveranse over dem, er den ikke ferdig."
+    storrelse="tjeneste"
+    tett
+  >
+    <div class="status-kolonne">
+      <dl class="status-budsjett">
+        {budsjett.map(([navn, verdi]) => (
           <div>
-            <dt><span class="mono">{t.navn}</span><br /><span class="small faint">{t.note}</span></dt>
-            <dd><StatusBadge status={t.status} /></dd>
+            <dt>{navn}</dt>
+            <dd>{verdi}</dd>
           </div>
         ))}
       </dl>
-      <p class="small faint">
-        Merkene over sier at serveren svarer akkurat nå. De er ikke en oppetidsprosent,
-        og vi oppgir ingen før vi måler den over tid – et tall uten historikk er bare
-        en påstand.
-      </p>
-      {/* HER STO ET GENERERT KLIPP, OG DET ER FJERNET MED VILJE.
-          lev-status lå i en Demo-ramme – altså presentert som BEVIS, med hårlinje
-          og bildetekst, akkurat som de ekte skjermopptakene av verktøyene våre.
-          Det var et bilde av aluminiumsplater. Målt endret det seg 2,55 av 255 fra
-          første til siste ramme (de vi kaller tydelige ligger på ~18,6), og
-          bevegelsen var over før en fjerdedel av tidslinjen.
-
-          Dekk over bildeteksten: en rørlegger ser grå hyller. Siden handler om at
-          serveren svarer og at vi holder et ytelsesbudsjett. Platene sa ingenting
-          om noen av delene, og en Demo-ramme rundt generert materiale er verre enn
-          ingen ramme – den låner troverdighet fra de ekte opptakene.
-
-          Klippet kostet 249 kB av førstelasten fordi det lå i første skjermbilde.
-          /status lå på 466 kB mot et tak på 400 kB.
-
-          Ingenting satt inn i stedet, og det er et valg: dette er siden som
-          publiserer ytelsesbudsjettet. Det ene ekte opptaket som ikke er i bruk
-          (rontgen, røntgenlinsen på vår egen forside) veier 676 kB på 960-trinnet,
-          og å legge det her ville brutt nøyaktig det løftet siden selger. Bevegelsen
-          på siden ligger i terminalutsnittet og i Horisont-blokken lenger nede. */}
+      {/* V1 hadde dette som et terminalutsnitt. Innholdet står her som vanlig tekst, ordrett fra
+          utsnittets skjermlesertekst (uten ordet «Terminalutsnitt:»). */}
+      <Prosa>
+        <p class="wow-notat">
+          Det som overvåkes er oppetid, sertifikat, ytelse, sårbare avhengigheter og sikkerhetskopi.
+          Varselet går til utvikleren først, og kunden får månedsrapport med ytelse, oppetid og endringer.
+        </p>
+      </Prosa>
     </div>
-  </Scene>
+  </Seksjon>
 
-  <Scene n={2} eyebrow="Budsjett" tittel="Ytelsesbudsjettet vi holder oss til" ingress="Dette er ikke mål. Det er grenser. Går en leveranse over dem, er den ikke ferdig.">
-    <Avslor>
-      <Nokkeltall poster={budsjettTall} navn="Ytelsesbudsjettets fire viktigste grenser" />
-    </Avslor>
-    {/* `budsjett-rad` finnes bare for aa kunne naa <dl class="kv"> uten aa skrive
-        en regel som gjelder hele nettstedet. Se <style> nederst. */}
-    <div class="grid-2 budsjett-rad">
-      <dl class="kv">
-        {budsjett.map(([k, v]) => (
-          <div><dt>{k}</dt><dd class="nowrap">{v}</dd></div>
-        ))}
-      </dl>
-      <Terminal
-        skriv
-        title="~/kodekonsulentene/drift"
-        lines={[
-          { type: "cmd", text: "hva overvåkes" },
-          { type: "out", text: "oppetid · sertifikat · ytelse" },
-          { type: "out", text: "sårbare avhengigheter · sikkerhetskopi" },
-          { type: "cmd", text: "hvem får varselet" },
-          { type: "ok", text: "vi – før du merker det" },
-          { type: "cmd", text: "hva får du" },
-          { type: "out", text: "månedsrapport: ytelse, oppetid, endringer" },
-        ]}
-        label="Terminalutsnitt: det som overvåkes er oppetid, sertifikat, ytelse, sårbare avhengigheter og sikkerhetskopi. Varselet går til utvikleren først, og kunden får månedsrapport med ytelse, oppetid og endringer."
-      />
-    </div>
-  </Scene>
+  <Seksjon id="avvik" tittel="Hvis noe er nede" storrelse="tjeneste" tett>
+    <Steg steg={avviksloep} tegn={false} />
+  </Seksjon>
 
-  <Horisont
-    poster={avviksloep}
-    navn="Hva som skjer fra et avvik oppstår til du har rapporten"
-    merke="Avvik"
-    n={3}
-    tittel="Hvis noe er nede"
-    hoyde={3}
-  />
+  <Seksjon id="varsel" tittel="Du trenger ikke melde fra" ingress={avvikIngress} storrelse="tjeneste" tett class="status-siste">
+    <Handlinger
+      handlinger={[
+        { tekst: "Hvordan vi jobber", href: "/handbok", type: "strek" },
+        { tekst: "Hva du kan holde oss til", href: "/vilkar", type: "strek" },
+      ]}
+    />
+  </Seksjon>
+</MalWow>
 
-  <Scene n={4} eyebrow="Varsel" tittel="Du trenger ikke melde fra" ingress={avvikIngress}>
-    <Button variant="ghost" href="/handbok">Hvordan vi jobber</Button>
-    <Button variant="ghost" href="/vilkar">Hva du kan holde oss til</Button>
-  </Scene>
-</Base>
 <style>
-  /* <dl> har 1em marg i nettleserens egen stilmal, og .kv i site.css nullstiller
-     den ikke. I rutenettet her startet noekkellista 16 px under terminalpanelet
-     ved siden av – maalt 1529,5 mot 1513,5 paa 1440 px. To bokser side om side
-     som ikke deler oeverste kant.
-
-     Scoped med vilje: baade .budsjett-rad og .kv staar i denne fila. Den riktige
-     kuren er `.kv { margin: 0 }` i site.css, som eies av en annen agent akkurat
-     naa; det staar i rapporten. */
-  .budsjett-rad > .kv { margin-block: 0; }
-</style>
-<style is:global>
-  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
-     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
-     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
-     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
-  .scene:first-of-type .mega .ord,
-  .scene:first-of-type .mega-blokk,
-  /* Bare FØRSTE avdekking i første scene, ikke hele scenen.
-     Regelen fantes for at innhold over folden ikke skal ligge usynlig og vente på
-     en scroll som aldri kommer. Men `.scene:first-of-type .avslor` traff ALLE
-     avdekkinger i scenen – og /caser og /handbok er én eneste scene, så den slo av
-     all bevegelse på hele siden. Målt: 0 bevegelsesøyeblikk, 5,5 skjermhøyder uten
-     at ett element endrer seg. */
-  /* Treffer på HVA elementet er, ikke hvor det tilfeldigvis står.
-     `> .avslor` traff ingenting fordi .avslor ligger i .scene__inner, og
-     `:first-of-type` gjelder tagg og ikke klasse. Begge varianter var stille døde:
-     skjemaet på /verktoy/cookie-sjekk sto på 0,56 opasitet ved innlasting –
-     sidens primære handling, halvgjennomsiktig til du scrollet. */
-  .scene:first-of-type .avslor:has(.scene__ingress),
-  .scene:first-of-type .avslor:has(form) {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
+  .status-tjenester {
+    padding-top: var(--wow-rom-7);
+  }
+  .status-tjenester__kolonne,
+  .status-kolonne {
+    display: grid;
+    gap: var(--wow-rom-5);
+  }
+  /* Siden har ingen kontaktblokk: luft mellom siste seksjon og bunnen. */
+  :global(.status-siste) {
+    padding-bottom: var(--wow-seksjon-tett);
+  }
+  /* Grensene som rader: navn til venstre, grensen til høyre, strek mellom. Vanlig skrift, ikke
+     displayskrift: dette er grenser i en tabell, ikke sidens store tall. */
+  .status-budsjett {
+    margin: 0;
+    border-bottom: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .status-budsjett > div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--wow-rom-1) var(--wow-rom-6);
+    padding-block: var(--wow-rom-4);
+    border-top: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .status-budsjett dt {
+    color: var(--wow-tekst-dempet);
+  }
+  .status-budsjett dd {
+    margin: 0;
+    font-weight: 600;
+  }
+  @media (min-width: 1024px) {
+    .status-tjenester__kolonne {
+      grid-column: 1 / 9;
+    }
+    /* Samme høyrekant som tjenestene over (åtte av tolv spalter). */
+    .status-kolonne {
+      max-width: calc((100% - 11 * var(--wow-luke)) / 12 * 8 + 7 * var(--wow-luke));
+    }
   }
 </style>

@@ -1,0 +1,98 @@
+---
+// Det vi bygger (wow-briefen, blokk 4). Tre redaksjonelle rader, hver med
+// to flater av noe vi faktisk har laget (kritikerfunn 6): et stort
+// nettleservindu i 16:10 og en telefon forskjøvet over hjørnet, som glir litt
+// raskere enn resten (data-parallax, negativ = foran). Nettleservinduet
+// avdekkes med clip-path (data-reveal="clip"). Sidene bytter for hver rad.
+//
+// KI-bildene er fjernet herfra; skjermbildene er ekte og KI-merkes ikke.
+// Tekst fra docs/design/tekst/forside.md del 6, i vi-form.
+import Ramme from "./Ramme.astro";
+
+const tjenester = [
+  {
+    href: "/nettsider",
+    tittel: "Nettsider",
+    linje: "Rask side som rangerer lokalt, består lovkravene og lar deg endre teksten selv.",
+    stor: {
+      bilde: "klinikker-d",
+      adresse: "kodekonsulentene.no/bransjer/klinikker",
+      alt: "Skjermbilde av bransjesiden for klinikker på kodekonsulentene.no.",
+    },
+    liten: {
+      bilde: "handverkere-m",
+      alt: "Skjermbilde av bransjesiden for håndverkere på mobil.",
+    },
+  },
+  {
+    href: "/systemer",
+    tittel: "Systemer og integrasjoner",
+    linje: "Booking, betaling og regnskap som snakker sammen, slik at ingen skriver samme tall to ganger.",
+    stor: {
+      bilde: "systemer-flyt",
+      adresse: "kodekonsulentene.no/systemer",
+      alt: "Skjermbilde av flyten fra booking til regnskap: kunde, booking, Vipps, Fiken og SMS.",
+    },
+    liten: {
+      bilde: "systemer-m",
+      alt: "Den samme flyten på mobil, steg for steg fra kunde til SMS-påminnelse.",
+    },
+  },
+  {
+    href: "/apper-og-ai",
+    tittel: "Apper og AI",
+    linje: "Intern app eller iOS-app fra den som bygde nettsiden – og AI som faktisk gjør en jobb.",
+    stor: {
+      bilde: "apper-kobling",
+      adresse: "kodekonsulentene.no/apper-og-ai",
+      alt: "Skjermbilde av hvordan app, database og nettside deler de samme tallene.",
+    },
+    liten: {
+      bilde: "apper-m",
+      alt: "Skjermbilde av siden om apper og AI på mobil.",
+    },
+  },
+];
+---
+
+<section class="wow-tjenester" id="tjenester" aria-labelledby="tjenester-tittel">
+  <div class="wow-rute wow-seksjonshode">
+    <h2 id="tjenester-tittel" class="wow-stor" data-split="lines">Tre ting vi gjør</h2>
+    <p class="wow-seksjonshode__ingress wow-seksjonshode__ingress--mellom">
+      Og én ting vi ikke gjør: selge deg noe du ikke trenger. Trenger du bare en lovsjekk, er det
+      det du får.
+    </p>
+  </div>
+
+  <ul class="wow-tjenester__liste" role="list">
+    {tjenester.map((t, i) => (
+      <li class:list={["wow-tjeneste wow-rute", i % 2 === 1 && "wow-tjeneste--speil"]}>
+        <div class="wow-tjeneste__tekst">
+          <h3 class="wow-tjeneste__tittel">
+            <a href={t.href} data-split="lines">{t.tittel}</a>
+          </h3>
+          <p class="wow-tjeneste__linje">{t.linje}</p>
+        </div>
+        <div class="wow-tjeneste__flater">
+          <Ramme
+            type="nettleser"
+            bilde={t.stor.bilde}
+            adresse={t.stor.adresse}
+            alt={t.stor.alt}
+            sizes="(min-width: 1024px) 52vw, 92vw"
+            class="wow-tjeneste__stor"
+            avdekk
+          />
+          <Ramme
+            type="telefon"
+            bilde={t.liten.bilde}
+            alt={t.liten.alt}
+            sizes="(min-width: 1024px) 16vw, 36vw"
+            class="wow-tjeneste__liten"
+            parallax="-0.14"
+          />
+        </div>
+      </li>
+    ))}
+  </ul>
+</section>

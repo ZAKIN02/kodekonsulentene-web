@@ -220,45 +220,44 @@ describe("terminalen har fast mørk flate i begge temaer", () => {
   });
 });
 
-describe("løkkeflater spiller faktisk av seg selv", () => {
-  /**
-   * `loope` ble overskrevet av en parallell agent én gang, og feilen var usynlig:
-   * CSS-flaten så helt riktig ut, mens videoen sto med paused=true og loop=false.
-   *
-   * Hele poenget med propen er bevegelse i ro. Målt mot referansene beveger siden
-   * vår seg bare når brukeren scroller, mens jeton.com har tre ganger vårt
-   * pikselavvik når siden står helt stille.
-   */
-  test("SceneFilm har logikk for data-loope, ikke bare stilen", () => {
-    const kilde = readFileSync("src/components/SceneFilm.astro", "utf8");
-    assert.ok(kilde.includes('hasAttribute("data-loope")'), "skriptet leser ikke data-loope");
-    assert.ok(/film\.loop\s*=\s*true/.test(kilde), "løkkeflaten setter ikke loop");
-    assert.ok(/film\.play\(\)/.test(kilde), "løkkeflaten starter aldri avspilling");
-  });
-});
-
 describe("skjermopptakene av verktøyene spiller, de spoles ikke", () => {
   /**
-   * Målt på alle 26 sider: av 21 videoer var 19 `paused`. De spilte aldri – de ble
+   * Målt på alle 26 sider i v1: av 21 videoer var 19 `paused`. De spilte aldri – de ble
    * skrubbet av scrollhjulet og frøs på halve varigheten idet brukeren sluttet å dra.
-   * 21 av 26 sider målte 0,0000 i pikselendring i ro: bit-identiske skjermbilder.
    *
-   * Opptakene av våre egne verktøy er det sterkeste materialet vi har, og de sto alle
-   * på pause. Denne testen finnes fordi avspillingsgrenen i SceneFilm allerede ble
-   * overskrevet én gang av en parallell agent uten at noe feilet synlig.
+   * Opptakene av våre egne verktøy er det sterkeste materialet vi har. I wow-drakten tegnes de av
+   * src/components/wow/side/Opptak.astro (v1-komponenten Demo og `data-demo-spill` er slettet i
+   * wow-r8-samling, sammen med SceneFilm og testen for `data-loope`, som ingen side brukte).
+   * Kravet er det samme: opptaket skal SPILLE i løkke, aldri spoles av rullingen, og hver
+   * verktøyside skal ha det. Nytt i wow: det spiller som svar på leseren (hover og fokus med mus,
+   * i syne på berøringsskjerm), og kan alltid startes og stoppes med knappen (WCAG 2.2.2).
    */
-  test("Demo har en avspillingsgren, ikke bare en prop", () => {
-    const kilde = readFileSync("src/components/Demo.astro", "utf8");
-    assert.ok(/spill\?: boolean/.test(kilde), "Demo mangler spill-propen");
-    assert.ok(kilde.includes('hasAttribute("data-demo-spill")'), "skriptet leser ikke data-demo-spill");
-    assert.ok(/film\.loop\s*=\s*true/.test(kilde), "avspillingsgrenen setter ikke loop");
-    assert.ok(/film\.play\(\)/.test(kilde), "avspillingsgrenen starter aldri avspilling");
+  const kilde = readFileSync("src/components/wow/side/Opptak.astro", "utf8");
+  const skript = kilde.slice(kilde.lastIndexOf("<script>"));
+
+  test("Opptak har en avspillingsgren, ikke bare en plakat", () => {
+    assert.match(kilde, /<video[^>]*\bloop\b/, "opptaket går ikke i løkke");
+    assert.ok(/video\.play\(\)/.test(skript), "skriptet starter aldri avspilling");
+    assert.ok(skript.includes("pointerenter"), "opptaket spiller ikke når pekeren er over det");
+    assert.ok(/IntersectionObserver/.test(skript), "opptaket spiller ikke av seg selv på berøringsskjerm");
+    assert.ok(skript.includes("[data-opptak-knapp]"), "knappen «Spill av» / «Pause» er borte");
   });
 
-  test("alle fem verktøysidene slår den på", () => {
+  test("opptaket spoles aldri: ingen kode setter tiden i klippet", () => {
+    // Det var skrubbingen som frøs opptakene i v1. Spoling hører til kapitlene, ikke til bevis.
+    assert.ok(!/currentTime\s*=/.test(skript), "skriptet setter currentTime – da spoles opptaket");
+    assert.ok(!/scroll/i.test(skript), "skriptet lytter på rulling");
+  });
+
+  test("alle fem verktøysidene har opptaket, med løkke og knapp", () => {
     for (const side of ["dmarc", "uu-sjekk", "cookie-sjekk", "priskalkulator", "index"]) {
       const html = readFileSync(`dist/client/verktoy/${side === "index" ? "" : side + "/"}index.html`, "utf8");
-      assert.ok(html.includes("data-demo-spill"), `/verktoy/${side} spoler fortsatt opptaket`);
+      const figur = html.match(/<figure[^>]*\bdata-opptak\b[\s\S]*?<\/figure>/)?.[0];
+      assert.ok(figur, `/verktoy/${side} har ikke noe opptak`);
+      assert.match(figur, /<video[^>]*\bloop\b/, `/verktoy/${side}: opptaket går ikke i løkke`);
+      assert.match(figur, /<source[^>]*src="[^"]+\.mp4"/, `/verktoy/${side}: opptaket har ingen videofil`);
+      assert.match(figur, /<button[^>]*data-opptak-knapp/, `/verktoy/${side}: knappen mangler`);
+      assert.ok(!html.includes("data-demo-spill"), `/verktoy/${side} bruker fortsatt v1-opptaket`);
     }
   });
 });

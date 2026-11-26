@@ -1,0 +1,121 @@
+---
+/**
+ * Toppdelen på undersider uten kapittel (wow-undersider.md del 1 og 3): priser, caser, sikkerhet,
+ * artikler, håndbok, verktøy-oversikt, status, terminal, 404, juridisk.
+ *
+ *   <SideHode tittel="Prisene står her" ingress="…" storrelse="stor"
+ *             handlinger={[{ tekst: "Book 20 minutter", href: "#kontakt", type: "primar" }]} />
+ *   <SideHode tittel="Driftsstatus" storrelse="tjeneste" brodsmuler />
+ *   <SideHode tittel="Siden vår består sin egen sjekk" storrelse="stor">
+ *     <Rapportark slot="side" …> … </Rapportark>
+ *   </SideHode>
+ *   <SideHode tittel="De 35 WCAG-kravene" storrelse="tjeneste" bredde="les" brodsmuler
+ *             meta="Publisert 6. okt. 2026. …" />
+ *
+ * H1 er synlig fra første maling (data-split-inngang, LCP). Står det Æ, Ø eller Å i tittelen,
+ * er linjeavstanden 0,95. Slotten `side` står i spalte 7–12 på desktop og under teksten på mobil.
+ * Standardslotten står under alt, i full bredde og uten sidemarg: innholdet der pakkes i en
+ * egen `wow-rute` (se artikler/index.astro).
+ */
+import Brodsmuler from "./Brodsmuler.astro";
+import Handlinger from "./Handlinger.astro";
+import { tittelKlasser, type Handling } from "./tittel";
+
+interface Props {
+  tittel: string;
+  ingress?: string;
+  storrelse?: "stor" | "tjeneste";
+  handlinger?: Handling[];
+  brodsmuler?: boolean;
+  /** Meta-linje under H1: dato, «Sist oppdatert», forbehold. */
+  meta?: string;
+  /** «les»: H1 og ingress i lesekolonnen (spalte 3–10 fra 1024 px). */
+  bredde?: "full" | "les";
+  id?: string;
+}
+const {
+  tittel,
+  ingress,
+  storrelse = "stor",
+  handlinger = [],
+  brodsmuler = false,
+  meta,
+  bredde = "full",
+  id = "side-tittel",
+} = Astro.props;
+const harSide = Astro.slots.has("side");
+---
+
+<header class:list={["wow-sidehode", `wow-sidehode--${storrelse}`, `wow-sidehode--${bredde}`, harSide && "wow-sidehode--side"]}>
+  <div class="wow-rute wow-sidehode__rute">
+    {brodsmuler && <div class="wow-sidehode__smuler"><Brodsmuler /></div>}
+    <div class="wow-sidehode__tekst">
+      <h1 id={id} class:list={tittelKlasser(storrelse, tittel)} data-split-inngang>{tittel}</h1>
+      {meta && <p class="wow-sidehode__meta">{meta}</p>}
+      {ingress && <p class="wow-sidehode__ingress">{ingress}</p>}
+      <Handlinger handlinger={handlinger} />
+    </div>
+    {harSide && <div class="wow-sidehode__side"><slot name="side" /></div>}
+  </div>
+  <slot />
+</header>
+
+<style>
+  .wow-sidehode {
+    padding-top: calc(var(--wow-hode-hoyde) + var(--wow-seksjon-tett));
+  }
+  .wow-sidehode__rute {
+    row-gap: var(--wow-rom-6);
+  }
+  .wow-sidehode__smuler {
+    margin-bottom: calc(-1 * var(--wow-rom-3));
+  }
+  .wow-sidehode__tekst {
+    display: grid;
+    /* minmax(0, …): spalten skal ikke vokse med det lengste ordet i H1 (se «overskrifter» i
+       wow.css, der lange ord deles under 600 px). */
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    justify-items: start;
+    gap: var(--wow-rom-5);
+  }
+  .wow-sidehode__meta {
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+  }
+  .wow-sidehode__ingress {
+    max-width: var(--wow-maal-ingress);
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-ingress);
+    line-height: 1.35;
+    text-wrap: pretty;
+  }
+  .wow-sidehode--les .wow-sidehode__ingress {
+    max-width: var(--wow-maal-brod);
+  }
+  @media (min-width: 768px) {
+    .wow-sidehode__tekst,
+    .wow-sidehode__smuler {
+      grid-column: 1 / 11;
+    }
+  }
+  @media (min-width: 1024px) {
+    .wow-sidehode--stor .wow-sidehode__tekst {
+      grid-column: 1 / 10;
+    }
+    .wow-sidehode--tjeneste .wow-sidehode__tekst {
+      grid-column: 1 / 9;
+    }
+    .wow-sidehode--side .wow-sidehode__tekst {
+      grid-column: 1 / 7;
+    }
+    .wow-sidehode__side {
+      grid-column: 7 / 13;
+      align-self: end;
+    }
+    .wow-sidehode--les .wow-sidehode__tekst,
+    .wow-sidehode--les .wow-sidehode__smuler {
+      grid-column: 3 / 10;
+    }
+  }
+</style>

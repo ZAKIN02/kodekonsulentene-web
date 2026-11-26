@@ -1,0 +1,113 @@
+---
+/**
+ * Rader for tjeneste- og bransjesidene (wow-r8-B1), i samme tegning som Kravrader og Tekstrader:
+ * tittel til venstre, tekst til høyre, strek mellom. To ting de felles radene ikke har:
+ *
+ *   detalj + kilde   en teknisk linje og en kildelenke under teksten («Det vi kobler oftest» på
+ *                    /systemer: gebyrer og abonnementskrav hos tredjepart skal kunne etterprøves).
+ *   forst            en lenke som åpner teksten (lovhjemmelen i «Fire krav» på /sikkerhet).
+ *   ordnet           <ol> med et tall foran tittelen. Bare der innholdet ER en rekkefølge
+ *                    («Fire steg» på /apper-og-ai). Tallet lages av CSS-telleren; <ol> bærer
+ *                    rekkefølgen for skjermlesere.
+ *
+ *   <Rader rader={integrasjoner.map((i) => ({ tittel: i.navn, tekst: i.verdi, detalj: i.teknisk, kilde: i.kilde }))} />
+ *   <Rader ordnet rader={steg} />
+ */
+interface Props {
+  rader: {
+    tittel: string;
+    tekst: string;
+    /** Lenke som åpner teksten (f.eks. lovhjemmelen); `tekst` fortsetter setningen. */
+    forst?: { tekst: string; url: string };
+    detalj?: string;
+    kilde?: { tekst: string; url: string };
+  }[];
+  ordnet?: boolean;
+  niva?: 3 | 4;
+}
+const { rader, ordnet = false, niva = 3 } = Astro.props;
+const Liste = ordnet ? "ol" : "ul";
+const H = niva === 4 ? "h4" : "h3";
+---
+
+<Liste class:list={["tj-rader", ordnet && "tj-rader--ordnet"]} role="list">
+  {rader.map((r) => (
+    <li class="tj-rad">
+      <H class="tj-rad__tittel">{r.tittel}</H>
+      <div class="tj-rad__tekst">
+        <p>{r.forst && <a class="wow-lenke" href={r.forst.url} rel="nofollow">{r.forst.tekst}</a>}{r.tekst}</p>
+        {r.detalj && <p class="tj-rad__detalj">{r.detalj}</p>}
+        {r.kilde && (
+          <p class="tj-rad__kilde">
+            Kilde: <a class="wow-lenke" href={r.kilde.url} rel="nofollow">{r.kilde.tekst}</a>
+          </p>
+        )}
+      </div>
+    </li>
+  ))}
+</Liste>
+
+<style>
+  .tj-rader {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-bottom: var(--wow-kant-1) solid var(--wow-linje);
+    counter-reset: tj-rad;
+  }
+  .tj-rad {
+    display: grid;
+    gap: var(--wow-rom-3) var(--wow-luke);
+    padding-block: var(--wow-rom-5);
+    border-top: var(--wow-kant-1) solid var(--wow-linje);
+    counter-increment: tj-rad;
+  }
+  .tj-rad__tittel {
+    font-size: var(--wow-tekst-h3);
+    font-weight: 700;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+  /* Tallet er rekkefølgen, satt i samme displayskrift som datoene i «Slik går det». */
+  .tj-rader--ordnet .tj-rad__tittel {
+    display: grid;
+    grid-template-columns: 2ch minmax(0, 1fr);
+    column-gap: var(--wow-rom-4);
+    align-items: baseline;
+  }
+  .tj-rader--ordnet .tj-rad__tittel::before {
+    content: counter(tj-rad);
+    color: var(--wow-refleks);
+    font-family: var(--wow-font-display);
+    font-weight: var(--wow-display-vekt);
+    font-stretch: var(--wow-display-bredde);
+    font-variant-numeric: tabular-nums;
+  }
+  .tj-rad__tekst {
+    display: grid;
+    gap: var(--wow-rom-3);
+    max-width: var(--wow-maal-brod);
+    color: var(--wow-tekst-dempet);
+  }
+  .tj-rad__detalj {
+    color: var(--wow-tekst);
+    font-size: var(--wow-tekst-liten);
+    line-height: 1.5;
+  }
+  .tj-rad__kilde {
+    font-size: var(--wow-tekst-liten);
+    line-height: 1.5;
+  }
+  @media (min-width: 1024px) {
+    .tj-rad {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      padding-block: var(--wow-rom-6);
+    }
+    .tj-rad__tittel {
+      grid-column: 1 / 6;
+    }
+    .tj-rad__tekst {
+      grid-column: 6 / 13;
+    }
+  }
+</style>

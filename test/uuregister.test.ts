@@ -340,8 +340,12 @@ describe("artikkelen i bygget HTML", { skip: harBygg ? false : "dist/ mangler �
     }
   });
 
-  test("stolpen er merket aria-hidden, så skjermlesere ikke leser tallet to ganger", () => {
-    assert.match(html, /class="regstolper__stolpe"[^>]*aria-hidden="true"/);
+  test("målelinja er merket aria-hidden, så skjermlesere ikke leser tallet to ganger", () => {
+    // V1 hadde en fylt stolpe (`regstolper__stolpe`); i wow er det en målelinje i et spor.
+    // Kravet er det samme, og det gjelder HVER rad: ingen målelinje uten aria-hidden.
+    const spor = html.match(/<span[^>]*class="wow-regstolper__spor"[^>]*>/g) ?? [];
+    assert.ok(spor.length >= 12, `fant ${spor.length} målelinjer, ventet minst 12`);
+    for (const s of spor) assert.match(s, /aria-hidden="true"/, `målelinje uten aria-hidden: ${s}`);
   });
 
   test("tusjstreken over folden står ferdig og animeres ikke", () => {
@@ -364,49 +368,80 @@ describe("artikkelen i bygget HTML", { skip: harBygg ? false : "dist/ mangler �
   });
 });
 
-describe("degraderingen uten JavaScript er stilsatt, ikke bare håpet på", { skip: harBygg ? false : "dist/ mangler" }, () => {
-  test("begge setningene ligger i DOM-en på /om", () => {
-    const html = readFileSync("dist/client/om/index.html", "utf8");
+/**
+ * Lagstabelen (Lagstabel + Utenskript) sto på /om i v1 og ble tatt ut derfra i wow-r8 (planen
+ * wow-undersider.md del 1.6; rapport wow-r8-B4 avvik 5). Kravet testene sikret, er fortsatt gyldig
+ * der figuren står: en figur som ber leseren dra, skal ha en egen, STILSATT setning for den som
+ * ikke har JavaScript. Figuren står nå bare på /lab/interaksjon, så kravet er flyttet dit, og
+ * /om får det omvendte kravet: ingen bruksanvisning til en figur som ikke er der.
+ */
+const DIST_LAGSTABEL = "dist/client/lab/interaksjon/index.html";
+const DIST_OM = "dist/client/om/index.html";
+const harLagstabel = existsSync(DIST_LAGSTABEL);
+
+describe("degraderingen uten JavaScript er stilsatt, ikke bare håpet på", { skip: harLagstabel ? false : "dist/ mangler" }, () => {
+  test("begge setningene ligger i DOM-en der lagstabelen står", () => {
+    const html = readFileSync(DIST_LAGSTABEL, "utf8");
     assert.match(html, /class="utenskript__med"/);
     assert.match(html, /class="utenskript__uten"/);
     // Innholdet skal faktisk være der, ikke bare beholderen.
     assert.ok(html.includes("Dra i stabelen"));
-    assert.ok(html.includes("Uten JavaScript står lagene fra hverandre"));
+    // Ordlyden er lab-sidens egen («ligger»); på /om sto det «står».
+    assert.ok(html.includes("Uten JavaScript ligger lagene fra hverandre"));
   });
 
   test("CSS-en bytter på scripting, i begge retninger", () => {
-    const html = readFileSync("dist/client/om/index.html", "utf8");
+    const html = readFileSync(DIST_LAGSTABEL, "utf8");
     // Begge spørringene må finnes. Bare `scripting: none` ville latt
     // no-JS-setningen stå synlig for alle; bare `enabled` ville latt den vanlige
     // setningen stå synlig uten JavaScript.
     assert.match(html, /@media\s*\(\s*scripting\s*:\s*none\s*\)/);
     assert.match(html, /@media\s*\(\s*scripting\s*:\s*enabled\s*\)/);
   });
+
+  test("/om ber ingen dra i en figur som ikke står der", { skip: existsSync(DIST_OM) ? false : "dist/ mangler" }, () => {
+    const html = readFileSync(DIST_OM, "utf8");
+    const harFigur = /class="[^"]*\blagstabel\b/.test(html);
+    if (harFigur) {
+      // Kommer figuren tilbake på /om, kommer kravet tilbake med den.
+      assert.match(html, /class="utenskript__med"/);
+      assert.match(html, /class="utenskript__uten"/);
+      assert.match(html, /@media\s*\(\s*scripting\s*:\s*none\s*\)/);
+      assert.match(html, /@media\s*\(\s*scripting\s*:\s*enabled\s*\)/);
+    } else {
+      assert.ok(!html.includes("Dra i stabelen"), "/om ber leseren dra i en stabel som ikke er på siden");
+      assert.ok(!html.includes("utenskript__"), "/om har en utenskript-setning uten figuren den hører til");
+    }
+  });
 });
 
-describe("stolpene kan ikke bli stående halvvokste", { skip: harBygg ? false : "dist/ mangler" }, () => {
-  test("rulleboksen og avslåingen av animasjonen står i samme mediaspørring", () => {
-    // DEN MÅLTE FEILEN: `overflow-x: auto` gjør elementet til en rullebeholder i
-    // begge akser, og `animation-timeline: view()` måler mot nærmeste rullende
-    // forelder. Stolpene lå da i en boks som aldri ruller loddrett, og de fire
-    // nederste ble stående på 0,18–0,64 for alltid – degradering mot SKJULT.
-    // Skiller noen disse to igjen, kommer feilen tilbake stille.
-    const kilde = readFileSync("src/components/Registerstolper.astro", "utf8");
-    const blokk = kilde.match(/@media \(max-width: 52rem\) \{[\s\S]*?\n  \}/);
-    assert.ok(blokk, "fant ikke mediaspørringen som slår på rulling");
-    assert.match(blokk[0], /overflow-x:\s*auto/);
-    assert.match(blokk[0], /animation:\s*none/);
-    assert.match(blokk[0], /transform:\s*scaleX\(1\)/);
+describe("målelinjene kan ikke bli stående halvvokste", () => {
+  /**
+   * DEN MÅLTE FEILEN I V1: stolpene vokste med `animation-timeline: view()` inne i en boks med
+   * `overflow-x: auto`. Boksen ble rullebeholder i begge akser, og de fire nederste stolpene ble
+   * stående på 0,18–0,64 for alltid – degradering mot SKJULT. V1-komponenten er slettet
+   * (wow-r8-samling). Wow-utgaven løser det ved å ikke ha noe som vokser: linjene står ferdig.
+   * Testene holder den løsningen fast, så feilen ikke kan komme tilbake med en ny animasjon.
+   */
+  const kilde = readFileSync("src/components/wow/les/Registerstolper.astro", "utf8");
+  const stil = kilde.slice(kilde.indexOf("<style"));
+
+  test("ingen animasjon, overgang eller rulletidslinje på figuren", () => {
+    assert.ok(!/animation(-[a-z]+)?\s*:/.test(stil), "figuren har fått en animasjon");
+    assert.ok(!/transition(-[a-z]+)?\s*:/.test(stil), "figuren har fått en overgang");
+    assert.ok(!/\b(view|scroll)\(/.test(stil), "figuren har fått en rulletidslinje");
+    assert.ok(!kilde.includes("<script"), "figuren har fått et skript");
   });
 
-  test("standardtilstanden utenfor @supports er full bredde", () => {
-    // Alt som krymper en stolpe skal ligge inne i @supports. Gjør det ikke det,
-    // står stolpene på null i Firefox til scroll-drevne animasjoner lander der.
-    const kilde = readFileSync("src/components/Registerstolper.astro", "utf8");
-    const foerSupports = kilde.slice(0, kilde.indexOf("@supports"));
-    assert.ok(
-      !/\.regstolper__stolpe\s*\{[^}]*transform:\s*scaleX\(0\)/.test(foerSupports),
-      "stolpen starter på scaleX(0) utenfor @supports",
-    );
+  test("tabellen er aldri en rulleboks", () => {
+    // Det var rulleboksen som gjorde view() ubrukelig. Wow-tabellen bryter om til blokker i
+    // stedet for å rulle, og skal ikke få `overflow: auto` eller `scroll` tilbake.
+    assert.ok(!/overflow(-[xy])?\s*:\s*(auto|scroll)/.test(stil), "tabellen ruller igjen");
+  });
+
+  test("lengden på linja er satt fra dataen, og aldri null som utgangspunkt", () => {
+    // Ingenting skal krympe en linje til null og vente på at noe skal få den til å vokse.
+    assert.ok(!/scaleX\(0\)|scale:\s*0\b|(?<![-a-z])(width|inline-size):\s*0\b/.test(stil), "en linje starter på null");
+    assert.match(kilde, /wow-regstolper__linje/, "målelinja er borte");
   });
 });

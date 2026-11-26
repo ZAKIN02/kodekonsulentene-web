@@ -1,20 +1,20 @@
 ---
-import Base from "../layouts/Base.astro";
-import Prisvelger from "../components/Prisvelger.astro";
-import Scene from "../components/Scene.astro";
-import Mega from "../components/Mega.astro";
-import Avslor from "../components/Avslor.astro";
-import PriceCard from "../components/PriceCard.astro";
-import Button from "../components/Button.astro";
-import Faq from "../components/Faq.astro";
-import ContactBlock from "../components/ContactBlock.astro";
-import { pakker, loepende, prisvilkaar, prisenhet, mvaSetning, treAar, MAANEDER } from "../data/priser";
+/**
+ * /priser i wow-drakten (wow-undersider.md del 1.5, mønsterside for wow-r8-grunnmur).
+ * Rekkefølge: H1 + prisliste → tre ferdig regnede oppdrag → løpende priser og vilkår → tre år →
+ * sammenligning med kilder → garantien → spørsmål → «Vet du ikke hva du trenger?» → kontakt.
+ *
+ * Alle beløp leses fra src/data/priser.ts, beregn() og markedspriser.ts. Også <title> og
+ * description bygges derfra (de sto skrevet av for hånd i v1), og gir samme streng som før.
+ */
+import MalWow from "../layouts/MalWow.astro";
+import { Seksjon, Prosa, Prisrader, Prisliste, Sporsmal, Refleksfelt, Kontaktblokk } from "../components/wow/side";
+import Handlinger from "../components/wow/side/Handlinger.astro";
+import { pakker, loepende, prisvilkaar, mvaSetning, treAar, MAANEDER } from "../data/priser";
 import { markedspriser, markedTimepris } from "../data/markedspriser";
 import { firma } from "../data/firma";
 import { faq } from "../data/faq";
 import { beregn, formaterKr } from "../lib/priskalkyle";
-
-import "../styles/scener.css";
 
 const prisFaq = faq.filter((f) => /binding|endre|koster|eier/i.test(f.q));
 
@@ -107,316 +107,163 @@ const norskDato = (iso: string): string =>
     year: "numeric",
     timeZone: "UTC",
   });
----
-<Base
-  tittel="Priser: nettside fra 14 900 kr"
-  beskrivelse="Åpne priser: nettside fra 14 900 kr, Bedrift 29 900 kr, system fra 60 000 kr, abonnement 1 290–1 990 kr/mnd. Timepris 950 kr. Prisene er endelige – foretaket er ikke mva-registrert."
->
-  <Scene lav>
-    <Mega som="h1" merke="Priser" n={1} tekst="Prisene står her" aksent="her" />
-    <Avslor trinn={1}>
-      <p class="scene__ingress body-lg">Fordi du skal kunne regne på det før du ringer, og fordi den som skjuler prisen sjelden gjør det til din fordel. {mvaSetning}</p>
-    </Avslor>
 
-    {/* Ferdige svar før skyvebryterne. Se kommentaren ved `eksempler`. */}
-    <Avslor trinn={2} class="luft-over">
-      <h2 class="heading eksempler__tittel">Tre typiske oppdrag, ferdig regnet</h2>
-      <dl class="kv eksempler">
-        {eksempler.map((e) => (
-          <div>
-            <dt>
-              <strong class="body-strong">{e.hvem}</strong><br />
-              <span class="small muted">{e.hva} · {e.pakke}-pakken</span>
-            </dt>
-            <dd class="nowrap">{e.gulv ? `fra ${e.sum}` : e.sum}</dd>
-          </div>
-        ))}
-      </dl>
-      <p class="small faint eksempler__note">
-        Regnet ut av den samme kalkulatoren som står under, med de valgene som er
-        beskrevet. Står det «fra», er beløpet et gulv og ikke et tak – et
+// <title> og description: samme setninger som i v1, men tallene leses fra prislista.
+const pakke = (navn: string) => pakker.find((p) => p.navn === navn)!;
+const abonnementHosOss = loepende.find((r) => r.navn === "Abonnement")!;
+const tittel = `Priser: nettside fra ${rimeligstePakke}`;
+const beskrivelse =
+  `Åpne priser: nettside fra ${rimeligstePakke}, Bedrift ${pakke("Bedrift").pris}, ` +
+  `system fra ${pakke("System").pris}, abonnement ${abonnementHosOss.pris}. Timepris ${firma.timepris}. ` +
+  (firma.mva ? mvaSetning : "Prisene er endelige – foretaket er ikke mva-registrert.");
+---
+
+<MalWow tittel={tittel} beskrivelse={beskrivelse} bevegelse="film">
+  <div class="priser-topp">
+    <Prisliste
+      variant="kort"
+      niva={1}
+      id="prisliste"
+      lenkeTilPriser={false}
+      ingress={`Fordi du skal kunne regne på det før du ringer, og fordi den som skjuler prisen sjelden gjør det til din fordel. ${mvaSetning}`}
+    />
+  </div>
+
+  {/* Ferdige svar før noen må velge noe. Se kommentaren ved `eksempler`. */}
+  <Seksjon id="eksempler" tittel="Tre typiske oppdrag, ferdig regnet" storrelse="tjeneste">
+    <Prisrader
+      storrelse="pris"
+      rader={eksempler.map((e) => ({
+        navn: e.hvem,
+        tekst: `${e.hva}, ${e.pakke}-pakken`,
+        verdi: e.gulv ? `fra ${e.sum}` : e.sum,
+      }))}
+    />
+    <Prosa class="priser-under">
+      <p class="wow-notat">
+        {/* V1: «… den samme kalkulatoren som står under». Kalkulatoren står ikke lenger på denne
+            siden (Prislista erstatter v1-prisvelgeren), så de tre ordene er tatt ut og lenken
+            peker dit den står. Tekstforfatter bør godkjenne (rapport wow-r8-grunnmur). */}
+        Regnet ut av <a href="/verktoy/priskalkulator">den samme kalkulatoren</a>,
+        med de valgene som er beskrevet. Står det «fra», er beløpet et gulv og ikke et tak – et
         systemoppdrag prises etter en samtale, og da er prisen fast.
       </p>
-    </Avslor>
+    </Prosa>
+  </Seksjon>
 
-    {/* Karakteren paa denne sida er TALLENE. Kortene kommer inn i ulik dybde slik
-        at det anbefalte ligger naermest leseren – en forskjell du kjenner foer du
-        har lest etiketten. Parallaksen er kontinuerlig, ikke en inngang, saa de tre
-        drar fra hverandre mens du scroller og leses som rom i stedet for en rad. */}
-    {/* Lik dybde paa alle tre. Kortene laa foer paa +26 for det anbefalte og -12
-        for de to andre, altsaa opptil 38 px forskjoevet loddrett – det leste som
-        at raden ikke var i linje. Det anbefalte kortet skiller seg fortsatt ut
-        der det betyr noe: merkelapp, lys flate og invertert knapp. */}
-    {/* Velg, og se konsekvensen i kroner med en gang. Kjernen er ren CSS –
-        :has() og :checked velger pakke uten en linje JavaScript, saa den
-        virker ogsaa uten. Prisene kommer fra samme beregn() som resten av
-        nettstedet, ikke fra en kopi som kan drive. */}
-    {/* Egen klasse, ikke priskort-rad. Aa gjenbruke den gjorde at prisvelgeren og
-        kortrutenettet ikke lot seg skille – verken i CSS eller i maaling. */}
-    <Prisvelger class="luft-over" />
-
-    <div class="grid-3 priskort-rad">
-      {pakker.map((p, k) => (
-        <Avslor
-          trinn={k}
-          fra="dybde"
-          dybde={18}
-          as="div"
-        >
-        <PriceCard nivaa={2}
-          name={p.navn}
-          price={p.pris}
-          prefix={p.prefiks}
-          unit={prisenhet}
-          description={p.beskrivelse}
-          recommended={p.anbefalt}
-          cta={p.cta}
-          href={p.href}
-          features={[
-            ...p.inkludert.map((t) => ({ text: t, included: true })),
-            ...(p.ikke ?? []).map((t) => ({ text: t, included: false })),
-          ]}
-        />
-        </Avslor>
-      ))}
-    </div>
-  </Scene>
-
-  <Scene n={2} class="flate--varm" eyebrow="Løpende" tittel="Drift, abonnement og timer">
-    <Avslor>
-    <div class="stack">
-      <dl class="kv">
-        {loepende.map((r) => (
-          <div>
-            <dt><strong class="body-strong">{r.navn}</strong><br /><span class="small muted">{r.tekst}</span></dt>
-            <dd class="nowrap">{r.pris}</dd>
-          </div>
-        ))}
-      </dl>
-      <ul class="small muted" style="margin: 0; padding-left: var(--space-5); display: grid; gap: var(--space-2)">
+  <Seksjon id="loepende" tittel="Drift, abonnement og timer" storrelse="tjeneste" tone="flate">
+    <Prisrader rader={loepende.map((r) => ({ navn: r.navn, tekst: r.tekst, verdi: r.pris }))} />
+    <Prosa class="priser-under">
+      <ul class="wow-notat">
         {prisvilkaar.map((v) => <li>{v}</li>)}
-        {/* Tallet 900–1 800 sto her uten kilde. Det ER riktig, men henvisningen lå
-            bare i src/data/markedspriser.ts, der ingen leser den. Nå hentes både
-            beløpene, lenken og datoen derfra, og Innovenas eget forbehold om at
-            dette er veiledende anslag står med – ellers leser det som en måling. */}
+        {/* Beløpene, lenken og datoen hentes fra markedspriser.ts, og Innovenas eget forbehold om
+            at dette er veiledende anslag står med – ellers leser det som en måling. */}
         <li>
           Timeprisen er {firma.timepris}. Norske byråer tar {nb(markedTimepris.byraaLav)}–{nb(markedTimepris.byraaHoy)} kr/t
           og frilansere {nb(markedTimepris.frilansLav)}–{nb(markedTimepris.frilansHoy)} kr/t, etter{" "}
-          <a class="kk-link" href={markedTimepris.kilde[0]} rel="nofollow">Innovenas prisartikkel</a>,
+          <a href={markedTimepris.kilde[0]} rel="nofollow">Innovenas prisartikkel</a>,
           lest {norskDato(markedTimepris.sistSjekket)}. Innovena oppgir selv at tallene er veiledende anslag og
           ikke en markedsundersøkelse.
         </li>
       </ul>
+    </Prosa>
+  </Seksjon>
 
-      {/*
-        TOTALPRIS OVER TRE ÅR.
+  {/* TOTALPRIS OVER TRE ÅR. Kjøperens første spørsmål, og det som avgjør mot et abonnement.
+      Vi regner bare på VÅRE egne tall og gir formelen, så kan den som vil kjøre den på hvem som
+      helst. Samme grep som at /sjekk sier «ikke sjekket» framfor å gjette. */}
+  <Seksjon id="tre-aar" tittel="Hva det koster over tre år" storrelse="tjeneste">
+    <Prisrader rader={treAar.map((r) => ({ navn: r.navn, tekst: r.forklaring, verdi: r.total }))} />
+    <Prosa class="priser-under">
+      <p class="wow-notat">
+        Formelen er byggepris + {MAANEDER} × månedspris + avtalte ekstra.
+        Kjør den på hvilket som helst tilbud du får, også våre. Et abonnement uten
+        oppstartskostnad er ikke billigere enn et engangskjøp før du har ganget med
+        antall måneder du faktisk blir værende.
+      </p>
+    </Prosa>
+  </Seksjon>
 
-        Kjøperens første spørsmål, og det vi ikke svarte på noe sted. Det er
-        også spørsmålet som avgjør mot et abonnement: 799 kr i måneden høres
-        billigere ut enn 29 900 kr én gang, helt til noen ganger 36.
-
-        Vi regner bare på VÅRE egne tall. Konkurrentenes månedspriser er hentet
-        fra salgsmateriell og kan endres uten at vi ser det, så vi setter ikke
-        tall på dem – vi gir formelen, så kan den som vil kjøre den på hvem som
-        helst. Det er samme grep som at /sjekk sier «ikke sjekket» framfor å
-        gjette.
-      */}
-      <div class="stack stack--tight treaar">
-        <h3 class="heading">Hva det koster over tre år</h3>
-        <dl class="kv">
-          {treAar.map((r) => (
-            <div>
-              <dt><strong class="body-strong">{r.navn}</strong><br /><span class="small muted">{r.forklaring}</span></dt>
-              <dd class="nowrap">{r.total}</dd>
-            </div>
-          ))}
-        </dl>
-        <p class="small faint">
-          Formelen er <span class="mono">byggepris + {MAANEDER} × månedspris + avtalte ekstra</span>.
-          Kjør den på hvilket som helst tilbud du får, også våre. Et abonnement uten
-          oppstartskostnad er ikke billigere enn et engangskjøp før du har ganget med
-          antall måneder du faktisk blir værende.
-        </p>
-      </div>
-    </div>
-    </Avslor>
-  </Scene>
-
-  <Scene
-    n={3}
-    eyebrow="Sammenligning"
+  <Seksjon
+    id="sammenligning"
     tittel={`Hvorfor ikke ${nb(abonnement.lav ?? 0)} kr i måneden`}
     ingress="Fordi du får noe annet. Her er hva pengene faktisk kjøper, slik at du kan ta valget selv."
+    storrelse="tjeneste"
   >
-    <Avslor>
-    <div class="prose">
+    <Prosa>
       <table>
         <thead>
           <tr><th scope="col">Alternativ</th><th scope="col">Pris</th><th scope="col">Hva du får – og ikke får</th></tr>
         </thead>
         <tbody>
-          {/*
-            TO RADER ER FJERNET HERFRA, OG DET ER MED VILJE.
-
-            «Wix, Squarespace, Webflow – 150–180 kr/mnd» og «AI-byggere – fra
-            250 kr/mnd» sto uten kilde noe sted i repoet. Squarespace-tallet lot
-            seg kontrollere og var galt (NOK 179–490/mnd, lest 7. oktober 2026),
-            mens Wix og Webflow priser i USD mot norske besøkende – det finnes
-            ikke ett kronebeløp som dekker de tre. For AI-byggerne fantes ingen
-            leverandør, ingen side og ingen dato.
-
-            Vi fjerner dem i stedet for å gjette nye tall. En sammenligning som
-            mangler et alternativ er svakere enn før; en sammenligning med et
-            oppdiktet tall er verdiløs, og den er dessuten det eneste vi ikke
-            tåler å bli tatt i. Finner noen tallene på leverandørenes egne sider,
-            hører de hjemme i src/data/markedspriser.ts med URL og dato – da
-            kommer radene tilbake av seg selv.
-          */}
-          <tr><td>Abonnementsbyrå</td><td>{abonnementSpenn}</td><td>Malbasert side, levert raskt. Lite skreddersøm av systemer, og bindingstid.</td></tr>
-          {/*
-            Raden som manglet, og den eneste sammenligningen kjøperen faktisk
-            gjør. Tabellen stilte oss opp mot Wix, AI-byggere, abonnementsbyråer
-            og «etablert byrå fra 80 000 kr» – altså bare mot dem vi vinner mot.
-            Det tetteste prispunktet i markedet ligger under vår inngang, og å
-            utelate det er å la ham oppdage det hos noen andre.
-
-            Prisene er lest på leverandørenes egne sider 7. oktober 2026:
-            Skaatun Web 4 900, Oppskalert fra 6 990, Moss Webdesign 7 990,
-            HjemmesideHelten 9 990, Godt Likt Media 9 990. Samme forbehold som
-            under tabellen gjelder dem.
-
-            De to endepunktene er kontrollert på nytt 7. oktober 2026, og de er
-            de eneste tallene i raden som står på siden. Begge er lenket, slik at
-            leseren kan åpne dem selv – en begrunnelse i en kildekodekommentar er
-            ikke en kilde for den som leser nettsiden. Det høye endepunktet er
-            samtidig HjemmesideHelten-raden i src/data/markedspriser.ts, som
-            test/kilder.test.ts holder i live.
-          */}
+          {/* TO RADER ER FJERNET HERFRA MED VILJE («Wix, Squarespace, Webflow» og «AI-byggere»): de
+              sto uten kilde. En rad her skal enten hente beløpet fra src/data/markedspriser.ts,
+              som test/kilder.test.ts holder i live, eller bære kilde og dato synlig i raden. */}
+          <tr><th scope="row">Abonnementsbyrå</th><td class="wow-ubrutt">{abonnementSpenn}</td><td>Malbasert side, levert raskt. Lite skreddersøm av systemer, og bindingstid.</td></tr>
           <tr>
-            <td>Norsk byrå med pakkepris</td>
-            {/* Ingen linjeskift mellom lenkene og tankestreken: Astro beholder
-                mellomrommet rundt et inline-element, og spennet ble rendret som
-                «4 900 – 9 990 kr». Samme felle som er funnet ni ganger før i
-                dette prosjektet – usynlig i kilden, synlig i bygget. */}
-            <td class="nowrap"><a class="kk-link" href="https://skaatunweb.no/" rel="nofollow">4 900</a>–<a class="kk-link" href="https://www.hjemmesidehelten.no/nettside-bedrift/" rel="nofollow">9 990 kr</a></td>
+            <th scope="row">Norsk byrå med pakkepris</th>
+            {/* Ingen linjeskift mellom lenkene og tankestreken: Astro beholder mellomrommet rundt
+                et inline-element, og spennet ble rendret som «4 900 – 9 990 kr». */}
+            <td class="wow-ubrutt"><a href="https://skaatunweb.no/" rel="nofollow">4 900</a>–<a href="https://www.hjemmesidehelten.no/nettside-bedrift/" rel="nofollow">9 990 kr</a></td>
             <td>Ferdig oppsett, ofte på mal. Billigst i markedet. Sjekk hva som skjer med siden hvis du slutter å betale, og hvem som eier koden.</td>
           </tr>
-          {/* Vår egen pris og byråraden sto skrevet av for hånd. Begge hentes nå:
-              vår fra `pakker`, byråets fra markedspriser.ts. CLAUDE.md sier det
-              rett ut – en pris skal aldri skrives av. */}
-          <tr><td>KodeKonsulentene</td><td>fra {rimeligstePakke}</td><td>Egenutviklet side, integrasjoner mot de systemene du har, sikkerhetsarbeid, og du eier koden.</td></tr>
-          <tr><td>Etablert byrå</td><td>fra {nb(etablert?.lav ?? 0)} kr</td><td>Team, prosess og prosjektleder. For dyrt og for tregt for de fleste småbedrifter.</td></tr>
+          <tr><th scope="row">KodeKonsulentene</th><td class="wow-ubrutt">fra {rimeligstePakke}</td><td>Egenutviklet side, integrasjoner mot de systemene du har, sikkerhetsarbeid, og du eier koden.</td></tr>
+          <tr><th scope="row">Etablert byrå</th><td class="wow-ubrutt">fra {nb(etablert?.lav ?? 0)} kr</td><td>Team, prosess og prosjektleder. For dyrt og for tregt for de fleste småbedrifter.</td></tr>
         </tbody>
       </table>
-      <p class="small faint">
+      <p class="wow-notat">
         Tallene for andre leverandører er lest på deres egne nettsider {norskDato(abonnement.sistSjekket)} og kan ha
         endret seg siden. De har kommersielle interesser og ulike definisjoner av «enkel nettside».
         Bruk dem som markedssignal, ikke som fasit. Hele oppstillingen med kilde og dato per rad står
-        i <a class="kk-link" href="/verktoy/priskalkulator#markedet">priskalkulatoren</a>.
+        i <a href="/verktoy/priskalkulator#markedet">priskalkulatoren</a>.
       </p>
-      {/* Pilottilbudet sto bare nederst på /caser, en side som nås fra footeren.
-          Ordrett samme setning som der – et tilbud skal lyde likt overalt. */}
-      <p class="small muted">
+      {/* Pilottilbudet: ordrett samme setning som på /caser. Et tilbud skal lyde likt overalt. */}
+      <p class="wow-notat">
         Vi tar inn to til tre pilotprosjekter til redusert pris mot at vi får bruke
         tallene som case. Si fra hvis det er aktuelt.
       </p>
-    </div>
-    </Avslor>
-  </Scene>
+    </Prosa>
+  </Seksjon>
 
-  <Scene n={4} eyebrow="Spørsmål" tittel="Om pris og binding">
-    <Faq items={prisFaq} />
-    <p class="small muted" style="margin-top: var(--space-5)">
-      {/* Mellomrommet maa staa eksplisitt. Astro fjerner linjeskiftet foran et inline-
-          element, saa «og» og lenken ble limt sammen til «oghåndboken» i bygget –
-          synlig i nettleseren, usynlig i kilden. */}
-      <a class="kk-link" href="/vilkar">Salgsvilkårene</a> står i klartekst, og{" "}
-      <a class="kk-link" href="/handbok">håndboken</a> forklarer hvordan vi jobber.
-    </p>
-  </Scene>
+  <Refleksfelt />
 
-  <div class="scenefilm-ramme">
-  <Scene n={5} eyebrow="Usikker" tittel="Vet du ikke hva du trenger?" ingress="Kjør den gratis sjekken på siden du har i dag. Da ser vi begge hva som er problemet før vi snakker om pris.">
-    <Avslor>
-    <div class="row">
-      <Button variant="primary" href="/sjekk">Sjekk nettsiden din</Button>
-      <Button variant="ghost" href="/kontakt">Book 20 minutter</Button>
-    </div>
-    </Avslor>
-  </Scene>
+  <Sporsmal liste={prisFaq} tittel="Om pris og binding" id="pris-faq" storrelse="tjeneste" />
+  <div class="wow-rute priser-etter-faq">
+    <Prosa>
+      {/* Mellomrommet må stå eksplisitt: Astro fjerner linjeskiftet foran et inline-element. */}
+      <p class="wow-notat">
+        <a href="/vilkar">Salgsvilkårene</a> står i klartekst, og{" "}
+        <a href="/handbok">håndboken</a> forklarer hvordan vi jobber.
+      </p>
+    </Prosa>
   </div>
 
-  <ContactBlock n={6} />
-</Base>
+  <Seksjon
+    id="usikker"
+    tittel="Vet du ikke hva du trenger?"
+    ingress="Kjør den gratis sjekken på siden du har i dag. Da ser vi begge hva som er problemet før vi snakker om pris."
+    storrelse="tjeneste"
+  >
+    <Handlinger
+      handlinger={[
+        { tekst: "Sjekk nettsiden din", href: "/sjekk", type: "primar" },
+        { tekst: "Book 20 minutter", href: "/kontakt", type: "strek" },
+      ]}
+    />
+  </Seksjon>
+
+  <Kontaktblokk />
+</MalWow>
+
 <style>
-  /* `.kv` eier allerede rad, kolonne og mobilbrekk for begge listene under, så
-     det eneste som mangler er luft rundt dem. Ingen nye verdier: alt gjennom
-     space-tokens. */
-  .eksempler__tittel { margin: 0 0 var(--space-4); }
-  .eksempler__note { margin: var(--space-3) 0 0; }
-  .treaar { margin-block-start: var(--space-7); }
-  .treaar .heading { margin: 0; }
-</style>
-<style is:global>
-  /* Toppene sto i linje, bunnene gjorde det ikke. .avslor er en vanlig blokk, saa
-     prisekortet inni fikk SIN EGEN hoeyde i stedet for radens: maalt 536/484/484 px
-     i celler paa 536 – «Start» stakk 52 px lenger ned enn de to andre.
-
-     display:grid gjoer kortet til et rutenettsbarn, og et rutenettsbarn strekkes
-     til cellen. .kk-price har allerede `grid-template-rows: auto auto 1fr auto` –
-     den 1fr-raden er laget for aa ta imot plassen, saa knappen havner i bunnen slik
-     komponenten var tegnet. Ingen hoeyde settes her.
-
-     is:global er IKKE valgfritt: .avslor kommer fra Avslor.astro og baerer DEN
-     komponentens scope-id, mens .priskort-rad baerer sidens. En vanlig <style>
-     ville krevd sidens id paa begge og matchet ingenting – stille. */
-  .priskort-rad.grid-3 > .avslor { display: grid; }
-</style>
-<style is:global>
-  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
-     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
-     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
-     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
-  .scene:first-of-type .mega .ord,
-  .scene:first-of-type .mega-blokk,
-  /* Bare FØRSTE avdekking i første scene, ikke hele scenen.
-     Regelen fantes for at innhold over folden ikke skal ligge usynlig og vente på
-     en scroll som aldri kommer. Men `.scene:first-of-type .avslor` traff ALLE
-     avdekkinger i scenen – og /caser og /handbok er én eneste scene, så den slo av
-     all bevegelse på hele siden. Målt: 0 bevegelsesøyeblikk, 5,5 skjermhøyder uten
-     at ett element endrer seg. */
-  /* Treffer på HVA elementet er, ikke hvor det tilfeldigvis står.
-     `> .avslor` traff ingenting fordi .avslor ligger i .scene__inner, og
-     `:first-of-type` gjelder tagg og ikke klasse. Begge varianter var stille døde:
-     skjemaet på /verktoy/cookie-sjekk sto på 0,56 opasitet ved innlasting –
-     sidens primære handling, halvgjennomsiktig til du scrollet. */
-  .scene:first-of-type .avslor:has(.scene__ingress),
-  .scene:first-of-type .avslor:has(form) {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
+  /* Prislista er sidens toppdel: H1 skal stå under det faste toppfeltet. */
+  .priser-topp {
+    padding-top: var(--wow-hode-hoyde);
   }
-</style>
-<style is:global>
-  /* Filmen dempes i stedet for å maskeres bort.
-
-     Scenetittelen bryter ut til 1320 px over 1200 px bredde (se
-     .scene__head .stortekst i scener.css). Å skyve masken langt nok ut til å
-     klarere den krevde 72 %, og da var filmen praktisk talt usynlig – den
-     løste kontrasten ved å fjerne grunnen til at den var der. Lavere opasitet
-     med standardmasken gir filmen tilbake over hele høyre halvdel og består
-     likevel AA.
-
-     Målt 6. oktober 2026 på /nettsider, verste tekst i rammen:
-       opasitet 0,85 maske 62 %  ->  2,75:1  stryker
-       opasitet 0,85 maske 72 %  ->  7,16:1  består, men filmen er borte
-       opasitet 0,45 maske 52 %  ->  3,86:1  stryker
-       opasitet 0,35 maske 46 %  ->  5,32:1  består, filmen synlig  <- valgt
-
-     is:global er IKKE valgfritt. .scenefilm ligger inne i SceneFilm.astro og
-     får dén komponentens scope-id, mens .scenefilm-ramme får sidens. En vanlig
-     <style> kompilerer til en selektor som krever sidens id på begge, og
-     matcher da ingenting. Verifisert: med vanlig <style> ga maske 46 % og
-     maske 92 % nøyaktig samme måling, fordi ingen av dem ble brukt. */
-  .scenefilm-ramme .scenefilm { opacity: 0.35; }
+  .priser-under {
+    margin-top: var(--wow-rom-5);
+  }
+  .priser-etter-faq {
+    padding-top: var(--wow-rom-6);
+  }
 </style>

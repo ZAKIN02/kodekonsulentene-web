@@ -1,0 +1,207 @@
+---
+/**
+ * Brødtekst i lesestil: avsnitt, lister, tabeller, sitat, kode, <details> og små notater
+ * (wow-undersider.md del 1.1, «Read»). Én kilde for all løpende tekst på undersidene:
+ * Artikkelkropp bruker den for artikkelteksten, og sidene bruker den i en Seksjon.
+ *
+ *   <Seksjon tittel="Hva ekomloven § 3-15 krever" bredde="les">
+ *     <Prosa>
+ *       <p>…</p>
+ *       <table>…</table>
+ *       <p class="wow-notat">Forbehold, kilde eller dato i liten, dempet skrift.</p>
+ *     </Prosa>
+ *   </Seksjon>
+ *
+ * Stilen er GLOBAL (`.wow-prosa …`) med vilje: verktøyskriptene setter inn tabeller og
+ * <details> i nettleseren, og markup som lages der, bærer ikke komponentens scope-id. Et skript
+ * kan derfor skrive `<div class="wow-prosa">…</div>` og få samme stil, så lenge siden rendrer
+ * minst én <Prosa> (ellers er stilen ikke med i siden).
+ *
+ * Alt står i :where(), så en klasse på elementet (f.eks. .wow-lenke, .wow-knapp) vinner alltid.
+ * Tabeller som er bredere enn kolonnen, ruller i seg selv (MalWow gjør dem tastaturnåbare).
+ *
+ * Avsnitt og lister holder 62 tegn uansett hvor bred kolonnen er; tabeller får hele bredden.
+ *
+ *   dempet   brødteksten i dempet farge (forklaringer under et verktøy).
+ */
+interface Props {
+  dempet?: boolean;
+  class?: string;
+}
+const { dempet = false, class: klasse } = Astro.props;
+---
+
+<div class:list={["wow-prosa", dempet && "wow-prosa--dempet", klasse]}>
+  <slot />
+</div>
+
+<style is:global>
+  .wow-prosa {
+    display: grid;
+    gap: var(--wow-rom-5);
+    min-width: 0;
+    line-height: var(--wow-linje-les);
+  }
+  .wow-prosa > * {
+    min-width: 0;
+  }
+  .wow-prosa--dempet {
+    color: var(--wow-tekst-dempet);
+  }
+  .wow-prosa :where(p, ul, ol, blockquote) {
+    max-width: var(--wow-maal-brod);
+  }
+  .wow-prosa :where(h2) {
+    margin-top: var(--wow-rom-6);
+    font-size: var(--wow-tekst-les-h2);
+    font-weight: 700;
+    line-height: 1.2;
+    text-wrap: balance;
+    scroll-margin-top: calc(var(--wow-hode-hoyde) + var(--wow-rom-5));
+  }
+  .wow-prosa :where(h3) {
+    margin-top: var(--wow-rom-4);
+    font-size: var(--wow-tekst-les-h3);
+    font-weight: 600;
+    line-height: 1.25;
+    scroll-margin-top: calc(var(--wow-hode-hoyde) + var(--wow-rom-5));
+  }
+  .wow-prosa :where(ul, ol) {
+    display: grid;
+    gap: var(--wow-rom-2);
+    margin: 0;
+    padding-left: var(--wow-rom-5);
+  }
+  /* Nettleserne setter tabular-nums på ::marker. I Schibsted gir det «1 .» med luft foran punktum. */
+  .wow-prosa :where(li)::marker {
+    color: var(--wow-tekst-dempet);
+    font-variant-numeric: normal;
+  }
+  .wow-prosa :where(strong) {
+    font-weight: 600;
+  }
+  .wow-prosa--dempet :where(strong) {
+    color: var(--wow-tekst);
+  }
+  .wow-prosa :where(a) {
+    color: var(--wow-tekst);
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: var(--wow-linje-sterk);
+    text-decoration-thickness: var(--wow-kant-1);
+    text-underline-offset: 0.2em;
+    transition:
+      color var(--wow-tid-kort) var(--wow-kurve),
+      text-decoration-color var(--wow-tid-kort) var(--wow-kurve);
+  }
+  .wow-prosa :where(a):hover {
+    color: var(--wow-refleks);
+    text-decoration-color: currentColor;
+  }
+  .wow-prosa :where(blockquote) {
+    padding-left: var(--wow-rom-5);
+    border-left: var(--wow-kant-2) solid var(--wow-linje-sterk);
+    color: var(--wow-tekst-dempet);
+  }
+  .wow-prosa :where(code) {
+    font-family: var(--wow-font-kode);
+    font-size: 0.9em;
+  }
+  .wow-prosa :where(:not(pre) > code) {
+    padding: 0 var(--wow-rom-1);
+    border-radius: var(--wow-radius-s);
+    background: var(--wow-flate-hev);
+  }
+  .wow-prosa :where(pre) {
+    max-width: 100%;
+    margin: 0;
+    padding: var(--wow-rom-4) var(--wow-rom-5);
+    overflow-x: auto;
+    border: var(--wow-kant-1) solid var(--wow-linje);
+    border-radius: var(--wow-radius-s);
+    background: var(--wow-flate);
+    font-size: var(--wow-tekst-liten);
+    line-height: 1.6;
+  }
+
+  /* Tabell: streker mellom radene, ingen ruter. Første kolonne er radens navn. */
+  .wow-prosa :where(table) {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: var(--wow-tekst-liten);
+    line-height: 1.45;
+  }
+  .wow-prosa :where(table) > * {
+    display: revert;
+  }
+  .wow-prosa :where(caption) {
+    padding-bottom: var(--wow-rom-3);
+    font-size: var(--wow-tekst-brod);
+    font-weight: 600;
+    text-align: left;
+  }
+  .wow-prosa :where(th, td) {
+    padding: var(--wow-rom-3) var(--wow-rom-5) var(--wow-rom-3) 0;
+    border-bottom: var(--wow-kant-1) solid var(--wow-linje);
+    text-align: left;
+    vertical-align: top;
+  }
+  .wow-prosa :where(thead th) {
+    color: var(--wow-tekst-dempet);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .wow-prosa :where(tbody > tr > :first-child) {
+    color: var(--wow-tekst);
+    font-weight: 600;
+  }
+  .wow-prosa :where(tbody td) {
+    color: var(--wow-tekst-dempet);
+  }
+  /* Smal skjerm: tabellen ruller sidelengs. Kolonnene får en minstebredde, ellers klemmes den
+     siste (som oftest er forklaringen) til ett ord per linje. */
+  @media (max-width: 767px) {
+    .wow-prosa :where(th, td) {
+      min-width: 7rem;
+    }
+    .wow-prosa :where(th, td):last-child {
+      min-width: 16rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    .wow-prosa :where(table) {
+      font-size: var(--wow-tekst-brod);
+    }
+  }
+  .wow-prosa :where(.wow-ubrutt) {
+    white-space: nowrap;
+  }
+
+  /* Det som åpnes ved behov: forbehold, hele lista. Åpner uten animasjon (svar på handling). */
+  .wow-prosa :where(details) {
+    border-block: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .wow-prosa :where(details + details) {
+    margin-top: calc(-1 * var(--wow-rom-5));
+    border-top: 0;
+  }
+  .wow-prosa :where(summary) {
+    display: flex;
+    align-items: center;
+    min-height: var(--wow-kontroll);
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .wow-prosa :where(details) > :where(:not(summary)) {
+    margin-bottom: var(--wow-rom-5);
+  }
+
+  /* Forbehold, kilde, dato: liten og dempet. Kontrast 8,07:1 på bunn, 7,43:1 på flate. */
+  .wow-prosa :where(.wow-notat) {
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+    line-height: 1.5;
+  }
+</style>

@@ -1,125 +1,214 @@
 ---
-import Base from "../layouts/Base.astro";
-import Scene from "../components/Scene.astro";
-import Mega from "../components/Mega.astro";
-import Avslor from "../components/Avslor.astro";
-import Eyebrow from "../components/Eyebrow.astro";
-import Horisont from "../components/Horisont.astro";
-import Button from "../components/Button.astro";
-import ContactBlock from "../components/ContactBlock.astro";
-import { synligeCaser } from "../data/caser";
+/**
+ * /caser i wow-drakten (wow-undersider.md del 1.6, «film»).
+ * Rekkefølge: H1 → casene, sortert etter kapitlene i filmen (nettsider, systemer, apper) →
+ * «Derfor er listen kort» → kontaktblokken med pilottilbudet.
+ *
+ * Siden viser én case. Det er ikke en feil: synligeCaser filtrerer bort alt som ennå
+ * inneholder TODO, fordi plassholdertekst i Google er verre enn en kort liste. Kravene under er
+ * grunnen til at listen er kort, og de er verdt å si høyt: de forteller leseren hva en case
+ * her ER, og hvorfor den kan stoles på.
+ *
+ * Resultatlista vises bare når casen har målte tall. Uten tall står det at den står uten.
+ */
+import MalWow from "../layouts/MalWow.astro";
+import { SideHode, Seksjon, Tekstrader, Kontaktblokk, Ramme, Lampe } from "../components/wow/side";
+import { tittelKlasser } from "../components/wow/side/tittel";
+import { synligeCaser, type Case } from "../data/caser";
 
-// Siden viser én case. Det er ikke en feil – synligeCaser filtrerer bort alt som
-// ennå inneholder TODO, fordi plassholdertekst i Google er verre enn en kort liste.
-// Kravene under er grunnen til at listen er kort, og de er verdt å si høyt:
-// de forteller leseren hva en case her ER, og hvorfor den kan stoles på.
+// Rekkefølgen i filmen på forsiden: bakeriet (nettsider), kontoret (systemer), rørleggeren
+// (apper). Demo og konsept hører til systemene til de er levert.
+const kapittel: Record<Case["type"], number> = { Nettside: 1, System: 2, Demo: 2, Konsept: 2, App: 3 };
+const caser = [...synligeCaser].sort((a, b) => kapittel[a.type] - kapittel[b.type]);
+
+// Ekte skjermbilder fra public/media/wow/ekte/ (tatt med Playwright av sider på dette nettstedet).
+// En case uten bilde her rendres uten ramme, aldri med en plassholder.
+const bilder: Record<string, { bilde: string; adresse: string; alt: string }> = {
+  "booking-demo": {
+    bilde: "klinikker-flyt",
+    adresse: "kodekonsulentene.no/bransjer/klinikker",
+    alt: "Skjermbilde av bookingflyten på siden for klinikker: fire steg fra bestilling til oppgjør.",
+  },
+};
+
 const krav = [
-  { nr: "01", tittel: "Problemet først", tekst: "Hva som faktisk kostet tid eller penger, i kundens ord. Ikke en teknologiliste." },
-  { nr: "02", tittel: "Løsningen i én setning", tekst: "Hva som ble bygget, uten teknologinavn. Rammeverket står nederst, der det hører hjemme." },
-  { nr: "03", tittel: "Tall vi har målt", tekst: "Resultatlisten står tom til tallet er målt. Et anslag presentert som en måling er en løgn med desimaler." },
-  { nr: "04", tittel: "Konsept er merket konsept", tekst: "Demo og øvelse står merket som det. Du skal aldri lure på om noe er levert til en kunde." },
+  { tittel: "Problemet først", tekst: "Hva som faktisk kostet tid eller penger, i kundens ord. Ikke en teknologiliste." },
+  { tittel: "Løsningen i én setning", tekst: "Hva som ble bygget, uten teknologinavn. Rammeverket står nederst, der det hører hjemme." },
+  { tittel: "Tall vi har målt", tekst: "Resultatlisten står tom til tallet er målt. Et anslag presentert som en måling er en løgn med desimaler." },
+  { tittel: "Konsept er merket konsept", tekst: "Demo og øvelse står merket som det. Du skal aldri lure på om noe er levert til en kunde." },
 ];
-
-import "../styles/scener.css";
 ---
-<Base
+
+<MalWow
   tittel="Caser: apper, systemer og konsepter"
   beskrivelse="Problem, løsning og resultat med tall. Egne iOS-apper, demo-systemer og konseptarbeid fra KodeKonsulentene i Oslo. Hver case sier hva som er målt."
+  bevegelse="film"
 >
-  <Scene lav>
-    <Mega som="h1" merke="Caser" n={1} tekst="Problem, løsning, resultat" aksent="resultat" />
-    <Avslor trinn={1}>
-      <p class="scene__ingress body-lg">Hver case sier hva som var problemet, hva vi bygde, og hva det ga i tall. Konseptarbeid er alltid merket, slik at du vet hva som er oppdrag og hva som er øvelse.</p>
-    </Avslor>
+  <SideHode
+    tittel="Problem, løsning, resultat"
+    ingress="Hver case sier hva som var problemet, hva vi bygde, og hva det ga i tall. Konseptarbeid er alltid merket, slik at du vet hva som er oppdrag og hva som er øvelse."
+    storrelse="stor"
+  />
 
-    {/* HER STO ET GENERERT KLIPP, OG DET ER FJERNET MED VILJE.
-        lev-caser gikk i løkke i full styrke rett under h1 – sidens mest
-        framtredende flate. Målt med samme metrikk som .skudd/klipp-endring.mjs
-        endret det seg 2,11 av 255 fra første til siste ramme, mot ~18,6 for de
-        klippene vi kaller tydelige. Fire grå plater som hang stille mens en tynn
-        grønn strek flyttet seg noen piksler.
+  {caser.map((c, i) => {
+    const b = bilder[c.slug];
+    return (
+      <article class="case" aria-labelledby={`case-${c.slug}`}>
+        <div class="wow-rute case__rute">
+          <header class="case__hode">
+            <p class="case__merker">
+              <span class="wow-merke">{c.type}</span>
+              <span class="wow-merke wow-merke--strek">{c.kunde}</span>
+            </p>
+            <h2 id={`case-${c.slug}`} class:list={tittelKlasser("tjeneste", c.tittel)} data-split="lines">{c.tittel}</h2>
+          </header>
 
-        Brandbokens prøve: dekk over teksten – ville en rørlegger skjønt hva dette
-        handlet om? Nei. Og generert materiale står ikke på rangeringen i det hele
-        tatt, bortsett fra som bakgrunnstekstur under tekst; dette var en innrammet
-        figur i full opasitet.
+          {b && (
+            <Ramme
+              class="case__ramme"
+              bilde={b.bilde}
+              type="nettleser"
+              adresse={b.adresse}
+              alt={b.alt}
+              sizes="94vw"
+              avdekk={i === 0}
+              zoom
+            />
+          )}
 
-        Det kostet 316 kB av førstelasten fordi en løkke spiller av seg selv og
-        derfor lastes med en gang. Siden lå på 532 kB mot et tak på 400 kB – hele
-        bruddet var dette ene klippet.
-
-        Bevegelsen på siden ligger nå i Horisont-blokken «Derfor er listen kort»,
-        som er en ren CSS-sekvens med fire navngitte krav. Den betyr noe.
-        Tredjeplassen i rangeringen vår er «ingenting», og den slår dekorasjon. */}
-
-    <Avslor>
-    <div class="stack">
-      {synligeCaser.map((c) => (
-        <article class="card">
-          <div class="row" style="justify-content: space-between">
-            <Eyebrow>{c.type}</Eyebrow>
-            <span class="mono faint">{c.kunde}</span>
+          <div class="case__tekst">
+            <p><strong>Problem.</strong> {c.problem}</p>
+            <p><strong>Løsning.</strong> {c.losning}</p>
+            <p class="case__stack">{c.stack.join(", ")}</p>
           </div>
-          <h2 class="heading">{c.tittel}</h2>
-          <div class="grid-2">
-            <div class="stack stack--tight">
-              <p class="muted"><strong class="body-strong">Problem.</strong> {c.problem}</p>
-              <p class="muted"><strong class="body-strong">Løsning.</strong> {c.losning}</p>
-              <p class="mono faint">{c.stack.join(" · ")}</p>
-            </div>
+
+          <div class="case__resultat">
             {c.resultat ? (
-              <dl class="kv">
+              <dl class="case__tall">
                 {c.resultat.map((r) => (
-                  <div><dt>{r.tekst}</dt><dd>{r.verdi}</dd></div>
+                  <div>
+                    <dt>{r.tekst}</dt>
+                    <dd><Lampe status="bestatt" />{r.verdi}</dd>
+                  </div>
                 ))}
               </dl>
             ) : (
-              <p class="small faint">
+              <p class="case__uten">
                 Ingen målte tall ennå. Når denne løsningen er levert til en kunde,
                 står resultatet her – ikke før.
               </p>
             )}
+            {c.href && (
+              <a class="wow-knapp wow-knapp--strek" href={c.href} data-magnetic>
+                <span class="wow-knapp__tekst" data-magnetic-tekst>Se mer</span>
+              </a>
+            )}
           </div>
-          {c.href && <Button variant="ghost" href={c.href}>Se mer</Button>}
-        </article>
-      ))}
-    </div>
-    </Avslor>
-  </Scene>
+        </div>
+      </article>
+    );
+  })}
 
-  <Horisont
-    poster={krav}
-    navn="Fire krav hver case på denne siden må oppfylle"
-    merke="Krav"
-    n={2}
-    tittel="Derfor er listen kort"
-    hoyde={3}
+  <Seksjon id="krav" tittel="Derfor er listen kort" storrelse="tjeneste">
+    <Tekstrader rader={krav} />
+  </Seksjon>
+
+  <Kontaktblokk
+    tittel="Vil du bli den neste?"
+    ingress="Vi tar inn to til tre pilotprosjekter til redusert pris mot at vi får bruke tallene som case. Si fra hvis det er aktuelt."
   />
+</MalWow>
 
-  <ContactBlock n={3} tittel="Vil du bli den neste?" ingress="Vi tar inn to til tre pilotprosjekter til redusert pris mot at vi får bruke tallene som case. Si fra hvis det er aktuelt." />
-</Base>
-<style is:global>
-  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
-     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
-     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
-     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
-  .scene:first-of-type .mega .ord,
-  .scene:first-of-type .mega-blokk,
-  /* Bare FØRSTE avdekking i første scene, ikke hele scenen.
-     Regelen fantes for at innhold over folden ikke skal ligge usynlig og vente på
-     en scroll som aldri kommer. Men `.scene:first-of-type .avslor` traff ALLE
-     avdekkinger i scenen – og /caser og /handbok er én eneste scene, så den slo av
-     all bevegelse på hele siden. Målt: 0 bevegelsesøyeblikk, 5,5 skjermhøyder uten
-     at ett element endrer seg. */
-  /* Treffer på HVA elementet er, ikke hvor det tilfeldigvis står.
-     `> .avslor` traff ingenting fordi .avslor ligger i .scene__inner, og
-     `:first-of-type` gjelder tagg og ikke klasse. Begge varianter var stille døde:
-     skjemaet på /verktoy/cookie-sjekk sto på 0,56 opasitet ved innlasting –
-     sidens primære handling, halvgjennomsiktig til du scrollet. */
-  .scene:first-of-type .avslor:has(.scene__ingress),
-  .scene:first-of-type .avslor:has(form) {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
+<style>
+  .case {
+    padding-top: var(--wow-seksjon-tett);
+  }
+  .case__rute {
+    row-gap: var(--wow-rom-6);
+    align-items: start;
+  }
+  .case__hode {
+    display: grid;
+    gap: var(--wow-rom-4);
+    justify-items: start;
+  }
+  .case__merker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--wow-rom-2);
+  }
+  /* Skjermbildet er 16:10 med en lys stripe nederst (neste seksjon på siden som er avbildet).
+     16:9 fra toppen kutter stripa, så bildet slutter i den mørke flaten. */
+  .case :global(.case__ramme .wow-ramme__skjerm) {
+    aspect-ratio: 16 / 9;
+  }
+  .case__tekst {
+    display: grid;
+    gap: var(--wow-rom-4);
+    max-width: var(--wow-maal-brod);
+  }
+  .case__tekst p {
+    color: var(--wow-tekst-dempet);
+    text-wrap: pretty;
+  }
+  .case__tekst strong {
+    color: var(--wow-tekst);
+    font-weight: 700;
+  }
+  .case__tekst .case__stack {
+    font-size: var(--wow-tekst-liten);
+  }
+  .case__resultat {
+    display: grid;
+    gap: var(--wow-rom-5);
+    justify-items: start;
+  }
+  .case__uten {
+    max-width: 34ch;
+    padding-left: var(--wow-rom-4);
+    border-left: var(--wow-kant-2) solid var(--wow-linje-sterk);
+    color: var(--wow-tekst-dempet);
+  }
+  .case__tall {
+    display: grid;
+    width: 100%;
+    margin: 0;
+    border-bottom: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .case__tall > div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--wow-rom-2) var(--wow-rom-5);
+    padding-block: var(--wow-rom-4);
+    border-top: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .case__tall dt {
+    color: var(--wow-tekst-dempet);
+  }
+  .case__tall dd {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--wow-rom-3);
+    margin: 0;
+    font-size: var(--wow-tekst-h3);
+    font-weight: 700;
+  }
+  @media (max-width: 599px) {
+    .case__resultat .wow-knapp {
+      width: 100%;
+    }
+  }
+  @media (min-width: 1024px) {
+    .case__hode {
+      grid-column: 1 / 10;
+    }
+    .case__tekst {
+      grid-column: 1 / 8;
+    }
+    .case__resultat {
+      grid-column: 8 / 13;
+    }
   }
 </style>

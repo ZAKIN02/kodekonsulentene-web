@@ -85,3 +85,34 @@ Dette er ikke juridisk rådgivning.
 - Etterarbeid: ffmpeg til AVIF (libaom, crf 32): <lag>.avif 2816x1584 og <lag>-1920.avif 1920x1080 (nedskalert, ikke oppskalert).
 - Innhold: ingen logoer, varemerker, personer, tekst eller navngitte kunstneres stil.
 - Kreditter brukt: ca. 5,8 (estimat).
+
+## public/media/wow/
+- Type: KI-generert stillbilder og video (hero-sløyfe 16:9 og 9:16 med poster, tre tjenestebilder og tre 4 s klipp). Merkes på siden: «Illustrasjon laget med KI».
+- Plattform: Higgsfield (API), betalt konto. Vilkår punkt 4.4 lest 2026-10-08 (lest av brief, ikke åpnet på nytt av produsenten; eier bekrefter).
+- Bilder: Grok Imagine Image 2.0 (`xai/grok-imagine-image-2.0`), 2k, ren tekst-til-bilde. Generert 2026-11-18. Kilder: assets/higgsfield/wow/{hero-16x9-1,hero-9x16-2,nettsider-2,systemer-1,apper-1}.png.
+- Video: Kling 3.0 pro image-to-video (`kling-video/v3.0/pro/image-to-video`), 8 s (hero) og 4 s (tjenester), uten lyd, kun startbilde. Kilder: assets/higgsfield/wow/*-v1.mp4.
+- Prompter: assets/higgsfield/prompter/ (stilkort-wow, hero-16x9, hero-9x16, tjeneste-*.txt, klipp-wow-*.txt).
+- Etterarbeid: ffmpeg/avifenc/cwebp. Hero kuttet til 7 s sløyfe med fadeblack-skjøt, H.264 + VP9. Tjenestebilder skalert ned til 1600 og 800 bred (ikke oppskalert).
+- Innhold: ingen logoer, varemerker, tekst eller ansikter. Hender er med (uskarpe i hero).
+- Kreditter brukt: ca. 37,9 (estimat; video uten sluttbilde har antatt pris).
+
+## public/media/wow/scroll-world/
+- Type: KI-generert video og stillbilder til scroll-verden (5 dykk og 4 overganger, 16:9 og 9:16, med poster). Merkes på siden: «Illustrasjon laget med KI».
+- Plattform: Higgsfield (API), betalt konto. Vilkår punkt 4.4 lest 2026-10-08 (lest av brief, ikke åpnet på nytt av produsenten; eier bekrefter).
+- Bilder: Grok Imagine Image 2.0 (`xai/grok-imagine-image-2.0`), 2k, scenebilder og interiørbilder med referansebilde (vår egen scene), generert 2026-11-18. Kilder: assets/higgsfield/scroll-world/stills/ og kjede/int-*.png.
+- Video: Kling 4.0 image-to-video (`kling-video/v4.0/image-to-video`), 1080p, 5 s, uten lyd, start- og sluttbilde. Overganger starter på siste ramme av forrige dykk og slutter på første ramme av neste. Kilder: assets/higgsfield/scroll-world/kjede/{dive,conn}-*.mp4 (rå, 1920x1080 og 1080x1920).
+- Prompter: assets/higgsfield/scroll-world/prompter/ (stilkort-sw, stilkort-interior, scene-*, interior-*, dykk-*, konn).
+- Etterarbeid: ffmpeg, H.264 crf 20, GOP 8, lyd fjernet, lett unsharp, +faststart, native oppløsning (ingen skalering). Dykk 1 (16:9) kuttet til 105 ramer der bevegelsen var over. Poster = første ramme som webp. Nettfilene er kodet med crf 28.
+- Endring 2026-11-18: scene 4 (verkstedet) laget på nytt uten det grønne trekantskiltet. Stillbilder og interiørbilder redigert med Qwen Image 3 edit (`alibaba/qwen-image-3/edit`, 2k, referanse = vårt eget gamle bilde). Nytt dykk 4 og ny overgang 3 (Kling 4.0, som over). Gamle filer arkivert i assets/higgsfield/scroll-world/forkastet-skilt/.
+- Innhold: ingen logoer, varemerker, tekst eller ansikter i nærbilde. Små figurer (kunde, rørlegger, frisør, fotgjengere) er med, sett fra siden eller bak.
+- Kreditter brukt: ca. 59,1 (fase 2a modelltest) + ca. 296 (fase 2b), estimat fra Higgsfields prisliste (16 kreditter per USD).
+
+## public/media/wow/scroll-world/ (tillegg 2026-11-19: «Lampa»)
+- Type: KI-generert stillbilder (pult.*, pult-m.*, stol.*, stol-m.*; webp og avif) og video (pult-inn.mp4, pult-inn-m.mp4 med pult-inn-poster.webp og pult-inn-m-poster.webp). Merkes på siden: «Illustrasjon laget med KI».
+- Plattform: Higgsfield (API), betalt konto. Vilkår punkt 4.4 lest 2026-10-08 (lest av brief, ikke åpnet på nytt av produsenten; eier bekrefter).
+- Bilder: Qwen Image 3 edit (`alibaba/qwen-image-3/edit`), 2k, generert 2026-11-19. Referanser = våre egne scroll-world-klipp (siste ramme dykk 4 og første ramme dykk 0). Kilder: assets/higgsfield/scroll-world/lampa/{n1-16x9,n1-9x16,n3-16x9,n3-9x16}.png (kandidater i lampa/kand/).
+- Video: Kling 4.0 image-to-video (`kling-video/v4.0/image-to-video`), 1080p, 5 s, uten lyd, start- og sluttbilde (start = N1, slutt = første ramme av dive-0). Spilles baklengs av motoren. Kilder: assets/higgsfield/scroll-world/lampa/klipp/n2-{16x9,9x16}-1.mp4.
+- Prompter: assets/higgsfield/scroll-world/prompter/lampa-n1.txt, lampa-n1-v2.txt, lampa-n2.txt, lampa-n3.txt.
+- Etterarbeid: ffmpeg x264 slow, tune film, crf 28, GOP 8, lyd fjernet, lett unsharp, +faststart, uskalert. Stillbilder cwebp q82 og avifenc q52, uskalert (2048x1152 og 1152x2048).
+- Innhold: ingen logoer, varemerker, tekst eller lesbare skilt. N3 viser én forenklet leirfigur (leketøysfigur, ikke en ekte person, ingen likhet med noen). Leiremodellene av bakeri, kontor, hus med varebil og gate er illustrasjon, ikke ekte bedrifter.
+- Kreditter brukt: 36,06 (estimat, 16 kreditter per USD): 5 bilder x 1,2 + 2 klipp x 15,03.

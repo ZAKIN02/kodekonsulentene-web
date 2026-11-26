@@ -1,0 +1,535 @@
+---
+/**
+ * AI-demoen på /apper-og-ai (wow-r8-B1, portert fra src/components/AiTekst.astro, som står urørt):
+ * lim inn teksten fra din egen nettside, og se den skrevet om mens den blir skrevet. Sidens eget
+ * øyeblikk (wow-undersider.md del 1.3, punkt 2).
+ *
+ * TRE TING SOM ER BINDENDE, UENDRET FRA V1:
+ *  1. Nøkkelen er ikke her. Kallet går fra /api/ai-tekst, på serveren.
+ *  2. Skjemaet er et EKTE <form method="post">. Uten JavaScript sender det til /api/ai-tekst, som
+ *     svarer med en komplett HTML-side. Skriptet overtar bare når det kan.
+ *  3. Svaret settes aldri inn som HTML. Hvert felt skrives med textContent.
+ *
+ * Id-er, feltnavn, data-attributter, API-kall, feiltekster og personvernlenken (#ai) er de samme
+ * som før. Endret i drakten: merkelappene står i setningsform uten midtprikk («Før: din tekst»),
+ * og statuslinja skiller med komma. Monospace bare på det modellen faktisk svarte (rådata).
+ *
+ * BEVEGELSE: bare svar på handling. Teksten kommer inn mens modellen skriver, og markøren ved
+ * merkelappen blinker så lenge det strømmer (av ved redusert bevegelse).
+ */
+import { Seksjon } from "../side";
+import { MAKS_TEGN, MIN_TEGN } from "../../../lib/ai-tekst";
+import { firma } from "../../../data/firma";
+
+/** Tusenskiller med mellomrom. */
+const tall = new Intl.NumberFormat("nb-NO");
+---
+
+<Seksjon
+  id="ai-demo"
+  tittel="Teksten din, skrevet om mens du ser på"
+  ingress="Lim inn teksten fra forsiden din. Claude skriver den om til noe som selger, og sier etterpå hva som ble endret og hvorfor. Ingen innlogging, ingen e-post, ingenting lagres."
+  storrelse="tjeneste"
+>
+  <form class="ai-grid" method="post" action="/api/ai-tekst" data-ai-skjema>
+    {/* FØR: kundens egen tekst. Feltet er samtidig venstre halvdel av før/etter. */}
+    <div class="ai-inn wow-skjema">
+      <h3 class="ai-rolle">Før: din tekst</h3>
+      <div class="wow-skjema__felt">
+        <label for="ai-tekst">Tekst fra nettsiden din</label>
+        <textarea
+          class="ai-felt"
+          id="ai-tekst"
+          name="tekst"
+          rows="12"
+          required
+          minlength={MIN_TEGN}
+          maxlength={MAKS_TEGN}
+          spellcheck="false"
+          aria-describedby="ai-tekst-hint"
+          placeholder="Velkommen til oss. Vi er en totalleverandør av skreddersydde løsninger innen rørlegging, og vi har lidenskap for kvalitet i alle ledd …"
+        ></textarea>
+        <p class="wow-skjema__hint" id="ai-tekst-hint">
+          Minst {tall.format(MIN_TEGN)} tegn, maks {tall.format(MAKS_TEGN)}. Ta med
+          overskriften og de første avsnittene.{" "}
+          <span class="ai-teller" data-ai-teller>0</span>
+        </p>
+      </div>
+      <div class="ai-send">
+        <button class="wow-knapp" type="submit" data-ai-send data-magnetic>
+          <span class="wow-knapp__tekst" data-magnetic-tekst>Skriv den om</span>
+        </button>
+        <span class="ai-status" data-ai-status aria-hidden="true"></span>
+      </div>
+      <p class="wow-skjema__personvern">
+        Teksten sendes til Anthropic, som kjører Claude, for å bli skrevet om.
+        Vi lagrer den ikke – verken det du limer inn eller svaret du får.{" "}
+        <a class="wow-lenke" href="/personvern#ai">Hva som skjer med teksten</a>.
+      </p>
+    </div>
+
+    {/* ETTER: resultatet. Kommer av en handling og venter ikke på rulling. */}
+    <div class="ai-svar">
+      <h3 class="ai-rolle">
+        Etter: forslag fra Claude
+        <span class="ai-markor" data-ai-markor aria-hidden="true"></span>
+      </h3>
+
+      {/* aria-live er «off» med vilje: en live-region som får ny tekst på hvert token, leser hele
+          forslaget om og om igjen. Beskjeden om at svaret er ferdig kommer i én melding under. */}
+      <div class="ai-ut" data-ai-ut aria-live="off" aria-busy="false">
+        <p class="ai-tom">
+          Resultatet kommer her, linje for linje, med en gang modellen begynner
+          å skrive.
+        </p>
+      </div>
+
+      <p class="wow-usynlig" role="status" data-ai-melding></p>
+
+      <noscript>
+        <p class="ai-noscript">
+          Du har JavaScript av, og det er helt greit. Trykk «Skriv den om», så
+          får du svaret på en egen side i stedet for linje for linje her.
+          Mangler nøkkelen på serveren, sier siden det i stedet for å gjette.
+          Du kan også sende teksten til{" "}
+          <a class="wow-lenke" href={`mailto:${firma.epost}?subject=Skriv%20om%20teksten%20min`}>{firma.epost}</a>.
+        </p>
+      </noscript>
+    </div>
+  </form>
+
+  <p class="ai-fot">
+    Dette er et forslag, ikke en fasit. Modellen får beskjed om å ikke finne på
+    tall, priser eller sertifikater som ikke står i teksten din – står det
+    likevel noe du ikke kjenner igjen, er det en feil, og vi vil høre om den.
+  </p>
+</Seksjon>
+
+<style is:global>
+  /* GLOBAL med vilje: halvparten av elementene lages av skriptet mens svaret strømmer inn, og de
+     bærer ikke komponentens scope-id. Alt er prefikset ai-. Bare tokens fra tokens-wow.css. */
+  .ai-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--wow-rom-6) var(--wow-luke);
+    align-items: start;
+  }
+  /* Feltet og svaret deler rutenettet med resten av siden: spalte 1–6 og 7–12. */
+  @media (min-width: 1024px) {
+    .ai-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: stretch;
+    }
+  }
+  /* .wow-skjema blir to spalter fra 1280 px (navn og e-post på /kontakt). Her er det ett felt. */
+  .ai-inn.wow-skjema {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ai-rolle {
+    display: flex;
+    align-items: center;
+    gap: var(--wow-rom-3);
+    font-size: var(--wow-tekst-h3);
+    font-weight: 700;
+    line-height: 1.15;
+  }
+  .ai-felt {
+    min-height: 16rem;
+  }
+  .ai-teller {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .ai-send {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--wow-rom-3) var(--wow-rom-5);
+  }
+  .ai-status {
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+  }
+
+  /* Svaret står på en egen flate: det leses som et svar, ikke som et nytt skjema. */
+  .ai-svar {
+    display: grid;
+    gap: var(--wow-rom-5);
+    align-content: start;
+    padding: var(--wow-rom-5);
+    background: var(--wow-flate);
+    border-radius: var(--wow-radius-m);
+  }
+  @media (min-width: 1024px) {
+    .ai-svar {
+      padding: var(--wow-rom-6);
+    }
+  }
+  .ai-ut {
+    display: grid;
+    gap: var(--wow-rom-4);
+    align-content: start;
+    min-height: 14rem;
+  }
+  .ai-tom,
+  .ai-noscript {
+    max-width: var(--wow-maal-brod);
+    color: var(--wow-tekst-dempet);
+  }
+  .ai-fot {
+    max-width: var(--wow-maal-brod);
+    margin-top: var(--wow-rom-5);
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+    line-height: 1.5;
+  }
+
+  /* Forslaget. Teksten vokser tegn for tegn; balanse hindrer at linjeskiftene hopper. */
+  .ai-tittel {
+    font-size: var(--wow-tekst-les-h2);
+    font-weight: 700;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+  .ai-ingress {
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-ingress);
+    line-height: 1.4;
+  }
+  .ai-punkter {
+    display: grid;
+    gap: var(--wow-rom-2);
+    margin: 0;
+    padding-left: var(--wow-rom-5);
+    color: var(--wow-tekst-dempet);
+  }
+  .ai-merke {
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+    font-weight: 600;
+  }
+  /* Knappeteksten vises som en VERDI, ikke som en knapp: en flate som ser ut som en knapp og
+     ikke gjør noe, er en felle. */
+  .ai-knapp {
+    display: grid;
+    gap: var(--wow-rom-1);
+  }
+  .ai-knapp-verdi {
+    color: var(--wow-refleks);
+    font-weight: 700;
+  }
+  .ai-grep {
+    display: grid;
+    gap: var(--wow-rom-3);
+    padding-top: var(--wow-rom-4);
+    border-top: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  /* Nummerert: det er en liste over endringer i den rekkefølgen modellen gjorde dem. */
+  .ai-grep-liste {
+    display: grid;
+    gap: var(--wow-rom-3);
+    margin: 0;
+    padding-left: var(--wow-rom-5);
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+    line-height: 1.5;
+  }
+  .ai-grep-liste li::marker {
+    color: var(--wow-tekst);
+    font-variant-numeric: normal;
+  }
+
+  .ai-feil {
+    display: grid;
+    gap: var(--wow-rom-2);
+  }
+  .ai-feil-tittel {
+    font-weight: 700;
+  }
+  .ai-feil-tekst {
+    max-width: var(--wow-maal-brod);
+    color: var(--wow-tekst-dempet);
+  }
+
+  /* Rådata fra modellen: det eneste som står i monospace her. */
+  .ai-raa-tittel {
+    min-height: var(--wow-trykkflate);
+    align-content: center;
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+    cursor: pointer;
+  }
+  .ai-raa {
+    max-height: 14rem;
+    margin: 0;
+    padding: var(--wow-rom-3);
+    overflow: auto;
+    background: var(--wow-bunn);
+    border-radius: var(--wow-radius-s);
+    color: var(--wow-tekst-dempet);
+    font-family: var(--wow-font-kode);
+    font-size: var(--wow-tekst-mikro);
+    line-height: 1.55;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* Markøren vises bare mens det faktisk strømmer. Den står i overskriften, så den ikke flytter
+     på teksten som kommer inn. */
+  .ai-markor {
+    display: none;
+    width: 0.5em;
+    height: 0.9em;
+    background: var(--wow-refleks);
+  }
+  .ai-svar:has([data-ai-ut][aria-busy="true"]) .ai-markor {
+    display: inline-block;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .ai-svar:has([data-ai-ut][aria-busy="true"]) .ai-markor {
+      animation: ai-blink var(--wow-tid-puls) steps(2, jump-none) infinite;
+    }
+  }
+  @keyframes ai-blink {
+    to { opacity: 0.15; }
+  }
+</style>
+
+<script>
+  /**
+   * Sondering FOERST: sidene er statiske, saa HTML-en vet ikke om noekkelen finnes
+   * paa serveren. Uten dette ville en besoekende moett et innbydende skjema som
+   * feiler naar han trykker – paa en side som selger paalitelighet.
+   *
+   * Kallet bruker ingen kvote og kaller ikke Claude; det er en egen vei i ruta.
+   * Den er POST fordi nettstedet kjoerer prefetchAll, og en GET som koster noe kan
+   * utloeses av en forhaandshenter.
+   *
+   * Uten JavaScript staar skjemaet, og da svarer serveren med en aerlig side.
+   * Degraderingen gaar altsaa mot «si det som det er», ikke mot en doed knapp.
+   */
+  (async () => {
+    const seksjon = document.getElementById("ai-demo");
+    if (!seksjon) return;
+    try {
+      const r = await fetch("/api/ai-tekst", { method: "POST", headers: { "x-kk-sondering": "1" } });
+      const d = await r.json();
+      if (!d?.paa) seksjon.remove();
+    } catch {
+      seksjon.remove();
+    }
+  })();
+</script>
+
+<script>
+  /**
+   * Klienten.
+   *
+   * Leser SSE fra /api/ai-tekst og tegner forslaget på nytt for hver bit som
+   * kommer inn. Tolkingen ligger i src/lib/ai-tekst.ts og deles med serveren –
+   * `tolkSvar` tåler et halvt svar nettopp fordi den blir kalt slik.
+   *
+   * Hvorfor fetch og ikke EventSource: EventSource kan bare gjøre GET, og da
+   * måtte teksten ligget i URL-en. Et GET-endepunkt som koster penger per kall
+   * er dessuten noe hvilken som helst forhåndshenter kan utløse.
+   */
+  import { MAKS_TEGN, MIN_TEGN, tolkSvar, type Forslag } from "../../../lib/ai-tekst";
+
+  const skjema = document.querySelector<HTMLFormElement>("[data-ai-skjema]");
+  const felt = document.querySelector<HTMLTextAreaElement>("#ai-tekst");
+  const ut = document.querySelector<HTMLElement>("[data-ai-ut]");
+  const statuslinje = document.querySelector<HTMLElement>("[data-ai-status]");
+  const teller = document.querySelector<HTMLElement>("[data-ai-teller]");
+  const melding = document.querySelector<HTMLElement>("[data-ai-melding]");
+  const knapp = document.querySelector<HTMLButtonElement>("[data-ai-send]");
+
+  if (skjema && felt && ut && statuslinje && teller && melding && knapp) {
+    // Lokalt alias med vilje. TypeScript snevrer ikke `ut` inne i funksjonene
+    // under – de er hoistet og kan i prinsippet kalles før vakten over – så uten
+    // dette måtte hver bruk hatt et utropstegn, og da er vakten ikke lenger verdt
+    // noe. `boks` er en const av den snevrede typen.
+    const boks = ut;
+    const tall = new Intl.NumberFormat("nb-NO");
+
+    const visTeller = () => {
+      const n = felt.value.trim().length;
+      teller.textContent = `${tall.format(n)} / ${tall.format(MAKS_TEGN)}`;
+    };
+    felt.addEventListener("input", visTeller);
+    visTeller();
+
+    /** Skriver ut en melding i stedet for et resultat. Ingen HTML, bare tekst. */
+    function visFeil(tittel: string, tekst: string) {
+      boks.replaceChildren(
+        lag("div", "ai-feil", [
+          lag("p", "ai-feil-tittel", tittel),
+          lag("p", "ai-feil-tekst", tekst),
+        ]),
+      );
+    }
+
+    function lag(tag: string, klasse: string, innhold: string | Node[] = ""): HTMLElement {
+      const el = document.createElement(tag);
+      el.className = klasse;
+      if (typeof innhold === "string") el.textContent = innhold;
+      else el.append(...innhold);
+      return el;
+    }
+
+    /**
+     * Tegner forslaget. Kalles på hver bit, så den bygger hele treet på nytt –
+     * det er ti korte linjer, og en diff-algoritme på den mengden tekst ville
+     * vært mer kode enn den sparer.
+     *
+     * Alt settes med textContent. Modellsvaret er avledet av tekst en ukjent
+     * besøkende limte inn, og skal aldri tolkes som markering.
+     */
+    function tegn(f: Forslag, raa: string) {
+      if (f.avvist) {
+        visFeil("Ikke nok å gå på.", f.avvist);
+        return;
+      }
+
+      const deler: Node[] = [];
+      if (f.tittel) deler.push(lag("p", "ai-tittel", f.tittel));
+      if (f.ingress) deler.push(lag("p", "ai-ingress", f.ingress));
+      if (f.punkter.length) {
+        deler.push(lag("ul", "ai-punkter", f.punkter.map((p) => lag("li", "", p))));
+      }
+      if (f.knapp) {
+        deler.push(
+          lag("div", "ai-knapp", [
+            lag("p", "ai-merke", "Knappetekst"),
+            lag("p", "ai-knapp-verdi", `«${f.knapp}»`),
+          ]),
+        );
+      }
+
+      if (f.grep.length) {
+        deler.push(
+          lag("div", "ai-grep", [
+            lag("p", "ai-merke", "Hva som ble endret, og hvorfor"),
+            lag("ol", "ai-grep-liste", f.grep.map((g) => lag("li", "", [lag("span", "", g)]))),
+          ]),
+        );
+      }
+
+      if (!deler.length) {
+        // Modellen har begynt, men ingen hel linje er ferdig ennå. Vis det som
+        // kommer inn rått i stedet for ingenting – da ser brukeren at det går.
+        deler.push(lag("pre", "ai-raa", raa));
+      }
+
+      boks.replaceChildren(...deler);
+    }
+
+    let kjorer = false;
+
+    skjema.addEventListener("submit", async (e) => {
+      // Uten JavaScript har nettleseren allerede sendt skjemaet. Herfra overtar vi.
+      e.preventDefault();
+      if (kjorer) return;
+
+      const tekst = felt.value.trim();
+      if (tekst.length < MIN_TEGN) {
+        visFeil(
+          "For lite å gå på.",
+          `${tall.format(tekst.length)} tegn. Modellen trenger minst ${tall.format(MIN_TEGN)} – ta med overskriften og de første avsnittene fra forsiden din.`,
+        );
+        return;
+      }
+
+      kjorer = true;
+      knapp.disabled = true;
+      melding.textContent = "";
+      boks.setAttribute("aria-busy", "true");
+      statuslinje.textContent = "sender …";
+      boks.replaceChildren(lag("p", "ai-tom", "Modellen leser teksten din …"));
+
+      let raa = "";
+      try {
+        const svar = await fetch("/api/ai-tekst", {
+          method: "POST",
+          headers: { "content-type": "application/json", accept: "text/event-stream" },
+          body: JSON.stringify({ tekst }),
+        });
+
+        if (!svar.body) throw new Error("tom kropp");
+        const leser = svar.body.getReader();
+        const dekoder = new TextDecoder();
+        let buffer = "";
+
+        for (;;) {
+          const { done, value } = await leser.read();
+          if (done) break;
+          buffer += dekoder.decode(value, { stream: true });
+
+          // SSE skiller hendelser med blank linje. Siste, ufullstendige del blir
+          // liggende i bufferet til resten kommer.
+          const hendelser = buffer.split("\n\n");
+          buffer = hendelser.pop() ?? "";
+
+          for (const h of hendelser) {
+            const linje = h.split("\n").find((l) => l.startsWith("data:"));
+            if (!linje) continue;
+            let d: { t?: string; v?: string; ut?: number; inn?: number; modell?: string; etter?: number };
+            try {
+              d = JSON.parse(linje.slice(5).trim());
+            } catch {
+              continue;
+            }
+
+            if (d.t === "start") {
+              statuslinje.textContent = `${d.modell ?? "claude"} skriver …`;
+            } else if (d.t === "tekst") {
+              raa += d.v ?? "";
+              tegn(tolkSvar(raa), raa);
+            } else if (d.t === "feil") {
+              visFeil("Omskrivingen stoppet.", d.v ?? "Ukjent feil.");
+              statuslinje.textContent = "stoppet";
+              melding.textContent = `Omskrivingen stoppet. ${d.v ?? ""}`;
+              raa = "";
+              break;
+            } else if (d.t === "ferdig") {
+              statuslinje.textContent = [
+                "ferdig",
+                d.inn ? `${tall.format(d.inn)} tokens inn` : null,
+                d.ut ? `${tall.format(d.ut)} tokens ut` : null,
+              ]
+                .filter(Boolean)
+                .join(", ");
+              melding.textContent = "Forslaget er ferdig skrevet.";
+            }
+          }
+        }
+
+        if (raa) {
+          const f = tolkSvar(raa);
+          tegn(f, raa);
+          // Rådataene, for den som vil se nøyaktig hva modellen sendte. Det er
+          // samme ærlighet som «Forbehold»-blokka i nettsidesjekken.
+          const d = document.createElement("details");
+          d.append(
+            Object.assign(document.createElement("summary"), {
+              className: "ai-raa-tittel",
+              textContent: "Se hva modellen faktisk svarte",
+            }),
+            lag("pre", "ai-raa", raa),
+          );
+          boks.append(d);
+        }
+      } catch {
+        visFeil(
+          "Omskrivingen stoppet.",
+          "Fikk ikke svar fra serveren. Prøv igjen om et øyeblikk – teksten din står fortsatt i feltet.",
+        );
+        statuslinje.textContent = "stoppet";
+        melding.textContent = "Omskrivingen stoppet.";
+      } finally {
+        kjorer = false;
+        knapp.disabled = false;
+        boks.setAttribute("aria-busy", "false");
+      }
+    });
+  }
+</script>

@@ -1,0 +1,93 @@
+---
+/**
+ * Rader med et navn, én linje under og et beløp til høyre (wow-undersider.md del 1.5): eksempler
+ * som er ferdig regnet, løpende priser, totalpris over tre år. En <dl>, så skjermlesere leser
+ * «navn, beløp» som par. Ingen kort, ingen nummer, strek mellom radene.
+ *
+ *   <Prisrader rader={loepende.map((r) => ({ navn: r.navn, tekst: r.tekst, verdi: r.pris }))} />
+ *   <Prisrader storrelse="pris" rader={eksempler.map((e) => ({ navn: e.hvem, tekst: e.hva, verdi: e.sum }))} />
+ *
+ * Beløpene skal komme fra src/data/priser.ts, beregn() eller markedspriser.ts. Skriv aldri av et
+ * tall her. Ingen opptelling: et tall som ruller inn, går mot «fast pris».
+ *
+ *   storrelse   h3 (standard): beløpet i --wow-tekst-h3.  pris: --wow-tekst-pris (høyst én
+ *               slik liste per side, det er sidens store tall).
+ */
+interface Props {
+  rader: { navn: string; tekst?: string; verdi: string }[];
+  storrelse?: "h3" | "pris";
+  class?: string;
+}
+const { rader, storrelse = "h3", class: klasse } = Astro.props;
+// Et beløp deles aldri midt i tallet («145 / 500 kr»). Et spenn kan brytes etter tankestreken.
+const ubrutt = (v: string) => v.replace(/ /g, "\u00a0").replace(/–/g, "–\u200b");
+---
+
+<dl class:list={["wow-prisrader", `wow-prisrader--${storrelse}`, klasse]}>
+  {rader.map((r) => (
+    <div class="wow-prisrad">
+      <dt class="wow-prisrad__navn">
+        <span class="wow-prisrad__tittel">{r.navn}</span>
+        {r.tekst && <span class="wow-prisrad__tekst">{r.tekst}</span>}
+      </dt>
+      <dd class="wow-prisrad__verdi">{ubrutt(r.verdi)}</dd>
+    </div>
+  ))}
+</dl>
+
+<style>
+  .wow-prisrader {
+    margin: 0;
+    border-bottom: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .wow-prisrad {
+    display: grid;
+    gap: var(--wow-rom-3) var(--wow-luke);
+    padding-block: var(--wow-rom-5);
+    border-top: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .wow-prisrad__navn {
+    display: grid;
+    gap: var(--wow-rom-1);
+  }
+  .wow-prisrad__tittel {
+    font-size: var(--wow-tekst-ingress);
+    font-weight: 700;
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+  .wow-prisrad__tekst {
+    max-width: var(--wow-maal-brod);
+    color: var(--wow-tekst-dempet);
+    text-wrap: pretty;
+  }
+  .wow-prisrad__verdi {
+    margin: 0;
+    font-family: var(--wow-font-display);
+    font-weight: var(--wow-display-vekt);
+    font-stretch: var(--wow-display-bredde);
+    font-size: var(--wow-tekst-h3);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .wow-prisrader--pris .wow-prisrad__verdi {
+    font-size: var(--wow-tekst-pris);
+    letter-spacing: var(--wow-display-sperring);
+  }
+  /* Et spenn i største størrelse («14 900–19 400 kr») er bredere enn en telefon: der får det bryte. */
+  @media (max-width: 767px) {
+    .wow-prisrader--pris .wow-prisrad__verdi {
+      white-space: normal;
+    }
+  }
+  @media (min-width: 768px) {
+    .wow-prisrad {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: baseline;
+    }
+    .wow-prisrad__verdi {
+      text-align: right;
+    }
+  }
+</style>

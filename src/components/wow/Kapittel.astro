@@ -1,0 +1,524 @@
+---
+/**
+ * Kapittel (data-kapittel). Eies av bevegelse. Toppbildet på tjenestesidene, /om og bransjesidene:
+ * et utdrag av dykket fra filmen på forsiden (ScrollWorld), så en som kommer rett fra et søk ser
+ * samme lampe og samme grå → farge. Plan: docs/design/wow-undersider.md del 2. Kontrakt:
+ * docs/design/bevegelse.md («Kapittel»). Skript: src/scripts/wow/kapittel.ts (hentes av index.ts
+ * bare når siden har [data-kapittel]). Klippene og tallene for dem: src/scripts/wow/kapittel-klipp.ts,
+ * filene i public/media/wow/scroll-world/kapitler/. Komponenten har ingen tekst selv: tittel,
+ * ingress, problem og løsning kommer fra siden (eier skriver om fortellingen i filmen, så
+ * undersidene er ikke bundet til historie.ts).
+ *
+ * Egenskaper:
+ *   nummer: 1 | 2 | 3 | 4    Klippet: 1 bakeriet, 2 kontoret, 3 rørleggeren, 4 verkstedet.
+ *                            kapittelFor(Astro.url.pathname) i kapittel-klipp.ts gir nummer og
+ *                            modus for sidene planen gir klipp.
+ *   modus?: "skrubb" | "still"   Standard "skrubb": klippet spoles av rullingen fra grått til
+ *                            grønt. "still": ingen video; det grønne bildet står grått og får
+ *                            farge ved 30 % av rullingen (bransjesidene).
+ *   tittel: string           H1. Står synlig fra første maling (LCP), spilles ikke inn.
+ *   ingress: string          Maks to linjer.
+ *   handlinger?: { tekst: string; href: string; type?: "primar" | "strek" | "lenke" }[]
+ *                            Maks 2, bare én "primar". Standard type: "primar" for den første,
+ *                            "lenke" for den andre.
+ *   problem: string          Linja med grå lampe mens bildet er grått. Påkrevd.
+ *   losning: string          Linja med grønn lampe når fargene kommer tilbake. Påkrevd.
+ *   kolofon?: string         KI-merket. Standard «Illustrasjon laget med KI».
+ *   prioritet?: boolean      Standard true: første bilde lastes straks med fetchpriority="high".
+ *                            Sett også `forhandslast={kapittelForhandslast(nummer, modus)}` på MalWow.
+ *   id?: string              id på H1. Standard "kapittel-tittel".
+ *   mappe?: string           Der filene ligger. Standard kapittelMappe fra kapittel-klipp.ts.
+ *
+ * Rulling (bare med JavaScript og full bevegelse): seksjonen er 100svh + rull × 100svh høy, og
+ * bildeflaten står fast (sticky) mens du ruller. rull = 1,2 (skrubb), 1,0 (skrubb på stående
+ * skjerm), 0,6 (still). 0–12 %: heroteksten glir opp og ut. Så kommer platen nede til venstre med
+ * grå lampe og problemet. Ved grønt (45 % i skrubb, 30 % i still) blir lampa grønn, det grå går
+ * bort på 700 ms, og platen bytter til løsningen, som står resten av rullingen. Baklengs går alt
+ * tilbake. Rullingen låses aldri.
+ *
+ * Uten JavaScript, ved redusert bevegelse og Save-Data: vanlig høyde, det grønne bildet i full
+ * farge, og under heroteksten står platen som en liste: grå lampe og problemet, grønn lampe og
+ * løsningen. Ingen video hentes.
+ *
+ * Det lille inline-skriptet må stå først i seksjonen: det setter data-kapittel-film før første
+ * maling, så høyden og det grå er riktige fra start (ingen CLS). Kommer ikke kapittel.ts innen
+ * 4 s, går seksjonen tilbake til stillbildet. CSP: skriptet er uten variabler; sikkerhet.mjs
+ * henter hashen fra bygget.
+ */
+import {
+  kapittelFiler,
+  kapittelGronn,
+  kapittelMappe,
+  kapittelMobil,
+  type KapittelNummer,
+  type KapittelModus,
+} from "../../scripts/wow/kapittel-klipp";
+
+interface Handling {
+  tekst: string;
+  href: string;
+  type?: "primar" | "strek" | "lenke";
+}
+
+interface Props {
+  nummer: KapittelNummer;
+  modus?: KapittelModus;
+  tittel: string;
+  ingress: string;
+  handlinger?: Handling[];
+  problem: string;
+  losning: string;
+  kolofon?: string;
+  prioritet?: boolean;
+  id?: string;
+  mappe?: string;
+}
+
+const {
+  nummer,
+  modus = "skrubb",
+  tittel,
+  ingress,
+  handlinger = [],
+  problem,
+  losning,
+  kolofon = "Illustrasjon laget med KI",
+  prioritet = true,
+  id = "kapittel-tittel",
+  mappe = kapittelMappe,
+} = Astro.props;
+
+const f = kapittelFiler(nummer, mappe);
+const gronn = kapittelGronn(nummer);
+const rull = modus === "still" ? 0.6 : 1.2;
+const rullMobil = modus === "still" ? 0.6 : 1.0;
+const MOBIL = kapittelMobil;
+const REDUSERT = "(prefers-reduced-motion: reduce)";
+const knapper = handlinger.slice(0, 2).map((h, i) => ({ ...h, type: h.type ?? (i === 0 ? "primar" : "lenke") }));
+const lasting = prioritet ? "eager" : "lazy";
+const prio = prioritet ? "high" : undefined;
+---
+
+<section
+  class="kap"
+  data-kapittel={nummer}
+  data-kapittel-modus={modus}
+  data-kapittel-gronn={gronn.toFixed(4)}
+  data-kapittel-rull={rull}
+  data-kapittel-klipp={modus === "skrubb" ? f.klipp : undefined}
+  data-kapittel-klipp-mobil={modus === "skrubb" ? f.klippMobil : undefined}
+  data-kapittel-fase="problem"
+  style={`--kap-rull: ${rull}; --kap-rull-mobil: ${rullMobil}`}
+  aria-labelledby={id}
+>
+  <script is:inline>(function(){var s=document.currentScript,k=s&&s.parentElement;if(!k)return;var c=navigator.connection;if(matchMedia("(prefers-reduced-motion: reduce)").matches||(c&&c.saveData))return;k.setAttribute("data-kapittel-film","");setTimeout(function(){if(!k.hasAttribute("data-kapittel-klar")){k.removeAttribute("data-kapittel-film");k.setAttribute("data-kapittel-sent","")}},4000)})();</script>
+  <div class="kap__ramme">
+    <div class="kap__flate" data-kapittel-flate aria-hidden="true">
+      {
+        modus === "skrubb" ? (
+          <picture class="kap__bilde kap__bilde--start">
+            {/* Redusert bevegelse: det grønne bildet, samme fil som laget over (én nedlasting). */}
+            <source media={`${REDUSERT} and ${MOBIL}`} srcset={f.gronn.avifMobil} type="image/avif" />
+            <source media={`${REDUSERT} and ${MOBIL}`} srcset={f.gronn.webpMobil} type="image/webp" />
+            <source media={REDUSERT} srcset={f.gronn.avif} type="image/avif" />
+            <source media={REDUSERT} srcset={f.gronn.webp} type="image/webp" />
+            <source media={MOBIL} srcset={f.start.avifMobil} type="image/avif" />
+            <source media={MOBIL} srcset={f.start.webpMobil} type="image/webp" />
+            <source srcset={f.start.avif} type="image/avif" />
+            <img src={f.start.webp} alt="" width="1920" height="1080" decoding="async" loading={lasting} fetchpriority={prio} />
+          </picture>
+        ) : null
+      }
+      {/* Det grønne bildet. I skrubb vises det uten film (uten JS, redusert bevegelse), og i filmen
+          bare når lampa er grønn før klippet har tegnet. Lazy: det hentes ikke før det vises. */}
+      <picture class:list={["kap__bilde", modus === "skrubb" ? "kap__bilde--gronn" : "kap__bilde--still"]}>
+        <source media={MOBIL} srcset={f.gronn.avifMobil} type="image/avif" />
+        <source media={MOBIL} srcset={f.gronn.webpMobil} type="image/webp" />
+        <source srcset={f.gronn.avif} type="image/avif" />
+        <img
+          src={f.gronn.webp}
+          alt=""
+          width="1920"
+          height="1080"
+          decoding="async"
+          loading={modus === "still" ? lasting : "lazy"}
+          fetchpriority={modus === "still" ? prio : undefined}
+        />
+      </picture>
+      {/* Grått til lampa er grønn: samme to lag som ScrollWorld, bare opasitet animeres. */}
+      <div class="kap__gra" data-kapittel-gra></div>
+      <div class="kap__gra kap__gra--mork" data-kapittel-gra></div>
+      <div class="kap__slor"></div>
+      <div class="kap__slor kap__slor--hero" data-kapittel-slor-hero></div>
+    </div>
+
+    <div class="kap__tekst wow-rute" data-kapittel-tekst>
+      <h1 class="kap__tittel" id={id}>{tittel}</h1>
+      <div class="kap__handling">
+        <p class="kap__ingress">{ingress}</p>
+        {
+          knapper.length > 0 && (
+            <p class="kap__knapper">
+              {knapper.map((h) =>
+                h.type === "lenke" ? (
+                  <a class="wow-lenke kap__lenke" href={h.href}>{h.tekst}</a>
+                ) : (
+                  <a class:list={["wow-knapp", h.type === "strek" && "wow-knapp--strek"]} href={h.href} data-magnetic>
+                    <span class="wow-knapp__tekst" data-magnetic-tekst>{h.tekst}</span>
+                  </a>
+                ),
+              )}
+            </p>
+          )
+        }
+      </div>
+    </div>
+
+    {/* Platen: problem → løsning. Uten film en liste med to rader under heroteksten. I filmen
+        står radene i samme rute og byttes, og én lampe til venstre blir grønn. */}
+    <div class="kap__plate-ramme wow-rute">
+      <div class="kap__plate" data-kapittel-plate>
+        <span class="sw__lampe kap__lampe" aria-hidden="true"><span class="wow-hake sw__lampe-gronn"></span></span>
+        <ul class="kap__rader" role="list">
+          <li class="kap__rad kap__rad--problem">
+            <span class="sw__lampe" aria-hidden="true"></span>
+            <p class="kap__linje"><span class="wow-sr">Problem: </span>{problem}</p>
+          </li>
+          {
+            losning && (
+              <li class="kap__rad kap__rad--losning" data-gronn>
+                <span class="sw__lampe" aria-hidden="true"><span class="wow-hake sw__lampe-gronn"></span></span>
+                <p class="kap__linje"><span class="wow-sr">Løst: </span>{losning}</p>
+              </li>
+            )
+          }
+        </ul>
+      </div>
+    </div>
+
+    <p class="wow-kolofon kap__kolofon">{kolofon}</p>
+  </div>
+</section>
+
+<style>
+  /* Bare tokens fra tokens-wow.css. Bare opacity, transform og clip-path animeres (del 8). */
+  .kap {
+    position: relative;
+    isolation: isolate;
+    background: var(--wow-bunn);
+    color: var(--wow-tekst);
+  }
+
+  .kap__ramme {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: var(--wow-rom-6);
+    box-sizing: border-box;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding-block: calc(var(--wow-hode-hoyde) + var(--wow-rom-7)) var(--wow-rom-8);
+    overflow: clip;
+  }
+
+  .kap__flate {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--wow-bunn);
+  }
+
+  .kap__bilde,
+  .kap__bilde img,
+  .kap__flate :global(.kap__video) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Desktop: motivet til høyre for teksten. */
+    object-position: 62% 50%;
+  }
+
+  @media (max-aspect-ratio: 4/5) {
+    /* Stående skjerm: motivet i øvre 45 % (kritiker r4 #15). */
+    .kap__bilde img,
+    .kap__flate :global(.kap__video) {
+      object-position: 50% 22%;
+    }
+  }
+
+  .kap__gra {
+    position: absolute;
+    inset: 0;
+    display: none;
+    background: var(--wow-bunn);
+    mix-blend-mode: saturation;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--wow-tid-lang) var(--wow-kurve);
+  }
+
+  .kap__gra--mork {
+    mix-blend-mode: normal;
+  }
+
+  /* Slør under teksten: tung der teksten står (4,5:1, kritiker r4 #16), åpent der motivet er. */
+  .kap__slor {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, var(--wow-slor-tung) 0%, var(--wow-slor) 25%, var(--wow-slor-null) 55%);
+  }
+
+  .kap__slor--hero {
+    background: linear-gradient(
+      to right,
+      var(--wow-slor-tung) 0%,
+      var(--wow-slor-tung) 34%,
+      var(--wow-slor) 52%,
+      var(--wow-slor-null) 75%
+    );
+  }
+
+  @media (max-aspect-ratio: 4/5) {
+    /* Uten film står platen under teksten, så teksten begynner høyere opp. */
+    .kap__slor--hero {
+      background: linear-gradient(to top, var(--wow-slor-tung) 0%, var(--wow-slor-tung) 66%, var(--wow-slor-null) 84%);
+    }
+
+    .kap[data-kapittel-film] .kap__slor--hero {
+      background: linear-gradient(to top, var(--wow-slor-tung) 0%, var(--wow-slor-tung) 44%, var(--wow-slor-null) 62%);
+    }
+  }
+
+  .kap__tekst {
+    row-gap: var(--wow-rom-6);
+  }
+
+  .kap__tittel {
+    margin: 0;
+    font-family: var(--wow-font-display);
+    font-size: min(var(--wow-tekst-hero), 13svh);
+    font-weight: var(--wow-display-vekt);
+    font-stretch: var(--wow-display-bredde);
+    letter-spacing: var(--wow-display-sperring);
+    /* Æ, Ø og Å i versaler (kritiker r4 #14). */
+    line-height: var(--wow-display-linje-smal, 0.95);
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+
+  .kap__handling {
+    display: grid;
+    gap: var(--wow-rom-5);
+    justify-items: start;
+    max-width: 35rem;
+  }
+
+  .kap__ingress {
+    max-width: var(--wow-maal-ingress);
+    margin: 0;
+    font-size: var(--wow-tekst-ingress);
+    line-height: 1.35;
+    text-wrap: pretty;
+  }
+
+  .kap__knapper {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--wow-rom-4) var(--wow-rom-6);
+    margin: 0;
+  }
+
+  /* Tekstlenken i heroen: 44 px mål på berøring (del 6, krav 7). */
+  .kap__lenke {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding-bottom: 0;
+    background-position: 0 75%, 0 75%;
+  }
+
+  @media (max-width: 767.98px) {
+    .kap__knapper,
+    .kap__knapper .wow-knapp {
+      width: 100%;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .kap__tittel {
+      grid-column: 1 / 8;
+    }
+
+    .kap__handling {
+      grid-column: 1 / 7;
+    }
+  }
+
+  /* Platen uten film: en liste under heroteksten, begge rader i full tekstfarge. */
+  .kap__plate {
+    box-sizing: border-box;
+    max-width: 36rem;
+    padding: var(--wow-rom-5) var(--wow-rom-6);
+    border-radius: var(--wow-radius-m);
+    background: var(--wow-slor-tung);
+  }
+
+  .kap__lampe {
+    display: none;
+  }
+
+  .kap__rader {
+    display: grid;
+    gap: var(--wow-rom-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .kap__rad {
+    display: grid;
+    grid-template-columns: 1.125rem minmax(0, 1fr);
+    column-gap: var(--wow-rom-4);
+  }
+
+  .kap__linje {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+    font-size: var(--wow-tekst-ingress);
+    line-height: 1.35;
+    text-wrap: pretty;
+  }
+
+  .kap__kolofon {
+    position: absolute;
+    inset-inline-end: var(--wow-marg);
+    inset-block-end: var(--wow-rom-4);
+    margin: 0;
+  }
+
+  /* Skrubb uten film: det grønne bildet over startbildet (startbildet er ofte allerede i hurtigbufferen). */
+  .kap__bilde--start {
+    display: none;
+  }
+
+  /* ── Filmen: satt av inline-skriptet før første maling ─────────────────────── */
+  .kap[data-kapittel-film] {
+    height: calc(100vh * (1 + var(--kap-rull)));
+    height: calc(100svh * (1 + var(--kap-rull)));
+  }
+
+  @media (max-aspect-ratio: 4/5) {
+    .kap[data-kapittel-film] {
+      --kap-rull: var(--kap-rull-mobil);
+    }
+  }
+
+  .kap[data-kapittel-film] .kap__ramme {
+    position: sticky;
+    inset-block-start: 0;
+    height: 100vh;
+    height: 100svh;
+    min-height: 0;
+  }
+
+  .kap[data-kapittel-film] .kap__bilde--start {
+    display: block;
+  }
+
+  .kap[data-kapittel-film] .kap__bilde--gronn {
+    display: none;
+  }
+
+  .kap[data-kapittel-film] .kap__flate[data-vis-gronn] .kap__bilde--gronn {
+    display: block;
+  }
+
+  .kap[data-kapittel-film] .kap__flate :global(.kap__video) {
+    opacity: 0;
+  }
+
+  .kap[data-kapittel-film] .kap__flate[data-har-klipp] :global(.kap__video) {
+    opacity: 1;
+  }
+
+  .kap[data-kapittel-film] .kap__flate[data-har-klipp] .kap__bilde {
+    visibility: hidden;
+  }
+
+  .kap[data-kapittel-film] .kap__gra {
+    display: block;
+  }
+
+  /* Grått mens problemet står. 280 ms inn i det grå, 700 ms ut når lampa blir grønn. */
+  .kap[data-kapittel-film][data-kapittel-fase="problem"] .kap__gra {
+    opacity: 0.92;
+    transition-duration: var(--wow-tid-svar);
+  }
+
+  .kap[data-kapittel-film][data-kapittel-fase="problem"] .kap__gra--mork {
+    opacity: 0.22;
+  }
+
+  /* Første maling: grått straks, ingen inntoning (skriptet tar over overgangene). */
+  .kap[data-kapittel-film]:not([data-kapittel-klar]) .kap__gra {
+    transition: none;
+  }
+
+  .kap[data-kapittel-film] .kap__plate-ramme {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: var(--wow-rom-7);
+    pointer-events: none;
+  }
+
+  .kap[data-kapittel-film] .kap__plate {
+    display: grid;
+    grid-template-columns: 1.125rem minmax(0, 1fr);
+    column-gap: var(--wow-rom-4);
+    width: min(36rem, 100%);
+    opacity: 0;
+    transition: opacity var(--wow-tid-svar) var(--wow-kurve);
+  }
+
+  .kap[data-kapittel-film] .kap__plate[data-synlig] {
+    opacity: 1;
+  }
+
+  .kap[data-kapittel-film] .kap__lampe {
+    display: block;
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .kap[data-kapittel-film] .kap__rader {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .kap[data-kapittel-film] .kap__rad {
+    display: block;
+    grid-area: 1 / 1;
+    opacity: 0;
+    transition: opacity calc(var(--wow-tid-kort) * 0.75) var(--wow-kurve);
+  }
+
+  .kap[data-kapittel-film] .kap__rad > .sw__lampe {
+    display: none;
+  }
+
+  /* Aldri to tekster samtidig: den gamle ut på 120 ms, den nye inn på 160 ms etter 120 ms. */
+  .kap[data-kapittel-film][data-kapittel-fase="problem"] .kap__rad--problem,
+  .kap[data-kapittel-film][data-kapittel-fase="losning"] .kap__rad--losning {
+    opacity: 1;
+    transition: opacity var(--wow-tid-kort) var(--wow-kurve) calc(var(--wow-tid-kort) * 0.75);
+  }
+
+  .kap[data-kapittel-film] .kap__kolofon {
+    z-index: 1;
+  }
+</style>

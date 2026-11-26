@@ -1,0 +1,134 @@
+---
+// Slik går det (wow-briefen, blokk 8): fire steg med ekte datoer, regnet ut
+// i index.astro ved bygg. En linje tegnes gjennom stegene mens du ruller
+// (data-draw på SVG-linja, scrub). Datoen er rekkefølgen, så ingen numre.
+// Datoene er overskriften her (kritikerfunn 16 og 20): H2 står liten over,
+// datoene i Archivo i visningsstørrelse.
+// Tekst ordrett fra docs/design/tekst/forside.md del 8.
+//
+// Runde wow-r6: datoene står på én linje hver på desktop. Ukedagen i prototypedatoen
+// («lørdag 21. november») står i liten skrift over datoen, så «21. november» får samme
+// størrelse og linje som de andre tre; skjermlesere leser hele datoen i ett. Linja tegnes med
+// rullingen (data-draw): loddrett på mobil, der tuppen følger 70 % av vinduet, og vannrett på
+// desktop.
+//
+// Runde wow-r7 «Lampa» (historie-manus.md del 5, «Fra samtale til lansering»), bare på forsiden
+// (`hjul`): en festet scene som starter i markøren «I dag» (andluca snudd: vår tidslinje regner
+// framover, ikke bakover). Én stor dato ruller fram som et datohjul mens prikken går langs
+// streken: i dag, dagene til prototypen, ukene til lanseringen. Bare én dato er stor om gangen;
+// den er innhold, ikke overskrift, og står i setningsform. H2 står liten. Hjulet er aria-hidden;
+// datoene leses i stegene, som står i DOM-en hele tiden. Rullingen styres av
+// src/scripts/wow/seksjoner/prosess.ts, festingen er CSS (sticky). Uten JS, med redusert
+// bevegelse, Save-Data eller lav skjerm står stegene som før og hjulet vises ikke.
+//
+// Bølge A1 (wow-undersider.md del 3): datoene regnes i side/prosessdatoer.ts, så forsiden og
+// tjenestesidene får samme utregning. Gir siden dem ikke, regner komponenten dem selv. Stegene
+// tegnes av side/Steg.astro (samme markup som før). `tittel`, `ingress` og `id` kan overstyres.
+//
+//   <Prosess />                                                    tjenesteside
+//   <Prosess prototypedato={…} lanseringsuke={…} />                forsiden (som før)
+import Steg from "../side/Steg.astro";
+import { prosessdatoer, hjulVerdier } from "../side/prosessdatoer";
+import { fortelling } from "./fortelling";
+
+interface Props {
+  prototypedato?: string;
+  lanseringsuke?: number;
+  tittel?: string;
+  ingress?: string;
+  id?: string;
+  /** Forsiden, runde wow-r7 «Lampa»: datohjulet som starter i «I dag» og ruller fram. */
+  hjul?: boolean;
+  /** Fortellerens linje ved overskriften (bare med `hjul`). */
+  forteller?: string;
+}
+const regnet = prosessdatoer();
+const {
+  prototypedato = regnet.prototypedato,
+  lanseringsuke = regnet.lanseringsuke,
+  tittel = "Slik går det",
+  ingress = "Datoene under er regnet fra i dag.",
+  id = "prosess",
+  hjul = false,
+  forteller,
+} = Astro.props;
+
+// «lørdag 21. november» → «lørdag» over «21. november». Første ord er ukedagen.
+const [ukedag, ...resten] = prototypedato.split(" ");
+const dato = resten.join(" ");
+
+// Datohjulet (wow-r7): «I dag», så dagene fram til prototypen og ukene fram til lanseringen.
+// Regnet ved bygg her; skriptet regner dem på nytt fra nettleserens dato, så hjulet og stegene
+// alltid står fra den dagen siden vises.
+const verdier = hjulVerdier(fortelling.prosess.start);
+
+const steg: { navn: string; naar: string; dag?: string; tekst: string; id: string }[] = [
+  {
+    id: "samtale",
+    navn: "Samtale",
+    naar: "20 minutter",
+    tekst: "Vi går gjennom hva som tar tid i bedriften i dag. Du får et prisspenn på telefonen.",
+  },
+  {
+    id: "prototype",
+    navn: "Prototype",
+    naar: dato || prototypedato,
+    dag: dato ? ukedag : undefined,
+    tekst: "Booker du i dag, er prototypen klar 72 timer etter samtalen.",
+  },
+  {
+    id: "bygging",
+    navn: "Bygging",
+    naar: "2–3 uker",
+    tekst: "Ukentlig oppdatering mens siden bygges.",
+  },
+  {
+    id: "lansering",
+    navn: "Lansering",
+    naar: `uke ${lanseringsuke}`,
+    tekst: "Deretter overvåkning, sikkerhetsoppdateringer og månedsrapport med ytelse og oppetid.",
+  },
+];
+---
+
+{hjul ? (
+  <section class="wow-prosess wow-prosess--hjul" data-seksjon="prosess" aria-labelledby={`${id}-tittel`}>
+    <div class="wow-hjul" data-hjul data-hjul-start={fortelling.prosess.start}>
+      <div class="wow-hjul__stage wow-rute">
+        <div class="wow-hjul__dato" aria-hidden="true">
+          <p class="wow-hjul__etikett" data-hjul-etikett>{steg[0].navn}</p>
+          <div class="wow-hjul__vindu">
+            <ol class="wow-hjul__rull" data-hjul-rull>
+              {verdier.map((v, i) => (
+                <li class="wow-hjul__verdi" data-hjul-steg={v.steg} data-hjul-aktiv={i === 0 ? "" : undefined}>{v.tekst}</li>
+              ))}
+            </ol>
+          </div>
+        </div>
+        <div class="wow-hjul__hode">
+          <h2 id={`${id}-tittel`} class="wow-hjul__tittel">{tittel}</h2>
+          {forteller && <p class="wow-forteller wow-hjul__forteller">{forteller}</p>}
+        </div>
+        <div class="wow-hjul__lop">
+          <span class="wow-hjul__prikk" data-hjul-prikk aria-hidden="true"></span>
+          <Steg steg={steg} tegn={false} />
+        </div>
+      </div>
+    </div>
+  </section>
+) : (
+  <section class="wow-prosess" aria-labelledby={`${id}-tittel`}>
+    <div class="wow-rute wow-prosess__hode">
+      <h2 id={`${id}-tittel`} class="wow-prosess__tittel">{tittel}</h2>
+      {ingress && <p class="wow-prosess__ingress">{ingress}</p>}
+    </div>
+
+    <div class="wow-rute">
+      <Steg steg={steg} />
+    </div>
+  </section>
+)}
+
+<script>
+  import "../../../scripts/wow/seksjoner/last";
+</script>

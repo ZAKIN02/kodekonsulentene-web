@@ -1,0 +1,50 @@
+---
+/**
+ * Steg i en ekte rekkefølge (wow-undersider.md del 3): demo på bransjesidene, fire steg på
+ * /apper-og-ai, avviksløpet på /status, håndboken. Samme tegning som «Slik går det» på forsiden
+ * (Prosess bruker denne): et punkt per steg og en linje gjennom dem, loddrett på mobil og vannrett
+ * på desktop. Rekkefølgen bæres av `naar` og av <ol>, ikke av nummer.
+ *
+ *   <Steg steg={[{ naar: "Mandag", navn: "Bestilling", tekst: "…" }, …]} />
+ *   <Steg steg={avvik} tegn={false} />          linja står ferdig tegnet (rolig)
+ *
+ * tegn (standard true): linja tegnes med rullingen på «film» (data-draw, bevegelse). På «rolig»
+ * lastes ikke skriptet, og linja står hel uansett.
+ * Fem eller flere steg står loddrett også på desktop (vannrett blir datoene for trange).
+ */
+interface Props {
+  /** `id` (valgfri) blir data-steg på <li>, så datohjulet på forsiden (wow-r7) finner stegene. */
+  steg: { naar: string; navn: string; tekst: string; dag?: string; id?: string }[];
+  tegn?: boolean;
+}
+const { steg, tegn = true } = Astro.props;
+const n = steg.length;
+const loddrett = n >= 5;
+// Antall spalter på desktop. Fire er standard i wow.css; da settes ingen stil (forsiden er uendret).
+const stil = !loddrett && n !== 4 ? `--wow-steg-antall: ${n}` : undefined;
+const harDag = steg.some((s) => s.dag);
+---
+
+<div class:list={["wow-prosess__lop", loddrett && "wow-prosess__lop--loddrett"]}>
+  <svg class="wow-prosess__linje wow-prosess__linje--vannrett" viewBox="0 0 1000 2" preserveAspectRatio="none" aria-hidden="true">
+    <line x1="0" y1="1" x2="1000" y2="1" data-draw={tegn ? "" : undefined} />
+  </svg>
+  <svg class="wow-prosess__linje wow-prosess__linje--loddrett" viewBox="0 0 2 1000" preserveAspectRatio="none" aria-hidden="true">
+    <line x1="1" y1="0" x2="1" y2="1000" data-draw={tegn ? "" : undefined} />
+  </svg>
+  <ol class="wow-prosess__steg" style={stil}>
+    {steg.map((s) => (
+      <li class="wow-steg" data-steg={s.id}>
+        <span class="wow-steg__punkt" aria-hidden="true"></span>
+        <p class="wow-steg__naar">
+          {harDag && (
+            <span class:list={["wow-steg__dag", !s.dag && "wow-steg__dag--tom"]} aria-hidden={s.dag ? undefined : "true"}>{s.dag ?? "–"}</span>
+          )}
+          <span data-steg-naar>{s.naar}</span>
+        </p>
+        <p class="wow-steg__navn">{s.navn}</p>
+        <p class="wow-steg__tekst">{s.tekst}</p>
+      </li>
+    ))}
+  </ol>
+</div>

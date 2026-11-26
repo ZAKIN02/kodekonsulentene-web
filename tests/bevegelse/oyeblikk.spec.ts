@@ -1,6 +1,6 @@
 // Tester for øyeblikk 2 (Loft), 3 (CaseVideo) og 6 (Reel). Kjører mot en statisk
 // testside som bruker komponentenes skript og stiler ordrett (se
-// lag-testside-oyeblikk.mjs). Testvideoene ligger i public/scener/test/.
+// lag-testside-oyeblikk.mjs). Testvideoene ligger i tests/bevegelse/fixtures/scener/test/.
 import { test, expect, type Page } from '@playwright/test';
 
 const SIDE = '/oyeblikk.html';

@@ -1,0 +1,118 @@
+---
+/**
+ * Rader med tittel og én linje, strek mellom (wow-undersider.md del 3). Samme form som «se flere»
+ * og listene på forsiden: ingen kort, ingen nummer. Med `href` er hele raden en lenke (tittelen er
+ * lenken, og flaten utvides med ::after), og `merke` står som liten merkelapp ved tittelen.
+ * `side` er en kort tekst til høyre (f.eks. «Kontrollert 6. okt. 2026» på /artikler).
+ *
+ *   <Tekstrader rader={[{ tittel: "Timebestilling", tekst: "…" }]} />
+ *   <Tekstrader rader={verktoy.map((v) => ({ tittel: v.navn, tekst: v.maaler, href: v.href }))} />
+ */
+interface Props {
+  rader: { tittel: string; tekst: string; href?: string; merke?: string; side?: string }[];
+  niva?: 2 | 3;
+  /** «display»: tittel i Archivo versaler (oversikter). Standard «tekst»: Schibsted 700. */
+  stil?: "tekst" | "display";
+}
+const { rader, niva = 3, stil = "tekst" } = Astro.props;
+const H = niva === 2 ? "h2" : "h3";
+---
+
+<ul class:list={["wow-tekstrader", `wow-tekstrader--${stil}`]} role="list">
+  {rader.map((r) => (
+    <li class:list={["wow-tekstrad", r.href && "wow-tekstrad--lenke"]}>
+      <div class="wow-tekstrad__hode">
+        <H class="wow-tekstrad__tittel">
+          {r.href ? <a href={r.href}>{r.tittel}</a> : r.tittel}
+        </H>
+        {r.merke && <span class="wow-merke">{r.merke}</span>}
+      </div>
+      <p class="wow-tekstrad__tekst">{r.tekst}</p>
+      {r.side && <p class="wow-tekstrad__side">{r.side}</p>}
+    </li>
+  ))}
+</ul>
+
+<style>
+  .wow-tekstrader {
+    margin: 0;
+    padding: 0;
+    border-bottom: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .wow-tekstrad {
+    position: relative;
+    display: grid;
+    gap: var(--wow-rom-2) var(--wow-luke);
+    padding-block: var(--wow-rom-5);
+    border-top: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .wow-tekstrad__hode {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--wow-rom-2) var(--wow-rom-3);
+  }
+  .wow-tekstrad__tittel {
+    font-size: var(--wow-tekst-h3);
+    font-weight: 700;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+  .wow-tekstrader--display .wow-tekstrad__tittel {
+    font-family: var(--wow-font-display);
+    font-weight: var(--wow-display-vekt);
+    font-stretch: var(--wow-display-bredde);
+    line-height: var(--wow-display-linje-smal);
+    text-transform: uppercase;
+  }
+  .wow-tekstrad__tekst {
+    max-width: var(--wow-maal-brod);
+    color: var(--wow-tekst-dempet);
+  }
+  .wow-tekstrad__side {
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+  }
+  .wow-tekstrad--lenke a {
+    color: var(--wow-tekst);
+    transition: color var(--wow-tid-kort) var(--wow-kurve);
+  }
+  /* Hele raden er trykkflaten; fokusringen står på lenken (og dermed raden). */
+  .wow-tekstrad--lenke a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+  .wow-tekstrad--lenke a:focus-visible {
+    outline: none;
+  }
+  .wow-tekstrad--lenke a:focus-visible::after {
+    outline: var(--wow-kant-2) solid var(--wow-fokus);
+    outline-offset: var(--wow-kant-2);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .wow-tekstrad--lenke:hover a {
+      color: var(--wow-refleks);
+    }
+  }
+  @media (min-width: 1024px) {
+    .wow-tekstrad {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      align-items: baseline;
+    }
+    .wow-tekstrad__hode {
+      grid-column: 1 / 6;
+    }
+    .wow-tekstrad__tekst {
+      grid-column: 6 / 11;
+    }
+    .wow-tekstrad__side {
+      grid-column: 11 / 13;
+      justify-self: end;
+      text-align: right;
+    }
+    .wow-tekstrad:not(:has(.wow-tekstrad__side)) .wow-tekstrad__tekst {
+      grid-column: 6 / 13;
+    }
+  }
+</style>

@@ -1,10 +1,13 @@
 ---
-import Base from "../../layouts/Base.astro";
-import Section from "../../components/Section.astro";
-import Button from "../../components/Button.astro";
-import ContactBlock from "../../components/ContactBlock.astro";
+/**
+ * Artikkel i wow-drakten (wow-undersider.md del 1.7, mønster: cookies-for-samtykke.astro).
+ * «rolig»: ingenting beveger seg uten at leseren har gjort noe. Teksten er uendret fra v1.
+ */
+import MalWow from "../../layouts/MalWow.astro";
+import { SideHode, Artikkelkropp, UrlFelt, Sporsmal, Kontaktblokk } from "../../components/wow/side";
+import Handlinger from "../../components/wow/side/Handlinger.astro";
 import { finnArtikkel } from "../../data/artikler";
-import { artikkel } from "../../data/schema";
+import { artikkel, faqSide } from "../../data/schema";
 import { WCAG_NAVN } from "../../data/wcag";
 import maalinger from "../../data/maalinger.json";
 
@@ -24,74 +27,62 @@ const vanligste = [
   "document-title",
 ] as const;
 
-/**
- * `Article` foerst, saa FAQPage.
- *
- * Artiklene hadde BARE FAQPage foer – ingen Article, ingen datoer, ingen
- * forfatter. Google kunne ikke se at det var en artikkel. Datoene kommer fra
- * artikler.ts og er de samme som staar i broedteksten: `publisert` og datoen
- * innholdet sist ble kontrollert mot kilden.
- */
-const schema = [
-  artikkel(a),
+// ÉN liste: den synlige FAQ-en nederst og FAQPage-markupen bygges av den samme, så de ikke kan
+// si noe ulikt (FAQPage uten synlig FAQ er i strid med Googles retningslinjer; i v1 sto
+// spørsmålene bare i markupen). Spørsmål og svar er ordrett de som sto i markupen.
+const sporsmaal = [
   {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: "Hvor mange WCAG-krav gjelder for private virksomheter i Norge?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "35 av 61 suksesskriterier på nivå A og AA i WCAG 2.0, etter forskrift om universell utforming av IKT-løsninger. Offentlig sektor har siden 1. februar 2023 hatt et strengere krav: 48 kriterier etter WCAG 2.1.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Gjelder kravene små bedrifter?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Ja. Kravene gjelder virksomheter som retter seg mot allmennheten, uavhengig av størrelse. Det finnes ingen terskel for antall ansatte eller omsetning.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Må private virksomheter ha en tilgjengelighetserklæring?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Nei. Tilgjengelighetserklæring er påbudt for offentlig sektor. Private kan publisere en frivillig, men det er ikke et krav.",
-        },
-      },
-    ],
+    q: "Hvor mange WCAG-krav gjelder for private virksomheter i Norge?",
+    a: "35 av 61 suksesskriterier på nivå A og AA i WCAG 2.0, etter forskrift om universell utforming av IKT-løsninger. Offentlig sektor har siden 1. februar 2023 hatt et strengere krav: 48 kriterier etter WCAG 2.1.",
+  },
+  {
+    q: "Gjelder kravene små bedrifter?",
+    a: "Ja. Kravene gjelder virksomheter som retter seg mot allmennheten, uavhengig av størrelse. Det finnes ingen terskel for antall ansatte eller omsetning.",
+  },
+  {
+    q: "Må private virksomheter ha en tilgjengelighetserklæring?",
+    a: "Nei. Tilgjengelighetserklæring er påbudt for offentlig sektor. Private kan publisere en frivillig, men det er ikke et krav.",
   },
 ];
+
+// `Article` først, så FAQPage. Datoene kommer fra artikler.ts og er de samme som står i
+// brødteksten: `publisert` og datoen innholdet sist ble kontrollert mot kilden.
+const schema = [artikkel(a), faqSide(sporsmaal)];
+
+const innhold = [
+  { id: "krav", tittel: "Hvilke krav som gjelder deg" },
+  { id: "omfang", tittel: "Hvor vanlig bruddene er" },
+  { id: "oftest", tittel: "De seks som feiler oftest" },
+  { id: "kostnad", tittel: "Hva det koster å rette" },
+  { id: "sjekk-selv", tittel: "Sjekk din egen side" },
+];
 ---
-<Base
+<MalWow
   tittel={a.tittel}
   beskrivelse={a.beskrivelse}
   schema={schema}
   artikkel={{ publisert: a.publisert, oppdatert: a.oppdatert }}
-  ogBilde="sikkerhet">
-  <Section
-    nivaa={1}
-    n={1}
-    eyebrow="Artikkel"
-    tittel="De 35 WCAG-kravene"
-    ingress="Private nettsider i Norge må oppfylle 35 av 61 suksesskriterier i WCAG 2.0. Det gjelder uansett hvor liten bedriften er. Her er hvilke som feiler oftest, og hva de koster å rette."
-  >
-    <div class="prose">
-      <p class="small faint">
-        Publisert {a.publisert}. Innholdet er kontrollert mot kilden {a.oppdatert}.
-        Dette er ikke juridisk rådgivning.
-      </p>
+  ogBilde="sikkerhet"
+  bevegelse="rolig"
+>
+  <article>
+    <SideHode tittel="De 35 WCAG-kravene" storrelse="tjeneste" bredde="les" brodsmuler />
+    <Artikkelkropp
+      kortSvar="Private nettsider i Norge må oppfylle 35 av 61 suksesskriterier i WCAG 2.0. Det gjelder uansett hvor liten bedriften er. Her er hvilke som feiler oftest, og hva de koster å rette."
+      publisert={a.publisert}
+      oppdatert={a.oppdatert}
+      metaTillegg="Dette er ikke juridisk rådgivning."
+      innhold={innhold}
+    >
+      <UrlFelt slot="verktoy" id="url-artikkel" action={a.verktoy!.href} knapp={a.verktoy!.tekst} />
 
-      <h2>Hvilke krav som gjelder deg</h2>
+      <h2 id="krav">Hvilke krav som gjelder deg</h2>
       <p>
         Kravene står i{" "}
-        <a class="kk-link" href="https://lovdata.no/dokument/SF/forskrift/2013-06-21-732" rel="nofollow">forskrift om universell utforming av IKT-løsninger</a>,
+        <a href="https://lovdata.no/dokument/SF/forskrift/2013-06-21-732" rel="nofollow">forskrift om universell utforming av IKT-løsninger</a>,
         som henger på likestillings- og diskrimineringsloven. For private virksomheter som
         retter seg mot allmennheten er minstekravet{" "}
-        <strong class="body-strong">35 av 61 suksesskriterier på nivå A og AA i WCAG 2.0</strong>.
+        <strong>35 av 61 suksesskriterier på nivå A og AA i WCAG 2.0</strong>.
         Unntaket fra de 61 er blant annet synstolking av video.
       </p>
       <p>
@@ -112,18 +103,18 @@ const schema = [
         WCAG 2.1 nå, slipper du å gjøre jobben to ganger.
       </p>
       <p>
-        <strong class="body-strong">En ting til:</strong> tilgjengelighetserklæring er påbudt
+        <strong>En ting til:</strong> tilgjengelighetserklæring er påbudt
         for offentlig sektor, ikke for private. Du kan publisere en frivillig, men du trenger
         det ikke.
       </p>
 
-      <h2>Hvor vanlig bruddene er</h2>
+      <h2 id="omfang">Hvor vanlig bruddene er</h2>
       <p>
         Vi skannet {utvalg.trukket} tilfeldig trukne nettsider fra foretak med{" "}
-        {utvalg.stoerrelse}. {utvalg.svarte} svarte.
-        <strong class="body-strong">{andel.harMinstEnUuFeil} % hadde minst én feil som kan måles maskinelt.</strong>
+        {utvalg.stoerrelse}. {utvalg.svarte} svarte.{" "}
+        <strong>{andel.harMinstEnUuFeil} % hadde minst én feil som kan måles maskinelt.</strong>
       </p>
-      <p class="small faint">
+      <p class="wow-notat">
         Og det er den viktige presiseringen: en maskin finner bare en del av kravene.
         Kontrast mellom tekst og bakgrunn kan måles. Om tastaturnavigasjonen gir mening,
         om rekkefølgen er logisk, og om en skjermleser faktisk kan fullføre en bestilling,
@@ -131,7 +122,7 @@ const schema = [
         høyere enn {andel.harMinstEnUuFeil} %.
       </p>
 
-      <h2>De seks som feiler oftest</h2>
+      <h2 id="oftest">De seks som feiler oftest</h2>
       <p>
         Dette er feilene vi finner igjen og igjen. Teksten under hver er den samme som
         rapporten vår gir, så du kjenner den igjen når du kjører sjekken.
@@ -143,7 +134,7 @@ const schema = [
         <tbody>
           {vanligste.map((n) => (
             <tr>
-              <td><span class="mono">{WCAG_NAVN[n].krav}</span></td>
+              <td>{WCAG_NAVN[n].krav}</td>
               <td>{WCAG_NAVN[n].tekst}</td>
             </tr>
           ))}
@@ -158,32 +149,32 @@ const schema = [
         bryte med lysegrå tekst på hvit bakgrunn – en stil som har vært på moten lenge.
       </p>
 
-      <h2>Hva det koster å rette</h2>
+      <h2 id="kostnad">Hva det koster å rette</h2>
       <p>
         Vi oppgir ikke et tall per krav, fordi det ville vært et anslag presentert som en
         måling. Men rekkefølgen etter hva som koster minst er den samme nesten hver gang:
       </p>
       <ol>
         <li>
-          <strong class="body-strong">Språkkode og sidetittel.</strong> To linjer i malen.
+          <strong>Språkkode og sidetittel.</strong> To linjer i malen.
           Dette er minutter, ikke timer, og det gjelder hele siden på én gang.
         </li>
         <li>
-          <strong class="body-strong">Alt-tekst på bilder.</strong> Arbeidet er å skrive dem,
+          <strong>Alt-tekst på bilder.</strong> Arbeidet er å skrive dem,
           ikke å legge dem inn. Et dekorativt bilde skal ha tom alt-tekst, ikke en beskrivelse
           – det er like viktig.
         </li>
         <li>
-          <strong class="body-strong">Lenke- og knappetekst.</strong> «Les mer» fem ganger på
+          <strong>Lenke- og knappetekst.</strong> «Les mer» fem ganger på
           samme side er en reell feil. En skjermleser kan liste opp alle lenkene, og da sier
           lista ingenting.
         </li>
         <li>
-          <strong class="body-strong">Kontrast.</strong> Ofte en endring i noen få
+          <strong>Kontrast.</strong> Ofte en endring i noen få
           fargevariabler. Blir dyrt hvis fargene er hardkodet på hvert enkelt element.
         </li>
         <li>
-          <strong class="body-strong">Tastaturnavigasjon og skjemaer.</strong> Her ligger
+          <strong>Tastaturnavigasjon og skjemaer.</strong> Her ligger
           timene. Dette er også det en maskin ikke finner for deg.
         </li>
       </ol>
@@ -193,7 +184,7 @@ const schema = [
         tastatur, er det ikke en justering – det er en ombygging av skjemaet.
       </p>
 
-      <h2>Sjekk din egen side</h2>
+      <h2 id="sjekk-selv">Sjekk din egen side</h2>
       <p>
         Verktøyet vårt kjører en ekte nettleser mot siden din og rapporterer det som kan
         måles maskinelt, med kravnummer og en setning om hva feilen betyr for den som
@@ -204,13 +195,19 @@ const schema = [
         påstår «0 feil» uten det forbeholdet, gir deg en falsk trygghet du kan bli
         ansvarlig for.
       </p>
-    </div>
 
-    <div class="row" style="margin-top: var(--space-6); gap: var(--space-4); flex-wrap: wrap">
-      <Button variant="primary" href={a.verktoy!.href}>{a.verktoy!.tekst}</Button>
-      <Button variant="ghost" href="/artikler/cookies-for-samtykke">Neste: cookies før samtykke</Button>
-    </div>
-  </Section>
+      <Fragment slot="etter">
+        <Sporsmal liste={sporsmaal} id="sporsmal" tittel="Spørsmål og svar om WCAG-kravene" storrelse="les" innfelt />
+        <Handlinger
+          handlinger={[
+            { tekst: a.verktoy!.tekst, href: a.verktoy!.href, type: "primar" },
+            { tekst: "Neste: cookies før samtykke", href: "/artikler/cookies-for-samtykke", type: "strek" },
+          ]}
+        />
+      </Fragment>
+    </Artikkelkropp>
+  </article>
 
-  <ContactBlock />
-</Base>
+  <Kontaktblokk />
+</MalWow>
+

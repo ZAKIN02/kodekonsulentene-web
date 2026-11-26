@@ -1,20 +1,23 @@
 ---
 /**
- * 404 – en blindvei er det dårligste stedet å miste noen.
+ * 404 i wow-drakten (wow-undersider.md del 1.9, «rolig»). En blindvei er det dårligste stedet å
+ * miste noen.
  *
- * Her er terminalen ikke en skjult detalj, men hele siden: du kan skrive
- * kommandoer rett i den, lese andre sider med `cat`, og kjøre den ekte
- * nettsidesjekken med `sjekk <url>` uten å gå noe sted.
+ * Rekkefølge: H1 → gjettet («Mente du …?») → den innfelte terminalen og lista over sider som
+ * finnes. Gjettet står først: en 404 har én jobb nummer én, å få folk videre dit de skulle.
  *
- * Uten JavaScript står feilmeldingen ferdig skrevet i HTML-en og lenkelisten
- * under gjør jobben. Inputfeltet er `disabled` til skriptet slår det på, slik at
- * ingen får et felt som ikke svarer.
+ * Terminalen er ikke en skjult detalj her, men halve siden: du kan skrive kommandoer rett i den,
+ * lese andre sider med `cat`, og kjøre den ekte nettsidesjekken med `sjekk <url>`. MalWow henter
+ * /terminal.js med en gang når siden har [data-kkterm-innfelt]. Monospace er lov i den: det er
+ * en ekte terminal (stil i wow-terminal.css).
+ *
+ * Uten JavaScript står feilmeldingen ferdig skrevet i HTML-en, og lenkelista gjør jobben.
+ * Inputfeltet er `disabled` til skriptet slår det på, så ingen får et felt som ikke svarer.
+ * Snarveikartet («?») ligger i MalWow på alle sider og står derfor ikke her lenger.
  */
-import Base from "../layouts/Base.astro";
-import Section from "../components/Section.astro";
-import Button from "../components/Button.astro";
-import Mentedu from "../components/Mentedu.astro";
-import Snarveikart from "../components/Snarveikart.astro";
+import MalWow from "../layouts/MalWow.astro";
+import { SideHode } from "../components/wow/side";
+import Mentedu from "../components/wow/info/Mentedu.astro";
 import { hovedmeny } from "../data/navigasjon";
 
 // Bare det hovedmenyen ikke allerede har – «Verktøy» ligger der fra før.
@@ -23,71 +26,127 @@ const snarveier = [
   { label: "Kontakt", href: "/kontakt" },
 ].filter((s) => !hovedmeny.some((h) => h.href === s.href));
 ---
-<Base tittel="Siden finnes ikke" beskrivelse="Fant ikke siden du lette etter. Men terminalen virker." noindex>
-  <Section
-    nivaa={1}
-    n={4}
-    eyebrow="404"
+
+<MalWow
+  tittel="Siden finnes ikke"
+  beskrivelse="Fant ikke siden du lette etter. Men terminalen virker."
+  noindex
+  bevegelse="rolig"
+  bookHref="/kontakt"
+>
+  <SideHode
     tittel="Den siden finnes ikke"
     ingress="Lenken er gammel eller feilskrevet. Siden du står på nå er likevel ikke tom – den er en terminal. Skriv noe."
-  >
-    {/* Gjettet står FØRST, over terminalen. En 404 har ett jobb nummer én – å få
-        folk videre dit de skulle – og terminalen er nummer to. Blokken er tom til
-        skriptet finner en sti som er nær nok, og tar da ingen plass. */}
-    <Mentedu />
+    storrelse="tjeneste"
+  />
 
-    <div class="fire-null">
-      <div class="kkterm fire-null__term" data-kkterm-innfelt>
-        <div class="kkterm__bar">
-          <span>~/kodekonsulentene</span>
-          <span class="fire-null__tips">help for kommandoer</span>
-        </div>
-        {/* Plassholder for dem uten JavaScript. Skriptet kjenner den ekte stien
-            og bytter ut hele blokken når det kjører. */}
-        <div class="kkterm__out" role="log" aria-live="polite">{`$ cat /siden-du-ba-om
+  <div class="wow-rute fire-null">
+    {/* Tom til skriptet finner en sti som er nær nok, og tar da ingen plass. */}
+    <Mentedu class="fire-null__gjett" />
+
+    <div class="kkterm fire-null__term" data-kkterm-innfelt>
+      <div class="kkterm__bar">
+        <span>~/kodekonsulentene</span>
+        <span>help for kommandoer</span>
+      </div>
+      {/* Plassholder for dem uten JavaScript. Skriptet kjenner den ekte stien
+          og bytter ut hele blokken når det kjører. */}
+      <div class="kkterm__out" role="log" aria-live="polite">{`$ cat /siden-du-ba-om
 cat: finnes ikke
 `}</div>
-        <div class="kkterm__line">
-          <span class="kkterm__ps" aria-hidden="true">$</span>
-          <label class="visually-hidden" for="kkterm-404">Kommando</label>
-          <input
-            class="kkterm__in"
-            id="kkterm-404"
-            autocomplete="off"
-            spellcheck="false"
-            autocapitalize="off"
-            autocorrect="off"
-            disabled
-            placeholder="krever JavaScript"
-          />
-        </div>
+      <div class="kkterm__line">
+        <span class="kkterm__ps" aria-hidden="true">$</span>
+        <label class="visually-hidden" for="kkterm-404">Kommando</label>
+        <input
+          class="kkterm__in"
+          id="kkterm-404"
+          autocomplete="off"
+          spellcheck="false"
+          autocapitalize="off"
+          autocorrect="off"
+          disabled
+          placeholder="krever JavaScript"
+        />
       </div>
-
-      <nav class="fire-null__ut" aria-label="Sider som finnes">
-        <p class="kk-eyebrow"><span class="kk-eyebrow-n" aria-hidden="true">//</span> <span>Sider som finnes</span></p>
-        <ul>
-          {hovedmeny.map((l) => <li><a class="kk-link" href={l.href}>{l.label}</a></li>)}
-          {snarveier.map((l) => <li><a class="kk-link" href={l.href}>{l.label}</a></li>)}
-        </ul>
-        <Button variant="primary" href="/">Til forsiden</Button>
-        {/* Den som havner på en 404 og blir stående, er ofte den som leter. Da er
-            dette stedet å si at tastaturet gjør mer enn å skrive i terminalen. */}
-        <Snarveikart />
-      </nav>
     </div>
-  </Section>
-</Base>
+
+    <nav class="fire-null__ut" aria-labelledby="fire-null-sider">
+      <h2 class="fire-null__tittel" id="fire-null-sider">Sider som finnes</h2>
+      <ul class="fire-null__liste" role="list">
+        {[...hovedmeny, ...snarveier].map((l) => (
+          <li><a href={l.href}>{l.label}</a></li>
+        ))}
+      </ul>
+      <a class="wow-knapp" href="/">
+        <span class="wow-knapp__tekst">Til forsiden</span>
+      </a>
+    </nav>
+  </div>
+</MalWow>
 
 <style>
-  .fire-null { display: grid; gap: var(--space-6); align-items: start; }
-  @media (min-width: 861px) { .fire-null { grid-template-columns: 1.6fr 1fr; gap: var(--space-7); } }
+  .fire-null {
+    row-gap: var(--wow-rom-7);
+    align-items: start;
+    padding-top: var(--wow-rom-7);
+    padding-bottom: var(--wow-seksjon-tett);
+  }
+  /* Gjettet har sin egen luft under ([data-klar]); uten gjett skal raden ikke ta plass. */
+  .fire-null > :global(.fire-null__gjett) {
+    margin-bottom: calc(-1 * var(--wow-rom-7));
+  }
+  .fire-null > :global(.fire-null__gjett[data-klar]) {
+    margin-bottom: 0;
+  }
 
-  /* .kkterm arver ramme, bakgrunn og skrift fra site.css. Her bare det som
-     skiller den innfelte flaten fra modalen. */
-  .fire-null__term { width: 100%; }
-  .fire-null__term .kkterm__out { min-height: 16rem; max-height: 50svh; }
-  .fire-null__tips { color: var(--on-terminal-muted); }
+  /* .kkterm har ramme, bakgrunn og skrift fra wow-terminal.css. Her bare det som skiller den
+     innfelte flaten fra modalen: full bredde i spalten og høyere utskrift. */
+  .fire-null__term {
+    max-width: none;
+  }
+  .fire-null__term :global(.kkterm__out) {
+    min-height: 16rem;
+    max-height: 50svh;
+  }
 
-  .fire-null__ut { display: grid; gap: var(--space-4); justify-items: start; }
-  .fire-null__ut ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+  .fire-null__ut {
+    display: grid;
+    gap: var(--wow-rom-5);
+    justify-items: start;
+  }
+  .fire-null__tittel {
+    font-size: var(--wow-tekst-h3);
+    font-weight: 700;
+    line-height: 1.15;
+  }
+  .fire-null__liste {
+    display: grid;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border-bottom: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .fire-null__liste a {
+    display: flex;
+    align-items: center;
+    min-height: var(--wow-trykkflate);
+    border-top: var(--wow-kant-1) solid var(--wow-linje);
+    color: var(--wow-tekst);
+    font-size: var(--wow-tekst-ingress);
+    font-weight: 500;
+    transition: color var(--wow-tid-kort) var(--wow-kurve);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .fire-null__liste a:hover {
+      color: var(--wow-refleks);
+    }
+  }
+  @media (min-width: 1024px) {
+    .fire-null__term {
+      grid-column: 1 / 8;
+    }
+    .fire-null__ut {
+      grid-column: 8 / 13;
+    }
+  }
 </style>

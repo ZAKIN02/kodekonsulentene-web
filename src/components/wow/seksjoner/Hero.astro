@@ -1,0 +1,69 @@
+---
+// Hero (wow-briefen, blokk 1). Mediet bak er dagens Higgsfield-sløyfe og skal
+// erstattes av <ScrollWorld /> (se index.astro). Teksten og handlingen ligger
+// i HeroTekst.astro, så den kan flyttes inn i kameraturen uten endringer.
+//
+// Mediet fyller hele bredden og høyden under toppfeltet (kritikerfunn 22).
+// KI-merkingen er én linje i liten tekst nede i hjørnet, ikke en pille (funn 8).
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+import HeroTekst from "./HeroTekst.astro";
+
+const finnes = (sti: string) => existsSync(join(process.cwd(), "public", sti));
+const wow = finnes("/media/wow/hero-16x9.mp4");
+
+const MEDIER = wow
+  ? {
+      desktop: { mp4: "/media/wow/hero-16x9.mp4", webm: "/media/wow/hero-16x9.webm" },
+      mobil: { mp4: "/media/wow/hero-9x16.mp4", webm: "/media/wow/hero-9x16.webm" },
+      poster: {
+        avif: "/media/wow/hero-poster.avif",
+        webp: "/media/wow/hero-poster.webp",
+        mobilAvif: "/media/wow/hero-poster-mobil.avif",
+        mobilWebp: "/media/wow/hero-poster-mobil.webp",
+      },
+    }
+  : {
+      desktop: { mp4: "/scener/hero/hero-1080.mp4", webm: "/scener/hero/hero-1080.webm" },
+      mobil: { mp4: "/scener/hero/hero-mobil.mp4", webm: "/scener/hero/hero-mobil.webm" },
+      poster: {
+        avif: "/scener/hero/poster.avif",
+        webp: null,
+        mobilAvif: "/scener/hero/poster-mobil.avif",
+        mobilWebp: null,
+      },
+    };
+
+const MOBIL = "(max-width: 767px)";
+const DESKTOP = "(min-width: 768px)";
+---
+
+<section class="wow-hero" aria-labelledby="hero-tittel">
+  <div class="wow-hero__medie">
+    <picture class="wow-hero__poster">
+      <source media={MOBIL} srcset={MEDIER.poster.mobilAvif} type="image/avif" />
+      {MEDIER.poster.mobilWebp && <source media={MOBIL} srcset={MEDIER.poster.mobilWebp} type="image/webp" />}
+      <source srcset={MEDIER.poster.avif} type="image/avif" />
+      {MEDIER.poster.webp && <source srcset={MEDIER.poster.webp} type="image/webp" />}
+      <img
+        src={MEDIER.poster.webp ?? MEDIER.poster.avif}
+        alt=""
+        width="1920"
+        height="1080"
+        fetchpriority="high"
+        decoding="async"
+      />
+    </picture>
+    <video class="wow-hero__video" autoplay muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1">
+      <source media={MOBIL} src={MEDIER.mobil.webm} type="video/webm" />
+      <source media={MOBIL} src={MEDIER.mobil.mp4} type="video/mp4" />
+      <source media={DESKTOP} src={MEDIER.desktop.webm} type="video/webm" />
+      <source media={DESKTOP} src={MEDIER.desktop.mp4} type="video/mp4" />
+    </video>
+    <div class="wow-hero__slor" aria-hidden="true"></div>
+  </div>
+
+  <HeroTekst />
+
+  <p class="wow-kolofon wow-hero__kolofon">Illustrasjon laget med KI</p>
+</section>

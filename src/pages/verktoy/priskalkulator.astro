@@ -1,51 +1,41 @@
 ---
-import Base from "../../layouts/Base.astro";
+/**
+ * Priskalkulatoren i wow-drakten (wow-undersider.md del 1.8, runde wow-r8-B2).
+ * Rekkefølge: Verktoyramme (brødsmuler, H1, de fire spørsmålene til venstre og estimatet til
+ * høyre, festet på desktop; på mobil står estimatet rett under skjemaet) → forutsetningene og
+ * ekte opptak → «Hva andre tar» (`#markedet`, forsiden og /priser lenker hit) → kontaktblokk.
+ *
+ * Uendret fra v1: `beregn()` fra src/lib/priskalkyle.ts, id-ene `#kalk`, `#svar`, `#sider`, `#cms`,
+ * `#app` og `#markedet`, feltnavnene `sider`, `cms`, `integrasjon` og `app`, alle tekster og
+ * WebApplication-markupen. Alle beløp kommer fra `priskalkyle.ts`, `priser.ts` og
+ * `markedspriser.ts`. Ingen er skrevet av.
+ *
+ * Ute: opptellingen av summen. Et tall som ruller inn, går mot «fast pris» (Prisrader.astro), og
+ * planen sier at estimatet oppdateres uten animasjon.
+ */
+import MalWow from "../../layouts/MalWow.astro";
+import { Verktoyramme, Seksjon, Prosa, Prisrader, Opptak, Kontaktblokk } from "../../components/wow/side";
 import { verktoy } from "../../data/schema";
-import Scene from "../../components/Scene.astro";
-import Mega from "../../components/Mega.astro";
-import Avslor from "../../components/Avslor.astro";
-import Demo from "../../components/Demo.astro";
-import opptak from "../../data/opptak.json";
-import ContactBlock from "../../components/ContactBlock.astro";
 import { tillegg, timepris, TIMER_PER_EKSTRA_SIDE, TIMER_APP_FRA } from "../../lib/priskalkyle";
 import { markedspriser, markedTimepris } from "../../data/markedspriser";
 import { prisvilkaar, prisenhet } from "../../data/priser";
 
-import "../../styles/scener.css";
-
 const t = timepris();
 /**
- * ENHETEN SKAL ALDRI KUNNE BLI STAAENDE IGJEN.
- *
- * Tusenskillet fra `toLocaleString("nb-NO")` er U+00A0, og det ble byttet ut
- * med et VANLIG mellomrom. Sammen med `class="nowrap"` paa cellen gjorde det
- * ingen skade - cellen brøt uansett ikke. Men da de brede tabellene fikk lov
- * til aa bryte (se «SAMMENLIGNINGSTABELLENE» i src/styles/components.css), ble
- * baade tusenskillet og mellomrommet foran «kr» lovlige bruddpunkter - og
- * tabellen klipper fra hoeyre.
- *
- * Maalt paa 390 px foer rettingen: beloepene sto som «19 900», «35 000»,
- * «80 000» og «499 kr-». Enheten manglet paa den ene siden som finnes for aa
- * fortelle deg hva noe koster.
- *
- * Nu er BAADE tusenskillet og mellomrommet foran «kr» harde mellomrom: et
- * beloep er ett ord. Spennet MELLOM to beloep brytes gjerne - tankestreken er
- * et lovlig bruddpunkt, og det er nettopp der en lang pris skal dele seg.
+ * Et beløp er ett ord: både tusenskillet og mellomrommet foran «kr» er harde mellomrom, så
+ * enheten aldri blir stående igjen på en egen linje. Spennet MELLOM to beløp kan brytes ved
+ * tankestreken.
  */
-const kr = (n: number) => `${n.toLocaleString("nb-NO").replace(/\s/g, "\u00A0")}\u00A0kr`;
+const kr = (n: number) => `${n.toLocaleString("nb-NO").replace(/\s/g, " ")} kr`;
 /**
- * Vertsnavnet som lenketekst i kildekolonnen, uten \u00ABwww.\u00BB.
- *
- * Hele URL-en ville brutt den smale kolonnen, og \u00ABKilde\u00BB som lenketekst sier
- * ingenting til den som navigerer p\u00E5 lenker. Vertsnavnet sier hvem som oppgir
- * prisen \u2013 som er n\u00F8yaktig det leseren skal kunne vurdere.
+ * Vertsnavnet som lenketekst i kildekolonnen, uten «www.». Hele URL-en ville brutt kolonnen, og
+ * «Kilde» som lenketekst sier ingenting til den som navigerer på lenker. Vertsnavnet sier hvem
+ * som oppgir prisen.
  */
 const vert = (u: string) => new URL(u).hostname.replace(/^www\./, "");
 /**
- * `WebApplication` fra `verktoy()` i src/data/schema.ts. Siden hadde ingen
- * strukturerte data foer – hjelperen var skrevet og aldri importert av noen.
- * `price: "0"` og `isAccessibleForFree` er sanne: verktoeyet krever ingen
- * innlogging og koster ingenting.
+ * `WebApplication` fra `verktoy()` i src/data/schema.ts. `price: "0"` og
+ * `isAccessibleForFree` er sanne: verktøyet krever ingen innlogging og koster ingenting.
  */
 const schema = verktoy({
   navn: "Priskalkulator for nettside",
@@ -53,143 +43,121 @@ const schema = verktoy({
     "Fire spoersmaal gir et prisspenn med alle timeanslag og forutsetninger synlige, satt opp mot vaare faste priser og mot markedstall med kilde og dato.",
   sti: "/verktoy/priskalkulator",
 });
+
+const timeanslag = [
+  { navn: "Side utover pakken", verdi: `${TIMER_PER_EKSTRA_SIDE.lav}–${TIMER_PER_EKSTRA_SIDE.hoy} t` },
+  ...tillegg.map((i) => ({ navn: i.navn, verdi: `${i.timerLav}–${i.timerHoy} t` })),
+  { navn: "App", verdi: `fra ${TIMER_APP_FRA} t` },
+];
 ---
-<Base
+
+<MalWow
   tittel="Priskalkulator: hva koster en nettside?"
   beskrivelse="Svar på fire spørsmål og få et prisspenn med alle forutsetninger synlige. Våre priser er faste og står åpent. Markedstallene har kilde og dato."
   schema={[schema]}
+  bevegelse="rolig"
 >
-  <Scene lav>
-    <Mega som="h1" merke="Verktøy" n={1} tekst="Hva koster det?" />
-    <Avslor trinn={1}>
-      <p class="scene__ingress body-lg">Fire spørsmål gir et prisspenn. Du ser hver linje estimatet består av, hvilke timeanslag som ligger bak, og hva andre tar for det samme.</p>
-    </Avslor>
+  <Verktoyramme
+    tittel="Hva koster det?"
+    ingress="Fire spørsmål gir et prisspenn. Du ser hver linje estimatet består av, hvilke timeanslag som ligger bak, og hva andre tar for det samme."
+  >
+    <form slot="skjema" class="kalk" id="kalk" aria-labelledby="kalk-tittel">
+      <h2 class="wow-usynlig" id="kalk-tittel">Fire spørsmål</h2>
 
-    <Avslor>
-    <div class="grid-2">
-      <form class="card" id="kalk">
-        <h2 class="heading">Fire spørsmål</h2>
+      <div class="kalk__sporsmal">
+        <label class="kalk__tittel" for="sider">Hvor mange sider trenger du?</label>
+        <input class="kalk__tall" id="sider" name="sider" type="number" inputmode="numeric" min="1" max="60" value="5" aria-describedby="sider-hint" />
+        <p class="kalk__hint" id="sider-hint">Forside, tjenester, om, kontakt – tell dem du faktisk vil ha.</p>
+      </div>
 
-        <div class="field">
-          <label for="sider">Hvor mange sider trenger du?</label>
-          <input class="control" id="sider" name="sider" type="number" min="1" max="60" value="5" />
-          <span class="hint">Forside, tjenester, om, kontakt – tell dem du faktisk vil ha.</span>
-        </div>
+      <fieldset class="kalk__sporsmal">
+        <legend class="kalk__tittel">Vil du endre innholdet selv?</legend>
+        <label class="kalk__valg">
+          <input type="checkbox" id="cms" name="cms" checked />
+          <span>Ja, jeg vil ha CMS</span>
+        </label>
+        <p class="kalk__hint">Uten CMS endrer vi teksten for deg – det er inkludert i drift.</p>
+      </fieldset>
 
-        <fieldset style="border: 0; padding: 0; margin: 0" class="stack stack--tight">
-          <legend class="body-strong" style="padding: 0">Vil du endre innholdet selv?</legend>
-          <label class="row" style="gap: var(--space-2)">
-            <input type="checkbox" id="cms" name="cms" checked />
-            <span>Ja, jeg vil ha CMS</span>
-          </label>
-          <span class="hint">Uten CMS endrer vi teksten for deg – det er inkludert i drift.</span>
-        </fieldset>
-
-        <fieldset style="border: 0; padding: 0; margin: 0" class="stack stack--tight">
-          <legend class="body-strong" style="padding: 0">Skal noe kobles sammen?</legend>
-          {tillegg.map((i) => (
-            <label class="row" style="gap: var(--space-2); align-items: flex-start">
-              <input type="checkbox" name="integrasjon" value={i.id} style="margin-top: 4px" />
+      <fieldset class="kalk__sporsmal">
+        <legend class="kalk__tittel">Skal noe kobles sammen?</legend>
+        {
+          tillegg.map((i) => (
+            <label class="kalk__valg">
+              <input type="checkbox" name="integrasjon" value={i.id} />
               <span>
                 {i.navn}
-                <br /><span class="small faint">{i.forklaring}</span>
+                <span class="kalk__forklaring">{i.forklaring}</span>
               </span>
             </label>
-          ))}
-        </fieldset>
+          ))
+        }
+      </fieldset>
 
-        <fieldset style="border: 0; padding: 0; margin: 0" class="stack stack--tight">
-          <legend class="body-strong" style="padding: 0">Trenger du en app?</legend>
-          <label class="row" style="gap: var(--space-2)">
-            <input type="checkbox" id="app" name="app" />
-            <span>Ja, iOS- eller intern app</span>
-          </label>
-          <span class="hint">En app estimeres ordentlig etter en samtale. Her får du bare et gulv.</span>
-        </fieldset>
-      </form>
+      <fieldset class="kalk__sporsmal">
+        <legend class="kalk__tittel">Trenger du en app?</legend>
+        <label class="kalk__valg">
+          <input type="checkbox" id="app" name="app" />
+          <span>Ja, iOS- eller intern app</span>
+        </label>
+        <p class="kalk__hint">En app estimeres ordentlig etter en samtale. Her får du bare et gulv.</p>
+      </fieldset>
+    </form>
+    <p slot="noscript">
+      Kalkulatoren krever JavaScript. Hele prislisten står uansett åpent på{" "}
+      <a class="wow-lenke" href="/priser">prissiden</a>.
+    </p>
 
-      <div class="stack">
-        <div id="svar" aria-live="polite"></div>
-        <noscript>
-          <p class="card">
-            Kalkulatoren krever JavaScript. Hele prislisten står uansett åpent på{" "}
-            <a class="kk-link" href="/priser">prissiden</a>.
-          </p>
-        </noscript>
+    <div slot="side" id="svar" aria-live="polite"></div>
+  </Verktoyramme>
+
+  <Seksjon
+    id="forutsetninger"
+    tittel="Dette ligger bak tallene"
+    ingress="En kalkulator som ikke viser forutsetningene sine er bare en påstand med skyvebryter. Her er alle sammen."
+    storrelse="tjeneste"
+  >
+    <div class="wow-vt-stabel">
+      <div class="kalk-bak">
+        <div class="kalk-bak__del">
+          <Prosa>
+            <h3>Timeanslag</h3>
+            {/* {" "} foran beløpet: Astro fjerner linjeskiftet foran et inline-element. */}
+            <p>
+              Pakkeprisene er faste. Alt utover dem regnes ut fra timeprisen på{" "}
+              <span class="wow-ubrutt">{kr(t)}</span> – {prisenhet} – og anslagene under.{" "}
+              <strong>Dette er våre anslag, ikke målte tall.</strong> Spennet er bredt med vilje:
+              en Vipps-integrasjon mot én betaling er noe annet enn mot et abonnement.
+            </p>
+          </Prosa>
+          <Prisrader rader={timeanslag} />
+        </div>
+        <div class="kalk-bak__del">
+          <Prosa>
+            <h3>Vilkår</h3>
+            <ul>
+              {prisvilkaar.map((v) => <li>{v}</li>)}
+              <li>Estimatet erstatter ikke et tilbud. Etter en samtale får du fast pris.</li>
+            </ul>
+          </Prosa>
+        </div>
+      </div>
+
+      {/* Ekte opptak av verktøyet mens det kjører, ikke en render. Det står alene, uten generert
+          bilde ved siden av. */}
+      <div class="wow-vt-opptak">
+        <Opptak navn="priskalkulator" adresse="kodekonsulentene.no/verktoy/priskalkulator" />
       </div>
     </div>
-    </Avslor>
-  </Scene>
+  </Seksjon>
 
-  <Scene n={2} eyebrow="Forutsetninger" tittel="Dette ligger bak tallene" ingress="En kalkulator som ikke viser forutsetningene sine er bare en påstand med skyvebryter. Her er alle sammen.">
-    <Avslor>
-    <div class="grid-2">
-      <div class="stack">
-        {/* {" "} foran beloepet: Astro spiser linjeskiftet foran et inline-element, saa det
-          sto «timeprisen paa950 kr» paa skjermen. Fella er funnet ni ganger i dette
-          prosjektet – usynlig i kilden, synlig i bygget. */}
-        <h3 class="subheading">Timeanslag</h3>
-        <p class="small muted">
-          Pakkeprisene er faste. Alt utover dem regnes ut fra timeprisen på{" "}
-          <span class="mono">{kr(t)}</span> – {prisenhet} – og anslagene under.{" "}
-          <strong>Dette er våre anslag, ikke målte tall.</strong> Spennet er bredt med vilje:
-          en Vipps-integrasjon mot én betaling er noe annet enn mot et abonnement.
-        </p>
-        <dl class="kv">
-          <div><dt>Side utover pakken</dt><dd>{TIMER_PER_EKSTRA_SIDE.lav}–{TIMER_PER_EKSTRA_SIDE.hoy} t</dd></div>
-          {tillegg.map((i) => (
-            <div><dt>{i.navn}</dt><dd>{i.timerLav}–{i.timerHoy} t</dd></div>
-          ))}
-          <div><dt>App</dt><dd>fra {TIMER_APP_FRA} t</dd></div>
-        </dl>
-      </div>
-      <div class="stack">
-        <h3 class="subheading">Vilkår</h3>
-        <ul class="small muted" style="margin: 0; padding-left: var(--space-5); display: grid; gap: var(--space-2)">
-          {prisvilkaar.map((v) => <li>{v}</li>)}
-          <li>Estimatet erstatter ikke et tilbud. Etter en samtale får du fast pris.</li>
-        </ul>
-      </div>
-    </div>
-    </Avslor>
-
-    <Avslor trinn={2}>
-      {/* Ekte opptak av verktøyet mens det kjører, ikke en render. Det BEVISER at
-          sjekken gjør et reelt oppslag i stedet for å antyde det. Demo og ikke
-          SceneFilm: Demo rammer med hårlinje og bildetekst med kildedato, mens
-          SceneFilm toner ned video som bakgrunn – og da leser et bevis som tapet. */}
-      <Demo
-        spill
-        smal={opptak["priskalkulator"].smal}
-        bred={opptak["priskalkulator"].bred}
-        stor={opptak["priskalkulator"].stor}
-        plakat={opptak["priskalkulator"].plakat}
-        tekst={opptak["priskalkulator"].tekst}
-        kilde={opptak["priskalkulator"].kilde}
-      />
-    </Avslor>
-
-    {/* HER LÅ ET GENERERT STILLBILDE (verktoy-pris), OG DET ER FJERNET MED VILJE.
-
-        Det sto rett under det EKTE skjermopptaket av priskalkulator – samme bredde, samme
-        plass i rekken, med en bildetekst som forklarte en metafor (like trinn i en stabel).
-        To figurer etter hverandre der den ene er bevis og den andre er pynt, gjør at
-        leseren vurderer dem likt. Da taper beviset.
-
-        Fire slike bilder lå på de fire verktøysidene. Lagt ved siden av hverandre er
-        de praktisk talt det samme bildet: hengende aluminiumsplater, forskjellen er
-        hvilken kant den grønne streken ligger på. At de er utbyttbare ER beviset på at
-        de ikke bærer informasjon.
-
-        Brandboken rangerer opptak av verktøyet i bruk først, diagram med ekte navn
-        nummer to, og ingenting som nummer tre. Generert materiale står ikke på listen,
-        bortsett fra som bakgrunnstekstur under tekst. Opptaket over er førsteplassen,
-        og det står nå alene. */}
-  </Scene>
-
-  <Scene n={3} id="markedet" eyebrow="Markedet" tittel="Hva andre tar" ingress="Tallene under er ikke våre. De er hentet fra leverandørenes egne nettsider, med kilde og dato, slik at du kan etterprøve dem.">
-    <Avslor>
-    <div class="prose" style="max-width: none">
+  <Seksjon
+    id="markedet"
+    tittel="Hva andre tar"
+    ingress="Tallene under er ikke våre. De er hentet fra leverandørenes egne nettsider, med kilde og dato, slik at du kan etterprøve dem."
+    storrelse="tjeneste"
+  >
+    <Prosa>
       <table>
         <thead>
           <tr>
@@ -198,154 +166,260 @@ const schema = verktoy({
           </tr>
         </thead>
         <tbody>
-          {/* data-kol paa hver celle: under 720 px stables raden til et kort, og
-              da er attributtet det eneste som sier hvilken kolonne verdien kom
-              fra. Regelen staar i src/styles/components.css, under
-              «PROSATABELL SOM KORT», og slaar bare inn naar attributtet finnes. */}
-          {markedspriser.map((m) => (
-            <tr>
-              <td data-kol="Leverandør">{m.leverandor}</td>
-              <td data-kol="Gjelder">{m.gjelder}{m.merknad && <><br /><span class="small faint">{m.merknad}</span></>}</td>
-              <td class="nowrap mono" data-kol="Pris">
-                {m.hoy === null ? `fra ${kr(m.lav ?? 0)}` : m.lav === m.hoy ? kr(m.lav ?? 0) : `${kr(m.lav ?? 0)}–${kr(m.hoy)}`}
-                {m.enhet === "mnd" ? "/mnd" : ""}
-              </td>
-              {/*
-                KILDEKOLONNEN VISTE BARE EN DATO.
-
-                «Sist sjekket 2026-10-07» forteller at NOEN har kontrollert noe,
-                men ikke hvor. Ingressen over lover at du kan etterprøve tallene;
-                den påstanden var sann i repoet og usann på siden. URL-ene har
-                ligget i `m.kilde` hele tiden – her er de, én lenke per tall, slik
-                at en rad med to endepunkter viser to kilder.
-              */}
-              <td class="small faint" data-kol="Kilde">
-                {m.kilde.map((u, i) => (
-                  <>
-                    {i > 0 && <span aria-hidden="true"> · </span>}
-                    <a class="kk-link" href={u} rel="nofollow">{vert(u)}</a>
-                  </>
-                ))}
-                <br />Lest {m.sistSjekket}
-              </td>
-            </tr>
-          ))}
+          {
+            markedspriser.map((m) => (
+              <tr>
+                <th scope="row">{m.leverandor}</th>
+                <td>
+                  {m.gjelder}
+                  {m.merknad && <span class="kalk-merknad">{m.merknad}</span>}
+                </td>
+                <td class="wow-ubrutt">
+                  {m.hoy === null ? `fra ${kr(m.lav ?? 0)}` : m.lav === m.hoy ? kr(m.lav ?? 0) : `${kr(m.lav ?? 0)}–${kr(m.hoy)}`}
+                  {m.enhet === "mnd" ? "/mnd" : ""}
+                </td>
+                {/* Én lenke per kilde, så en rad med to endepunkter viser to kilder. Ingressen
+                    lover at tallene kan etterprøves. */}
+                <td>
+                  {m.kilde.map((u) => (
+                    <a class="kalk-kilde" href={u} rel="nofollow">{vert(u)}</a>
+                  ))}
+                  <span class="kalk-merknad">Lest {m.sistSjekket}</span>
+                </td>
+              </tr>
+            ))
+          }
           <tr>
-            <td data-kol="Leverandør">Timepris i markedet</td>
-            <td data-kol="Gjelder">Byråer / frilansere</td>
-            <td class="nowrap mono" data-kol="Pris">{kr(markedTimepris.byraaLav)}–{kr(markedTimepris.byraaHoy)}/t · {kr(markedTimepris.frilansLav)}–{kr(markedTimepris.frilansHoy)}/t</td>
-            <td class="small faint" data-kol="Kilde">
-              {markedTimepris.kilde.map((u, i) => (
-                <>
-                  {i > 0 && <span aria-hidden="true"> · </span>}
-                  <a class="kk-link" href={u} rel="nofollow">{vert(u)}</a>
-                </>
+            <th scope="row">Timepris i markedet</th>
+            <td>Byråer / frilansere</td>
+            <td class="wow-ubrutt">
+              {kr(markedTimepris.byraaLav)}–{kr(markedTimepris.byraaHoy)}/t
+              <br />
+              {kr(markedTimepris.frilansLav)}–{kr(markedTimepris.frilansHoy)}/t
+            </td>
+            <td>
+              {markedTimepris.kilde.map((u) => (
+                <a class="kalk-kilde" href={u} rel="nofollow">{vert(u)}</a>
               ))}
-              <br />Lest {markedTimepris.sistSjekket}
+              <span class="kalk-merknad">Lest {markedTimepris.sistSjekket}</span>
             </td>
           </tr>
         </tbody>
       </table>
-      <p class="small faint">
+      <p class="wow-notat">
         Leverandørene har kommersielle interesser og ulike definisjoner av «enkel nettside».
         Bruk tallene som markedssignal, ikke som fasit. Flere av dem er oppgitt eks. mva hos
         leverandøren; vår egen timepris er {kr(t)}, og det er {prisenhet}.
       </p>
-    </div>
-    </Avslor>
-  </Scene>
+    </Prosa>
+  </Seksjon>
 
-  <ContactBlock n={4} tittel="Vil du ha fast pris?" ingress="Et estimat er et spenn. Et tilbud er et tall. Tjue minutter på telefon er nok til å gi deg det andre." />
-</Base>
+  <Kontaktblokk
+    tittel="Vil du ha fast pris?"
+    ingress="Et estimat er et spenn. Et tilbud er et tall. Tjue minutter på telefon er nok til å gi deg det andre."
+  />
+</MalWow>
+
+<style>
+  /* De fire spørsmålene: rader med strek, ingen kort. */
+  .kalk {
+    display: grid;
+    border-bottom: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .kalk__sporsmal {
+    display: grid;
+    gap: var(--wow-rom-3);
+    min-width: 0;
+    margin: 0;
+    padding: var(--wow-rom-5) 0;
+    border: 0;
+    border-top: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .kalk__tittel {
+    padding: 0;
+    font-size: var(--wow-tekst-ingress);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  /* En <legend> tegnes ellers oppå fieldsettets kantlinje. Flytende blir den et vanlig barn i
+     rutenettet, og streken står over spørsmålet som på de andre radene. */
+  legend.kalk__tittel {
+    float: left;
+    width: 100%;
+  }
+  .kalk__hint,
+  .kalk__forklaring {
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+    line-height: 1.45;
+  }
+  .kalk__hint {
+    max-width: var(--wow-maal-brod);
+  }
+  .kalk__forklaring {
+    display: block;
+  }
+  .kalk__tall {
+    width: 8rem;
+    min-height: var(--wow-felt);
+    padding: var(--wow-rom-3) var(--wow-rom-4);
+    background: var(--wow-flate);
+    color: var(--wow-tekst);
+    border: var(--wow-kant-1) solid var(--wow-linje-sterk);
+    border-radius: var(--wow-radius-s);
+    font: inherit;
+    font-size: var(--wow-tekst-brod);
+    font-variant-numeric: tabular-nums;
+    accent-color: var(--wow-refleks);
+    transition:
+      border-color var(--wow-tid-kort) var(--wow-kurve),
+      background-color var(--wow-tid-kort) var(--wow-kurve);
+  }
+  .kalk__tall:focus {
+    background: var(--wow-flate-hev);
+    border-color: var(--wow-refleks);
+  }
+  /* Hele raden er trykkflaten. Avkrysningsboksen er nettleserens egen (tastatur og skjermleser
+     følger med), farget med accent-color. */
+  .kalk__valg {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: var(--wow-rom-3);
+    min-height: var(--wow-trykkflate);
+    padding-block: var(--wow-rom-2);
+    cursor: pointer;
+  }
+  .kalk__valg input {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin: 0.2rem 0 0;
+    accent-color: var(--wow-refleks);
+    cursor: pointer;
+  }
+  .kalk__valg:has(input:checked) > span {
+    color: var(--wow-tekst);
+  }
+
+  /* Forutsetningene: timeanslag til venstre, vilkår til høyre. */
+  .kalk-bak {
+    display: grid;
+    gap: var(--wow-rom-7) var(--wow-luke);
+  }
+  .kalk-bak__del {
+    display: grid;
+    gap: var(--wow-rom-5);
+    align-content: start;
+    min-width: 0;
+  }
+  .kalk-bak__del :global(h3) {
+    margin-top: 0;
+  }
+  @media (min-width: 1024px) {
+    .kalk-bak {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+    .kalk-bak__del:first-child {
+      grid-column: 1 / 7;
+    }
+    .kalk-bak__del:last-child {
+      grid-column: 8 / 13;
+    }
+  }
+
+  /* Tabellen: merknad og dato under verdien, én kilde per linje. */
+  .kalk-merknad {
+    display: block;
+    margin-top: var(--wow-rom-1);
+    font-size: var(--wow-tekst-liten);
+  }
+  /* Smal skjerm: tabellen ruller sidelengs (Prosa). «Gjelder» har merknaden under seg og trenger
+     lesebredde, ellers blir raden ti linjer høy. */
+  @media (max-width: 767px) {
+    #markedet td:nth-child(2) {
+      min-width: 18rem;
+    }
+  }
+  /* Hver kilde på egen linje, og høy nok til å treffes (WCAG 2.5.8: minst 24 px). */
+  .kalk-kilde {
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    min-height: 1.75rem;
+  }
+</style>
+
 <style is:global>
-  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
-     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
-     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
-     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
-  .scene:first-of-type .mega .ord,
-  .scene:first-of-type .mega-blokk,
-  /* Bare FØRSTE avdekking i første scene, ikke hele scenen.
-     Regelen fantes for at innhold over folden ikke skal ligge usynlig og vente på
-     en scroll som aldri kommer. Men `.scene:first-of-type .avslor` traff ALLE
-     avdekkinger i scenen – og /caser og /handbok er én eneste scene, så den slo av
-     all bevegelse på hele siden. Målt: 0 bevegelsesøyeblikk, 5,5 skjermhøyder uten
-     at ett element endrer seg. */
-  .scene:first-of-type .avslor:first-of-type {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
+  /* Estimatet settes inn av skriptet, så stilen må være global. */
+  .kalk-svar {
+    display: grid;
+    gap: var(--wow-rom-4);
   }
-
-  /* Avkrysningen svarer med én gang, uten en linje JavaScript.
-     :has() leser :checked rett fra DOM-en, så dette virker like godt med JS slått
-     av – og kalkulatorens egen utregning er det eneste på siden som krever JS.
-     Bruksandel 94,82 %, bredest støttet av alt i docs/research-teknikker.md.
-     Uten støtte står raden som før: ingen markør, fullt lesbar tekst. */
-  /* Kontrollene tegnes av operativsystemet og kom i systemets blå. På en side der
-     aksenten er limegrønn leses de som fremmedelementer. `accent-color` er den
-     eneste måten å fargelegge en avkrysningsboks uten å bygge den på nytt – og en
-     hjemmelaget avkrysningsboks taper tastaturoppførsel og skjermleserrolle.
-
-     Hører egentlig hjemme globalt. Reglene for dette ligger i
-     src/styles/interaksjon.css, men den fila importeres BARE av /lab/interaksjon –
-     se rapporten. Her settes den på sidene jeg eier. */
-  #kalk input[type="checkbox"],
-  #kalk input[type="number"] {
-    accent-color: var(--accent);
+  .kalk-svar__pakke {
+    font-weight: 700;
   }
-
-  #kalk label.row {
-    /* Markøren legges i kortets egen luft, ikke i teksten. Padding alene smalnet
-       tekstkolonnen med 12 px, og «Booking» brøt til en ekstra linje – raden
-       vokste fra 80 til 106 px. Negativ marg av samme størrelse gir tilbake
-       nøyaktig den bredden teksten hadde før. Målt, ikke antatt. */
-    margin-inline-start: calc(-1 * var(--space-3));
-    padding-inline-start: calc(var(--space-3) - 2px);
-    border-inline-start: 2px solid transparent;
-    border-radius: var(--radius-sm);
-    transition-property: border-color, color;
-    transition-duration: 140ms;
-    transition-timing-function: ease;
+  /* Sidens store tall. Et spenn får bryte etter tankestreken, aldri midt i et beløp. */
+  .kalk-svar__sum {
+    font-family: var(--wow-font-display);
+    font-weight: var(--wow-display-vekt);
+    font-stretch: var(--wow-display-bredde);
+    font-size: var(--wow-tekst-pris);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: var(--wow-display-sperring);
+    line-height: 1;
   }
-  #kalk label.row:has(input:checked) {
-    border-inline-start-color: var(--accent);
-    color: var(--accent-text);
+  .kalk-svar__enhet,
+  .kalk-svar__hvorfor {
+    color: var(--wow-tekst-dempet);
   }
-
-  @media (prefers-reduced-motion: reduce) {
-    #kalk label.row { transition-duration: 0.01ms; }
+  .kalk-svar__enhet {
+    margin-top: calc(-1 * var(--wow-rom-2));
+    font-size: var(--wow-tekst-liten);
   }
-
-  /* Skjemaet er sidens handling, og det skal aldri vente på en scroll.
-     Unntaket over gjelder bare FØRSTE avdekking. Den andre inneholder selve
-     skjemaet, og på 900 px høyde ligger det akkurat i foldekanten: målt 0,56
-     opasitet ved innlasting på /verktoy/cookie-sjekk, 0,87 på kalkulatoren.
-     Det er view()-tidslinjen som gjør jobben sin – elementet er delvis inne i
-     bildet – men en halvgjennomsiktig inngang er feil på den siden som skal få
-     folk til å kjøre sjekken.
-
-     :has(form) treffer nøyaktig den blokken og ingenting annet. Uten støtte for
-     :has() faller siden tilbake til dagens oppførsel: innholdet er fortsatt der
-     og blir helt synlig ved første scroll. Degraderingen går mot «synlig». */
-  /* Ikke barnekombinator: .avslor ligger inne i .scene__inner, ikke rett under
-     .scene. Med «>» traff regelen ingenting – målt på /verktoy/cookie-sjekk, der
-     skjemaet sto på 0,56 opasitet ved innlasting selv med unntaket på plass. */
-  /* Ingressen treffes på hva den ER, ikke på posisjon. `:first-of-type` gjelder
-     TAGG, ikke klasse: står det et annet <div> foran avdekkingen, peker den et
-     annet sted. Målt på /verktoy/cookie-sjekk – ingressen lå på 0,78 ved
-     innlasting selv med unntaket på plass. */
-  .scene:first-of-type .avslor:has(.scene__ingress),
-  .scene:first-of-type .avslor:has(form) {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
+  .kalk-svar__hvorfor {
+    max-width: var(--wow-maal-brod);
+    text-wrap: pretty;
+  }
+  .kalk-linjer {
+    margin: 0;
+    border-bottom: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .kalk-linjer > div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--wow-rom-4);
+    padding-block: var(--wow-rom-3);
+    border-top: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .kalk-linjer dt {
+    min-width: 0;
+  }
+  .kalk-linjer dt span {
+    display: block;
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+  }
+  .kalk-linjer dd {
+    margin: 0;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .kalk-svar .wow-knapp {
+    justify-self: start;
+  }
+  @media (max-width: 599px) {
+    .kalk-svar .wow-knapp {
+      justify-self: stretch;
+    }
   }
 </style>
 
 <script>
   import { beregn, formaterKr, type Integrasjon } from "../../lib/priskalkyle.ts";
-  // Enheten under summen hentes, den skrives ikke. Sto «eks. mva» her mens
-  // foretaket ikke er mva-registrert – se src/data/priser.ts.
+  // Enheten under summen hentes, den skrives ikke (src/data/priser.ts).
   import { prisenhet } from "../../data/priser.ts";
 
   const skjema = document.querySelector<HTMLFormElement>("#kalk")!;
@@ -353,6 +427,9 @@ const schema = verktoy({
 
   const esc = (s: unknown) =>
     String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
+
+  /** Et spenn kan brytes etter tankestreken (usynlig bruddpunkt), aldri midt i et beløp. */
+  const spenn = (lav: number, hoy: number) => `${formaterKr(lav)}–​${formaterKr(hoy)}`;
 
   function tegn() {
     const data = new FormData(skjema);
@@ -367,111 +444,44 @@ const schema = verktoy({
       .map((l) => {
         const belop = l.lav === l.hoy ? formaterKr(l.lav) : `${formaterKr(l.lav)}–${formaterKr(l.hoy)}`;
         const anslag = l.anslag
-          ? `<br><span class="small faint">${l.anslag.timerLav === l.anslag.timerHoy ? `fra ${l.anslag.timerLav}` : `${l.anslag.timerLav}–${l.anslag.timerHoy}`} timer · anslag</span>`
+          ? `<span>${l.anslag.timerLav === l.anslag.timerHoy ? `fra ${l.anslag.timerLav}` : `${l.anslag.timerLav}–${l.anslag.timerHoy}`} timer, anslag</span>`
           : "";
-        return `<div><dt>${esc(l.tekst)}${anslag}</dt><dd class="nowrap">${belop}</dd></div>`;
+        return `<div><dt>${esc(l.tekst)}${anslag}</dt><dd>${belop}</dd></div>`;
       })
       .join("");
 
-    const sum =
-      e.lav === e.hoy
-        ? `${e.aapentOppe ? "fra " : ""}${formaterKr(e.lav)}`
-        : `${formaterKr(e.lav)}–${formaterKr(e.hoy)}`;
+    const sum = e.lav === e.hoy ? `${e.aapentOppe ? "fra " : ""}${formaterKr(e.lav)}` : spenn(e.lav, e.hoy);
 
+    // Ingen opptelling: estimatet bytter verdi med en gang (wow-undersider.md del 1.8).
     svar.innerHTML = `
-      <div class="card">
-        <p class="kk-eyebrow"><span class="kk-eyebrow-n" aria-hidden="true">//</span><span>${esc(e.pakke)}-pakken</span></p>
-        <p class="mono-stat" data-sum>${sum}</p>
-        <p class="small faint">${prisenhet}${e.aapentOppe ? " · gulv, ikke tak" : ""}</p>
-        <p class="muted">${esc(e.pakkeBegrunnelse)}</p>
-        <dl class="kv">${linjer}</dl>
-        <dl class="kv">
-          <div><dt>Etter lansering</dt><dd class="nowrap">${esc(e.loepende.pris)}</dd></div>
+      <div class="kalk-svar">
+        <p class="kalk-svar__pakke">${esc(e.pakke)}-pakken</p>
+        <p class="kalk-svar__sum" data-sum>${sum}</p>
+        <p class="kalk-svar__enhet">${prisenhet}${e.aapentOppe ? " – gulv, ikke tak" : ""}</p>
+        <p class="kalk-svar__hvorfor">${esc(e.pakkeBegrunnelse)}</p>
+        <dl class="kalk-linjer">
+          ${linjer}
+          <div><dt>Etter lansering</dt><dd>${esc(e.loepende.pris)}</dd></div>
         </dl>
-        <a class="kk-btn kk-btn-primary" href="/kontakt">Få fast pris</a>
-      </div>
-      <details class="card card--sunken" style="margin-top: var(--space-4)">
-        <summary class="body-strong" style="cursor: pointer">Hva estimatet forutsetter</summary>
-        <ul class="small muted" style="margin: var(--space-3) 0 0; padding-left: var(--space-5); display: grid; gap: var(--space-2)">
-          ${e.forutsetninger.map((f) => `<li>${esc(f)}</li>`).join("")}
-        </ul>
-      </details>`;
-
-    animerSum(e);
+        <a class="wow-knapp" href="/kontakt"><span class="wow-knapp__tekst">Få fast pris</span></a>
+        <div class="wow-prosa">
+          <details>
+            <summary>Hva estimatet forutsetter</summary>
+            <ul class="wow-notat">${e.forutsetninger.map((f) => `<li>${esc(f)}</li>`).join("")}</ul>
+          </details>
+        </div>
+      </div>`;
   }
 
-  /**
-   * Summen teller til den nye verdien når du huker av noe.
-   *
-   * Hvorfor i det hele tatt: kalkulatoren er sidens eneste ekte interaksjon, og
-   * et tall som bare bytter verdi mellom to malinger leses ikke som et svar på
-   * det du nettopp gjorde. Opptellingen knytter handlingen til resultatet.
-   *
-   * Hvorfor skrevet her og ikke gjenbrukt fra Nokkeltall: den teller ÉN gang når
-   * raden kommer i syne, styrt av en IntersectionObserver. Her endrer tallet seg
-   * hver gang du rører skjemaet, og det er en annen mekanikk.
-   *
-   * Første visning står ferdig. En opptelling fra null ved innlasting ville sagt
-   * at noe skjedde, mens brukeren ennå ikke har gjort noe.
-   */
-  const REDUSERT = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let forrige: { lav: number; hoy: number } | null = null;
-  let raf = 0;
-
-  function animerSum(e: { lav: number; hoy: number; aapentOppe: boolean }) {
-    const el = svar.querySelector<HTMLElement>("[data-sum]");
-    if (!el) return;
-
-    const maal = { lav: e.lav, hoy: e.hoy };
-    const fra = forrige;
-    forrige = maal;
-    if (REDUSERT || !fra || (fra.lav === maal.lav && fra.hoy === maal.hoy)) return;
-
-    cancelAnimationFrame(raf);
-    // Spennet avgjøres av MÅLET, ikke av de interpolerte tallene. Ellers blinker
-    // «fra 14 900 kr» fram i det ene bildet der lav tilfeldigvis passerer hoy.
-    const spenn = maal.lav !== maal.hoy;
-    const tekst = (lav: number, hoy: number) =>
-      spenn
-        ? `${formaterKr(lav)}\u2013${formaterKr(hoy)}`
-        : `${e.aapentOppe ? "fra " : ""}${formaterKr(lav)}`;
-
-    // Bredden låses til sluttverdien først. Uten den vokser elementet mens
-    // sifrene skifter, og hele kortet rykker sidelengs under avkryssingen.
-    // Låsen regnes ÉN gang og brukes som fast pikselverdi – leses den på nytt
-    // hver ramme, mater den seg selv.
-    const laas = `${el.getBoundingClientRect().width}px`;
-
-    const VARIGHET = 420;
-    const start = performance.now();
-    const steg = (naa: number) => {
-      // Elementet slås opp på nytt hver ramme, ikke én gang utenfor løkken.
-      // Avkryssing utløser BÅDE «input» og «change», så tegn() kjører to ganger
-      // i samme tikk og bytter ut hele kortet. Holdt vi på referansen fra første
-      // ramme, skrev vi resten av animasjonen til et element som ikke lenger satt
-      // i dokumentet – tallet hoppet rett til sluttverdien, og opptellingen var
-      // usynlig. Målt: 1 unik verdi gjennom hele endringen.
-      const n = svar.querySelector<HTMLElement>("[data-sum]");
-      if (!n) return;
-      n.style.minInlineSize = laas;
-
-      const t = Math.min(1, (naa - start) / VARIGHET);
-      const k = 1 - Math.pow(1 - t, 3);
-      n.textContent = tekst(
-        Math.round(fra.lav + (maal.lav - fra.lav) * k),
-        Math.round(fra.hoy + (maal.hoy - fra.hoy) * k),
-      );
-      if (t < 1) raf = requestAnimationFrame(steg);
-      else {
-        n.textContent = tekst(maal.lav, maal.hoy);
-        n.style.minInlineSize = "";
-      }
-    };
-    raf = requestAnimationFrame(steg);
+  // Detaljene åpnes av brukeren. Når skjemaet tegner estimatet på nytt, skal de ikke klappe sammen.
+  function tegnOgBehold() {
+    const aapen = svar.querySelector("details")?.open ?? false;
+    tegn();
+    if (aapen) svar.querySelector("details")!.open = true;
   }
 
-  skjema.addEventListener("input", tegn);
-  skjema.addEventListener("change", tegn);
+  skjema.addEventListener("input", tegnOgBehold);
+  skjema.addEventListener("change", tegnOgBehold);
   skjema.addEventListener("submit", (ev) => ev.preventDefault());
   tegn();
 </script>

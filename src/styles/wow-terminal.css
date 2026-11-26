@@ -1,0 +1,300 @@
+/* Terminalen og snarveikartet i wow-drakt (wow-undersider.md del 3, «Terminalstil»).
+   Lastes av MalWow på alle sider. Markupen til terminalen lages av /terminal.js (modal på ~ og
+   Ctrl/Cmd+K, innfelt på /404 og /terminal med [data-kkterm-innfelt]); snarveikartet er
+   side/Snarveier.astro. Bare var(--wow-*). Monospace her er lov: dette er den ekte terminalen. */
+
+/* ───────────────────────────────────────────────────────── terminalen ── */
+
+.kkterm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--wow-lag-hopp);
+  display: grid;
+  align-items: start;
+  justify-items: center;
+  padding: var(--wow-rom-8) var(--wow-marg);
+  background: var(--wow-slor-tung);
+}
+
+.kkterm {
+  /* terminal.js skriver nordlys-raden med style="color:var(--accent)". */
+  --accent: var(--wow-refleks);
+  width: 100%;
+  max-width: 45rem;
+  overflow: hidden;
+  border: var(--wow-kant-1) solid var(--wow-linje-sterk);
+  border-radius: var(--wow-radius-m);
+  background: var(--wow-flate);
+  color: var(--wow-tekst);
+  font-family: var(--wow-font-kode);
+  font-size: var(--wow-tekst-liten);
+  line-height: 1.6;
+  box-shadow: var(--wow-skygge-ramme);
+}
+
+.kkterm__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--wow-rom-2);
+  padding: var(--wow-rom-2) var(--wow-rom-4);
+  border-bottom: var(--wow-kant-1) solid var(--wow-linje);
+  color: var(--wow-tekst-dempet);
+  font-size: var(--wow-tekst-mikro);
+}
+
+.kkterm__bar span:last-child {
+  margin-left: auto;
+}
+
+.kkterm__out {
+  margin: 0;
+  padding: var(--wow-rom-4);
+  max-height: 46vh;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.kkterm__out b {
+  color: var(--wow-tekst);
+  font-weight: 400;
+}
+
+.kkterm__out i {
+  color: var(--wow-tekst-dempet);
+  font-style: normal;
+}
+
+.kkterm__out u {
+  color: var(--wow-refleks);
+  text-decoration: none;
+}
+
+.kkterm .kk-ok {
+  color: var(--wow-refleks);
+}
+
+.kkterm .kk-warn,
+.kkterm .kk-fail {
+  color: var(--wow-feil);
+}
+
+.kkterm__line {
+  display: flex;
+  align-items: center;
+  gap: var(--wow-rom-2);
+  padding: var(--wow-rom-3) var(--wow-rom-4);
+  border-top: var(--wow-kant-1) solid var(--wow-linje);
+}
+
+.kkterm__ps {
+  flex: none;
+  color: var(--wow-refleks);
+}
+
+.kkterm__in {
+  flex: 1;
+  min-width: 0;
+  min-height: var(--wow-rom-6);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--wow-tekst);
+  font: inherit;
+}
+
+.kkterm__in:focus-visible {
+  outline: none;
+}
+
+.kkterm__in:disabled {
+  color: var(--wow-tekst-svak);
+}
+
+.kkterm__line:focus-within {
+  outline: var(--wow-kant-2) solid var(--wow-fokus);
+  outline-offset: calc(-1 * var(--wow-kant-2));
+}
+
+/* terminal.js bruker v1-klassen for den usynlige etiketten. */
+.kkterm .visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* «Trykk ~ for terminal» vises ikke i wow: terminalen er en skjult ekstra, og inngangen står i
+   bunnmenyen («Terminal (~)») og i snarveikartet. */
+.kkterm__hint {
+  display: none;
+}
+
+/* ─────────────────────────────────────────────────────── snarveikartet ── */
+
+.wow-snar {
+  width: min(42.5rem, calc(100vw - 2 * var(--wow-marg)));
+  max-height: calc(100vh - 2 * var(--wow-rom-7));
+  padding: 0;
+  border: var(--wow-kant-1) solid var(--wow-linje-sterk);
+  border-radius: var(--wow-radius-m);
+  background: var(--wow-flate);
+  color: var(--wow-tekst);
+  box-shadow: var(--wow-skygge-ramme);
+}
+
+.wow-snar::backdrop {
+  background: var(--wow-slor-tung);
+}
+
+.wow-snar__ramme {
+  display: grid;
+  gap: var(--wow-rom-5);
+  padding: var(--wow-rom-5);
+}
+
+.wow-snar__topp {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--wow-rom-4);
+}
+
+.wow-snar__tittel {
+  margin: 0;
+  font-family: var(--wow-font-display);
+  font-weight: var(--wow-display-vekt);
+  font-stretch: var(--wow-display-bredde);
+  font-size: var(--wow-tekst-h3);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.wow-snar__lukk {
+  min-height: var(--wow-trykkflate);
+  min-width: var(--wow-trykkflate);
+  padding: 0 var(--wow-rom-3);
+  border: var(--wow-kant-1) solid var(--wow-linje-sterk);
+  border-radius: var(--wow-radius-pille);
+  background: transparent;
+  color: var(--wow-tekst);
+  font: inherit;
+  font-size: var(--wow-tekst-liten);
+  cursor: pointer;
+}
+
+.wow-snar__lukk:hover {
+  border-color: var(--wow-tekst);
+}
+
+.wow-snar__spalter {
+  display: grid;
+  gap: var(--wow-rom-5);
+}
+
+@media (min-width: 561px) {
+  .wow-snar__spalter {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--wow-rom-6);
+  }
+}
+
+.wow-snar__spalte {
+  display: grid;
+  gap: var(--wow-rom-3);
+  align-content: start;
+}
+
+.wow-snar__under {
+  margin: 0;
+  color: var(--wow-tekst-dempet);
+  font-size: var(--wow-tekst-liten);
+  font-weight: 600;
+}
+
+.wow-snar__liste {
+  display: grid;
+  margin: 0;
+}
+
+.wow-snar__rad {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--wow-rom-3);
+  padding-block: var(--wow-rom-2);
+  border-top: var(--wow-kant-1) solid var(--wow-linje);
+  font-size: var(--wow-tekst-liten);
+}
+
+.wow-snar__rad dt,
+.wow-snar__rad dd {
+  margin: 0;
+}
+
+.wow-snar__rad dd {
+  color: var(--wow-tekst-dempet);
+}
+
+.wow-snar__rad dd a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--wow-rom-6);
+  color: var(--wow-tekst);
+  text-decoration: underline;
+  text-decoration-color: var(--wow-linje-sterk);
+  text-underline-offset: 0.2em;
+}
+
+.wow-snar__rad dd a:hover {
+  color: var(--wow-refleks);
+}
+
+/* Tastene: 24 × 24 som minst (WCAG 2.5.8). Systemets monospace, fordi det er taster. */
+.wow-snar__kbd {
+  display: inline-grid;
+  place-items: center;
+  min-inline-size: var(--wow-rom-6);
+  min-block-size: var(--wow-rom-6);
+  padding-inline: var(--wow-rom-2);
+  border: var(--wow-kant-1) solid var(--wow-linje-sterk);
+  border-radius: var(--wow-radius-s);
+  background: var(--wow-bunn);
+  color: var(--wow-tekst);
+  font-family: var(--wow-font-kode);
+  font-size: var(--wow-tekst-mikro);
+}
+
+.wow-snar__liten {
+  margin: 0;
+  color: var(--wow-tekst-dempet);
+  font-size: var(--wow-tekst-mikro);
+}
+
+.wow-snar__fot {
+  padding-top: var(--wow-rom-3);
+  border-top: var(--wow-kant-1) solid var(--wow-linje);
+}
+
+/* Brikken som viser at «g» venter. Nede til venstre, aldri i veien for en lenke. */
+.wow-snar__venter {
+  position: fixed;
+  bottom: var(--wow-rom-4);
+  left: var(--wow-rom-4);
+  z-index: var(--wow-lag-meny);
+  margin: 0;
+  padding: var(--wow-rom-1) var(--wow-rom-3);
+  border: var(--wow-kant-1) solid var(--wow-linje-sterk);
+  border-radius: var(--wow-radius-s);
+  background: var(--wow-flate);
+  color: var(--wow-tekst);
+  font-family: var(--wow-font-kode);
+  font-size: var(--wow-tekst-mikro);
+  pointer-events: none;
+}
+
+.wow-snar__venter[hidden] {
+  display: none;
+}

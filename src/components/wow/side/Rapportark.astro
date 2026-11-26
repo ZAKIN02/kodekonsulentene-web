@@ -1,0 +1,62 @@
+---
+/**
+ * Rapportarket: målingene som rader, så adressen og datoen som bunnlinje (wow-undersider.md del 3).
+ * Samme form som befaringsrapporten på forsiden (Befaring.astro): samme bunnlinje, samme klasser.
+ *
+ *   <Rapportark adresse="kodekonsulentene.no" dato="Målt 18. nov. 2026" datoIso="2026-11-18">
+ *     <Maaling navn="Cookies før samtykke" verdi="0" status="bestatt" />
+ *     …
+ *   </Rapportark>
+ *
+ * Verktøyene fyller lista i nettleseren: `listeId` gir <ol> en id, og skriptet setter inn
+ * maalingHtml()-rader. Tittelen har tabindex="-1", så skriptet kan flytte fokus dit når
+ * resultatet er klart (`tittelId`).
+ */
+interface Props {
+  tittel?: string;
+  /** Overskriftsnivå. Standard 2. */
+  niva?: 2 | 3;
+  /** Vis tittelen bare for skjermlesere (som på forsiden). */
+  skjultTittel?: boolean;
+  adresse?: string;
+  /** Datoen slik den står: «Målt 18. nov. 2026». */
+  dato?: string;
+  datoIso?: string;
+  tittelId?: string;
+  listeId?: string;
+  class?: string;
+}
+const {
+  tittel = "Befaringsrapport",
+  niva = 2,
+  skjultTittel = false,
+  adresse,
+  dato,
+  datoIso,
+  tittelId,
+  listeId,
+  class: klasse,
+} = Astro.props;
+const H = niva === 3 ? "h3" : "h2";
+---
+
+<div class:list={["wow-rapportark", "wow-rapportark--side", klasse]}>
+  <H class:list={["wow-rapportark__tittel", skjultTittel && "wow-usynlig"]} id={tittelId} tabindex={tittelId ? "-1" : undefined}>{tittel}</H>
+  <ol class="wow-maalinger" role="list" id={listeId}>
+    <slot />
+  </ol>
+  {(adresse || dato) && (
+    <div class="wow-rapportark__fot">
+      {adresse && (
+        <p class="wow-befaring__adresse">
+          <span class="wow-befaring__prikk" aria-hidden="true"></span>
+          {adresse}
+        </p>
+      )}
+      {dato && <p class="wow-rapportark__dato">{datoIso ? <time datetime={datoIso}>{dato}</time> : dato}</p>}
+    </div>
+  )}
+</div>
+
+{/* Stilen står i wow.css («lampe og måling»): verktøyskriptene lager samme markup i
+    nettleseren med rapportarkHtml() i maaling.ts, og den bærer ikke komponentens scope-id. */}

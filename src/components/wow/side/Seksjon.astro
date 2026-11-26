@@ -1,0 +1,126 @@
+---
+/**
+ * En seksjon på en underside (wow-undersider.md del 1 og 3): overskrift, valgfri ingress og
+ * innholdet i slotten. Luft over overskriften, aldri under (--wow-seksjon, eller -tett).
+ *
+ *   <Seksjon tittel="Hva du får" storrelse="tjeneste" tone="flate"> <Kravrader … /> </Seksjon>
+ *   <Seksjon tittel="Hvilke krav som gjelder deg" storrelse="les" bredde="les" tett> … </Seksjon>
+ *
+ * storrelse:  stor      Archivo, versaler, --wow-tekst-stor (høyst tre per side)
+ *             tjeneste  Archivo, versaler, --wow-tekst-tjeneste (standard)
+ *             les       Schibsted 700, setningsform, --wow-tekst-les-h2 (lesesidene)
+ * tone:       bunn (standard) eller flate (høyst én seksjon av gangen)
+ * bredde:     full (12 spalter) eller les (spalte 3–10 fra 1024 px)
+ *
+ * På «film» løftes overskriften inn linje for linje (data-split); på «rolig» står den stille,
+ * fordi skriptet ikke lastes der. Lesestørrelsen deles aldri.
+ */
+import { tittelKlasser, slug } from "./tittel";
+
+interface Props {
+  id?: string;
+  tittel: string;
+  niva?: 2 | 3;
+  ingress?: string;
+  storrelse?: "stor" | "tjeneste" | "les";
+  tone?: "bunn" | "flate";
+  bredde?: "full" | "les";
+  tett?: boolean;
+  class?: string;
+}
+const {
+  id,
+  tittel,
+  niva = 2,
+  ingress,
+  storrelse = "tjeneste",
+  tone = "bunn",
+  bredde = "full",
+  tett = false,
+  class: klasse,
+} = Astro.props;
+const H = niva === 3 ? "h3" : "h2";
+const tittelId = `${id ?? slug(tittel)}-tittel`;
+const klasser =
+  storrelse === "les" ? ["wow-les-h2"] : tittelKlasser(niva === 3 ? "h3" : storrelse, tittel);
+---
+
+<section
+  class:list={["wow-seksjon", `wow-seksjon--${tone}`, `wow-seksjon--${bredde}`, tett && "wow-seksjon--tett", klasse]}
+  id={id}
+  aria-labelledby={tittelId}
+>
+  <div class="wow-rute">
+    <div class:list={["wow-seksjon__hode", ingress && "wow-seksjon__hode--ingress"]}>
+      <H id={tittelId} class:list={klasser} data-split={storrelse === "les" ? undefined : "lines"}>{tittel}</H>
+      {ingress && <p class="wow-seksjon__ingress">{ingress}</p>}
+    </div>
+    <div class="wow-seksjon__innhold">
+      <slot />
+    </div>
+  </div>
+</section>
+
+<style>
+  .wow-seksjon {
+    padding-top: var(--wow-seksjon);
+  }
+  .wow-seksjon--tett {
+    padding-top: var(--wow-seksjon-tett);
+  }
+  .wow-seksjon--flate {
+    margin-top: var(--wow-seksjon);
+    padding-block: var(--wow-seksjon);
+    background: var(--wow-flate);
+  }
+  .wow-seksjon--flate.wow-seksjon--tett {
+    margin-top: var(--wow-seksjon-tett);
+    padding-block: var(--wow-seksjon-tett);
+  }
+  .wow-seksjon__hode {
+    display: grid;
+    /* minmax(0, …): uten den vokser spalten med det lengste ordet i overskriften, og et ord på
+       17 tegn («Ytelsesbudsjettet») ga sidelengs rulling ved 320 px. */
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--wow-rom-4) var(--wow-luke);
+    margin-bottom: clamp(var(--wow-rom-6), 4vw, var(--wow-rom-7));
+  }
+  .wow-seksjon--les .wow-seksjon__hode {
+    margin-bottom: var(--wow-rom-5);
+  }
+  .wow-seksjon__ingress {
+    max-width: var(--wow-maal-ingress);
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-ingress);
+    line-height: 1.35;
+    text-wrap: pretty;
+  }
+  .wow-seksjon--les .wow-seksjon__ingress {
+    max-width: var(--wow-maal-brod);
+    font-size: var(--wow-tekst-brod);
+    line-height: var(--wow-linje-les);
+  }
+  @media (min-width: 768px) {
+    .wow-seksjon__hode,
+    .wow-seksjon--les .wow-seksjon__innhold {
+      grid-column: 1 / 11;
+    }
+  }
+  @media (min-width: 1024px) {
+    .wow-seksjon--full .wow-seksjon__hode--ingress {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      grid-column: 1 / -1;
+      align-items: end;
+    }
+    .wow-seksjon--full .wow-seksjon__hode--ingress > :first-child {
+      grid-column: 1 / 8;
+    }
+    .wow-seksjon--full .wow-seksjon__hode--ingress > .wow-seksjon__ingress {
+      grid-column: 8 / 13;
+    }
+    .wow-seksjon--les .wow-seksjon__hode,
+    .wow-seksjon--les .wow-seksjon__innhold {
+      grid-column: 3 / 10;
+    }
+  }
+</style>

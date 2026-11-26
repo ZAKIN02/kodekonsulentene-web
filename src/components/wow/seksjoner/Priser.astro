@@ -1,0 +1,231 @@
+---
+// Runde wow-r6 (prisen på 5 sekunder): det valgte pakkevalget folder ut «Dette er med» rett
+// under seg på mobil, og står ved siden av radene på desktop (samme markup, display: contents).
+// Tidligere sto lista under alle tre radene på mobil, så man måtte rulle forbi to andre priser
+// for å se hva man valgte. «kr» og «fra» står i vanlig skrift og samme farge som tallet
+// (kritiker r4 #18). Overskriften har egen rad over velgeren.
+// Priser (wow-briefen, blokk 7): typografisk prisliste. Prisvelgeren er tre
+// radioknapper i et <fieldset>; den valgte pakken viser hva som er med, rent
+// med CSS (:has), så velgeren virker uten JavaScript. Overskriften er første
+// rad i prislista (kritikerfunn 16). Prisene ruller ikke inn (funn 5): et tall
+// som snurrer som en spilleautomat, går mot budskapet «fast pris». De løpende
+// prisene står som én rad med tre tall (funn 18). Pakkeprisene har
+// data-count med data-count-inn="av" (runde wow-r2b): ingen opptelling ved
+// inngang, men sifrene er klippet til linjen hvis verdien noen gang byttes. Alle beløp leses fra
+// src/data/priser.ts og skrives aldri av. Tekst fra
+// docs/design/tekst/forside.md del 7, i vi-form.
+//
+// Runde wow-r7 «Lampa» (historie-manus.md del 5, Priser), bare på forsiden (`lampa`): prislista i
+// samme grammatikk som målingene i rapporten: navn, blå målelinje, tall. Velger du pakke, trekkes
+// målelinja fra navnet til tallet (ren CSS på :checked, så det virker uten JS og kan avbrytes).
+// Sporet under linja tegnes inn én gang når lista kommer inn (CSS view-timeline der nettleseren
+// har det; ellers står det). Tallene er det store; H2 står i 3rem i setningsform med fortellerens
+// linje, til høyre for radene på desktop. Det som er med i pakken folder ut under den valgte
+// raden også på desktop, så radene får hele bredden.
+//
+// Bølge A1 (wow-undersider.md del 3, «Prisliste»): samme komponent på forsiden, /priser og
+// tjenestesidene. Valget er fortsatt ren CSS (:has på hver rad, ingen faste id-er i wow.css), og
+// `gruppe` gir radioknappene eget navn og egne id-er, så to prislister på samme side ikke deler
+// valg.
+//
+//   <Priser />                                              forsiden (som før)
+//   <Priser variant="kort" pakker={["Start", "Bedrift"]} id="priser-nettsider" gruppe="pakke-nettsider"
+//           tittel="…" ingress="…" />                       tjenesteside
+//   <Priser niva={2} lenkeTilPriser={false} />              /priser (full)
+//
+// variant:  full  pakkene, løpende priser, vilkårene og lenken (forsiden)
+//           kort  bare pakkene og lenken til /priser
+import { pakker, loepende, prisvilkaar } from "../../../data/priser";
+
+interface Props {
+  variant?: "kort" | "full";
+  /** Navn på pakkene som skal stå (fra priser.ts), i denne rekkefølgen. Standard: alle tre. */
+  pakker?: string[];
+  /** id-en til pakken som er valgt fra start («start», «bedrift», «system»). */
+  valgt?: string;
+  /** Navnet på radiogruppen og prefiks for id-ene. Standard «pakke». */
+  gruppe?: string;
+  tittel?: string;
+  ingress?: string;
+  niva?: 1 | 2;
+  /** Lenken «Se hele prislisten» under lista. */
+  lenkeTilPriser?: boolean;
+  id?: string;
+  /** Forsiden, runde wow-r7 «Lampa»: prisene som målinger (navn, blå målelinje, tall). */
+  lampa?: boolean;
+  /** Fortellerens linje ved overskriften (bare med `lampa`). */
+  forteller?: string;
+}
+const {
+  variant = "full",
+  pakker: valgtePakker,
+  gruppe = "pakke",
+  tittel = "Prisene står her",
+  ingress = "Fordi du skal kunne regne på det før du ringer.",
+  niva = 2,
+  lenkeTilPriser = true,
+  id = "priser",
+  lampa = false,
+  forteller,
+} = Astro.props;
+const Tittel = niva === 1 ? "h1" : "h2";
+const Under = niva === 1 ? "h2" : "h3";
+
+const finn = (navn: string) => pakker.find((p) => p.navn === navn);
+const utenKr = (pris: string) => pris.replace(/\s*kr$/, "");
+const tall = (pris: string) => Number(pris.replace(/\D/g, ""));
+
+const alleValg = [
+  {
+    id: "start",
+    pakke: finn("Start"),
+    tekst: "For deg som trenger å finnes, bli ringt og bestå lovkravene.",
+    med: [
+      "1–3 sider, skrevet ferdig",
+      "Booking eller kontaktskjema",
+      "Grunnleggende SEO og Google Bedriftsprofil",
+      "Lovsjekk: org.nr., cookies, universell utforming",
+    ],
+    ikke: ["CMS – vi endrer teksten for deg", "Lokal SEO per bydel"],
+  },
+  {
+    id: "bedrift",
+    pakke: finn("Bedrift"),
+    tekst: "Du endrer innholdet selv, og siden synes i lokale søk. Pakken de fleste trenger.",
+    med: [
+      "5–8 sider med CMS du kan redigere selv",
+      "Lokal SEO per tjeneste og bydel",
+      "Cookieløs analyse – ingen banner",
+      "Lovsjekk og sikkerhetsheadere",
+    ],
+    ikke: [] as string[],
+    merke: "Anbefalt",
+  },
+  {
+    id: "system",
+    pakke: finn("System"),
+    tekst: "Kundeportal, app eller kobling mot systemene du allerede betaler for.",
+    med: [
+      "Booking, kundeportal eller intern app",
+      "Vipps- eller Stripe-betaling",
+      "Integrasjon mot Tripletex, Fiken eller PowerOffice",
+      "BankID-innlogging ved behov",
+      "Sikkerhetsgjennomgang før lansering",
+    ],
+    ikke: [] as string[],
+  },
+].filter((v) => v.pakke);
+
+const velger = valgtePakker
+  ? valgtePakker
+      .map((navn) => alleValg.find((v) => v.pakke!.navn === navn))
+      .filter((v): v is (typeof alleValg)[number] => Boolean(v))
+  : alleValg;
+const valgt =
+  Astro.props.valgt && velger.some((v) => v.id === Astro.props.valgt)
+    ? Astro.props.valgt
+    : velger.some((v) => v.id === "bedrift")
+      ? "bedrift"
+      : velger[0]?.id;
+// Desktop: «Dette er med» står ved siden av alle radene. Tre er standard i wow.css; da settes
+// ingen stil (forsiden er uendret).
+const velgerStil = velger.length !== 3 ? `--wow-velger-antall: ${velger.length}` : undefined;
+
+const rad = (navn: string) => loepende.find((r) => r.navn === navn);
+const loependeRader = [
+  {
+    rad: rad("Abonnement"),
+    linje: "Side bygget, hosting, endringer og sikkerhetsoppdateringer. Ingen oppstartskostnad.",
+  },
+  {
+    rad: rad("Drift og vedlikehold"),
+    linje: "For deg som kjøpte siden som engangskjøp. Oppdateringer, backup og overvåkning.",
+  },
+  {
+    rad: rad("Timepris"),
+    linje: "Arbeid utenfor avtalt omfang. Faktureres per påbegynte halvtime.",
+  },
+].filter((r) => r.rad);
+
+// Mva, betaling og revisjoner. Eierskapslinja bæres av FAQ-svaret.
+const vilkaar = prisvilkaar.slice(0, 3);
+---
+
+<section class:list={["wow-priser", lampa && "wow-priser--lampa"]} id={id} aria-labelledby={`${id}-tittel`}>
+  <div class="wow-rute wow-priser__rute">
+    {lampa ? (
+      <div class="wow-priser__hode">
+        <Tittel id={`${id}-tittel`} class="wow-setning wow-setning--liten">{tittel}</Tittel>
+        {forteller && <p class="wow-forteller wow-priser__forteller">{forteller}</p>}
+      </div>
+    ) : (
+      <div class="wow-priser__hode">
+        <Tittel id={`${id}-tittel`} class="wow-stor" data-split={niva === 1 ? undefined : "lines"} data-split-inngang={niva === 1 ? "" : undefined}>{tittel}</Tittel>
+        {ingress && <p class="wow-priser__ingress">{ingress}</p>}
+      </div>
+    )}
+
+    <fieldset class="wow-velger" style={velgerStil}>
+      <legend class="wow-usynlig">Velg pakke</legend>
+      {velger.map((v) => (
+        <div class="wow-velger__valg">
+          <label class="wow-velger__rad" for={`${gruppe}-${v.id}`}>
+            <input
+              class="wow-velger__radio"
+              type="radio"
+              name={gruppe}
+              id={`${gruppe}-${v.id}`}
+              value={v.id}
+              checked={v.id === valgt}
+            />
+            <span class="wow-velger__navn">
+              {v.pakke!.navn}
+              {v.merke && <span class="wow-merke wow-merke--refleks">{v.merke}</span>}
+            </span>
+            {lampa && <span class="wow-velger__spor" aria-hidden="true"><span class="wow-velger__linje"></span></span>}
+            <span class="wow-velger__pris">
+              {v.pakke!.prefiks && <span class="wow-velger__prefiks">{v.pakke!.prefiks} </span>}
+              <span data-count={tall(v.pakke!.pris)} data-count-inn="av">{utenKr(v.pakke!.pris)}</span>
+              <span class="wow-velger__kr"> kr</span>
+            </span>
+            <span class="wow-velger__tekst">{v.tekst}</span>
+          </label>
+          <div class="wow-inkludert__pakke" data-pakke={v.id}>
+            <Under class="wow-inkludert__tittel">Dette er med i {v.pakke!.navn}</Under>
+            <ul>
+              {v.med.map((p) => (
+                <li>{p}</li>
+              ))}
+            </ul>
+            {v.ikke.length > 0 && <p class="wow-inkludert__ikke">Ikke med: {v.ikke.join(". ")}.</p>}
+          </div>
+        </div>
+      ))}
+    </fieldset>
+
+    {variant === "full" && (
+      <ul class="wow-loepende" role="list">
+        {loependeRader.map((r) => (
+          <li class="wow-loepende__rad">
+            <span class="wow-loepende__navn">{r.rad!.navn}</span>
+            <span class="wow-loepende__pris">{r.rad!.pris}</span>
+            <span class="wow-loepende__linje">{r.linje}</span>
+          </li>
+        ))}
+      </ul>
+    )}
+
+    {(variant === "full" || lenkeTilPriser) && (
+      <div class="wow-priser__fot">
+        {variant === "full" && (
+          <ul class="wow-vilkaar" role="list">
+            {vilkaar.map((v) => (
+              <li>{v}</li>
+            ))}
+          </ul>
+        )}
+        {lenkeTilPriser && <a class="wow-lenke" href="/priser">Se hele prislisten</a>}
+      </div>
+    )}
+  </div>
+</section>

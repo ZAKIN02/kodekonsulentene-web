@@ -1,0 +1,33 @@
+---
+/**
+ * Inngangen (eies av bevegelse). Ikke lenger et teppe eller en innlastingsskjerm: det
+ * synlige er bare at første bilde i ScrollWorld toner inn fra svart (0,9 s, CSS) mens
+ * H1-linjene løftes opp (data-split, index.ts). Ingenting dekker siden, og ingenting
+ * venter på JavaScript før første maling.
+ *
+ * Ingen egenskaper. Plassering: først i <body>, rett etter hopp-lenken.
+ *
+ * Det lille skriptet må kjøre før resten av siden tegnes:
+ *  - setter html.wow-js, så startstilene i wow-bevegelse.css og filmoppsettet i
+ *    ScrollWorld gjelder fra første maling (ingen layoutskift når bunten kommer)
+ *  - setter html.wow-spar ved Save-Data: ScrollWorld viser bare stillbilder
+ *  - setter html.wow-inngang når du kommer til forsiden utenfra: da toner filmen inn fra svart.
+ *    Laster du siden på nytt, går tilbake i loggen eller kommer fra en annen side her, starter den
+ *    rett på bildet. Dette avgjøres UTEN LAGRING (eier 24. nov. 2026, r8-rettelser.md variant A):
+ *    navigasjonstypen (Navigation Timing) og document.referrer. Før sto en markering i
+ *    sessionStorage («wow-inngang»); den talte som lagring etter ekomloven § 3-15, og siden sier
+ *    at den ikke lagrer noe. Skriptet verken leser eller skriver lager nå.
+ *  - fjerner wow-js og wow-inngang igjen etter 4 s hvis index.ts ikke har startet
+ *    (html.wow-klar), og setter wow-sent, så siden aldri blir stående skjult om bunten
+ *    ikke kommer. Kommer den senere, spilles ingen innganger og filmen blir stillbilder.
+ *
+ * CSP: skriptet er inline og uten variabler, så innholdet er likt i hvert bygg.
+ * sikkerhet.mjs leser hashene for inline-skript ut av det ferdige bygget
+ * (inlineSkriptHasher), så det slipper gjennom script-src uten 'unsafe-inline'.
+ *
+ * Uten JavaScript: ingen av klassene settes, og alt står synlig.
+ * Redusert bevegelse: CSS-en spiller ingen inntoning; filmen er stillbilder.
+ */
+---
+
+<script is:inline>(function(){var d=document.documentElement;d.classList.add("wow-js");try{var c=navigator.connection;if(c&&c.saveData)d.classList.add("wow-spar")}catch(e){}try{var n=performance.getEntriesByType("navigation")[0],r=document.referrer;if((!n||n.type==="navigate")&&r.indexOf(location.origin+"/")!==0)d.classList.add("wow-inngang")}catch(e){}setTimeout(function(){if(!d.classList.contains("wow-klar")){d.classList.remove("wow-js","wow-inngang");d.classList.add("wow-sent")}},4000)})();</script>

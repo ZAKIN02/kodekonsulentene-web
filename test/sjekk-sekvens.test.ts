@@ -23,6 +23,7 @@ import {
   type Maalinger,
 } from "../src/data/sjekk-sekvens.ts";
 import { analyserHeadere, analyserCookies, analyserUu, analyserLovpaalagt } from "../src/lib/sjekk.ts";
+import { statusOrd, fraSjekk } from "../src/components/wow/side/maaling.ts";
 
 const maalinger = JSON.parse(readFileSync("src/data/maalinger.json", "utf8")) as Maalinger;
 const s = byggSekvens(maalinger);
@@ -136,11 +137,39 @@ describe("feltnavn og hjemler er ekte", () => {
   });
 
   test("statusordene er de samme som rapporten på siden bruker", () => {
-    const side = readFileSync("src/pages/sjekk.astro", "utf8");
+    // Rapporten på /sjekk tegnes av maalingHtml() i src/components/wow/side/maaling.ts. Ordet
+    // ved lampa er statusOrd[fraSjekk[status]] – ordene står ikke lenger i sjekk.astro. Testen
+    // sammenligner derfor mot den ekte tabellen, ikke mot kildeteksten.
     for (const [status, ord] of Object.entries(ORD)) {
-      assert.ok(
-        new RegExp(`${status}:\\s*"${ord}"`).test(side),
-        `Sekvensen kaller «${status}» for «${ord}», rapporten under den gjør ikke det.`,
+      assert.equal(
+        statusOrd[fraSjekk[status as keyof typeof fraSjekk]],
+        ord,
+        `Sekvensen kaller «${status}» for «${ord}», rapporten på siden gjør ikke det.`,
+      );
+    }
+    // Alle fire statusene fra motoren har et ord, og ingen to deler ord: «Ikke sjekket» kan
+    // aldri falle sammen med «Bestått».
+    assert.deepEqual(Object.keys(fraSjekk).sort(), Object.keys(ORD).sort());
+    assert.equal(new Set(Object.keys(fraSjekk).map((s) => statusOrd[fraSjekk[s as keyof typeof fraSjekk]])).size, 4);
+  });
+
+  test("/sjekk og verktøyene henter ordene derfra og skriver ingen egne", () => {
+    // Det den gamle testen egentlig vernet: at siden ikke har sin egen ordliste som kan gli fra
+    // motorens. Hver side som viser et resultat, skal sende motorens status gjennom fraSjekk og
+    // tegne raden med maalingHtml/rapportarkHtml – og ikke ha en egen tabell «ok: "…"».
+    for (const f of [
+      "src/pages/sjekk.astro",
+      "src/pages/verktoy/cookie-sjekk.astro",
+      "src/pages/verktoy/uu-sjekk.astro",
+      "src/pages/verktoy/dmarc.astro",
+    ]) {
+      const side = readFileSync(f, "utf8");
+      assert.match(side, /import \{[^}]*\b(rapportarkHtml|maalingHtml)\b[^}]*\} from "[^"]*wow\/side(\/maaling)?"/, `${f} tegner ikke resultatet med maaling.ts`);
+      assert.match(side, /\bfraSjekk\b/, `${f} oversetter ikke motorens status med fraSjekk`);
+      assert.doesNotMatch(
+        side,
+        /\b(ok|warn|fail|neutral):\s*"(Bestått|Bør fikses|Brudd|Ikke sjekket)"/,
+        `${f} har en egen ordliste for statusene. Ordene skal bare stå i maaling.ts.`,
       );
     }
   });

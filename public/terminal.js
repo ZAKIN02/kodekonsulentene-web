@@ -3,7 +3,8 @@
  *
  * To flater, én motor:
  *   1. Modal, åpnes med «~» eller Ctrl/Cmd+K hvor som helst på siden.
- *   2. Innfelt, på /404 – der er terminalen hele poenget med siden.
+ *   2. Innfelt, på /404 – der er terminalen hele poenget med siden – og på
+ *      /terminal, der utsnittet på siden er en terminal du kan skrive i.
  *
  * Progressiv forbedring: alt den gjør finnes også som vanlige lenker, og siden
  * fungerer uten denne filen. Ingenting kjører før brukeren utløser noe – modalen
@@ -18,7 +19,7 @@
   const SIDER = {
     hjem: "/", nettsider: "/nettsider", systemer: "/systemer", apper: "/apper-og-ai",
     sikkerhet: "/sikkerhet", priser: "/priser", caser: "/caser", om: "/om",
-    kontakt: "/kontakt", sjekk: "/sjekk", verktoy: "/verktoy", historie: "/historie",
+    kontakt: "/kontakt", sjekk: "/sjekk", verktoy: "/verktoy",
     handbok: "/handbok", status: "/status", personvern: "/personvern", vilkar: "/vilkar",
   };
 
@@ -217,18 +218,21 @@
           const r = await fetch("/priser", { headers: { Accept: "text/html" } });
           const doc = new DOMParser().parseFromString(await r.text(), "text/html");
           venter.remove();
-          const kort = [...doc.querySelectorAll(".kk-price")];
-          if (!kort.length) throw new Error("fant ingen prisekort");
-          const rader = kort.map((k) => {
-            const belop = k.querySelector(".kk-amount");
-            // Prefikset («fra») og beløpet er egne elementer. textContent limer dem
-            // sammen til «fra60 000 kr», så de hentes hver for seg.
-            const prefiks = belop?.querySelector(".kk-prefix")?.textContent?.trim() ?? "";
-            const tall = [...(belop?.childNodes ?? [])]
+          // Prislista på /priser (src/components/wow/seksjoner/Priser.astro): én
+          // `.wow-velger__valg` per pakke. Endres klassene der, endres de her.
+          const valg = [...doc.querySelectorAll(".wow-velger__valg")];
+          if (!valg.length) throw new Error("fant ingen pakker");
+          const rader = valg.map((v) => {
+            // Navnet er første tekstnode; merkelappen («Mest valgt») står i et eget
+            // element ved siden av og skal ikke limes på navnet.
+            const navn = [...(v.querySelector(".wow-velger__navn")?.childNodes ?? [])]
               .filter((n) => n.nodeType === 3).map((n) => n.textContent).join(" ");
+            // Prefikset («fra»), beløpet og «kr» er egne elementer med mellomrommet
+            // i markupen, så textContent gir «fra 60 000 kr» når luften normaliseres.
+            const pris = v.querySelector(".wow-velger__pris")?.textContent ?? "";
             return {
-              navn: k.querySelector("h3")?.textContent?.trim() ?? "",
-              pris: (prefiks + " " + tall).replace(/\s+/g, " ").trim(),
+              navn: navn.replace(/\s+/g, " ").trim(),
+              pris: pris.replace(/\s+/g, " ").trim(),
             };
           });
           const bredde = Math.max(...rader.map((x) => x.navn.length));
@@ -251,16 +255,6 @@
     kontakt: {
       tekst: "book 20 minutter",
       async kjor(okt) { okt.skriv("<i>åpner kontaktsiden …</i>"); location.href = "/kontakt"; },
-    },
-
-    tema: {
-      tekst: "bytt mørkt og lyst",
-      async kjor(okt) {
-        const lys = document.documentElement.dataset.theme === "light";
-        document.documentElement.dataset.theme = lys ? "dark" : "light";
-        try { localStorage.setItem("kk-tema", lys ? "dark" : "light"); } catch {}
-        okt.skriv("<i>tema: " + (lys ? "mørkt" : "lyst") + "</i>");
-      },
     },
 
     whoami: {
@@ -418,11 +412,19 @@
 
   // På /404 ER terminalen siden. Da monteres den i dokumentet i stedet for i en
   // modal, og «exit» gir ingen mening – derfor ingen lukkefunksjon.
+  //
+  // På /terminal står `data-kkterm-innfelt="utsnitt"`: det som er skrevet ut fra
+  // serveren, er et ekte utsnitt med dato og skal bli stående. Da slås bare feltet
+  // på, og ingenting skrives før leseren gjør det.
   const vert = document.querySelector("[data-kkterm-innfelt]");
   if (vert) {
     const out = vert.querySelector(".kkterm__out");
     const inn = vert.querySelector(".kkterm__in");
-    if (out && inn) {
+    if (out && inn && vert.getAttribute("data-kkterm-innfelt") === "utsnitt") {
+      lagOkt(out, inn, null);
+      inn.disabled = false;
+      inn.setAttribute("placeholder", "help");
+    } else if (out && inn) {
       const okt = lagOkt(out, inn, null);
       // Server-side står en plassholder, slik at de uten JavaScript ser en lesbar
       // feilmelding. Vi kjenner den ekte stien, så plassholderen byttes ut – ellers

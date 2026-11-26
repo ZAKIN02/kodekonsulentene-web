@@ -1,41 +1,35 @@
 ---
-import Base from "../layouts/Base.astro";
+/**
+ * /sikkerhet i wow-drakten (wow-undersider.md del 1.3b og del 4, wow-r8-B1). Tjenesteside uten
+ * klipp. Rekkefølge: toppdel med rapportarket for vår egen side → SamtykkeSekvens → «Verktøyet
+ * tok oss selv» (fortelling og ekte opptak) → «Seks ting på hver leveranse» → «Fire krav som er
+ * konkrete og testbare» → Lovsjekk-pakken med pris og adressefeltet → kontakt.
+ *
+ * Målingene står ÉN gang på siden: rapportarket i toppen, med verdiene fra src/data/historie.ts
+ * (/api/sjekk mot kodekonsulentene.no 18. nov. 2026, samme kilde som forsiden). V1 hadde en egen
+ * rapport lenger ned med målingen fra 6. oktober; den er slått sammen med toppen (planen).
+ * Ute fra v1: Storflate «Det sto åpent.» (generert klipp utenfor et kapittel) og terminalutsnittet
+ * (funnet 6. oktober står som tekst).
+ */
+import MalWow from "../layouts/MalWow.astro";
+import {
+  SideHode,
+  Seksjon,
+  Prosa,
+  Prisrader,
+  Rapportark,
+  Maaling,
+  Tekstrader,
+  Opptak,
+  UrlFelt,
+  Kontaktblokk,
+} from "../components/wow/side";
+import SamtykkeSekvens from "../components/wow/tjeneste/SamtykkeSekvens.astro";
+import Rader from "../components/wow/tjeneste/Rader.astro";
 import { tjeneste } from "../data/schema";
-import Storflate from "../components/Storflate.astro";
-import opptak from "../data/opptak.json";
-import Demo from "../components/Demo.astro";
-import Scene from "../components/Scene.astro";
-import Mega from "../components/Mega.astro";
-import Avslor from "../components/Avslor.astro";
-import SamtykkeSekvens from "../components/SamtykkeSekvens.astro";
-import Button from "../components/Button.astro";
-import Terminal from "../components/Terminal.astro";
-import UrlCheck from "../components/UrlCheck.astro";
-import CheckReport from "../components/CheckReport.astro";
-import ContactBlock from "../components/ContactBlock.astro";
 import { loepende, prisenhet } from "../data/priser";
 import maalinger from "../data/maalinger.json";
-
-import "../styles/scener.css";
-
-/**
- * Dette er ikke et salgsargument skrevet for hånd – det er svaret /api/sjekk og
- * /api/cookie-sjekk gir om vår egen forside. Målt 6. oktober 2026.
- * Endrer siden seg, skal disse tallene endres med den. Står det noe her vi ikke
- * kan måle på nytt i dag, er det en feil.
- */
-/* Tallene leses fra src/data/maalinger.json, som skrives av .skudd/maaling-egen.mjs
-   mot produksjon. Svartiden sto tidligere som «204 ms» skrevet for hånd mens den
-   målte verdien var 133 ms – nøyaktig den driften kommentaren over advarer mot. */
-const oss = maalinger.oss;
-
-const egenSjekk = [
-  { name: "Ytelse", status: "neutral" as const, value: `${oss.ttfbMs} ms`, note: "Svartid målt fra Oslo. Lighthouse-score er ikke hentet inn her, og da sier vi «ikke sjekket» i stedet for å vise et tall vi ikke har målt." },
-  { name: "Sikkerhetsheadere", status: "ok" as const, value: `${oss.headereAv6}/6`, note: "CSP, HSTS, X-Content-Type-Options, Referrer-Policy, Permissions-Policy og rammevern." },
-  { name: "Cookies før samtykke", status: "ok" as const, value: String(oss.cookiesForSamtykke), note: "Målt med en ekte nettleser, uten å klikke på noe: null cookies, null lagringsnøkler og null tredjepartskall." },
-  { name: "Universell utforming", status: "ok" as const, value: `${oss.uuFeil} feil`, note: "Ingen av de maskinelt testbare feilene. Kontrast, tastaturflyt og skjermleserrekkefølge må testes manuelt, og det er ikke gjort her." },
-  { name: "Lovpålagt informasjon", status: "ok" as const, value: "Org.nr. bekreftet", note: "Nummeret er slått opp i Enhetsregisteret og tilhører KODEKONSULENTENE ELKASSMI." },
-];
+import { malinger, maltDato, maltDatoIso, maltAdresse } from "../data/historie";
 
 const tiltak = [
   ["Sikkerhetsheadere", "CSP, HSTS, X-Content-Type-Options, Referrer-Policy, Permissions-Policy og rammevern settes på alle leveranser – ikke bare de som ber om det."],
@@ -45,10 +39,41 @@ const tiltak = [
   ["Sikkerhetskopi", "Daglig backup med test av gjenoppretting hver måned. En backup du ikke har prøvd å lese tilbake, er ikke en backup."],
   ["Rapport", "Du får en kort rapport ved lansering som sier hva som er testet og hva som ikke er det. Den er lesbar uten utviklerbakgrunn."],
 ];
+
 /**
- * Fra `tjeneste()`, uten `pakker`: lovsjekk-pakken ligger i `loepende` i
- * priser.ts, ikke i `pakker`, og hjelperen leser bare den siste. Heller ingen
- * pris i markupen enn en pris hentet fra feil liste.
+ * De fire lovkravene. Overskriften på det første navngir begge lovene, fordi hvilken som treffer
+ * avhenger av registeret – se src/data/kilder.ts. Hjemmelen for cookie-samtykke er kontrollert
+ * mot Lovdata 6. oktober 2026: ekomloven er LOV-2024-12-13-76, og § 3-15 heter «Bruk av
+ * informasjonskapsler mv.». Den gamle § 2-7b i ekomloven av 2003 er opphevet. Ikke skriv om
+ * dette uten å slå det opp på nytt.
+ */
+const lovkrav = [
+  {
+    tittel: "Org.nr. og foretaksnavn (foretaksregisterloven § 10-2 / ehandelsloven § 8)",
+    tekst:
+      "Registrert foretaksnavn og organisasjonsnummer skal stå på nettsiden. Står foretaket i Foretaksregisteret, følger kravet av foretaksregisterloven § 10-2; gjør det ikke det, krever ehandelsloven § 8 det samme av alle som tilbyr en tjeneste på nett. Er du mva-registrert, skal «MVA» stå etter nummeret.",
+  },
+  {
+    tittel: "Kontaktinformasjon (ehandelsloven § 8)",
+    tekst: "Geografisk adresse, e-postadresse og et nummer kunden kan nå deg på. Et kontaktskjema alene er ikke nok.",
+  },
+  {
+    tittel: "Cookie-samtykke (ekomloven § 3-15)",
+    forst: { tekst: "Ekomloven § 3-15", url: "https://lovdata.no/lov/2024-12-13-76/§3-15" },
+    tekst:
+      ", «Bruk av informasjonskapsler mv.», forbyr å lagre eller skaffe seg tilgang til opplysninger i utstyret til den som besøker siden uten at vedkommende har samtykket. Fra 1. januar 2025 må samtykket oppfylle kravene i personvernforordningen: ingen forhåndsavkryssing, «avvis» like lett tilgjengelig som «godta», og ingenting lagret før samtykke er gitt. Unntaket gjelder det som er strengt nødvendig for å levere tjenesten. Den enkleste måten å overholde dette på er å ikke sette cookies i det hele tatt.",
+  },
+  {
+    tittel: "Universell utforming",
+    tekst:
+      "Private virksomheter skal oppfylle 35 krav i WCAG 2.0 nivå A og AA. Offentlig sektor har 48 krav i WCAG 2.1. Vi bygger etter WCAG 2.2 AA, som dekker begge.",
+  },
+];
+
+/**
+ * Fra `tjeneste()`, uten `pakker`: lovsjekk-pakken ligger i `loepende` i priser.ts, ikke i
+ * `pakker`, og hjelperen leser bare den siste. Heller ingen pris i markupen enn en pris hentet
+ * fra feil liste.
  */
 const schema = tjeneste({
   type: "Sikkerhetsgjennomgang og lovsjekk av nettsider",
@@ -58,254 +83,137 @@ const schema = tjeneste({
   sti: "/sikkerhet",
 });
 
-/**
- * Lovsjekk-prisen i metabeskrivelsen sto skrevet av for hånd («7 900 kr eks.
- * mva»), med to feil i én streng: tallet var en kopi av prislisten, og «eks.
- * mva» er usant så lenge foretaket ikke er mva-registrert. Nå hentes begge.
- */
-const lovsjekkPris = loepende.find((r) => r.navn === "Lovsjekk-pakke")?.pris ?? "";
+/** Lovsjekk-prisen hentes fra prislisten, aldri skrevet av. */
+const lovsjekk = loepende.filter((r) => r.navn === "Lovsjekk-pakke");
+const lovsjekkPris = lovsjekk[0]?.pris ?? "";
 ---
-<Base
+
+<MalWow
   tittel="Sikkerhet og lovkrav på nettsider"
   beskrivelse={`Sikkerhetsheadere, avhengighetsskanning, GDPR og universell utforming på hver leveranse. Lovsjekk-pakke til fast pris: ${lovsjekkPris} – ${prisenhet}.`}
   schema={[schema]}
+  bevegelse="film"
 >
-  <Scene lav>
-    <Mega som="h1" merke="Sikkerhet" n={1} tekst="Siden vår består sin egen sjekk" aksent="sjekk" />
-    <Avslor trinn={1}>
-      {/*
-        «LOVBRUDDET DE FLESTE NORSKE NETTSIDER GJØR» VAR EN PÅSTAND VI IKKE HAR MÅLT.
-
-        Vi har målt 38 forsider, trukket fra Enhetsregisteret innenfor sju
-        næringskoder, blant foretak med 1–20 ansatte. 79 % av dem satte cookies
-        før samtykke. Det er et funn i ET UTVALG – ikke i «norske nettsider».
-        Utvalget er heller ikke representativt: maalinger.json sier det selv,
-        fordi bare foretak som har registrert hjemmeside i Enhetsregisteret kan
-        trekkes.
-
-        Å gå fra 38 sider til «de fleste norske nettsider» er nøyaktig det
-        sprangeet vi tar andre for. Setningen sier nå hva vi faktisk fant, hvor
-        mange det var, og lenker til tallene.
-      */}
-      <p class="scene__ingress body-lg">
-        Det er lett å selge sikkerhet. Det er vanskeligere å bevise det. Her er bruddet vi fant
-        på {maalinger.andelProsent.settercookiesForSamtykke} % av de {maalinger.utvalg.svarte}{" "}
-        sidene <a class="kk-link" href="/sjekk">vi målte</a>, spilt av i sanntid – og den samme
-        sjekken kjørt på vår egen side.
-      </p>
-    </Avslor>
-
-    {/* Sekvensen står OVER folden, med vilje. Målt på /sikkerhet: ingressen slutter
-       på 601 px ved 1440x900 og 491 px ved 390x844, så sekvensen begynner å spille
-       i synsfeltet uten at noen scroller. Det er den målte forskjellen mot
-       jeton.com, osmo.supply og spinxdigital.com: der beveger noe seg med én gang.
-
-       Den ligger IKKE i en <Avslor>. Scroll-avdekking på noe som allerede er synlig
-       ved innlasting gir et element som står halvt gjennomsiktig til brukeren
-       scroller – det er feilen is:global-regelen nederst på sida finnes for. */}
-    <SamtykkeSekvens />
-  </Scene>
-
-  {/* Bekjennelsen staar paa varm flate, ikke paa samme moerke som resten.
-      Seksjonen er et annet register – vi innroemmer en feil – og flaten sier det
-      foer teksten gjoer. Det er ogsaa det eneste stedet paa sida som bytter grunn. */}
-  <Scene n={2} class="flate--varm" eyebrow="Et funn" tittel="Verktøyet tok oss selv" ingress="6. oktober 2026 kjørte vi cookie-skanningen mot vår egen forside. Den fant to tredjepartskall vi ikke visste om.">
-    <Avslor>
-    <div class="grid-2">
-      <div class="stack">
-        <p class="muted">
-          Fontene våre lå hos Google. Ingen cookies ble satt, så den gamle sjekken –
-          som bare leste HTML – meldte alt grønt. Men hver besøkende sendte
-          IP-adressen sin til <span class="mono">fonts.gstatic.com</span> før de
-          hadde gjort noe. På en side som selger «ingen tredjeparter før samtykke»
-          er det en påstand vi ikke kunne forsvare.
-        </p>
-        <p class="muted">
-          Fontene ligger nå på vår egen server. Det tok en time, og det er grunnen
-          til at skanningen bruker en ekte nettleser i stedet for å lese kildekoden:
-          forskjellen er nettopp funn som dette.
-        </p>
-      </div>
-      <Terminal
-        skriv
-        title="~/kodekonsulentene"
-        lines={[
-          { type: "cmd", text: "cookie-sjekk kodekonsulentene.no" },
-          { type: "warn", text: "tredjepart: fonts.googleapis.com" },
-          { type: "warn", text: "tredjepart: fonts.gstatic.com" },
-          { type: "out", text: "" },
-          { type: "cmd", text: "# fontene hentet hjem, ny kjøring" },
-          { type: "ok", text: "cookies 0 · lagring 0 · tredjeparter 0" },
-        ]}
-        label="Terminalutsnitt: cookie-sjekken fant tredjepartskall til Google Fonts på vår egen side. Etter at fontene ble flyttet til egen server: null cookies, null lagring, null tredjeparter."
-      />
-    </div>
-    </Avslor>
-      {/* Flyttet ned fra aapningsscenen. Over folden lastet opptaket 1093 kB av sidens
-        2077 ved foerstelast – maalt 467 px over folden, saa den late lastingen gjorde
-        jobben sin. Det var plasseringen som kostet. Og her hoerer det bedre hjemme:
-        seksjonen handler om at verktoeyet tok oss selv, og opptaket VISER verktoeyet. */}
-    <Avslor trinn={2}>
-      {/* Terminalen kjoerer de samme sjekkene som verktoeyene, her mot vaart EGET domene. Regelen om aa ikke navngi sider som kommer daarlig ut gjelder ikke oss selv. */}
-      <Demo
-        smal={opptak.terminal.smal}
-        bred={opptak.terminal.bred}
-        stor={opptak.terminal.stor}
-        plakat={opptak.terminal.plakat}
-        tekst={opptak.terminal.tekst}
-        kilde={opptak.terminal.kilde}
-      />
-    </Avslor>
-
-    <CheckReport
-      url="kodekonsulentene.no"
-      date="oppdatert ved hver lansering"
-      rows={egenSjekk}
-      footer="Samlet: 90 av 100, målt 6. oktober 2026. Ytelsesraden står som «ikke sjekket» fordi Lighthouse ikke er kjørt."
-    >
-      <Button slot="action" variant="ghost" href="/sjekk">Kjør den på din side</Button>
-    </CheckReport>
-
-  </Scene>
-
-  <div class="scenefilm-ramme">
-
-  {/* Full styrke, kant til kant. Dekker du teksten: en spalte staar aapen, en slaa
-      glir over den, spalten er borte, og limelinja tenner langs skjoeten. Subjekt,
-      verb, resultat – det er hele sikkerhetsjobben i ett bilde.
-
-      Levert paa to bestillinger. Runde 1 ble forkastet fordi slaaen VOKSTE 16 % i
-      hoeyde idet den gikk i inngrep – aarsaken laa i vaar egen prompt: «filling it
-      completely from wall to wall» ble lest i hoeyderetningen. Rettet til «covering
-      that opening». Runde 2 holder 15,97-16,25 % gjennom alle aatte sekundene.
-
-      Staar i loggen og bortforklares ikke: slaaen blir 7,3 % LENGRE underveis.
-      Agenten fanget det ikke foer bestilling fordi den kontrollerte hoeyden – altsaa
-      dimensjonen som sviktet sist – i stedet for alle. */}
-  <Storflate
-    smal="/scener/bolt-1280.mp4"
-    bred="/scener/bolt-1920.mp4"
-    stor="/scener/bolt-2560.mp4"
-    plakat="/scener/bolt-poster.avif"
-    tittel="Det sto åpent."
-    tekst="Manglende sikkerhetsheadere er en åpning du ikke ser. Sjekken vår finner dem, og de tar minutter å lukke."
-    hoyde={64}
-  />
-  <Scene n={3} eyebrow="Hva som gjøres" tittel="Seks ting på hver leveranse" ingress="Dette er ikke et tillegg du kjøper. Det er en del av prisen, fordi en side som kan misbrukes til å lure dine kunder ikke er ferdig.">
-    <Avslor>
-    <div class="grid-2">
-      {tiltak.map(([t, b]) => (
-        <div class="card">
-          <h3 class="subheading">{t}</h3>
-          <p class="muted">{b}</p>
-        </div>
+  {/*
+    «LOVBRUDDET DE FLESTE NORSKE NETTSIDER GJØR» VAR EN PÅSTAND VI IKKE HAR MÅLT (v1). Vi har målt
+    38 forsider, trukket fra Enhetsregisteret innenfor sju næringskoder. 79 % av dem satte cookies
+    før samtykke. Det er et funn i ET UTVALG, ikke i «norske nettsider». Ingressen sier hva vi
+    faktisk fant og hvor mange det var; lenken til sjekken står som handling under.
+  */}
+  <SideHode
+    tittel="Siden vår består sin egen sjekk"
+    ingress={`Det er lett å selge sikkerhet. Det er vanskeligere å bevise det. Her er bruddet vi fant på ${maalinger.andelProsent.settercookiesForSamtykke} % av de ${maalinger.utvalg.svarte} sidene vi målte, vist steg for steg – og det sjekken fant på vår egen side.`}
+    storrelse="stor"
+    handlinger={[{ tekst: "Kjør den på din side", href: "/sjekk", type: "primar" }]}
+  >
+    <Rapportark slot="side" skjultTittel adresse={maltAdresse} dato={maltDato} datoIso={maltDatoIso}>
+      {malinger.map((m) => (
+        <Maaling navn={m.etikett} verdi={m.verdi} status={m.status === "mangler" ? "brudd" : m.status} forbehold={m.forbehold} />
       ))}
-    </div>
-    </Avslor>
-  </Scene>
-  </div>
+    </Rapportark>
 
-  <Scene
-    n={4}
-    eyebrow="Lovkrav"
+    {/* Sekvensen spiller når den kommer i syne, én gang. Uten JavaScript står den ferdig. */}
+    <div class="wow-rute sik-sekvens">
+      {/* To målinger, to datoer (r8-rettelser.md punkt 7). Notatet fjernes når begge er kjørt på
+          nytt samme dag. */}
+      <Prosa>
+        <p class="wow-notat">
+          Rapporten over er nettsidesjekken, kjørt 18. november 2026. Sekvensen under bygger på
+          cookie-skanningen i ekte nettleser, kjørt 6. oktober 2026. Derfor to datoer.
+        </p>
+      </Prosa>
+      <SamtykkeSekvens />
+    </div>
+  </SideHode>
+
+  {/* Bekjennelsen står på egen flate: seksjonen er et annet register – vi innrømmer en feil. */}
+  <Seksjon
+    id="funn"
+    tittel="Verktøyet tok oss selv"
+    ingress="6. oktober 2026 kjørte vi cookie-skanningen mot vår egen forside. Den fant to tredjepartskall vi ikke visste om."
+    storrelse="stor"
+    tone="flate"
+  >
+    <Prosa>
+      <p>
+        Fontene våre lå hos Google. Ingen cookies ble satt, så den gamle sjekken –
+        som bare leste HTML – meldte alt grønt. Men hver besøkende sendte
+        IP-adressen sin til <code>fonts.gstatic.com</code> før de
+        hadde gjort noe. På en side som selger «ingen tredjeparter før samtykke»
+        er det en påstand vi ikke kunne forsvare.
+      </p>
+      <p>
+        Fontene ligger nå på vår egen server. Det tok en time, og det er grunnen
+        til at skanningen bruker en ekte nettleser i stedet for å lese kildekoden:
+        forskjellen er nettopp funn som dette.
+      </p>
+      {/* Sto som terminalutsnitt i v1. Setningen er utsnittets skjermlesertekst. */}
+      <p class="wow-notat">
+        Cookie-sjekken fant tredjepartskall til Google Fonts på vår egen side. Etter at fontene ble
+        flyttet til egen server: null cookies, null lagring, null tredjeparter.
+      </p>
+    </Prosa>
+    {/* Terminalen kjører de samme sjekkene som verktøyene, her mot vårt EGET domene. Regelen om å
+        ikke navngi sider som kommer dårlig ut, gjelder ikke oss selv. Ekte opptak, ikke KI. */}
+    <Opptak navn="terminal" adresse="kodekonsulentene.no/terminal" class="sik-opptak" />
+  </Seksjon>
+
+  <Seksjon
+    id="tiltak"
+    tittel="Seks ting på hver leveranse"
+    ingress="Dette er ikke et tillegg du kjøper. Det er en del av prisen, fordi en side som kan misbrukes til å lure dine kunder ikke er ferdig."
+    storrelse="tjeneste"
+  >
+    <Tekstrader rader={tiltak.map(([tittel, tekst]) => ({ tittel, tekst }))} />
+  </Seksjon>
+
+  <Seksjon
+    id="lovkrav"
     tittel="Fire krav som er konkrete og testbare"
     ingress="De færreste bryter dem med vilje. De fleste vet ikke at de gjelder."
+    storrelse="tjeneste"
+    tone="flate"
   >
-    <Avslor>
-    <div class="prose">
-      {/* Overskriften navnga ingen hjemmel, mens de tre andre kravene i denne
-          listen gjorde det. Begge lovene står her nå, fordi hvilken som treffer
-          avhenger av registeret – se src/data/kilder.ts. */}
-      <h3>Org.nr. og foretaksnavn (foretaksregisterloven § 10-2 / ehandelsloven § 8)</h3>
-      <p class="muted">
-        Registrert foretaksnavn og organisasjonsnummer skal stå på nettsiden. Står foretaket i
-        Foretaksregisteret, følger kravet av foretaksregisterloven § 10-2; gjør det ikke det,
-        krever ehandelsloven § 8 det samme av alle som tilbyr en tjeneste på nett. Er du
-        mva-registrert, skal «MVA» stå etter nummeret.
-      </p>
-      <h3>Kontaktinformasjon (ehandelsloven § 8)</h3>
-      <p class="muted">Geografisk adresse, e-postadresse og et nummer kunden kan nå deg på. Et kontaktskjema alene er ikke nok.</p>
-      {/* Hjemmelen er kontrollert mot Lovdata 6. oktober 2026: ekomloven er
-          LOV-2024-12-13-76, og § 3-15 heter «Bruk av informasjonskapsler mv.».
-          Den gamle § 2-7b i ekomloven av 2003 er opphevet. Ikke skriv om dette
-          uten å slå det opp på nytt. */}
-      <h3>Cookie-samtykke (ekomloven § 3-15)</h3>
-      <p class="muted">
-        <a class="kk-link" href="https://lovdata.no/lov/2024-12-13-76/§3-15" rel="nofollow">Ekomloven § 3-15</a>,
-        «Bruk av informasjonskapsler mv.», forbyr å lagre eller skaffe seg tilgang til opplysninger
-        i utstyret til den som besøker siden uten at vedkommende har samtykket. Fra 1. januar 2025
-        må samtykket oppfylle kravene i personvernforordningen: ingen forhåndsavkryssing, «avvis»
-        like lett tilgjengelig som «godta», og ingenting lagret før samtykke er gitt. Unntaket gjelder
-        det som er strengt nødvendig for å levere tjenesten. Den enkleste måten å overholde dette på
-        er å ikke sette cookies i det hele tatt.
-      </p>
-      <h3>Universell utforming</h3>
-      <p class="muted">Private virksomheter skal oppfylle 35 krav i WCAG 2.0 nivå A og AA. Offentlig sektor har 48 krav i WCAG 2.1. Vi bygger etter WCAG 2.2 AA, som dekker begge.</p>
-      <p class="small faint">Dette er ikke juridisk rådgivning. Få standardvilkår og personvernerklæring kvalitetssikret av advokat før du bruker dem i avtaler.</p>
-    </div>
-    </Avslor>
-  </Scene>
+    <Rader rader={lovkrav} />
+    <Prosa class="sik-under">
+      <p class="wow-notat">Dette er ikke juridisk rådgivning. Få standardvilkår og personvernerklæring kvalitetssikret av advokat før du bruker dem i avtaler.</p>
+    </Prosa>
+  </Seksjon>
 
-  <Scene n={5} eyebrow="Lovsjekk" tittel="Rydd opp i den siden du har" ingress="Du trenger ikke ny nettside for å bli lovlig. Lovsjekk-pakken er fastpris på den du har, også om den er WordPress.">
-    <Avslor>
-    <div class="stack">
-      <dl class="kv">
-        {loepende.filter((r) => r.navn === "Lovsjekk-pakke").map((r) => (
-          <div><dt><strong class="body-strong">{r.navn}</strong><br /><span class="small muted">{r.tekst}</span></dt><dd class="nowrap">{r.pris}</dd></div>
-        ))}
-      </dl>
-      <UrlCheck buttonLabel="Sjekk gratis først" hint="Kjør den gratis sjekken før du bestemmer deg. Du ser selv hva som må gjøres." />
+  <Seksjon
+    id="lovsjekk"
+    tittel="Rydd opp i den siden du har"
+    ingress="Du trenger ikke ny nettside for å bli lovlig. Lovsjekk-pakken er fastpris på den du har, også om den er WordPress."
+    storrelse="stor"
+  >
+    <Prisrader storrelse="pris" rader={lovsjekk.map((r) => ({ navn: r.navn, tekst: r.tekst, verdi: r.pris }))} />
+    <div class="sik-sjekk">
+      <UrlFelt
+        id="url-sikkerhet"
+        knapp="Sjekk gratis først"
+        hint="Kjør den gratis sjekken før du bestemmer deg. Du ser selv hva som må gjøres."
+      />
     </div>
-    </Avslor>
-  </Scene>
+  </Seksjon>
 
-  <ContactBlock n={6} />
-</Base>
-<style is:global>
-  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
-     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
-     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
-     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
-  .scene:first-of-type .mega .ord,
-  .scene:first-of-type .mega-blokk,
-  /* Bare FØRSTE avdekking i første scene, ikke hele scenen.
-     Regelen fantes for at innhold over folden ikke skal ligge usynlig og vente på
-     en scroll som aldri kommer. Men `.scene:first-of-type .avslor` traff ALLE
-     avdekkinger i scenen – og /caser og /handbok er én eneste scene, så den slo av
-     all bevegelse på hele siden. Målt: 0 bevegelsesøyeblikk, 5,5 skjermhøyder uten
-     at ett element endrer seg. */
-  /* Treffer på HVA elementet er, ikke hvor det tilfeldigvis står.
-     `> .avslor` traff ingenting fordi .avslor ligger i .scene__inner, og
-     `:first-of-type` gjelder tagg og ikke klasse. Begge varianter var stille døde:
-     skjemaet på /verktoy/cookie-sjekk sto på 0,56 opasitet ved innlasting –
-     sidens primære handling, halvgjennomsiktig til du scrollet. */
-  .scene:first-of-type .avslor:has(.scene__ingress),
-  .scene:first-of-type .avslor:has(form) {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
+  <Kontaktblokk />
+</MalWow>
+
+<style>
+  .sik-sekvens {
+    padding-top: var(--wow-seksjon-tett);
   }
-</style>
-<style is:global>
-  /* Filmen dempes i stedet for å maskeres bort.
-
-     Scenetittelen bryter ut til 1320 px over 1200 px bredde (se
-     .scene__head .stortekst i scener.css). Å skyve masken langt nok ut til å
-     klarere den krevde 72 %, og da var filmen praktisk talt usynlig – den
-     løste kontrasten ved å fjerne grunnen til at den var der. Lavere opasitet
-     med standardmasken gir filmen tilbake over hele høyre halvdel og består
-     likevel AA.
-
-     Målt 6. oktober 2026 på /nettsider, verste tekst i rammen:
-       opasitet 0,85 maske 62 %  ->  2,75:1  stryker
-       opasitet 0,85 maske 72 %  ->  7,16:1  består, men filmen er borte
-       opasitet 0,45 maske 52 %  ->  3,86:1  stryker
-       opasitet 0,35 maske 46 %  ->  5,32:1  består, filmen synlig  <- valgt
-
-     is:global er IKKE valgfritt. .scenefilm ligger inne i SceneFilm.astro og
-     får dén komponentens scope-id, mens .scenefilm-ramme får sidens. En vanlig
-     <style> kompilerer til en selektor som krever sidens id på begge, og
-     matcher da ingenting. Verifisert: med vanlig <style> ga maske 46 % og
-     maske 92 % nøyaktig samme måling, fordi ingen av dem ble brukt. */
-  .scenefilm-ramme .scenefilm { opacity: 0.35; }
+  .sik-sekvens > :global(*) {
+    grid-column: 1 / -1;
+  }
+  :global(.sik-opptak) {
+    margin-top: var(--wow-rom-7);
+  }
+  :global(.sik-under) {
+    margin-top: var(--wow-rom-5);
+  }
+  .sik-sjekk {
+    margin-top: var(--wow-rom-7);
+    max-width: 44rem;
+  }
 </style>

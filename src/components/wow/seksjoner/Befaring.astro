@@ -1,0 +1,142 @@
+---
+// Befaringen (#rapport), eies av bevegelse fra runde wow-r5. Historiens svar, ikke et nytt
+// kapittel. Rapporten står FERDIG UTFYLT for kodekonsulentene.no fra første stund, i vanlig
+// flyt, uten festing.
+//
+// Runde wow-r5 (kritiker r4 #2, #4, #13, #18):
+//  - Panelet i filmen BLIR radene her. Radene og delene i dem er merket med data-maal-del
+//    («0:status», «0:navn», «0:forbehold», «0:spor», «0:verdi» …), samme nøkler som panelet i
+//    ScrollWorld. Når filmen slutter, flytter scroll-world.ts disse delene fra panelets plass til
+//    sin egen med rullingen (bare transform og opacity). Ingen skjerm viser målingene to ganger.
+//    Bakgrunnen til panelet (data-sw-bak) følger med og tones bort.
+//  - Uten JS, ved redusert bevegelse og Save-Data står rapporten som vanlig, og målingene står
+//    bare her (panelet i filmen finnes ikke da).
+//  - Den fjerde lampa: grå, ved adressefeltet, «Din side: ikke sjekket». Telleren i filmen ender
+//    på «3 av 4», og den fjerde er denne. Linja er også feltets beskrivelse (aria-describedby).
+//  - «Ingen innlogging …» står bare i heroen (kritiker r4 #13).
+//  - Målelinjen står hel. Den tegnes ikke lenger inn her: i filmen har den allerede låst seg.
+//
+// Runde wow-r6 (eier: panelet dekket «Start befaringen» et øyeblikk i overgangen): radene står
+// ØVERST i seksjonen, og spørsmålet med feltet kommer etter dem. Panelet venter festet til radene
+// når det; før endringen rullet tittelen og feltet forbi under panelet (på mobil helt dekket, på
+// desktop dekket kanten mens panelet ble bredere). Nå ligger ingenting mellom filmen og radene,
+// så ingenting kan dekkes. Rekkefølgen leses også bedre: vår rapport, så «Lyser din side grønt?»
+// med den fjerde, grå lampa og feltet, så fastprisen. «Befaringsrapport» er usynlig H2 øverst;
+// adressen og datoen står som bunnlinje under radene. Målt med .skudd/wow/r6/overlapp.mjs.
+//
+// ÉN KILDE: målingene, datoen, adressen og overskriften leses fra src/data/historie.ts, så filmen
+// og rapporten aldri kan si noe ulikt. Verdien deles i en stor del og en liten (enheten) med
+// delVerdi() derfra, ordrett samme tekst.
+//
+// Fastprisfeltet (kritiker r3 #19): ordlyd skrevet av byggeren på dirigentens oppdrag. Pris og
+// enhet fra priser.ts.
+//
+// Runde wow-r7 «Lampa» (historie-manus.md del 5, Rapporten): radene åpner seksjonen (de er
+// panelet fra filmen). Så H2 «Sjekk nettsiden din» i setningsform (3,5rem), fortellerens linje
+// og feltet med den hule lampa: «står slukket til du har målt». Lampa tennes aldri her; det er
+// /sjekk som måler. Den lysner bare når adressen i feltet er gyldig (ren CSS), som et tegn på at
+// den kan måles. Kontrakten med bevegelse: linja har data-sw-din-side og lampa data-sw-din-lampe
+// (filmens lampe kan lande her), og lampa beholder wow-hake--venter (scroll-world.spec.ts).
+// Fastprisen er ikke lenger et refleksfelt: refleksfeltet er garantien alene. Den står som en
+// måling, med målelinje fra etiketten til prisen, samme grammatikk som radene over og prislista.
+//
+// Skjemaet er det samme som i heroen (forside.md del 1) og sender en vanlig GET til /sjekk, så
+// det virker uten JavaScript. Egne id-er, så de to ikke kolliderer.
+import { loepende, prisenhet } from "../../../data/priser";
+import { malinger, maltDato, maltDatoIso, maltAdresse, filmTekst, delVerdi } from "../../../data/historie";
+import { fortelling } from "./fortelling";
+
+const lovsjekk = loepende.find((r) => r.navn === "Lovsjekk-pakke");
+const rader = malinger.map((m) => ({ ...m, ...delVerdi(m.verdi) }));
+---
+
+<section class="wow-befaring" id="rapport" aria-labelledby="rapport-tittel">
+  <div class="wow-befaring__ramme wow-rute">
+    <div class="wow-rapportark" data-sw-rapport>
+      <h2 id="rapport-ark-tittel" class="wow-usynlig">Befaringsrapport</h2>
+      <div class="wow-rapport__ramme">
+        <div class="wow-rapport__bak" data-sw-bak aria-hidden="true"></div>
+        <ol class="wow-rapport" role="list">
+          {rader.map((r, j) => (
+            <li class="wow-rapport__rad">
+              <span
+                class:list={["wow-hake wow-rapport__status", r.status !== "bestatt" && "wow-hake--venter"]}
+                data-maal-del={`${j}:status`}
+                aria-hidden="true"
+              ></span>
+              <span class="wow-rapport__navn">
+                <span class="wow-maalt__navn" data-maal-del={`${j}:navn`}>{r.etikett}<span class="wow-usynlig">:</span></span>
+                {r.forbehold && <span class="wow-rapport__forbehold" data-maal-del={`${j}:forbehold`}>{r.forbehold}</span>}
+              </span>
+              <span class="wow-rapport__maaling">
+                <span class="wow-rapport__spor" data-maal-del={`${j}:spor`} aria-hidden="true">
+                  <span class="wow-rapport__linje"></span>
+                </span>
+                <span class="wow-maalt__verdi wow-rapport__verdi" data-maal-del={`${j}:verdi`}>
+                  {r.for && <span class="wow-maalt__enhet">{r.for}</span>}{r.stor}{r.etter && <span class="wow-maalt__enhet">{r.etter}</span>}
+                </span>
+              </span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div class="wow-rapportark__fot">
+        <p class="wow-befaring__adresse">
+          <span class="wow-befaring__prikk" aria-hidden="true"></span>
+          {maltAdresse}
+        </p>
+        <p class="wow-rapportark__dato"><time datetime={maltDatoIso}>{maltDato}</time></p>
+      </div>
+    </div>
+
+    <div class="wow-befaring__hode">
+      <h2 id="rapport-tittel" class="wow-setning wow-setning--seksjon wow-befaring__tittel">{fortelling.rapport.tittel}</h2>
+      <p class="wow-forteller wow-befaring__forteller">{fortelling.rapport.linje}</p>
+
+      <form class="wow-sjekk wow-befaring__sjekk" method="get" action="/sjekk">
+        <p class="wow-befaring__din" id="adresse-rapport-din" data-sw-din-side>
+          <span class="wow-hake wow-hake--venter wow-befaring__din-lampe" data-sw-din-lampe aria-hidden="true"></span>
+          {filmTekst.dinSideStatus}
+        </p>
+        <label class="wow-usynlig" for="adresse-rapport">Nettadresse</label>
+        <div class="wow-sjekk__rad">
+          <input
+            id="adresse-rapport"
+            name="url"
+            type="text"
+            inputmode="url"
+            autocomplete="url"
+            spellcheck="false"
+            placeholder="dinbedrift.no"
+            required
+            pattern="[^ ]+\.[^ ]+"
+            aria-describedby="adresse-rapport-din adresse-rapport-feil"
+          />
+          <button class="wow-knapp" type="submit" data-magnetic>
+            <span class="wow-knapp__tekst" data-magnetic-tekst>Start befaringen</span>
+          </button>
+        </div>
+        <p class="wow-sjekk__feil" id="adresse-rapport-feil">
+          Det ser ikke ut som en nettadresse. Prøv formen dinbedrift.no.
+        </p>
+      </form>
+    </div>
+
+    {lovsjekk && (
+      <div class="wow-fastpris">
+        <p class="wow-fastpris__tekst">
+          <span class="wow-fastpris__etikett">Finner befaringen feil på din side, retter vi dem med lovsjekk-pakken:</span>
+          <span class="wow-fastpris__spor" aria-hidden="true"><span class="wow-fastpris__linje"></span></span>
+          <strong class="wow-fastpris__pris">{lovsjekk.pris.replace(/\s*kr$/, "")}<span class="wow-fastpris__kr"> kr</span> <span class="wow-fastpris__enhet">{prisenhet}</span></strong>
+          <span class="wow-fastpris__dekker">
+            Fast pris for siden du har i dag. Dekker cookie-samtykke, universell utforming, org.nr. og
+            personvernerklæring.
+          </span>
+        </p>
+        <a class="wow-knapp wow-fastpris__knapp" href="#kontakt" data-magnetic>
+          <span class="wow-knapp__tekst" data-magnetic-tekst>Book 20 minutter</span>
+        </a>
+      </div>
+    )}
+  </div>
+</section>

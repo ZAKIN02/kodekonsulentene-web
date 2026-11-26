@@ -1,0 +1,114 @@
+---
+/**
+ * Lab: «rolig» (bølge A2) – lese- og verktøysidene. Samme stiler og hode som MalWow, men
+ * inngangen er scripts/wow/rolig.ts, ikke index.ts: ingen GSAP, ingen Lenis, ingen peker, ingen
+ * inntoning. Bare toppfeltet som glir bort ved rulling og <details> som toner innholdet inn når
+ * leseren åpner det. Teksten er en lab-tekst om hva siden viser, ikke innhold fra nettstedet.
+ * Står også et Kapittel her, blir det stillbilde (kontrollen i tests/wow/kapittel.spec.ts).
+ * `noindex`, lenkes ikke fra noe.
+ */
+import "../../styles/fonter-v2.css";
+import "../../styles/tokens-wow.css";
+import "../../styles/wow.css";
+import "../../styles/wow-bevegelse.css";
+import Hode from "../../components/wow/seksjoner/Hode.astro";
+import Kapittel from "../../components/wow/Kapittel.astro";
+---
+
+<!doctype html>
+<html lang="nb" class="wow">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lab: rolig</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body class="wow-kropp">
+    <a class="wow-hopp" href="#innhold">Hopp til innhold</a>
+    <Hode />
+    <main id="innhold" class="lab-les">
+      <article class="lab-kolonne">
+        <p class="lab-h1">Lab: rolig modus</p>
+        <p class="lab-ingress">
+          Denne siden laster bare rolig.ts. Ingenting beveger seg før du gjør noe: rull nedover, så glir
+          toppfeltet bort; rull oppover, så kommer det tilbake. Åpne spørsmålet under, så tones svaret inn.
+        </p>
+        <details class="lab-details">
+          <summary>Hva beveger seg på en rolig side?</summary>
+          <div>
+            <p>Bare svar på det du gjør: toppfeltet ved rulling, innholdet i en åpnet boks, fokusringen.</p>
+          </div>
+        </details>
+        <details class="lab-details" open>
+          <summary>Hva står stille?</summary>
+          <div>
+            <p>Alt annet. Overskrifter, avsnitt, tabeller og bilder står der de står fra første maling.</p>
+          </div>
+        </details>
+        {Array.from({ length: 8 }, (_, i) => (
+          <p class="lab-avsnitt">
+            Avsnitt {i + 1}. Søk i siden (Cmd+F) og vanlig rulling virker som i en bok, fordi ingen myk
+            rulling ligger mellom deg og nettleseren. Linjelengden holder seg rundt 62 tegn.
+          </p>
+        ))}
+      </article>
+      <Kapittel
+        nummer={1}
+        tittel="Kapittel på en rolig side"
+        ingress="Står det et kapittel her ved en feil, blir det stillbilde: ingen film uten filminngangen."
+        problem="Lab: problemlinja står med grå lampe."
+        losning="Lab: løsningslinja står med grønn lampe."
+        prioritet={false}
+        id="rolig-kapittel"
+      />
+    </main>
+    <script>
+      import "../../scripts/wow/rolig.ts";
+    </script>
+  </body>
+</html>
+
+<style>
+  .lab-les {
+    padding-block: calc(var(--wow-hode-hoyde) + var(--wow-rom-8)) var(--wow-rom-9);
+    background: var(--wow-bunn);
+    color: var(--wow-tekst);
+  }
+
+  .lab-kolonne {
+    max-width: var(--wow-maal-brod);
+    margin-inline: auto;
+    padding-inline: var(--wow-marg);
+    margin-bottom: var(--wow-rom-9);
+  }
+
+  .lab-h1 {
+    font-family: var(--wow-font-display);
+    font-size: var(--wow-tekst-tjeneste);
+    text-transform: uppercase;
+  }
+
+  .lab-ingress {
+    font-size: var(--wow-tekst-ingress);
+  }
+
+  .lab-avsnitt {
+    font-size: var(--wow-tekst-brod);
+    line-height: 1.65;
+  }
+
+  .lab-details {
+    margin-block: var(--wow-rom-4);
+    padding: var(--wow-rom-4);
+    border: var(--wow-kant-1) solid var(--wow-linje);
+    border-radius: var(--wow-radius-m);
+  }
+
+  .lab-details summary {
+    min-height: 1.5rem;
+    cursor: pointer;
+    font-weight: 600;
+  }
+</style>

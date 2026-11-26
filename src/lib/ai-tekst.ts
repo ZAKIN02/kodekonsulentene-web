@@ -7,7 +7,7 @@
  *
  * Filen importeres fra tre steder, og det er med vilje:
  *   1. `src/pages/api/ai-tekst.ts`  – serveren som kaller Claude
- *   2. `src/components/AiTekst.astro` – nettleseren, som tolker strømmen mens den kommer
+ *   2. `src/components/wow/tjeneste/AiTekst.astro` – nettleseren, som tolker strømmen mens den kommer
  *   3. testene
  * Hadde tolkingen ligget to steder, ville nettleseren og no-JS-varianten vist to
  * forskjellige svar på samme tekst første gang noen endret én av dem.

@@ -1,0 +1,49 @@
+---
+/**
+ * Tusjstrek i wow-drakt (portert fra src/components/Tusjstrek.astro, wow-undersider.md del 4):
+ * en refleksstrek under ETT poeng i en setning. Innholdet står i en ekte <strong>, så meningen
+ * bæres av markupen; streken er for øyet.
+ *
+ * Forskjeller fra v1, alle bevisste:
+ *  - Streken står ferdig. Lesesidene er «rolig»: ingenting beveger seg uten at leseren har gjort
+ *    noe, så rulletegningen (animation-timeline: view()) er ute. `staar` tas fortsatt imot og
+ *    setter klassen wow-tusj--staar (test/uuregister.test.ts krever at streken over folden er
+ *    merket slik), men alle streker står nå uansett.
+ *  - Bare strek, ingen flate bak ordet. Flaten fantes for det lyse temaet, som er fjernet.
+ *  - text-decoration i stedet for bakgrunnslag: den følger linjeskift av seg selv og overlever
+ *    tvungne farger. Lenkene i Prosa har tynn grå strek; denne er tykk og i refleks.
+ *
+ * Redaksjonell regel fra v1 gjelder: én per skjerm. Komponenten kan ikke håndheve den.
+ *
+ * tone:  aksent (standard) og ok: refleks. varsel og feil: --wow-feil (wow har ingen egen
+ *        varselfarge). Bruk dem bare når setningen faktisk er et forbehold eller en feil.
+ */
+interface Props {
+  tone?: "aksent" | "ok" | "varsel" | "feil";
+  staar?: boolean;
+  class?: string;
+}
+const { tone = "aksent", staar = false, class: klasse } = Astro.props;
+const advarer = tone === "varsel" || tone === "feil";
+---
+
+<strong class:list={["wow-tusj", advarer && "wow-tusj--varsel", staar && "wow-tusj--staar", klasse]}><slot /></strong>
+
+<style>
+  .wow-tusj {
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: var(--wow-refleks);
+    text-decoration-thickness: 0.12em;
+    text-underline-offset: 0.22em;
+    text-decoration-skip-ink: none;
+  }
+  .wow-tusj--varsel {
+    text-decoration-color: var(--wow-feil);
+  }
+  @media (forced-colors: active) {
+    .wow-tusj {
+      text-decoration-color: CanvasText;
+    }
+  }
+</style>

@@ -1,0 +1,276 @@
+---
+/**
+ * Registerstolper i wow-drakt (portert fra src/components/Registerstolper.astro): hvilke
+ * WCAG-krav offentlige virksomheter selv rapporterer at de bryter. En ekte tabell: prosenten står
+ * som tekst, og målelinja under tallet er bare forsterkning (aria-hidden). Uten CSS er dette en
+ * tabell, og det finnes ikke noe skript.
+ *
+ * Kolonnen «Målbar maskinelt» er poenget med figuren. Den kommer fra skannerens egen regelliste
+ * (maskinsjekkbareKrav() i src/lib/uuregister.ts) og kan derfor ikke påstå en dekning vi ikke har.
+ * «Ja» og «Nei» har ingen statusfarge: ingen av svarene er en dom over virksomheten.
+ *
+ * Forskjeller fra v1, alle bevisste:
+ *  - Linjene står ferdig. Lesesidene er «rolig», så rulleanimasjonen (view() og sibling-index())
+ *    er ute.
+ *  - Målelinje i rapportspråket (samme tegning som Maaling: spor og linje) i stedet for en fylt
+ *    stolpe bak tallet. Fargen er tekstfargen, ikke refleks: refleks betyr «bestått» i wow, og en
+ *    lang linje her betyr mange brudd.
+ *  - Ingen sidelengs rulling. Figuren er sin egen container: under 40rem (mobil, og lesekolonnen
+ *    mellom 1024 og 1279 px) står hver rad som en blokk med navnet på verdien foran. Radene har
+ *    eksplisitte ARIA-roller, fordi display: grid på <tr> ellers tar tabellrollen fra flere
+ *    skjermlesere. Setningen «Tabellen er bredere enn skjermen …» fra v1 er derfor borte: den
+ *    ville vært usann.
+ *  - Ingen monospace og ingen versaler i tabellhodet (del 12, AI-preg).
+ *
+ * Linjene skaleres mot det høyeste tallet i utvalget, ikke mot 100, som i v1. Prosenten i teksten
+ * er uendret; det er den som er dataen.
+ *
+ * Står i en <Prosa> (Artikkelkropp): tittelen, cellepolstringen og strekene mellom radene kommer
+ * derfra, og reglene under legger bare til det som er særegent for figuren.
+ */
+import type { Kravrad } from "../../../lib/uuregister";
+import { KRAVNAVN } from "../../../lib/uuregister";
+
+interface Props {
+  rader: Kravrad[];
+  /** Krav vår egen skanner har en regel for. Utled med maskinsjekkbareKrav(). */
+  maskinsjekkbare: Set<string>;
+  /** Tabellens tittel. Blir <caption>, så den leses før radene. */
+  tittel: string;
+  /** Står under tabellen. Her hører kilden og forbeholdet hjemme. */
+  bunntekst?: string;
+  class?: string;
+}
+const { rader, maskinsjekkbare, tittel, bunntekst, class: klasse } = Astro.props;
+
+const tall = (n: number) => n.toLocaleString("nb-NO");
+/** Alltid én desimal, alltid komma. */
+const prosent = (n: number) =>
+  n.toLocaleString("nb-NO", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const maks = Math.max(...rader.map((r) => r.andel), 1);
+---
+
+<figure class:list={["wow-regstolper", klasse]}>
+  <table class="wow-regstolper__tabell" role="table">
+    <caption class="wow-regstolper__tittel">{tittel}</caption>
+    <thead role="rowgroup">
+      <tr role="row">
+        <th scope="col" role="columnheader" class="wow-regstolper__kol-krav">Krav</th>
+        <th scope="col" role="columnheader">Hva kravet heter</th>
+        <th scope="col" role="columnheader" class="wow-regstolper__kol-verdi">Rapporterer brudd</th>
+        <th scope="col" role="columnheader" class="wow-regstolper__kol-av">Av vurderte</th>
+        <th scope="col" role="columnheader" class="wow-regstolper__kol-sjekk">Målbar maskinelt</th>
+      </tr>
+    </thead>
+    <tbody role="rowgroup">
+      {
+        rader.map((r) => {
+          const n = KRAVNAVN[r.krav];
+          const maskin = maskinsjekkbare.has(r.krav);
+          return (
+            <tr role="row" class="wow-regstolper__rad" style={`--andel:${((r.andel / maks) * 100).toFixed(1)}%`}>
+              <th scope="row" role="rowheader" class="wow-regstolper__krav">
+                {/* Lenker til tilsynets egen side for kravet. Stien er lest ut av tilsynets
+                    sitemap (KRAVNAVN), ikke konstruert av kravnummeret. */}
+                <a href={`https://www.uutilsynet.no/wcag-standarden/${n?.sti ?? ""}`} rel="noopener">{r.krav}</a>
+                {n && <span class="wow-regstolper__niva">{n.niva}</span>}
+              </th>
+              <td role="cell" class="wow-regstolper__navn">{n?.navn ?? "—"}</td>
+              <td role="cell" class="wow-regstolper__verdi">
+                <span class="wow-regstolper__prosent">{prosent(r.andel)} %</span>
+                <span class="wow-regstolper__spor" aria-hidden="true"><span class="wow-regstolper__linje"></span></span>
+              </td>
+              <td role="cell" class="wow-regstolper__av" data-kol="Av vurderte">{tall(r.brot)} av {tall(r.vurdert)}</td>
+              <td role="cell" class:list={["wow-regstolper__sjekk", maskin && "wow-regstolper__sjekk--ja"]} data-kol="Målbar maskinelt">
+                {maskin ? "Ja" : "Nei"}
+              </td>
+            </tr>
+          );
+        })
+      }
+    </tbody>
+  </table>
+  {bunntekst && <figcaption class="wow-notat wow-regstolper__bunn">{bunntekst}</figcaption>}
+</figure>
+
+<style>
+  .wow-regstolper {
+    container-type: inline-size;
+    display: grid;
+    gap: var(--wow-rom-4);
+    margin: 0;
+  }
+  /* Prosa gjør tabeller til rullebokser (display: block). Denne skal aldri rulle. */
+  .wow-regstolper__tabell {
+    display: table;
+    width: 100%;
+    overflow: visible;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-size: var(--wow-tekst-liten);
+  }
+  .wow-regstolper__tabell :is(th, td) {
+    min-width: 0;
+    padding-right: var(--wow-rom-4);
+    vertical-align: baseline;
+  }
+  .wow-regstolper__tabell :is(th, td):last-child {
+    min-width: 0;
+    padding-right: 0;
+  }
+  .wow-regstolper__tabell thead th {
+    font-weight: 500;
+    white-space: normal;
+    vertical-align: bottom;
+  }
+  .wow-regstolper__kol-krav {
+    width: 6rem;
+  }
+  .wow-regstolper__kol-verdi {
+    width: 8.5rem;
+  }
+  .wow-regstolper__kol-av {
+    width: 8.5rem;
+  }
+  .wow-regstolper__kol-sjekk {
+    width: 5.5rem;
+  }
+  .wow-regstolper__kol-verdi,
+  .wow-regstolper__kol-av,
+  .wow-regstolper__kol-sjekk,
+  .wow-regstolper__verdi,
+  .wow-regstolper__av,
+  .wow-regstolper__sjekk {
+    text-align: right;
+  }
+
+  .wow-regstolper__krav {
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  /* Trykkflaten er minst 24 × 24 px (WCAG 2.5.8) uten at raden vokser. */
+  .wow-regstolper__krav a {
+    display: inline-block;
+    min-width: 1.5rem;
+    min-height: 1.5rem;
+  }
+  .wow-regstolper__niva {
+    margin-left: var(--wow-rom-2);
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-mikro);
+    font-weight: 400;
+  }
+  .wow-regstolper__tabell .wow-regstolper__navn {
+    color: var(--wow-tekst);
+  }
+  .wow-regstolper__prosent {
+    display: block;
+    color: var(--wow-tekst);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .wow-regstolper__spor {
+    display: block;
+    height: var(--wow-kant-2);
+    margin-top: var(--wow-rom-1);
+    background: var(--wow-linje);
+  }
+  /* Vokser fra høyre, mot tallet som står høyrestilt over. */
+  .wow-regstolper__linje {
+    display: block;
+    width: var(--andel);
+    height: 100%;
+    margin-left: auto;
+    background: var(--wow-tekst);
+  }
+  .wow-regstolper__av {
+    white-space: nowrap;
+  }
+  .wow-regstolper__sjekk--ja {
+    color: var(--wow-tekst);
+    font-weight: 600;
+  }
+  .wow-regstolper__bunn {
+    max-width: var(--wow-maal-brod);
+  }
+
+  /* Smal figur: hver rad som en blokk. Kravnummer, navn, målelinja med prosenten til høyre, så de
+     to siste verdiene med kolonnenavnet foran. */
+  @container (max-width: 40rem) {
+    .wow-regstolper__tabell,
+    .wow-regstolper__tabell tbody,
+    .wow-regstolper__tittel {
+      display: block;
+    }
+    .wow-regstolper__tittel {
+      border-bottom: var(--wow-kant-1) solid var(--wow-linje);
+    }
+    .wow-regstolper__tabell thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    .wow-regstolper__rad {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: var(--wow-rom-1) var(--wow-rom-4);
+      padding-block: var(--wow-rom-4);
+      border-bottom: var(--wow-kant-1) solid var(--wow-linje);
+    }
+    .wow-regstolper__rad > * {
+      padding: 0;
+      border: 0;
+      text-align: left;
+    }
+    .wow-regstolper__krav,
+    .wow-regstolper__navn,
+    .wow-regstolper__verdi {
+      grid-column: 1 / -1;
+    }
+    .wow-regstolper__navn {
+      font-size: var(--wow-tekst-brod);
+      font-weight: 600;
+      line-height: 1.3;
+    }
+    /* Linja først, tallet til høyre for den. */
+    .wow-regstolper__verdi {
+      display: flex;
+      align-items: center;
+      gap: var(--wow-rom-4);
+      padding-block: var(--wow-rom-1);
+    }
+    .wow-regstolper__prosent {
+      order: 2;
+      min-width: 4.5rem;
+      text-align: right;
+    }
+    .wow-regstolper__spor {
+      flex: 1;
+      margin-top: 0;
+    }
+    .wow-regstolper__linje {
+      margin-left: 0;
+    }
+    .wow-regstolper__sjekk {
+      text-align: right;
+    }
+    .wow-regstolper__av::before,
+    .wow-regstolper__sjekk::before {
+      content: attr(data-kol) ": ";
+      color: var(--wow-tekst-dempet);
+      font-weight: 400;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .wow-regstolper__spor {
+      background: GrayText;
+    }
+    .wow-regstolper__linje {
+      background: CanvasText;
+    }
+  }
+</style>

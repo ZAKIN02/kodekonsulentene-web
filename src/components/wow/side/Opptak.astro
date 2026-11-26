@@ -1,0 +1,161 @@
+---
+/**
+ * Et ekte skjermopptak av våre egne verktøy i nettleserrammen fra Ramme.astro
+ * (wow-undersider.md del 3). Ekte opptak, ikke KI, og merkes derfor ikke.
+ *
+ *   <Opptak navn="dmarc" adresse="kodekonsulentene.no/verktoy/dmarc" />
+ *
+ * `navn` er nøkkelen i src/data/opptak.json. Finnes ikke nøkkelen eller filene i public/, rendres
+ * ingenting (ingen «MANGLER» i HTML). Største variant er 1920 px bred (korteste side ≥ 1080).
+ *
+ * Avspilling (skriptet under, ≤ 1 kB, ingen biblioteker):
+ *  - preload="none": ingenting hentes før opptaket skal spille.
+ *  - Fin peker (mus): spiller ved hover og når knappen har fokus; pauser når du går ut.
+ *  - Berøring: spiller når 40 % av opptaket er synlig; pauser når det ruller ut.
+ *  - Redusert bevegelse eller Save-Data: spiller aldri av seg selv, bare med knappen.
+ *  - Knappen «Spill av» / «Pause» står alltid med JavaScript (WCAG 2.2.2: noe som beveger seg
+ *    i mer enn fem sekunder skal kunne stoppes).
+ * Uten JavaScript står plakaten (stillbilde av opptaket) med bildeteksten.
+ */
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+import opptak from "../../../data/opptak.json";
+
+interface Props {
+  navn: string;
+  /** Teksten i adressefeltet i rammen. */
+  adresse?: string;
+  class?: string;
+}
+type Opptak = {
+  smal: string;
+  bred: string;
+  stor?: string;
+  plakat: string;
+  bredde: number;
+  hoyde: number;
+  tekst: string;
+  kilde?: string;
+};
+const { navn, adresse, class: klasse } = Astro.props;
+const o = (opptak as Record<string, Opptak>)[navn];
+const finnes = (sti: string) => existsSync(join(process.cwd(), "public", sti));
+const ok = o && finnes(o.plakat) && finnes(o.smal) && finnes(o.bred);
+---
+
+{ok && (
+  <figure class:list={["wow-opptak", klasse]} data-opptak>
+    <div class="wow-ramme wow-ramme--nettleser">
+      <div class="wow-ramme__linje" aria-hidden="true">
+        <span class="wow-ramme__prikker"><i></i><i></i><i></i></span>
+        {adresse && <span class="wow-ramme__adresse">{adresse}</span>}
+      </div>
+      <div class="wow-ramme__skjerm" style={`aspect-ratio: ${o.bredde} / ${o.hoyde}`}>
+        <video muted playsinline loop preload="none" poster={o.plakat} width={o.bredde} height={o.hoyde} aria-hidden="true">
+          {o.stor && finnes(o.stor) && <source media="(min-width: 1281px)" src={o.stor} type="video/mp4" />}
+          <source media="(min-width: 700px)" src={o.bred} type="video/mp4" />
+          <source src={o.smal} type="video/mp4" />
+        </video>
+      </div>
+    </div>
+    <figcaption class="wow-opptak__tekst">
+      <button class="wow-opptak__knapp" type="button" data-opptak-knapp hidden>Spill av</button>
+      <span>
+        {o.tekst}
+        {o.kilde && <span class="wow-opptak__kilde"> {o.kilde}</span>}
+      </span>
+    </figcaption>
+  </figure>
+)}
+
+<style>
+  .wow-opptak {
+    display: grid;
+    gap: var(--wow-rom-4);
+    margin: 0;
+  }
+  .wow-opptak video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+  .wow-opptak__tekst {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--wow-rom-4);
+    max-width: var(--wow-maal-brod);
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+  }
+  .wow-opptak__kilde {
+    color: var(--wow-tekst-svak);
+  }
+  .wow-opptak__knapp {
+    flex-shrink: 0;
+    min-height: var(--wow-trykkflate);
+    min-width: 6rem;
+    padding-inline: var(--wow-rom-4);
+    border: var(--wow-kant-1) solid var(--wow-linje-sterk);
+    border-radius: var(--wow-radius-pille);
+    background: transparent;
+    color: var(--wow-tekst);
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background-color var(--wow-tid-kort) var(--wow-kurve),
+      border-color var(--wow-tid-kort) var(--wow-kurve);
+  }
+  .wow-opptak__knapp[hidden] {
+    display: none;
+  }
+  .wow-opptak__knapp:hover {
+    border-color: var(--wow-tekst);
+    background: var(--wow-flate-hev);
+  }
+</style>
+
+<script>
+  const roMQ = matchMedia("(prefers-reduced-motion: reduce)");
+  const fin = matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const spar = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
+
+  for (const fig of document.querySelectorAll<HTMLElement>("[data-opptak]")) {
+    const video = fig.querySelector("video");
+    const knapp = fig.querySelector<HTMLButtonElement>("[data-opptak-knapp]");
+    if (!video || !knapp) continue;
+    knapp.hidden = false;
+    // Stoppet med knappen: da spiller den ikke av seg selv igjen.
+    let stoppet = false;
+    const auto = () => !stoppet && !spar && !roMQ.matches;
+    const vis = () => (knapp.textContent = video.paused ? "Spill av" : "Pause");
+    const spill = () => void video.play().catch(() => {});
+    video.addEventListener("play", vis);
+    video.addEventListener("pause", vis);
+
+    knapp.addEventListener("click", () => {
+      if (video.paused) {
+        stoppet = false;
+        spill();
+      } else {
+        stoppet = true;
+        video.pause();
+      }
+    });
+
+    if (fin) {
+      fig.addEventListener("pointerenter", () => auto() && spill());
+      fig.addEventListener("pointerleave", () => auto() && video.pause());
+      knapp.addEventListener("focus", () => auto() && spill());
+    } else {
+      new IntersectionObserver(
+        ([e]) => {
+          if (e.isIntersecting && auto()) spill();
+          else if (!e.isIntersecting) video.pause();
+        },
+        { threshold: 0.4 },
+      ).observe(fig);
+    }
+  }
+</script>

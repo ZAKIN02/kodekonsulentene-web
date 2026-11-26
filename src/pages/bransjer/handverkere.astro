@@ -1,23 +1,21 @@
 ---
-import Base from "../../layouts/Base.astro";
-import Flyt from "../../components/Flyt.astro";
+/**
+ * /bransjer/handverkere i wow-drakten (wow-undersider.md del 1.4 og del 4, wow-r8-B1).
+ * Rekkefølge: kapittel 3 som stillbilde (rørleggeren) → tallene fra SSB, med kilde og forbehold,
+ * og flyten → demo (ekte rekkefølge, id «demo») → «Det du allerede betaler for» → «Sjekk den
+ * siden du har» → kontakt med sidens egen tittel.
+ * Ute fra v1: terminalutsnittet (tallene står som tall), det genererte stillbildet med seksjonen
+ * som viste det, og løpenumrene 01–04.
+ */
+import MalWow from "../../layouts/MalWow.astro";
+import { Seksjon, Prosa, Flyt, Steg, Tekstrader, UrlFelt, Kontaktblokk } from "../../components/wow/side";
+import Kapittel from "../../components/wow/Kapittel.astro";
+import { kapittelForhandslast } from "../../scripts/wow/kapittel-klipp";
 import { flyter } from "../../data/flyter";
-import Scene from "../../components/Scene.astro";
-import Mega from "../../components/Mega.astro";
-import Avslor from "../../components/Avslor.astro";
-import Button from "../../components/Button.astro";
-import Terminal from "../../components/Terminal.astro";
-import UrlCheck from "../../components/UrlCheck.astro";
-import ProcessSteps from "../../components/ProcessSteps.astro";
-import Stillbilde from "../../components/Stillbilde.astro";
-import Horisont from "../../components/Horisont.astro";
-import ContactBlock from "../../components/ContactBlock.astro";
 import { bookUrl } from "../../data/firma";
 import { tjeneste } from "../../data/schema";
 import { pakker, prisenhet } from "../../data/priser";
 import { kilde } from "../../data/kilder";
-
-import "../../styles/scener.css";
 
 /** SSB-tabellen de to tallene i denne seksjonen står i. Se kommentaren ved bruken. */
 const ssb = kilde("ssb-14933");
@@ -31,23 +29,20 @@ const norskDato = (iso: string): string =>
   });
 
 const steg = [
-  { title: "Kunden fyller ut", time: "2 vår", text: "Fire felt og tre bilder fra telefonen. Ikke et kontaktskjema – en befaringsforespørsel." },
-  { title: "Du får varsel", time: "Straks", text: "Push eller SMS med adresse, bilder og beskrivelse. Du ser om det er verdt turen før du setter deg i bilen." },
-  { title: "Du foreslår tid", time: "1 klikk", text: "Kunden velger blant tidene du faktisk har ledig. Ingen telefonrunde." },
-  { title: "Tilbudet går ut", time: "Samme dag", text: "Mal med dine priser, signert digitalt. Blir det ja, ligger ordren i regnskapet." },
+  { navn: "Kunden fyller ut", naar: "Fra telefonen", tekst: "Fire felt og tre bilder fra telefonen. Ikke et kontaktskjema – en befaringsforespørsel." },
+  { navn: "Du får varsel", naar: "Straks", tekst: "Push eller SMS med adresse, bilder og beskrivelse. Du ser om det er verdt turen før du setter deg i bilen." },
+  { navn: "Du foreslår tid", naar: "1 klikk", tekst: "Kunden velger blant tidene du faktisk har ledig. Ingen telefonrunde." },
+  { navn: "Tilbudet går ut", naar: "Samme dag", tekst: "Mal med dine priser, signert digitalt. Blir det ja, ligger ordren i regnskapet." },
 ];
 
 const kobles = [
-  { nr: "01", tittel: "Tripletex og Fiken", tekst: "Godtatt tilbud blir ordre blir faktura. Ingen taster timene inn på nytt om kvelden." },
-  { nr: "02", tittel: "Vipps", tekst: "Depositum eller sluttbetaling med én skanning. Norske kunder forventer det." },
-  { nr: "03", tittel: "Mittanbud", tekst: "Siden din er det kunden sjekker etter at de har sett deg der. Da bør den si noe mer enn navnet ditt." },
-  { nr: "04", tittel: "SMS og push", tekst: "Varselet om ny befaring kommer dit du faktisk ser det, ikke i en innboks du leser om kvelden." },
+  { tittel: "Tripletex og Fiken", tekst: "Godtatt tilbud blir ordre blir faktura. Ingen taster timene inn på nytt om kvelden." },
+  { tittel: "Vipps", tekst: "Depositum eller sluttbetaling med én skanning. Norske kunder forventer det." },
+  { tittel: "Mittanbud", tekst: "Siden din er det kunden sjekker etter at de har sett deg der. Da bør den si noe mer enn navnet ditt." },
+  { tittel: "SMS og push", tekst: "Varselet om ny befaring kommer dit du faktisk ser det, ikke i en innboks du leser om kvelden." },
 ];
 
-/**
- * Fra `tjeneste()`. Se klinikksiden for hvorfor den gamle `provider`-noden var
- * et problem: den lagde en andre, navnløs virksomhet paa samme side.
- */
+/** Fra `tjeneste()`. */
 const schema = tjeneste({
   type: "Nettside og befaringssystem for håndverkere",
   navn: "Nettside og befaringssystem for håndverkere",
@@ -57,183 +52,187 @@ const schema = tjeneste({
   pakker: ["Start", "Bedrift"],
 });
 ---
-<Base
+
+<MalWow
   tittel="Nettside for håndverkere i Oslo"
   beskrivelse={`Nettside og befaringssystem for håndverkere: bilder fra kunden, tilbud samme dag, ordre rett i Tripletex eller Fiken. Fast pris fra ${pakker[0].pris} – ${prisenhet}.`}
   schema={[schema]}
+  bevegelse="film"
+  forhandslast={kapittelForhandslast(3, "still")}
 >
-  <Scene lav>
-    <Mega som="h1" merke="Håndverkere" n={1} tekst="Slutt å kjøre på befaring du ikke ville tatt" aksent="befaring" />
-    <Avslor trinn={1}>
-      <p class="scene__ingress body-lg">De fleste håndverkersider er et telefonnummer og et skjema. Det gir deg forespørsler du må ringe tilbake på for å finne ut om de er noe verdt.</p>
-    </Avslor>
+  {/* Problem og løsning på platen er setninger som allerede står på siden (planen del 4):
+      ingressens første setning og beskrivelsen i schemaet. */}
+  <Kapittel
+    nummer={3}
+    modus="still"
+    tittel="Slutt å kjøre på befaring du ikke ville tatt"
+    ingress="De fleste håndverkersider er et telefonnummer og et skjema. Det gir deg forespørsler du må ringe tilbake på for å finne ut om de er noe verdt."
+    problem="De fleste håndverkersider er et telefonnummer og et skjema."
+    losning="Befaringsforespørsel med bilder fra kunden, tilbud samme dag og ordre rett i Tripletex eller Fiken."
+    handlinger={[
+      { tekst: "Book 20 minutter", href: bookUrl, type: "primar" },
+      { tekst: "Se befaringsflyten", href: "#demo", type: "lenke" },
+    ]}
+  />
 
-    <Avslor>
-    <div class="row">
-      <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
-      <Button variant="ghost" href="#demo">Se befaringsflyten</Button>
-    </div>
-    </Avslor>
-  </Scene>
-
-  <Scene n={2} eyebrow="Tallene" tittel="Bransjen henger etter – det er en fordel for deg">
-    <Avslor>
-    <div class="grid-2">
-      <div class="stack">
-        <p class="body-lg muted">
+  <Seksjon id="tallene" tittel="Bransjen henger etter – det er en fordel for deg" storrelse="stor">
+    <div class="bransje-tall">
+      {/* De to tallene fra SSB, satt som tall. Etikettene sier hvem tallet gjelder. */}
+      <dl class="bransje-tall__tall">
+        <div>
+          <dt>Bygg og anlegg, 10–19 ansatte</dt>
+          <dd>72 %</dd>
+        </div>
+        <div>
+          <dt>Alle foretak med minst ti ansatte</dt>
+          <dd>86 %</dd>
+        </div>
+      </dl>
+      <Prosa>
+        <p>
           SSB oppgir at 72 % av foretakene i bygg og anlegg med 10–19 ansatte har nettside.
           Snittet for alle foretak med minst ti ansatte er 86 %.
         </p>
-        <p class="muted">
+        <p>
           Det betyr to ting. For det første at omtrent én av fire konkurrenter på din
           størrelse ikke har noe å bli funnet på i det hele tatt. For det andre at listen
           for å ligge øverst lokalt er lavere i din bransje enn i de fleste andre.
         </p>
         {/*
-          HENVISNINGEN SA «SSB», OG DET ER IKKE NOK.
-
-          Tallene 72 % og 86 % er RIKTIGE og er ikke rørt. Det var kilden som
-          sviktet: SSB flyttet 2026-tallene fra tabell 10975 (etter SN2007) til
-          tabell 14933 (etter SN2025), og de to tabellene gir ulike tall for
-          samme næring. En markedsresearch som etterprøvde oss mot den gamle
-          tabellen konkluderte med at 72 ikke fantes – vi så ut som vi løy, med
-          et korrekt tall på siden.
-
-          Henvisningen hentes nå fra `ssb-14933` i src/data/kilder.ts, med
-          tabellnummer, næringsstandard og dato, og forbeholdene står ordrett fra
-          samme oppføring i stedet for å være skrevet om her. test/kilder.test.ts
-          krever at henvisningen bærer både 14933 og SN2025.
+          HENVISNINGEN SA «SSB», OG DET ER IKKE NOK (v1). Tallene 72 % og 86 % er riktige. SSB
+          flyttet 2026-tallene fra tabell 10975 (SN2007) til tabell 14933 (SN2025), og de to
+          tabellene gir ulike tall for samme næring. Henvisningen hentes fra `ssb-14933` i
+          src/data/kilder.ts med tabellnummer, næringsstandard og dato, og forbeholdene står
+          ordrett fra samme oppføring. test/kilder.test.ts krever at henvisningen bærer både
+          14933 og SN2025.
         */}
-        <p class="small faint">
-          Kilde: <a class="kk-link" href={ssb.url} rel="nofollow">{ssb.henvisning}</a>.
+        <p class="wow-notat">
+          Kilde: <a href={ssb.url} rel="nofollow">{ssb.henvisning}</a>.
           Lest {norskDato(ssb.hentet)}.
         </p>
-        <ul class="small faint" style="margin: 0; padding-left: var(--space-5); display: grid; gap: var(--space-2)">
+        <ul class="wow-notat">
           {ssb.forbehold?.slice(0, 2).map((f) => <li>{f}</li>)}
         </ul>
-      </div>
-      <Terminal
-        skriv
-        title="~/bransje/bygg"
-        lines={[
-          { type: "cmd", text: "nettsidedekning --bransje=bygg --ansatte=10-19" },
-          { type: "warn", text: "72 %" },
-          { type: "cmd", text: "nettsidedekning --alle --ansatte=10+" },
-          { type: "out", text: "86 %" },
-          { type: "cmd", text: "echo $GAP" },
-          { type: "ok", text: "14 prosentpoeng å ta" },
-        ]}
-        label="Terminalutsnitt: nettsidedekning i bygg og anlegg for foretak med ti til nitten ansatte er 72 prosent, mot 86 prosent for alle foretak med minst ti ansatte. Gapet er fjorten prosentpoeng."
-      />
+      </Prosa>
     </div>
-    </Avslor>
 
-    <Avslor trinn={2}>
-      {/* Diagram med EKTE navn på systemene, ikke abstrakte former. Brandboken
-          rangerer dette over generert materiale: det forklarer hva kunden får,
-          og koster 0 kB. */}
+    {/* Diagram med EKTE navn på systemene, ikke abstrakte former. */}
+    <div class="bransje-flyt">
       <Flyt flyt={flyter.handverkere} />
-    </Avslor>
-  </Scene>
+    </div>
+  </Seksjon>
 
-  <Scene n={3} eyebrow="Forespørslene" tittel="Slik ser de ut før noen har sett på dem">
-    <Avslor>
-      <p class="body-lg muted">
-        Sju forespørsler i uka er sju like anonyme klumper til noen gjør jobben med å
-        skille dem. Den jobben gjør du i dag på telefon, etter at du har kjørt.
-      </p>
-      <Stillbilde id="bransje-handverk" sizes="(min-width: 1120px) 1120px, 100vw" />
-    </Avslor>
-  </Scene>
-
-  {/* Filmen er fjernet. Klippet skulle vise en blokk LØFTES ut av en haug, men
-      modellen lot den VOKSE seg høyere i stedet: bunnen står i gulvet, ingen glippe,
-      ingen frittliggende skygge. Det bryter kravet om identiske proporsjoner, altså
-      samme feilklasse som de to klippene vi kalte ødelagte – ikke «svak bevegelse».
-      Andre generering ga samme feil.
-
-      Brandboken rangerer «ingenting» over et bilde som ikke sier noe, og dette sa
-      ingenting for 3,9 MB. Masteren og den rettede prompten ligger igjen, så en ny
-      generering er mulig. */}
-  <Scene
-    n={4}
-    eyebrow="Demo"
+  <Seksjon
+    id="demo"
     tittel="Befaring uten telefonrunde"
     ingress="Dette er flyten vi bygger for håndverkere. Den er ikke en kontaktside med flere felt – den er laget for å sortere bort turene du ikke vil ha."
-    id="demo"
+    storrelse="tjeneste"
+    tone="flate"
   >
-    <ProcessSteps steps={steg} />
-    <div class="card" style="margin-top: var(--space-6)">
-      <h3 class="heading">Se den på skjerm</h3>
-      <p class="muted">
+    <Steg steg={steg} />
+    <div class="bransje-se">
+      <h3 class="bransje-se__tittel">Se den på skjerm</h3>
+      <p class="bransje-se__tekst">
         Vi går gjennom flyten med deg i stedet for å beskrive den her. Da ser du
         feltene, varselet og tilbudsmalen med dine egne priser i.
       </p>
-      <Button variant="secondary" href="/kontakt">Be om en gjennomgang</Button>
+      <a class="wow-knapp wow-knapp--strek" href="/kontakt" data-magnetic>
+        <span class="wow-knapp__tekst" data-magnetic-tekst>Be om en gjennomgang</span>
+      </a>
     </div>
-  </Scene>
+  </Seksjon>
 
-  <Horisont
-    n={5}
-    merke="Kobles mot"
-    tittel="Det du allerede betaler for"
-    navn="Systemer vi kobler siden mot"
-    poster={kobles}
+  <Seksjon id="kobles" tittel="Det du allerede betaler for" storrelse="tjeneste">
+    <Tekstrader rader={kobles} />
+  </Seksjon>
+
+  <Seksjon
+    id="start"
+    tittel="Sjekk den siden du har"
+    ingress="Før vi snakker om ny side: kjør den gratis sjekken. Mangler org.nr. eller settes det cookies før samtykke, er det raskt fikset – og det er billigere enn en ny side."
+    storrelse="stor"
+    tone="flate"
+  >
+    <UrlFelt id="url-bransje" knapp="Kjør sjekken" hint="30 sekunder. Du ser hva som er galt før du bruker penger." />
+  </Seksjon>
+
+  <Kontaktblokk
+    tittel="Ring, så tar vi det på fem minutter"
+    ingress="Vi vet hva en befaring koster deg i tid. Fortell hvor mange forespørsler du får i uka, så regner vi på om dette lønner seg."
   />
+</MalWow>
 
-  <Scene n={6} eyebrow="Start her" tittel="Sjekk den siden du har" ingress="Før vi snakker om ny side: kjør den gratis sjekken. Mangler org.nr. eller settes det cookies før samtykke, er det raskt fikset – og det er billigere enn en ny side.">
-    <UrlCheck buttonLabel="Kjør sjekken" hint="30 sekunder. Du ser hva som er galt før du bruker penger." />
-  </Scene>
-
-  <ContactBlock n={7} tittel="Ring, så tar vi det på fem minutter" ingress="Vi vet hva en befaring koster deg i tid. Fortell hvor mange forespørsler du får i uka, så regner vi på om dette lønner seg." />
-</Base>
-<style is:global>
-  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
-     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
-     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
-     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
-  .scene:first-of-type .mega .ord,
-  .scene:first-of-type .mega-blokk,
-  /* Bare FØRSTE avdekking i første scene, ikke hele scenen.
-     Regelen fantes for at innhold over folden ikke skal ligge usynlig og vente på
-     en scroll som aldri kommer. Men `.scene:first-of-type .avslor` traff ALLE
-     avdekkinger i scenen – og /caser og /handbok er én eneste scene, så den slo av
-     all bevegelse på hele siden. Målt: 0 bevegelsesøyeblikk, 5,5 skjermhøyder uten
-     at ett element endrer seg. */
-  /* Treffer på HVA elementet er, ikke hvor det tilfeldigvis står.
-     `> .avslor` traff ingenting fordi .avslor ligger i .scene__inner, og
-     `:first-of-type` gjelder tagg og ikke klasse. Begge varianter var stille døde:
-     skjemaet på /verktoy/cookie-sjekk sto på 0,56 opasitet ved innlasting –
-     sidens primære handling, halvgjennomsiktig til du scrollet. */
-  .scene:first-of-type .avslor:has(.scene__ingress),
-  .scene:first-of-type .avslor:has(form) {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
+<style>
+  .bransje-tall {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--wow-rom-7) var(--wow-luke);
   }
-
-  /* Målt på DENNE siden, ikke arvet: 0,35 ga 4,45:1 på skrivebord og strøk så
-     vidt. 0,28 gir 4,84:1 skrivebord og 5,48:1 mobil, og holder filmen mer
-     synlig enn 0,22 (5,09:1). Verdien fra /nettsider holdt ikke her fordi
-     demo-seksjonen har tettere tekst over motivet.
-     is:global er påkrevd – .scenefilm får SceneFilm.astro sin scope-id, mens
-     .scenefilm-ramme får sidens, så vanlig <style> matcher ingenting og to
-     ulike verdier måler identisk. */
-  /* Bare brede skjermer. SceneFilm setter selv 0,42 under 861 px med en loddrett
-     maske, og den verdien er riktig der – en global overstyring tok den også, og
-     presset mobil ned til 4,65:1. */
-  @media (min-width: 861px) {
-    .scenefilm-ramme .scenefilm { opacity: 0.50; }
+  .bransje-tall__tall {
+    display: grid;
+    gap: var(--wow-rom-5);
+    align-content: start;
+    margin: 0;
   }
-
-  /* Masken skyves ut på brede skjermer, samme grep som /systemer. Standardmasken
-     slipper motivet inn fra 46 %, altså midt under brødteksten, og da må
-     opasiteten ned til 0,28 for å holde AA – der er motivet nesten usynlig.
-     Med masken på 62 % lever filmen der teksten ikke er, og tåler 0,50. */
-  @media (min-width: 1200px) {
-    .scenefilm-ramme .scenefilm--venstre {
-      -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 62%, rgb(0 0 0 / 0.25) 72%, #000 86%);
-      mask-image: linear-gradient(90deg, transparent 0%, transparent 62%, rgb(0 0 0 / 0.25) 72%, #000 86%);
+  .bransje-tall__tall > div {
+    display: grid;
+    gap: var(--wow-rom-2);
+    padding-top: var(--wow-rom-4);
+    border-top: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .bransje-tall__tall dt {
+    color: var(--wow-tekst-dempet);
+  }
+  .bransje-tall__tall dd {
+    margin: 0;
+    font-family: var(--wow-font-display);
+    font-size: var(--wow-tekst-tall);
+    font-weight: var(--wow-display-vekt);
+    font-stretch: var(--wow-display-bredde);
+    font-variant-numeric: tabular-nums;
+    line-height: var(--wow-display-linje);
+  }
+  .bransje-flyt {
+    margin-top: var(--wow-rom-8);
+  }
+  .bransje-se {
+    display: grid;
+    gap: var(--wow-rom-4);
+    justify-items: start;
+    margin-top: var(--wow-rom-7);
+    padding-top: var(--wow-rom-5);
+    border-top: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .bransje-se__tittel {
+    font-size: var(--wow-tekst-h3);
+    font-weight: 700;
+    line-height: 1.15;
+  }
+  .bransje-se__tekst {
+    max-width: var(--wow-maal-brod);
+    color: var(--wow-tekst-dempet);
+  }
+  @media (min-width: 1024px) {
+    .bransje-tall {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      align-items: start;
+    }
+    .bransje-tall__tall {
+      grid-column: 1 / 6;
+    }
+    .bransje-tall > :global(.wow-prosa) {
+      grid-column: 6 / 13;
+    }
+    .bransje-se {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--wow-luke);
+    }
+    .bransje-se__tittel {
+      grid-column: 1 / 6;
+    }
+    .bransje-se__tekst,
+    .bransje-se > .wow-knapp {
+      grid-column: 6 / 13;
     }
   }
 </style>

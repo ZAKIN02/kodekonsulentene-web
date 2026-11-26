@@ -190,10 +190,6 @@
   --kk-hvile: 0 1px 2px rgba(0,0,0,0.30), 0 8px 24px -14px rgba(0,0,0,0.70);
   --kk-loft: 0 2px 4px rgba(0,0,0,0.35), 0 18px 40px -18px rgba(0,0,0,0.85);
 }
-[data-theme="light"] {
-  --kk-hvile: 0 1px 2px rgba(20,23,27,0.06), 0 8px 24px -14px rgba(20,23,27,0.22);
-  --kk-loft: 0 2px 4px rgba(20,23,27,0.08), 0 18px 40px -18px rgba(20,23,27,0.28);
-}
 
 /* Knappene blir piller. Det er det enkleste grepet som skiller en side bygget
    i 2026 fra en bygget i 2016, og det koster ingenting. Hårlinja og vekten er

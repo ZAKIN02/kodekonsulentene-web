@@ -1,11 +1,13 @@
 ---
-import Base from "../../layouts/Base.astro";
-import Section from "../../components/Section.astro";
-import Button from "../../components/Button.astro";
-import ContactBlock from "../../components/ContactBlock.astro";
-import Terminal from "../../components/Terminal.astro";
+/**
+ * Artikkel i wow-drakten (wow-undersider.md del 1.7, mønster: cookies-for-samtykke.astro).
+ * «rolig»: ingenting beveger seg uten at leseren har gjort noe. Teksten er uendret fra v1.
+ */
+import MalWow from "../../layouts/MalWow.astro";
+import { SideHode, Artikkelkropp, UrlFelt, Sporsmal, Kontaktblokk } from "../../components/wow/side";
+import Handlinger from "../../components/wow/side/Handlinger.astro";
 import { finnArtikkel } from "../../data/artikler";
-import { artikkel } from "../../data/schema";
+import { artikkel, faqSide } from "../../data/schema";
 import { firma, orgnrVist } from "../../data/firma";
 import { kilde } from "../../data/kilder";
 import maalinger from "../../data/maalinger.json";
@@ -14,68 +16,55 @@ const a = finnArtikkel("orgnr-pa-nettsiden");
 const andel = maalinger.andelProsent;
 const utvalg = maalinger.utvalg;
 
-/**
- * `Article` foerst, saa FAQPage.
- *
- * Artiklene hadde BARE FAQPage foer – ingen Article, ingen datoer, ingen
- * forfatter. Google kunne ikke se at det var en artikkel. Datoene kommer fra
- * artikler.ts og er de samme som staar i broedteksten: `publisert` og datoen
- * innholdet sist ble kontrollert mot kilden.
- */
-const schema = [
-  artikkel(a),
+// ÉN liste: den synlige FAQ-en nederst og FAQPage-markupen bygges av den samme (i v1 sto
+// spørsmålene bare i markupen). Spørsmål og svar er ordrett de som sto i markupen.
+const sporsmaal = [
   {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: "Må en norsk nettside ha organisasjonsnummer?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Ja, men hjemmelen avhenger av hvilket register du står i. Foretaksregisterloven § 10-2 krever organisasjonsnummer og foretaksnavn på nettsidene til foretak som er registrert i Foretaksregisteret. Et enkeltpersonforetak som bare står i Enhetsregisteret treffes ikke av § 10-2, men ehandelsloven § 8 krever de samme opplysningene av enhver som tilbyr en informasjonssamfunnstjeneste. Aksjeselskaper må i tillegg oppgi registeret foretaket er registrert i, selskapsform og forretningskontor.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Hvilken informasjon krever ehandelsloven § 8 på en nettside?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Navn, geografisk adresse, e-postadresse og annen informasjon som gjør det mulig å komme i direkte kontakt. I tillegg registeret du er registrert i, organisasjonsnummer, om virksomheten er mva-registrert, og eventuelle nødvendige tillatelser.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Hvor på nettsiden skal organisasjonsnummeret stå?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Loven sier ikke hvor. Den vanlige løsningen er footeren, fordi den står på alle sider. Kravet er at opplysningene er lett og direkte tilgjengelige, så en kontaktside alene er svakere enn en footer.",
-        },
-      },
-    ],
+    q: "Må en norsk nettside ha organisasjonsnummer?",
+    a: "Ja, men hjemmelen avhenger av hvilket register du står i. Foretaksregisterloven § 10-2 krever organisasjonsnummer og foretaksnavn på nettsidene til foretak som er registrert i Foretaksregisteret. Et enkeltpersonforetak som bare står i Enhetsregisteret treffes ikke av § 10-2, men ehandelsloven § 8 krever de samme opplysningene av enhver som tilbyr en informasjonssamfunnstjeneste. Aksjeselskaper må i tillegg oppgi registeret foretaket er registrert i, selskapsform og forretningskontor.",
+  },
+  {
+    q: "Hvilken informasjon krever ehandelsloven § 8 på en nettside?",
+    a: "Navn, geografisk adresse, e-postadresse og annen informasjon som gjør det mulig å komme i direkte kontakt. I tillegg registeret du er registrert i, organisasjonsnummer, om virksomheten er mva-registrert, og eventuelle nødvendige tillatelser.",
+  },
+  {
+    q: "Hvor på nettsiden skal organisasjonsnummeret stå?",
+    a: "Loven sier ikke hvor. Den vanlige løsningen er footeren, fordi den står på alle sider. Kravet er at opplysningene er lett og direkte tilgjengelige, så en kontaktside alene er svakere enn en footer.",
   },
 ];
+
+// `Article` først, så FAQPage. Datoene kommer fra artikler.ts og er de samme som står i
+// brødteksten: `publisert` og datoen innholdet sist ble kontrollert mot kilden.
+const schema = [artikkel(a), faqSide(sporsmaal)];
+
+const innhold = [
+  { id: "lovene", tittel: "To lover, to ulike krav" },
+  { id: "omfang", tittel: "Hvor mange som mangler det" },
+  { id: "hvorfor", tittel: "Hvorfor det er verdt å bry seg" },
+  { id: "hva-og-hvor", tittel: "Hva som skal stå, og hvor" },
+  { id: "sjekk-selv", tittel: "Sjekk din egen side" },
+];
 ---
-<Base
+<MalWow
   tittel={a.tittel}
   beskrivelse={a.beskrivelse}
   schema={schema}
   artikkel={{ publisert: a.publisert, oppdatert: a.oppdatert }}
-  ogBilde="forside">
-  <Section
-    nivaa={1}
-    n={1}
-    eyebrow="Artikkel"
-    tittel="Org.nr. på nettsiden"
-    ingress="Det er ikke en anbefaling. Står foretaket i Foretaksregisteret, krever foretaksregisterloven § 10-2 organisasjonsnummer og foretaksnavn på nettsidene. Står det bare i Enhetsregisteret, krever ehandelsloven § 8 det samme. To av tre sider vi målte manglet det."
-  >
-    <div class="prose">
-      <p class="small faint">
-        Publisert {a.publisert}. Innholdet er kontrollert mot kilden {a.oppdatert}.
-        Dette er ikke juridisk rådgivning.
-      </p>
+  ogBilde="forside"
+  bevegelse="rolig"
+>
+  <article>
+    <SideHode tittel="Org.nr. på nettsiden" storrelse="tjeneste" bredde="les" brodsmuler />
+    <Artikkelkropp
+      kortSvar="Det er ikke en anbefaling. Står foretaket i Foretaksregisteret, krever foretaksregisterloven § 10-2 organisasjonsnummer og foretaksnavn på nettsidene. Står det bare i Enhetsregisteret, krever ehandelsloven § 8 det samme. To av tre sider vi målte manglet det."
+      publisert={a.publisert}
+      oppdatert={a.oppdatert}
+      metaTillegg="Dette er ikke juridisk rådgivning."
+      innhold={innhold}
+    >
+      <UrlFelt slot="verktoy" id="url-artikkel" action={a.verktoy!.href} knapp={a.verktoy!.tekst} />
 
-      <h2>To lover, to ulike krav</h2>
+      <h2 id="lovene">To lover, to ulike krav</h2>
       <p>
         Dette blandes sammen hele tiden, så det er verdt å skille dem.
       </p>
@@ -98,16 +87,16 @@ const schema = [
            § 10-2 gjelder alle foretak».
       */}
       <p>
-        <a class="kk-link" href={kilde("foretaksregisterloven-10-2").url} rel="nofollow">Paragrafen</a>{" "}
+        <a href={kilde("foretaksregisterloven-10-2").url} rel="nofollow">Paragrafen</a>{" "}
         sier at foretakets nettsider, brev og forretningsdokumenter skal inneholde{" "}
-        <strong class="body-strong">organisasjonsnummeret og foretaksnavnet</strong>.
+        <strong>organisasjonsnummeret og foretaksnavnet</strong>.
         Det gjelder uansett medium – men det gjelder foretak som er registrert i{" "}
-        <strong class="body-strong">Foretaksregisteret</strong>, ikke alle som har et
+        <strong>Foretaksregisteret</strong>, ikke alle som har et
         organisasjonsnummer. Står enkeltpersonforetaket ditt bare i Enhetsregisteret, er
         det ehandelsloven § 8 under som er hjemmelen for deg. Kravet til hva som skal stå
         er i praksis det samme.
       </p>
-      <p class="small faint">
+      <p class="wow-notat">
         Kilde: {kilde("foretaksregisterloven-10-2").henvisning}. Lest {kilde("foretaksregisterloven-10-2").hentet}.
       </p>
       <p>
@@ -123,10 +112,10 @@ const schema = [
 
       <h3>Ehandelsloven § 8</h3>
       <p>
-        <a class="kk-link" href={kilde("ehandelsloven-8").url} rel="nofollow">Denne</a>{" "}
+        <a href={kilde("ehandelsloven-8").url} rel="nofollow">Denne</a>{" "}
         gjelder hvis du tilbyr en informasjonssamfunnstjeneste – i praksis nesten enhver
         kommersiell nettside. Den krever at du gir{" "}
-        <strong class="body-strong">navn, geografisk adresse, e-postadresse</strong> og annen
+        <strong>navn, geografisk adresse, e-postadresse</strong> og annen
         informasjon som gjør det mulig å komme i direkte kontakt med deg. I tillegg registeret
         du står i, organisasjonsnummeret, om du er mva-registrert, og eventuelle tillatelser
         virksomheten krever.
@@ -144,13 +133,13 @@ const schema = [
         nummeret er kopiert fra et sted det ikke hørte hjemme.
       </p>
 
-      <h2>Hvor mange som mangler det</h2>
+      <h2 id="omfang">Hvor mange som mangler det</h2>
       <p>
         Vi skannet {utvalg.trukket} tilfeldig trukne nettsider fra foretak med{" "}
-        {utvalg.stoerrelse}. {utvalg.svarte} svarte.
-        <strong class="body-strong">{andel.manglerOrgnr} % hadde ikke organisasjonsnummer på forsiden.</strong>
+        {utvalg.stoerrelse}. {utvalg.svarte} svarte.{" "}
+        <strong>{andel.manglerOrgnr} % hadde ikke organisasjonsnummer på forsiden.</strong>
       </p>
-      <p class="small faint">
+      <p class="wow-notat">
         Forbeholdet som hører med: vi hentet forsiden, ikke hele nettstedet. Står nummeret på
         en egen «Om oss»-side, teller det som manglende her. Det er strengere enn loven, som
         ikke sier hvor opplysningene skal stå – men det er nær det en besøkende faktisk
@@ -158,10 +147,10 @@ const schema = [
       </p>
       <p>
         Vi navngir ingen av dem. Metoden, inkludert hva vi ikke har målt, står i{" "}
-        <a class="kk-link" href="/handbok">håndboken</a>.
+        <a href="/handbok">håndboken</a>.
       </p>
 
-      <h2>Hvorfor det er verdt å bry seg</h2>
+      <h2 id="hvorfor">Hvorfor det er verdt å bry seg</h2>
       <p>
         Den ærlige grunnen er ikke frykt for tilsyn. Vi kjenner ingen småbedrift som har
         fått bot for dette. Grunnen er at opplysningene gjør deg mulig å kontrollere.
@@ -177,7 +166,7 @@ const schema = [
         satt opp på en ettermiddag. Det koster deg én linje.
       </p>
 
-      <h2>Hva som skal stå, og hvor</h2>
+      <h2 id="hva-og-hvor">Hva som skal stå, og hvor</h2>
       <p>
         Loven sier ikke hvor på siden opplysningene skal stå, bare at de skal være lett og
         direkte tilgjengelige. Den praktiske løsningen er footeren, fordi den står på alle
@@ -192,16 +181,15 @@ const schema = [
           FAKTISK står nederst på siden, og den grupperer tre og tre. Sto nummeret
           her i rå form, viste artikkelen om org.nr.-kravet et org.nr. i en annen
           form enn sidens eget – på den ene siden som ikke tåler det. */}
-      <Terminal
-        title="footeren på denne siden"
-        label={`Utsnitt av footeren: ${firma.foretaksnavn}, org.nr. ${orgnrVist}, ${firma.adresse}, ${firma.epost}`}
-        lines={[
-          { type: "out", text: firma.foretaksnavn },
-          { type: "out", text: `org.nr. ${orgnrVist}` },
-          { type: "out", text: firma.adresse },
-          { type: "out", text: firma.epost },
-        ]}
-      />
+      {/* V1 hadde et terminalutsnitt her. Det viste verken en måling eller en kommando, bare
+          de fire linjene i footeren, og står derfor som en liste (migreringsoppskriften:
+          «Terminal som pynt → innholdet som liste eller tekst»). Linjene er de samme. */}
+      <ul class="footer-utsnitt" role="list">
+        <li>{firma.foretaksnavn}</li>
+        <li>org.nr. {orgnrVist}</li>
+        <li>{firma.adresse}</li>
+        <li>{firma.epost}</li>
+      </ul>
       <p>
         Sjekklista er kort:
       </p>
@@ -213,7 +201,7 @@ const schema = [
         <li>For AS: register, selskapsform og forretningskontor</li>
       </ul>
 
-      <h2>Sjekk din egen side</h2>
+      <h2 id="sjekk-selv">Sjekk din egen side</h2>
       <p>
         Sjekken vår leter etter et organisasjonsnummer på forsiden, og slår det opp mot
         Enhetsregisteret for å se at det finnes og hvilket foretak det hører til. Den sier
@@ -223,13 +211,33 @@ const schema = [
         Den påstår ikke at det er <em>riktig</em> foretak – bare at nummeret er gyldig og
         hvem det tilhører. Resten må du vurdere selv.
       </p>
-    </div>
 
-    <div class="row" style="margin-top: var(--space-6); gap: var(--space-4); flex-wrap: wrap">
-      <Button variant="primary" href={a.verktoy!.href}>{a.verktoy!.tekst}</Button>
-      <Button variant="ghost" href="/artikler/35-wcag-krav">Neste: de 35 WCAG-kravene</Button>
-    </div>
-  </Section>
+      <Fragment slot="etter">
+        <Sporsmal liste={sporsmaal} id="sporsmal" tittel="Spørsmål og svar om org.nr. på nettsiden" storrelse="les" innfelt />
+        <Handlinger
+          handlinger={[
+            { tekst: a.verktoy!.tekst, href: a.verktoy!.href, type: "primar" },
+            { tekst: "Neste: de 35 WCAG-kravene", href: "/artikler/35-wcag-krav", type: "strek" },
+          ]}
+        />
+      </Fragment>
+    </Artikkelkropp>
+  </article>
 
-  <ContactBlock />
-</Base>
+  <Kontaktblokk />
+</MalWow>
+
+<style>
+  .footer-utsnitt {
+    display: grid;
+    gap: var(--wow-rom-1);
+    margin: 0;
+    padding: var(--wow-rom-4) var(--wow-rom-5);
+    border: var(--wow-kant-1) solid var(--wow-linje);
+    border-radius: var(--wow-radius-s);
+    background: var(--wow-flate);
+    list-style: none;
+    font-size: var(--wow-tekst-liten);
+    line-height: 1.5;
+  }
+</style>

@@ -1,27 +1,33 @@
 ---
-import Base from "../../layouts/Base.astro";
-import { verktoy } from "../../data/schema";
-import Snitt from "../../components/Snitt.astro";
+/**
+ * E-postsjekken i wow-drakten (wow-undersider.md del 1.8, runde wow-r8-B2, etter mønstersiden
+ * cookie-sjekk). Rekkefølge: Verktoyramme (brødsmuler, H1, feltet, resultatet) → de tre postene
+ * (snitt og forklaring) → ekte opptak → «Etterpå» → kontaktblokk. «rolig».
+ *
+ * Uendret fra v1: API-kallet (POST /api/dmarc med { domene, dkim }), id-ene `#dmarc-skjema`,
+ * `#domene`, `#dkim` og `#resultat`, feltnavnene `domene` og `dkim`, alle feiltekster,
+ * forbeholdene og WebApplication-markupen.
+ * Nytt: SPF, DKIM og DMARC står som målinger (lampe + status som ord), fokus flyttes til
+ * rapportens tittel når den er klar, og `?domene=` leses fra adressen også i bygget.
+ *
+ * Flyttet: snittet sto mellom ingressen og feltet, og skjøv feltet ut av første skjerm på mobil.
+ * Det står nå i forklaringen, der det erstatter lista som sa det samme (SPF, DKIM, DMARC).
+ */
+import MalWow from "../../layouts/MalWow.astro";
+import { Verktoyramme, UrlFelt, Seksjon, Prosa, Opptak, Kontaktblokk } from "../../components/wow/side";
+import Handlinger from "../../components/wow/side/Handlinger.astro";
+import Snitt from "../../components/wow/verktoy/Snitt.astro";
 import { snitt } from "../../data/flyter";
-import Scene from "../../components/Scene.astro";
-import Mega from "../../components/Mega.astro";
-import Avslor from "../../components/Avslor.astro";
-import Button from "../../components/Button.astro";
-import Terminal from "../../components/Terminal.astro";
-import Demo from "../../components/Demo.astro";
-import opptak from "../../data/opptak.json";
-import ContactBlock from "../../components/ContactBlock.astro";
+import { verktoy } from "../../data/schema";
 import { firma } from "../../data/firma";
 import { prisenhet } from "../../data/priser";
 
-import "../../styles/scener.css";
-
+// Siden er statisk: i bygget er searchParams tom, og skriptet under leser ?domene= fra
+// location.search. Linja fyller feltet bare i `astro dev`.
 const forhandsutfylt = Astro.url.searchParams.get("domene") ?? "";
 /**
- * `WebApplication` fra `verktoy()` i src/data/schema.ts. Siden hadde ingen
- * strukturerte data foer – hjelperen var skrevet og aldri importert av noen.
- * `price: "0"` og `isAccessibleForFree` er sanne: verktoeyet krever ingen
- * innlogging og koster ingenting.
+ * `WebApplication` fra `verktoy()` i src/data/schema.ts. `price: "0"` og
+ * `isAccessibleForFree` er sanne: verktøyet krever ingen innlogging og koster ingenting.
  */
 const schema = verktoy({
   navn: "SPF-, DKIM- og DMARC-sjekk",
@@ -30,286 +36,214 @@ const schema = verktoy({
   sti: "/verktoy/dmarc",
 });
 ---
-<Base
+
+<MalWow
   tittel="Sjekk e-posten din: SPF, DKIM og DMARC"
   beskrivelse="Gratis sjekk av SPF, DKIM og DMARC på domenet ditt. Se om noen kan sende e-post i bedriftens navn, og om din egen e-post havner i søppelposten."
   schema={[schema]}
+  bevegelse="rolig"
 >
-  <Scene lav>
-    <Mega som="h1" merke="Verktøy" n={1} tekst="Kan noen sende e-post i ditt navn?" />
-    <Avslor trinn={1}>
-      <p class="scene__ingress body-lg">Tre poster i DNS avgjør det: SPF, DKIM og DMARC. Mangler de, kan hvem som helst sende faktura som ser ut til å komme fra bedriften din – og din egen e-post havner oftere i søppelposten.</p>
-    </Avslor>
-
-    <Avslor trinn={2}>
-      {/* Tegning med ekte navn, hentet ordrett fra siden. Brandboken rangerer
-          diagram over generert materiale – det forklarer, og koster 0 kB. */}
-      <Snitt snitt={snitt.epost} nivaa={2} />
-    </Avslor>
-
-    <Avslor>
-    <div class="stack">
-      <form class="stack stack--tight" id="dmarc-skjema" style="max-width: 560px">
-        <div class="kk-urlcheck">
-          <label class="visually-hidden" for="domene">Domene</label>
-          <span class="kk-prompt" aria-hidden="true">@</span>
-          <input
-            class="kk-input" id="domene" name="domene" type="text" inputmode="url"
-            value={forhandsutfylt} placeholder="dinbedrift.no" autocomplete="url"
-            spellcheck="false" required
-          />
-          <Button variant="primary" type="submit">Sjekk</Button>
+  {/* «e‑post» i H1 har hard bindestrek (U+2011), så overskriften ikke deles «E-» / «POST». Lampa
+      «Din side» er av: her sjekkes et domene, ikke en side. */}
+  <Verktoyramme
+    tittel="Kan noen sende e‑post i ditt navn?"
+    ingress="Tre poster i DNS avgjør det: SPF, DKIM og DMARC. Mangler de, kan hvem som helst sende faktura som ser ut til å komme fra bedriften din – og din egen e-post havner oftere i søppelposten."
+  >
+    <UrlFelt
+      slot="skjema"
+      id="domene"
+      navn="domene"
+      type="domene"
+      action="/verktoy/dmarc"
+      knapp="Sjekk"
+      skjemaId="dmarc-skjema"
+      lampe={false}
+      verdi={forhandsutfylt}
+      hint="Vi leser bare DNS. Ingen e-post sendes, ingenting lagres."
+    >
+      <details class="dmarc-dkim">
+        <summary>Har du DKIM-selektoren? (valgfritt)</summary>
+        <div class="wow-skjema__felt">
+          <label for="dkim">DKIM-selektor</label>
+          <input id="dkim" name="dkim" type="text" placeholder="google" spellcheck="false" autocapitalize="off" aria-describedby="dkim-hint" />
+          <p class="wow-skjema__hint" id="dkim-hint">
+            DKIM ligger på en selektor vi ikke kan gjette. Google Workspace bruker ofte
+            «google», Microsoft 365 bruker «selector1». Står den ikke her, hopper vi over DKIM.
+          </p>
         </div>
-        <details>
-          <summary class="small muted" style="cursor: pointer">Har du DKIM-selektoren? (valgfritt)</summary>
-          <div class="field" style="margin-top: var(--space-3)">
-            <label for="dkim">DKIM-selektor</label>
-            <input class="control" id="dkim" name="dkim" type="text" placeholder="google" spellcheck="false" />
-            <span class="hint">
-              DKIM ligger på en selektor vi ikke kan gjette. Google Workspace bruker ofte
-              «google», Microsoft 365 bruker «selector1». Står den ikke her, hopper vi over DKIM.
-            </span>
-          </div>
-        </details>
-        <p class="kk-urlcheck-hint">Vi leser bare DNS. Ingen e-post sendes, ingenting lagres.</p>
-      </form>
+      </details>
+    </UrlFelt>
+    <p slot="noscript">
+      Sjekken krever JavaScript. Send domenet til{" "}
+      <a class="wow-lenke" href={`mailto:${firma.epost}?subject=E-postsjekk`}>{firma.epost}</a>,
+      så kjører vi den manuelt.
+    </p>
+  </Verktoyramme>
 
-      <div id="resultat" aria-live="polite" aria-busy="false"></div>
-
-      <noscript>
-        <p class="card">
-          Sjekken krever JavaScript. Send domenet til{" "}
-          <a class="kk-link" href={`mailto:${firma.epost}?subject=E-postsjekk`}>{firma.epost}</a>,
-          så kjører vi den manuelt.
-        </p>
-      </noscript>
-    </div>
-    </Avslor>
-  </Scene>
-
-  <Scene n={2} eyebrow="Hva det betyr" tittel="De tre postene, forklart">
-    <Avslor>
-    <div class="grid-2">
-      <div class="stack">
-        <dl class="kv">
-          <div><dt>SPF</dt><dd>hvem får sende</dd></div>
-          <div><dt>DKIM</dt><dd>signatur på e-posten</dd></div>
-          <div><dt>DMARC</dt><dd>hva mottaker skal gjøre</dd></div>
-        </dl>
-        <p class="muted">
+  <Seksjon id="postene" tittel="De tre postene, forklart" storrelse="tjeneste" tett>
+    <div class="wow-vt-stabel">
+      {/* Tegning med ekte navn, hentet fra src/data/flyter.ts. Bildeteksten er av: avsnittet
+          under sier det samme, og et løfte skal ikke stå to ganger på siden (del 12). */}
+      <div class="wow-vt-opptak">
+        <Snitt snitt={snitt.epost} bildetekst={false} />
+      </div>
+      <Prosa class="dmarc-prosa">
+        <p>
           SPF sier hvilke servere som har lov til å sende e-post for domenet ditt.
           DKIM signerer hver e-post, slik at mottakeren ser at innholdet ikke er endret.
           DMARC binder de to sammen og sier hva som skal skje når noe ikke stemmer.
         </p>
-        <p class="muted">
+        <p>
           Den vanligste feilen er ikke at postene mangler, men at DMARC står på{" "}
-          <span class="mono">p=none</span>. Da blir falsk e-post i ditt navn levert
+          <code>p=none</code>. Da blir falsk e-post i ditt navn levert
           som normalt – du får bare en rapport om at det skjedde.
         </p>
-      </div>
-      <div class="stack">
-        <Terminal
-          skriv
-          title="~/kodekonsulentene/dmarc"
-          lines={[
-            { type: "cmd", text: "dig +short TXT _dmarc.dinbedrift.no" },
-            { type: "fail", text: "(tomt)" },
-            { type: "out", text: "" },
-            { type: "warn", text: "ingen DMARC-post" },
-            { type: "out", text: "noen kan sende faktura i ditt navn," },
-            { type: "out", text: "og du får ikke beskjed om at det skjer" },
-          ]}
-          label="Terminalutsnitt: oppslag etter DMARC-post gir tomt svar. Uten DMARC kan noen sende faktura i bedriftens navn uten at eieren får beskjed."
-        />
-        <p class="small faint">
+        {/* Kommandoen finnes og kan kjøres, så den står som kode (v1: terminalutsnitt). Linjene
+            under er utsnittets egne ord. */}
+        <pre><code>dig +short TXT _dmarc.dinbedrift.no
+(tomt)</code></pre>
+        <p>
+          Ingen DMARC-post. Noen kan sende faktura i ditt navn, og du får ikke beskjed om at det skjer.
+        </p>
+        <p class="wow-notat">
           Sjekken sier at postene finnes og er riktig formet. Den sier ikke at hele
           e-postoppsettet ditt virker i praksis – det krever en testsending.
         </p>
+      </Prosa>
+
+      {/* Ekte opptak av vårt eget verktøy mot nkom.no, ikke en render. */}
+      <div class="wow-vt-opptak">
+        <Opptak navn="dmarc" adresse="kodekonsulentene.no/verktoy/dmarc" />
       </div>
     </div>
-    </Avslor>
+  </Seksjon>
 
-    <Avslor trinn={2}>
-      {/* Ekte opptak av vårt eget verktøy mot nkom.no, ikke en render. Det BEVISER
-          at verktøyet virker i stedet for å antyde det, og kan ikke kopieres av noen
-          som ikke har bygget det. Demo rammer med hårlinje og bildetekst med dato;
-          SceneFilm ville tonet det ned som bakgrunn, og da leser det som tapet. */}
-      <Demo
-        spill
-        smal={opptak.dmarc.smal}
-        bred={opptak.dmarc.bred}
-        stor={opptak.dmarc.stor}
-        plakat={opptak.dmarc.plakat}
-        tekst={opptak.dmarc.tekst}
-        kilde={opptak.dmarc.kilde}
-      />
-    </Avslor>
+  <Seksjon
+    id="etterpa"
+    tittel="Vil du at vi ordner det?"
+    ingress={`Å sette opp SPF, DKIM og DMARC riktig tar vanligvis en til to timer, og det gjøres én gang. Timeprisen er ${firma.timepris}, og det er ${prisenhet}.`}
+    storrelse="tjeneste"
+  >
+    <Handlinger
+      handlinger={[
+        { tekst: "Book 20 minutter", href: "/kontakt", type: "primar" },
+        { tekst: "Se de andre verktøyene", href: "/verktoy", type: "strek" },
+      ]}
+    />
+  </Seksjon>
 
-    {/* HER LÅ ET GENERERT STILLBILDE (verktoy-dmarc), OG DET ER FJERNET MED VILJE.
+  <Kontaktblokk />
+</MalWow>
 
-        Det sto rett under det EKTE skjermopptaket av dmarc – samme bredde, samme
-        plass i rekken, med en bildetekst som forklarte en metafor (tre plater over hverandre).
-        To figurer etter hverandre der den ene er bevis og den andre er pynt, gjør at
-        leseren vurderer dem likt. Da taper beviset.
+<style>
+  /* Kodeblokken følger lesebredden, som avsnittene rundt den. */
+  :global(.dmarc-prosa) :global(pre) {
+    max-width: var(--wow-maal-brod);
+  }
+  /* DKIM-feltet under adressefeltet: lukket som standard, samme feltstil som kontaktskjemaet. */
+  .dmarc-dkim {
+    margin-top: var(--wow-rom-3);
+  }
+  .dmarc-dkim summary {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--wow-trykkflate);
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+    cursor: pointer;
+  }
+  .dmarc-dkim .wow-skjema__felt {
+    margin-top: var(--wow-rom-3);
+  }
+  .dmarc-dkim input {
+    width: 100%;
+    min-height: var(--wow-felt);
+    padding: var(--wow-rom-3) var(--wow-rom-4);
+    background: var(--wow-flate);
+    color: var(--wow-tekst);
+    border: var(--wow-kant-1) solid var(--wow-linje-sterk);
+    border-radius: var(--wow-radius-s);
+    font: inherit;
+    font-size: var(--wow-tekst-brod);
+  }
+  .dmarc-dkim input:focus {
+    background: var(--wow-flate-hev);
+    border-color: var(--wow-refleks);
+  }
+</style>
 
-        Fire slike bilder lå på de fire verktøysidene. Lagt ved siden av hverandre er
-        de praktisk talt det samme bildet: hengende aluminiumsplater, forskjellen er
-        hvilken kant den grønne streken ligger på. At de er utbyttbare ER beviset på at
-        de ikke bærer informasjon.
-
-        Brandboken rangerer opptak av verktøyet i bruk først, diagram med ekte navn
-        nummer to, og ingenting som nummer tre. Generert materiale står ikke på listen,
-        bortsett fra som bakgrunnstekstur under tekst. Opptaket over er førsteplassen,
-        og det står nå alene. */}
-  </Scene>
-
-  <Scene n={3} eyebrow="Etterpå" tittel="Vil du at vi ordner det?" ingress={`Å sette opp SPF, DKIM og DMARC riktig tar vanligvis en til to timer, og det gjøres én gang. Timeprisen er ${firma.timepris}, og det er ${prisenhet}.`}>
-    <Avslor>
-    <div class="row">
-      <Button variant="primary" href="/kontakt">Book 20 minutter</Button>
-      <Button variant="ghost" href="/verktoy">Se de andre verktøyene</Button>
-    </div>
-    </Avslor>
-  </Scene>
-
-  <ContactBlock n={4} />
-</Base>
 <style is:global>
-  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
-     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
-     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
-     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
-  .scene:first-of-type .mega .ord,
-  .scene:first-of-type .mega-blokk,
-  /* Bare FØRSTE avdekking i første scene, ikke hele scenen.
-     Regelen fantes for at innhold over folden ikke skal ligge usynlig og vente på
-     en scroll som aldri kommer. Men `.scene:first-of-type .avslor` traff ALLE
-     avdekkinger i scenen – og /caser og /handbok er én eneste scene, så den slo av
-     all bevegelse på hele siden. Målt: 0 bevegelsesøyeblikk, 5,5 skjermhøyder uten
-     at ett element endrer seg. */
-  .scene:first-of-type .avslor:first-of-type {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
+  /* DNS-verdier er bokstavrette («p=none», «-all», selektornavnet). De står derfor ikke i
+     versaler, og hele verdien har én størrelse: rapportspråket deler ellers verdien i tall og
+     enhet, og det passer ikke på «-all · 3/10 oppslag». Gjelder bare resultatet på denne siden. */
+  #resultat .wow-maaling__verdi {
+    font-size: var(--wow-tekst-h3);
+    line-height: 1.1;
+    text-transform: none;
+    white-space: normal;
+    text-align: right;
   }
-
-  /* Resultatet glir inn når skriptet setter det inn i DOM-en.
-     @starting-style gir startverdien for et element som ikke fantes ved forrige
-     maling. Før den måtte man sette en klasse fra JavaScript én ramme etterpå –
-     her er det ren CSS, 0 B.
-
-     Langformer og ikke `transition:`-stenografi. CSS-minifieren slår stenografi
-     sammen på måter både Chromium og Firefox har forkastet STILLE her før.
-
-     Rekkefølgen er ikke valgfri: @starting-style må stå ETTER hovedregelen, ellers
-     vinner hovedregelen og startverdien blir lik sluttverdien – altså ingen overgang.
-     Uten støtte vises resultatet uten overgang. Degraderingen går mot «synlig». */
-  #resultat > * {
-    opacity: 1;
-    transform: none;
-    transition-property: opacity, transform;
-    transition-duration: 260ms;
-    transition-timing-function: ease;
-  }
-  @starting-style {
-    #resultat > * {
-      opacity: 0;
-      transform: translateY(8px);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    #resultat > * { transition-duration: 0.01ms; }
-  }
-
-  /* Skjemaet er sidens handling, og det skal aldri vente på en scroll.
-     Unntaket over gjelder bare FØRSTE avdekking. Den andre inneholder selve
-     skjemaet, og på 900 px høyde ligger det akkurat i foldekanten: målt 0,56
-     opasitet ved innlasting på /verktoy/cookie-sjekk, 0,87 på kalkulatoren.
-     Det er view()-tidslinjen som gjør jobben sin – elementet er delvis inne i
-     bildet – men en halvgjennomsiktig inngang er feil på den siden som skal få
-     folk til å kjøre sjekken.
-
-     :has(form) treffer nøyaktig den blokken og ingenting annet. Uten støtte for
-     :has() faller siden tilbake til dagens oppførsel: innholdet er fortsatt der
-     og blir helt synlig ved første scroll. Degraderingen går mot «synlig». */
-  /* Ikke barnekombinator: .avslor ligger inne i .scene__inner, ikke rett under
-     .scene. Med «>» traff regelen ingenting – målt på /verktoy/cookie-sjekk, der
-     skjemaet sto på 0,56 opasitet ved innlasting selv med unntaket på plass. */
-  /* Ingressen treffes på hva den ER, ikke på posisjon. `:first-of-type` gjelder
-     TAGG, ikke klasse: står det et annet <div> foran avdekkingen, peker den et
-     annet sted. Målt på /verktoy/cookie-sjekk – ingressen lå på 0,78 ved
-     innlasting selv med unntaket på plass. */
-  .scene:first-of-type .avslor:has(.scene__ingress),
-  .scene:first-of-type .avslor:has(form) {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
+  #resultat .wow-maaling__verdi .wow-maalt__enhet {
+    font: inherit;
+    letter-spacing: inherit;
   }
 </style>
 
 <script>
-  const ORD = { ok: "Bestått", warn: "Bør fikses", fail: "Brudd", neutral: "Ikke sjekket" } as const;
-  type Status = keyof typeof ORD;
+  import { maalingHtml, rapportarkHtml, statusOrd, fraSjekk } from "../../components/wow/side/maaling";
 
-  const IKON: Record<Status, string> = {
-    ok: '<path d="M20 6 9 17l-5-5"/>',
-    warn: '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
-    fail: '<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>',
-    neutral: '<circle cx="12" cy="12" r="10"/><path d="M8 12h8"/>',
-  };
-
+  type Status = "ok" | "warn" | "fail" | "neutral";
   interface Rad { name: string; status: Status; value: string; note: string }
   interface Rapport { domene: string; dato: string; rader: Rad[]; totalt: number; forbehold: string[] }
 
   const esc = (s: unknown) =>
     String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
 
-  const badge = (s: Status) =>
-    `<span class="kk-badge kk-badge-${s}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IKON[s]}</svg>${ORD[s]}</span>`;
-
   const boks = document.querySelector<HTMLElement>("#resultat")!;
   const skjema = document.querySelector<HTMLFormElement>("#dmarc-skjema")!;
   const felt = document.querySelector<HTMLInputElement>("#domene")!;
   const dkimFelt = document.querySelector<HTMLInputElement>("#dkim")!;
 
-  const melding = (html: string) => { boks.innerHTML = `<div class="card">${html}</div>`; };
+  // De tre postene sjekken slår opp. Samme navn mens den venter og når svaret er her.
+  const RADER = ["SPF", "DKIM", "DMARC"] as const;
+
+  /** Én rad utenfor et rapportark: sjekken kjørte ikke. «Ikke sjekket», aldri «Bestått» eller «Brudd». */
+  const stoppet = (hvorfor: string) => {
+    boks.innerHTML = maalingHtml({ navn: "Sjekken stoppet", status: "ikke-sjekket", merknad: hvorfor }, "div");
+  };
 
   function tegn(r: Rapport) {
-    const rader = r.rader
-      .map(
-        (x) => `<tr>
-          <td class="kk-name">${esc(x.name)}</td>
-          <td>${badge(x.status)}</td>
-          <td class="kk-value">${esc(x.value)}</td>
-          <td class="kk-note">${esc(x.note)}</td>
-        </tr>`,
-      )
-      .join("");
+    boks.innerHTML =
+      rapportarkHtml({
+        tittelId: "rapport-tittel",
+        rader: r.rader.map((x) => {
+          const status = fraSjekk[x.status];
+          // DKIM uten selektor kommer som verdien «Ikke sjekket» med status «neutral». Ordet
+          // står da allerede ved lampa, og skrives ikke én gang til som verdi.
+          const verdi = x.value === statusOrd[status] ? undefined : x.value;
+          return { navn: x.name, verdi, status, merknad: x.note };
+        }),
+        adresse: r.domene,
+        dato: `${r.dato}. Samlet: ${r.totalt} av 100`,
+      }) +
+      `<div class="wow-prosa">
+         <details>
+           <summary>Forbehold – hva sjekken ikke ser</summary>
+           <ul class="wow-notat">${r.forbehold.map((f) => `<li>${esc(f)}</li>`).join("")}</ul>
+         </details>
+       </div>`;
 
-    boks.innerHTML = `
-      <div class="stack">
-        <div class="kk-report">
-          <div class="kk-report-head"><span class="kk-url">${esc(r.domene)}</span><span>${esc(r.dato)}</span></div>
-          <table>
-            <thead><tr><th scope="col">Post</th><th scope="col">Status</th><th scope="col">Verdi</th><th scope="col">Hva det betyr</th></tr></thead>
-            <tbody>${rader}</tbody>
-          </table>
-          <div class="kk-report-foot"><span>Samlet: ${r.totalt} av 100</span><span class="mono">${esc(r.domene)}</span></div>
-        </div>
-        <details class="card card--sunken">
-          <summary class="body-strong" style="cursor: pointer">Forbehold – hva sjekken ikke ser</summary>
-          <ul class="small muted" style="margin: var(--space-3) 0 0; padding-left: var(--space-5); display: grid; gap: var(--space-2)">
-            ${r.forbehold.map((f) => `<li>${esc(f)}</li>`).join("")}
-          </ul>
-        </details>
-      </div>`;
+    // Resultatet er klart: flytt fokus til rapportens tittel, så skjermleseren starter der.
+    document.getElementById("rapport-tittel")?.focus({ preventScroll: false });
   }
 
   async function kjor(domene: string, dkim: string) {
     if (!domene.trim()) return;
     boks.setAttribute("aria-busy", "true");
-    melding(`<p class="mono">$ dig TXT ${esc(domene)} …</p><p class="small faint">Tre DNS-oppslag. Dette tar et par sekunder.</p>`);
+    // Venter: de tre postene, uten verdi. Ingen spinner.
+    boks.innerHTML =
+      rapportarkHtml({ rader: RADER.map((navn) => ({ navn, status: "venter" as const })), adresse: domene }) +
+      `<p class="wow-vt-venter">Tre DNS-oppslag. Dette tar et par sekunder.</p>`;
     try {
       const svar = await fetch("/api/dmarc", {
         method: "POST",
@@ -318,12 +252,12 @@ const schema = verktoy({
       });
       const data = (await svar.json()) as Rapport & { feil?: string };
       if (!svar.ok || data.feil) {
-        melding(`<p class="body-strong">Sjekken stoppet.</p><p class="muted">${esc(data.feil ?? "Ukjent feil.")}</p>`);
+        stoppet(data.feil ?? "Ukjent feil.");
         return;
       }
       tegn(data);
     } catch {
-      melding('<p class="body-strong">Sjekken stoppet.</p><p class="muted">Fikk ikke svar fra serveren. Prøv igjen om et øyeblikk.</p>');
+      stoppet("Fikk ikke svar fra serveren. Prøv igjen om et øyeblikk.");
     } finally {
       boks.setAttribute("aria-busy", "false");
     }
@@ -336,5 +270,9 @@ const schema = verktoy({
     void kjor(d, dkimFelt.value);
   });
 
+  // Siden er forhåndsbygget, så ?domene= kommer ikke med i feltets value fra serveren.
+  // Adressen leses her (samme grep som /sjekk).
+  const fraAdresse = new URLSearchParams(location.search).get("domene")?.trim() ?? "";
+  if (fraAdresse && !felt.value.trim()) felt.value = fraAdresse;
   if (felt.value.trim()) void kjor(felt.value, dkimFelt.value);
 </script>

@@ -1,16 +1,17 @@
 ---
-import Base from "../../layouts/Base.astro";
-import Flyt from "../../components/Flyt.astro";
+/**
+ * /bransjer/klinikker i wow-drakten (wow-undersider.md del 1.4 og del 4, wow-r8-B1).
+ * Rekkefølge: kapittel 2 som stillbilde (kontoret) → «Tre tall dere kjenner igjen» (radene står
+ * tomme med vilje) og flyten → demo (ekte rekkefølge, id «demo») → «Medlemmer, ikke bare timer»
+ * → «Sjekk den siden dere har» → kontakt med sidens egen tittel.
+ * Ute fra v1: bakgrunnsfilmen, terminalutsnittet (påstander om når folk bestiller, som ikke er
+ * målt) og løpenumrene på kortene.
+ */
+import MalWow from "../../layouts/MalWow.astro";
+import { Seksjon, Prosa, Flyt, Steg, Tekstrader, UrlFelt, Kontaktblokk } from "../../components/wow/side";
+import Kapittel from "../../components/wow/Kapittel.astro";
+import { kapittelForhandslast } from "../../scripts/wow/kapittel-klipp";
 import { flyter } from "../../data/flyter";
-import Scene from "../../components/Scene.astro";
-import Mega from "../../components/Mega.astro";
-import Avslor from "../../components/Avslor.astro";
-import Button from "../../components/Button.astro";
-import Terminal from "../../components/Terminal.astro";
-import UrlCheck from "../../components/UrlCheck.astro";
-import ProcessSteps from "../../components/ProcessSteps.astro";
-import Pekerkort from "../../components/Pekerkort.astro";
-import ContactBlock from "../../components/ContactBlock.astro";
 import { bookUrl } from "../../data/firma";
 import { tjeneste } from "../../data/schema";
 import { pakker, prisenhet } from "../../data/priser";
@@ -21,39 +22,33 @@ import { pakker, prisenhet } from "../../data/priser";
    påløper avgift på. Se src/data/priser.ts og kilden `mval-3-2` i kilder.ts. */
 const systemPris = pakker.find((p) => p.navn === "System")?.pris ?? "";
 
-import "../../styles/scener.css";
-
 /**
- * TO PÅSTANDER ER FJERNET FRA STEGENE UNDER.
+ * TO PÅSTANDER ER FJERNET FRA STEGENE UNDER (v1).
  *
  * «De fleste bestillinger kommer utenom åpningstiden» og «Det alene fjerner
- * mesteparten av de som ikke møter opp» er begge kvantifiserte funn – «de
- * fleste», «mesteparten» – om hva som skjer hos en klinikk. Vi har ikke målt
- * noen av dem. Vi har ingen klinikk i drift å måle på: `booking-demo` i
- * src/data/caser.ts er merket «Ikke et levert oppdrag» og står uten
- * resultatliste nettopp fordi det ikke finnes tall.
- *
- * Et tall uten tallsymbol er fortsatt et tall. «Mesteparten» er en påstand om
- * en andel, og den er like lite etterprøvbar som «71 %» ville vært – forskjellen
- * er bare at den ikke ser ut som noe man kan kreve kilde på.
- *
- * Begge er erstattet med det systemet GJØR, som vi kan stå inne for uten å måle
- * noe: døgnåpen bestilling er en egenskap ved løsningen, og forskuddsbetaling er
- * et virkemiddel mot uteblivelse. Ingen av formuleringene lover en effekt.
+ * mesteparten av de som ikke møter opp» er begge kvantifiserte funn om hva som
+ * skjer hos en klinikk. Vi har ikke målt noen av dem: `booking-demo` i
+ * src/data/caser.ts er merket «Ikke et levert oppdrag». Et tall uten tallsymbol
+ * er fortsatt et tall. Begge er erstattet med det systemet GJØR. Ingen av
+ * formuleringene lover en effekt.
  */
 const steg = [
-  { title: "Kunden booker selv", time: "Døgnet rundt", text: "Ledige timer per behandler og behandlingstype, også når dere er stengt og ingen kan ta telefonen." },
-  { title: "Betaler ved bestilling", time: "Vipps", text: "Forskuddsbetaling eller depositum, slik at den som bestiller har noe å miste på å ikke møte opp." },
-  { title: "Påminnelse går ut", time: "24 t før", text: "SMS med tid, behandler og avbestillingslenke. Avbestiller de, frigis timen automatisk." },
-  { title: "Oppgjøret stemmer", time: "Automatisk", text: "Betalingen ligger som ordre i regnskapet. Ingen avstemming av Vipps mot timeboken." },
+  { navn: "Kunden booker selv", naar: "Døgnet rundt", tekst: "Ledige timer per behandler og behandlingstype, også når dere er stengt og ingen kan ta telefonen." },
+  { navn: "Betaler ved bestilling", naar: "Vipps", tekst: "Forskuddsbetaling eller depositum, slik at den som bestiller har noe å miste på å ikke møte opp." },
+  { navn: "Påminnelse går ut", naar: "24 t før", tekst: "SMS med tid, behandler og avbestillingslenke. Avbestiller de, frigis timen automatisk." },
+  { navn: "Oppgjøret stemmer", naar: "Automatisk", tekst: "Betalingen ligger som ordre i regnskapet. Ingen avstemming av Vipps mot timeboken." },
 ];
 
-/**
- * Fra `tjeneste()`, ikke skrevet her. Den gamle noden lagde en NAVNLOES
- * foretakskopi via `provider: { "@type": "ProfessionalService", name: ... }` –
- * uten `@id`, saa Google saa to virksomheter paa siden. Nå peker den paa
- * `/#foretak`, som er den ene med org.nr.
- */
+/** Radene står tomme fordi tallene er klinikkens, ikke våre. */
+const tall = ["Timer brukt på telefon i uka", "Timer som ikke møtes opp", "Tid på avstemming per måned"];
+
+const medlemmer = [
+  { tittel: "Medlemsregister", tekst: "Månedstrekk, frysing av medlemskap og oversikt over hvem som faktisk møter opp. Aktuelt for treningssentre og kampsportklubber." },
+  { tittel: "Medlemsapp", tekst: "Booking av gruppetimer, innsjekk og varsler. Vi lager både nettsiden og appen, så det er ett system og ikke to." },
+  { tittel: "Journal og personvern", tekst: "Behandler dere helseopplysninger, gjelder strengere krav. Da settes det opp med databehandleravtale og tilgangsstyring fra start." },
+];
+
+/** Fra `tjeneste()`, ikke skrevet her. `provider` peker på `/#foretak`, den ene med org.nr. */
 const schema = tjeneste({
   type: "Bookingsystem og nettside for klinikker og treningssentre",
   navn: "Nettside og bookingsystem for klinikker",
@@ -63,138 +58,169 @@ const schema = tjeneste({
   pakker: ["System"],
 });
 ---
-<Base
+
+<MalWow
   tittel="Nettside og booking for klinikker"
   beskrivelse={`Timebestilling, Vipps-betaling, SMS-påminnelse og medlemsregister for klinikker, treningssentre og kampsportklubber i Oslo. System fra ${systemPris} – ${prisenhet}.`}
   schema={[schema]}
+  bevegelse="film"
+  forhandslast={kapittelForhandslast(2, "still")}
 >
-  <Scene lav>
-    <Mega som="h1" merke="Klinikker og trening" n={1} tekst="Timer som bestilles mens dere er stengt" aksent="stengt" storrelse="stor" />
-    <Avslor trinn={1}>
-      <p class="scene__ingress body-lg">Telefonbestilling betyr at dere bare kan selge timer i åpningstiden, og at noen må avbryte en behandling for å ta telefonen.</p>
-    </Avslor>
+  {/* Problem og løsning på platen er setninger som allerede står på siden (planen del 4):
+      ingressen, og tjenestene fra metabeskrivelsen. */}
+  <Kapittel
+    nummer={2}
+    modus="still"
+    tittel="Timer som bestilles mens dere er stengt"
+    ingress="Telefonbestilling betyr at dere bare kan selge timer i åpningstiden, og at noen må avbryte en behandling for å ta telefonen."
+    problem="Telefonbestilling betyr at dere bare kan selge timer i åpningstiden."
+    losning="Timebestilling, Vipps-betaling, SMS-påminnelse og medlemsregister."
+    handlinger={[
+      { tekst: "Book 20 minutter", href: bookUrl, type: "primar" },
+      { tekst: "Se bookingflyten", href: "#demo", type: "lenke" },
+    ]}
+  />
 
-    <Avslor>
-    <div class="row">
-      <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
-      <Button variant="ghost" href="#demo">Se bookingflyten</Button>
-    </div>
-    </Avslor>
-  </Scene>
-
-  {/* Filmen ERSTATTER stillbildet som lå i scenen over. Første ramme av klippet er
-      nøyaktig den komposisjonen stillbildet viste – en målestokk der de aller fleste
-      feltene står tomme – og gjennom klippet fylles de.
-
-      Den ligger i «Problemet» og ikke i «Fra bestilling til oppgjør», selv om den
-      sistnevnte passer bedre tematisk. Grunnen er målt: demo-scenen er fire
-      tekstkolonner i full bredde, og kolonne 03 og 04 havner rett oppå skinnen.
-      Kontrast mot FAKTISKE piksler der: 1,23:1. Her skjermer terminalkortet den
-      lyseste delen av motivet, og teksten står i den klare venstre halvdelen. */}
-  <div class="scenefilm-ramme">
-  <Scene n={2} eyebrow="Problemet" tittel="Tre tall dere kjenner igjen">
-    <Avslor>
-    <div class="grid-2">
-      <div class="stack">
-        {/* Tankestrek, ikke «TODO». Intensjonen er den samme – vi finner ikke på
-            kundens tall – men TODO er et internt notat, og det sto på en salgsside.
-            Samme redaksjonelle linje som /caser, der tomheten forklares i stedet
-            for å skjules. */}
-        <dl class="kv">
-          <div><dt>Timer brukt på telefon i uka</dt><dd aria-label="Ikke utfylt">–</dd></div>
-          <div><dt>Timer som ikke møtes opp</dt><dd aria-label="Ikke utfylt">–</dd></div>
-          <div><dt>Tid på avstemming per måned</dt><dd aria-label="Ikke utfylt">–</dd></div>
-        </dl>
-        <p class="muted">
+  <Seksjon id="tallene" tittel="Tre tall dere kjenner igjen" storrelse="stor">
+    <div class="bransje-tall">
+      {/* Tankestrek, ikke et oppdiktet bransjesnitt. Skjermlesere får «Ikke utfylt». */}
+      <dl class="bransje-tall__rader">
+        {tall.map((t) => (
+          <div>
+            <dt>{t}</dt>
+            <dd><span aria-hidden="true">–</span><span class="wow-usynlig">Ikke utfylt</span></dd>
+          </div>
+        ))}
+      </dl>
+      <Prosa>
+        <p>
           Radene står tomme fordi tallene er deres, ikke våre. Vi kunne satt inn et
           bransjesnitt og latt det se ut som en analyse, men da hadde dere tatt en
           beslutning på et tall vi fant på. Fyll dem ut i samtalen, så regner vi
           sammen på hva systemet må spare for å lønne seg. Blir svaret at det ikke
           lønner seg, sier vi det.
         </p>
-      </div>
-      <Terminal
-        skriv
-        title="~/bransje/klinikk"
-        lines={[
-          { type: "cmd", text: "når bestiller folk time" },
-          { type: "out", text: "mest kveld og helg" },
-          { type: "cmd", text: "når tar dere telefonen" },
-          { type: "warn", text: "hverdager 09–16" },
-          { type: "cmd", text: "echo $PROBLEM" },
-          { type: "fail", text: "dere selger når kundene ikke kjøper" },
-        ]}
-        label="Terminalutsnitt: folk bestiller time mest kveld og helg, men klinikken tar telefonen hverdager ni til seksten. Problemet er at dere selger når kundene ikke kjøper."
-      />
+      </Prosa>
     </div>
-    </Avslor>
 
-    <Avslor trinn={2}>
-      {/* Diagram med EKTE navn på systemene, ikke abstrakte former. Brandboken
-          rangerer dette over generert materiale: det forklarer hva kunden får,
-          og koster 0 kB. */}
+    {/* Diagram med EKTE navn på systemene, ikke abstrakte former. */}
+    <div class="bransje-flyt">
       <Flyt flyt={flyter.klinikker} />
-    </Avslor>
-  </Scene>
-  </div>
+    </div>
+  </Seksjon>
 
-  <Scene
-    n={3}
-    eyebrow="Demo"
+  <Seksjon
+    id="demo"
     tittel="Fra bestilling til oppgjør"
     ingress="Fire steg som skjer uten at noen i resepsjonen gjør noe. Det er dette som skiller et system fra en nettside med et skjema."
-    id="demo"
+    storrelse="tjeneste"
+    tone="flate"
   >
-    <ProcessSteps steps={steg} />
-    <div class="card" style="margin-top: var(--space-6)">
-      <h3 class="heading">Se den på skjerm</h3>
-      <p class="muted">
+    <Steg steg={steg} />
+    <div class="bransje-se">
+      <h3 class="bransje-se__tittel">Se den på skjerm</h3>
+      <p class="bransje-se__tekst">
         Vi går gjennom flyten med dere på skjerm i stedet for å beskrive den her.
         Da ser dere kalenderen, betalingen og påminnelsen med deres egne tider i.
       </p>
-      <Button variant="secondary" href="/kontakt">Be om en gjennomgang</Button>
+      <a class="wow-knapp wow-knapp--strek" href="/kontakt" data-magnetic>
+        <span class="wow-knapp__tekst" data-magnetic-tekst>Be om en gjennomgang</span>
+      </a>
     </div>
-  </Scene>
+  </Seksjon>
 
-  <Scene n={4} eyebrow="Også aktuelt" tittel="Medlemmer, ikke bare timer">
-    <Avslor>
-    <div class="grid-3">
-      <Pekerkort nr={1} tittel="Medlemsregister" tekst="Månedstrekk, frysing av medlemskap og oversikt over hvem som faktisk møter opp. Aktuelt for treningssentre og kampsportklubber." />
-      <Pekerkort nr={2} tittel="Medlemsapp" tekst="Booking av gruppetimer, innsjekk og varsler. Vi lager både nettsiden og appen, så det er ett system og ikke to." />
-      <Pekerkort nr={3} tittel="Journal og personvern" tekst="Behandler dere helseopplysninger, gjelder strengere krav. Da settes det opp med databehandleravtale og tilgangsstyring fra start." />
-    </div>
-    </Avslor>
-  </Scene>
+  <Seksjon id="medlemmer" tittel="Medlemmer, ikke bare timer" storrelse="tjeneste">
+    <Tekstrader rader={medlemmer} />
+  </Seksjon>
 
-  <Scene n={5} eyebrow="Start her" tittel="Sjekk den siden dere har" ingress="Mange klinikksider laster Google Analytics før noen har klikket i samtykkebanneret. Om det er et lovbrudd, kommer an på hva som faktisk lagres – og det er nettopp det sjekken måler.">
-    <UrlCheck buttonLabel="Kjør sjekken" hint="30 sekunder. Gratis, uten innlogging." />
-  </Scene>
+  <Seksjon
+    id="start"
+    tittel="Sjekk den siden dere har"
+    ingress="Mange klinikksider laster Google Analytics før noen har klikket i samtykkebanneret. Om det er et lovbrudd, kommer an på hva som faktisk lagres – og det er nettopp det sjekken måler."
+    storrelse="stor"
+    tone="flate"
+  >
+    <UrlFelt id="url-bransje" knapp="Kjør sjekken" hint="30 sekunder. Gratis, uten innlogging." />
+  </Seksjon>
 
-  <ContactBlock n={6} tittel="Ta en prat før dere bytter system" ingress="Har dere allerede et bookingsystem dere betaler for, er ofte svaret å koble det sammen med resten i stedet for å bytte. Det sier vi gjerne før dere kjøper noe." />
-</Base>
-<style is:global>
-  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
-     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
-     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
-     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
-  .scene:first-of-type .mega .ord,
-  .scene:first-of-type .mega-blokk,
-  /* Bare FØRSTE avdekking i første scene, ikke hele scenen.
-     Regelen fantes for at innhold over folden ikke skal ligge usynlig og vente på
-     en scroll som aldri kommer. Men `.scene:first-of-type .avslor` traff ALLE
-     avdekkinger i scenen – og /caser og /handbok er én eneste scene, så den slo av
-     all bevegelse på hele siden. Målt: 0 bevegelsesøyeblikk, 5,5 skjermhøyder uten
-     at ett element endrer seg. */
-  /* Treffer på HVA elementet er, ikke hvor det tilfeldigvis står.
-     `> .avslor` traff ingenting fordi .avslor ligger i .scene__inner, og
-     `:first-of-type` gjelder tagg og ikke klasse. Begge varianter var stille døde:
-     skjemaet på /verktoy/cookie-sjekk sto på 0,56 opasitet ved innlasting –
-     sidens primære handling, halvgjennomsiktig til du scrollet. */
-  .scene:first-of-type .avslor:has(.scene__ingress),
-  .scene:first-of-type .avslor:has(form) {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
+  <Kontaktblokk
+    tittel="Ta en prat før dere bytter system"
+    ingress="Har dere allerede et bookingsystem dere betaler for, er ofte svaret å koble det sammen med resten i stedet for å bytte. Det sier vi gjerne før dere kjøper noe."
+  />
+</MalWow>
+
+<style>
+  .bransje-tall {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--wow-rom-7) var(--wow-luke);
   }
-
+  .bransje-tall__rader {
+    margin: 0;
+    border-bottom: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .bransje-tall__rader > div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--wow-rom-5);
+    padding-block: var(--wow-rom-4);
+    border-top: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .bransje-tall__rader dt {
+    font-size: var(--wow-tekst-ingress);
+    font-weight: 700;
+    line-height: 1.25;
+  }
+  .bransje-tall__rader dd {
+    position: relative;
+    margin: 0;
+    color: var(--wow-tekst-dempet);
+    font-family: var(--wow-font-display);
+    font-size: var(--wow-tekst-h3);
+    font-weight: var(--wow-display-vekt);
+  }
+  .bransje-flyt {
+    margin-top: var(--wow-rom-8);
+  }
+  .bransje-se {
+    display: grid;
+    gap: var(--wow-rom-4);
+    justify-items: start;
+    margin-top: var(--wow-rom-7);
+    padding-top: var(--wow-rom-5);
+    border-top: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .bransje-se__tittel {
+    font-size: var(--wow-tekst-h3);
+    font-weight: 700;
+    line-height: 1.15;
+  }
+  .bransje-se__tekst {
+    max-width: var(--wow-maal-brod);
+    color: var(--wow-tekst-dempet);
+  }
+  @media (min-width: 1024px) {
+    .bransje-tall {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      align-items: start;
+    }
+    .bransje-tall__rader {
+      grid-column: 1 / 7;
+    }
+    .bransje-tall > :global(.wow-prosa) {
+      grid-column: 8 / 13;
+    }
+    .bransje-se {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--wow-luke);
+    }
+    .bransje-se__tittel {
+      grid-column: 1 / 6;
+    }
+    .bransje-se__tekst,
+    .bransje-se > .wow-knapp {
+      grid-column: 6 / 13;
+    }
+  }
 </style>

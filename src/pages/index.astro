@@ -1,44 +1,36 @@
 ---
-// Forsiden, retning A «Befaring». Rekkefølgen er fast (briefen del 6):
-// Tilbudet → Scenen → Rapporten → Arbeid → Garantien → Det jeg bygger →
-// Prisvelgeren og prislista → Slik går det → Hvem jeg er → Spørsmål →
-// Kontakt → Footer. Tekst ordrett fra docs/design/tekst/forside.md.
-// Øyeblikk 2, 3, 5 og 6 felles inn i bølge 3.2 – seksjonene står klare.
-import MalV2 from "../layouts/MalV2.astro";
-import Scene from "../components/bevegelse/Scene.astro";
-import Tilbud from "../components/forside/Tilbud.astro";
-import Rapport from "../components/forside/Rapport.astro";
-import Arbeid from "../components/forside/Arbeid.astro";
-import Garanti from "../components/forside/Garanti.astro";
-import Tjenester from "../components/forside/Tjenester.astro";
-import Prisliste from "../components/forside/Prisliste.astro";
-import Prosess from "../components/forside/Prosess.astro";
-import Hvem from "../components/forside/Hvem.astro";
-import Sporsmal from "../components/forside/Sporsmal.astro";
-import Kontakt from "../components/forside/Kontakt.astro";
+// Forsiden, wow-retningen «Natt i verkstedet» (docs/design/wow-brief.md).
+// Rekkefølgen: ScrollWorld (historien: heroen, tre bedrifter, verkstedet der
+// målingene låser seg) → Befaringen (historiens svar, ferdig utfylt) → Arbeid → Garantien → Priser → Slik går det →
+// Spørsmål → Kontakt → footer (i MalWow).
+// Runde wow-r2b: ScrollWorld erstatter både Hero og Tjenester (dirigentens
+// avgjørelse). Kapittel 1–3 bærer tjenestene, kapittel 4 leder inn i
+// befaringen. Hero.astro og Tjenester.astro står igjen ubrukt til dirigenten
+// har avgjort om de skal slettes.
+// Tallraden er fjernet i runde wow-r2 (kritikerfunn 4). «Hvem jeg er» rendres
+// ikke før eier har levert portrett og navn. Tekst fra
+// docs/design/tekst/forside.md, i vi-form.
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+import MalWow from "../layouts/MalWow.astro";
+import ScrollWorld from "../components/wow/ScrollWorld.astro";
+import HeroTekst from "../components/wow/seksjoner/HeroTekst.astro";
+import Befaring from "../components/wow/seksjoner/Befaring.astro";
+import Arbeid from "../components/wow/seksjoner/Arbeid.astro";
+import Garanti from "../components/wow/seksjoner/Garanti.astro";
+import Priser from "../components/wow/seksjoner/Priser.astro";
+import Prosess from "../components/wow/seksjoner/Prosess.astro";
+import Sporsmal from "../components/wow/seksjoner/Sporsmal.astro";
+import Kontakt from "../components/wow/seksjoner/Kontakt.astro";
 import { firma } from "../data/firma";
+import { filmTekst } from "../data/historie";
+import { filmForhandslast } from "../scripts/wow/film-filer";
 import { faqSide } from "../data/schema";
 import type { Sporsmaal } from "../data/faq";
+import { fortelling, type Henvisning } from "../components/wow/seksjoner/fortelling";
 
 const beskrivelse =
   "Gratis befaring av nettsiden din: rapport på 30 sekunder. Nettsider og systemer for norske småbedrifter i Oslo, til fast pris.";
-
-// Scenen, variant «A→B alene» (tekstmanuset del 2): tre steg, der det siste
-// peker videre til rapporten.
-const steg = [
-  {
-    tittel: "Dette er nettsiden din",
-    tekst: "Fire lag og fem kabler i rot. Utenfra ser du bare det øverste laget.",
-  },
-  {
-    tittel: "Jeg tar den fra hverandre",
-    tekst: "Lag for lag: design, kode, sikkerhet og integrasjoner.",
-  },
-  {
-    tittel: "Hvert lag blir målt",
-    tekst: "Laster siden raskt? Er den trygg? Snakker systemene bak sammen? Svaret står i rapporten under.",
-  },
-];
 
 // Datoene i «Slik går det» regnes ut ved bygg (tekstmanuset del 8):
 // prototypen er dagens dato + 3 døgn, lanseringen er ISO-uka for dagens dato
@@ -60,9 +52,22 @@ function isoUke(d: Date): number {
 }
 const lanseringsuke = isoUke(new Date(naa.getTime() + 24 * DOGN));
 
+// Kapitlene i filmen (runde wow-r3: historien) og tekstene rundt dem eies av
+// bevegelse i src/data/historie.ts (tekst fra forside.md del 2, variant A).
+// Kapittel 0 er heroen (HeroTekst i slotten). Lengden (dirigentens avgjørelse
+// i wow-r2b): kobling 0,35; dykk per kapittel står i historie.ts.
+
+// LCP: heroen i «Lampa» er pulten (siste ramme av dive-4), ikke gata.
+// Filmen eier hvilke filer som forhåndslastes (src/scripts/wow/film-filer.ts).
+const forhandslast = filmForhandslast(import.meta.env.DEV);
+const SW = "/media/wow/scroll-world";
+const iPublic = (sti: string) => existsSync(join(process.cwd(), "public", sti));
+
 // Spørsmålene, ordrett fra tekstmanuset del 10. Samme liste går til
 // FAQPage-markupen, så tekst og strukturerte data ikke kan komme i utakt.
-const sporsmaal: Sporsmaal[] = [
+// Runde wow-r7 «Lampa»: henvisningen som står fast ved svaret, bare der svaret selv nevner en
+// lov, en standard eller avtalen. Begge delene står ordrett i svaret. Faktasjekker bør se dem.
+const sporsmaal: (Sporsmaal & { henvisning?: Henvisning })[] = [
   {
     q: "Eier jeg koden og domenet?",
     a: "Ja. Domenet står registrert på ditt foretak fra dag én, og koden ligger i en konto i ditt navn fra lansering. Sier du opp et abonnement, får du en kjørbar kopi av siden og databasen – ingen innlåsing.",
@@ -72,16 +77,19 @@ const sporsmaal: Sporsmaal[] = [
     a: "Abonnement har 12 måneder binding, fordi byggekostnaden ligger i de første månedene. Drift og vedlikehold på en side du har kjøpt har ingen binding og kan sies opp med én måneds varsel.",
   },
   {
-    q: "Hva skjer hvis du ikke kan fullføre?",
-    a: "Du har koden, domenet og alle kontoer i ditt navn, så siden står uansett. Avtalen sier at du får full dokumentasjon og alle tilganger utlevert innen fem arbeidsdager hvis jeg ikke kan fullføre, og jeg oppgir to andre utviklere som kan overta.",
+    q: "Hva skjer hvis dere ikke kan fullføre?",
+    a: "Du har koden, domenet og alle kontoer i ditt navn, så siden står uansett. Avtalen sier at du får full dokumentasjon og alle tilganger utlevert innen fem arbeidsdager hvis vi ikke kan fullføre, og vi oppgir to andre utviklere som kan overta.",
+    henvisning: { ledd: "fem arbeidsdager", kilde: "Avtalen" },
   },
   {
     q: "Trenger siden min cookie-banner?",
-    a: "Sannsynligvis ikke. Jeg bruker cookieløs analyse, og da er det ingenting å samtykke til. Fra 1. januar 2025 krever ekomloven § 3-15 at cookie-samtykke oppfyller GDPR-kravene – ingen forhåndsavkryssing, «avvis» like lett som «godta», ingen sporing før samtykke. Den enkleste måten å overholde det på er å ikke sette cookies.",
+    a: "Sannsynligvis ikke. Vi bruker cookieløs analyse, og da er det ingenting å samtykke til. Fra 1. januar 2025 krever ekomloven § 3-15 at cookie-samtykke oppfyller GDPR-kravene – ingen forhåndsavkryssing, «avvis» like lett som «godta», ingen sporing før samtykke. Den enkleste måten å overholde det på er å ikke sette cookies.",
+    henvisning: { ledd: "§ 3-15", kilde: "ekomloven" },
   },
   {
     q: "Må siden være universelt utformet?",
-    a: "Private virksomheter skal oppfylle 35 krav i WCAG 2.0 nivå A og AA. Jeg bygger etter WCAG 2.2 AA, som er strengere, fordi det koster lite ekstra og gjør at du også kan levere til det offentlige. Du får en rapport som viser hva som er testet.",
+    a: "Private virksomheter skal oppfylle 35 krav i WCAG 2.0 nivå A og AA. Vi bygger etter WCAG 2.2 AA, som er strengere, fordi det koster lite ekstra og gjør at du også kan levere til det offentlige. Du får en rapport som viser hva som er testet.",
+    henvisning: { ledd: "35 krav", kilde: "WCAG 2.0 nivå A og AA" },
   },
   {
     q: "Hva koster det å endre noe etterpå?",
@@ -92,28 +100,38 @@ const sporsmaal: Sporsmaal[] = [
     a: "Da er lovsjekk-pakken ofte riktig sted å starte. Hva den dekker og hva den koster, står nederst i befaringsrapporten lenger opp. Virker resten av siden, trenger du ikke en ny.",
   },
 ];
+
+// Kontakten (wow-r7): N3, pulten med en leirfigur i stolen, lages av produsenten
+// (scroll-world/stol.webp og stol-m.webp). Til den finnes står verkstedet med den tomme stolen
+// (kapittel-4-gronn), et ekte bilde fra filmen. Byttes automatisk ved neste bygg.
+const stol = (navn: string, reserve: string) => (iPublic(`${SW}/${navn}`) ? `${SW}/${navn}` : `${SW}/kapitler/${reserve}`);
+const kontaktScene = {
+  forteller: fortelling.kontakt.linje,
+  bilde: {
+    desktop: stol("stol.webp", "kapittel-4-gronn.webp"),
+    mobil: stol("stol-m.webp", "kapittel-4-gronn-m.webp"),
+    desktopAvif: stol("stol.avif", "kapittel-4-gronn.avif"),
+    mobilAvif: stol("stol-m.avif", "kapittel-4-gronn-m.avif"),
+  },
+  kolofon: filmTekst.kolofon,
+};
 ---
 
-<MalV2 tittel={firma.navn} beskrivelse={beskrivelse} schema={[faqSide(sporsmaal)]}>
-  <Tilbud />
-
-  <Scene
-    navn="hero"
-    etikett="Slik befarer jeg en nettside"
-    hoppTil="rapport"
-    prioritet
-    bakgrunn="#080809"
-    steg={steg}
-  />
-  <p class="kolofon felt">Illustrasjon laget med KI</p>
-
-  <Rapport />
+<MalWow tittel={firma.navn} beskrivelse={beskrivelse} schema={[faqSide(sporsmaal)]} forhandslast={forhandslast}>
+  <ScrollWorld tekst={filmTekst}>
+    <HeroTekst />
+  </ScrollWorld>
+  <Befaring />
   <Arbeid />
-  <Garanti />
-  <Tjenester />
-  <Prisliste />
-  <Prosess prototypedato={prototypedato} lanseringsuke={lanseringsuke} />
-  <Hvem />
-  <Sporsmal liste={sporsmaal} />
-  <Kontakt />
-</MalV2>
+  <Garanti tegning forteller={fortelling.garanti.linje} />
+  <Priser lampa tittel={fortelling.priser.tittel} forteller={fortelling.priser.linje} />
+  <Prosess
+    prototypedato={prototypedato}
+    lanseringsuke={lanseringsuke}
+    hjul
+    tittel={fortelling.prosess.tittel}
+    forteller={fortelling.prosess.linje}
+  />
+  <Sporsmal liste={sporsmaal} rolig />
+  <Kontakt scene={kontaktScene} />
+</MalWow>

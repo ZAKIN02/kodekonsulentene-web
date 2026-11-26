@@ -1,0 +1,21 @@
+---
+/**
+ * Egen peker (data-wow-peker). Eies av bevegelse; styres av src/scripts/wow/peker.ts.
+ *
+ * Ingen egenskaper. Settes én gang i layouten, i <body>.
+ *
+ * Liten refleksprikk som følger musa. Over lenker og knapper blir den en ring;
+ * over bilder, video, karusellen og alt med data-peker blir den en stor sirkel.
+ * data-peker="Se" på et element setter ordet «Se» i sirkelen.
+ * Systempekeren beholdes; prikken er et tillegg.
+ *
+ * Vises bare med fin peker (mus/styreflate), med JavaScript og uten redusert
+ * bevegelse. Ellers display: none. Den er dekor og skjult for skjermlesere.
+ */
+---
+
+<div class="wow-peker" data-wow-peker aria-hidden="true">
+  <span class="wow-peker__ring"></span>
+  <span class="wow-peker__prikk"></span>
+  <span class="wow-peker__tekst" data-peker-tekst></span>
+</div>

@@ -16,11 +16,12 @@
  *
  * Listen kommer fra src/data/artikler.ts. Legger noen til en artikkel der, står
  * den her – ingen liste å glemme å oppdatere.
+ *
+ * WOW-DRAKTEN (wow-undersider.md del 1.7): artiklene som typografiske rader, nyest først, med
+ * kontrolldatoen til høyre. Ingen nummer, ingen kort. «rolig»: ingenting beveger seg.
  */
-import Base from "../../layouts/Base.astro";
-import Section from "../../components/Section.astro";
-import Pekerkort from "../../components/Pekerkort.astro";
-import ContactBlock from "../../components/ContactBlock.astro";
+import MalWow from "../../layouts/MalWow.astro";
+import { SideHode, Tekstrader, Kontaktblokk } from "../../components/wow/side";
 import { artikler } from "../../data/artikler";
 import { artikkelOversikt } from "../../data/schema";
 
@@ -54,50 +55,58 @@ const eldstKontrollert = sortert.reduce(
 );
 ---
 
-<Base
+<MalWow
   tittel="Artikler om lovkrav på nettsider"
   beskrivelse="Hva loven krever av en norsk nettside: cookie-samtykke, universell utforming og organisasjonsnummer. Med paragraf, kilde og et verktøy for din egen side."
   schema={schema}
+  bevegelse="rolig"
 >
-  <Section
-    nivaa={1}
-    n={1}
-    eyebrow="Artikler"
+  <SideHode
     tittel="Hva loven krever av nettsiden din"
     ingress={`${antall} artikler om kravene vi oftest ser brutt. Hver av dem oppgir paragrafen, hva den sier, og hvilket verktøy som avgjør om din egen side er i orden.`}
-  >
-    <div class="grid-3">
-      {
-        sortert.map((a, i) => (
-          <Pekerkort
-            nr={i + 1}
-            tittel={a.tittel}
-            tekst={a.loefte}
-            href={`/artikler/${a.slug}`}
-            lenketekst="Les artikkelen"
-          />
-        ))
-      }
-    </div>
-
-    <div class="prose" style="margin-top: var(--space-6)">
-      <p class="small faint">
-        {/* Datoene står her fordi de står i artiklene og i markupen. En
-            oversikt som skjuler hvor gammelt innholdet er, er mindre nyttig enn
-            ingen oversikt – særlig når innholdet er juridisk. */}
-        {/* Den ELDSTE kontrolldatoen, ikke den nyeste. `sortert[0]` er den sist
-            publiserte, og den sa at alt var kontrollert i dag selv om den eldste
-            artikkelen var et år gammel. På juridisk innhold er det den gale
-            halvdelen å oppgi. */}
+    storrelse="tjeneste"
+  />
+  <div class="wow-rute">
+    <div class="oversikt">
+      <Tekstrader
+        niva={2}
+        stil="display"
+        rader={sortert.map((a) => ({
+          tittel: a.tittel,
+          tekst: a.loefte,
+          href: `/artikler/${a.slug}`,
+          side: `Kontrollert ${norskDato(a.oppdatert)}`,
+        }))}
+      />
+      {/* Datoene står her fordi de står i artiklene og i markupen. En oversikt som skjuler hvor
+          gammelt innholdet er, er mindre nyttig enn ingen oversikt – særlig når innholdet er
+          juridisk. Den ELDSTE kontrolldatoen, ikke den nyeste: `sortert[0]` er den sist
+          publiserte, og den sa at alt var kontrollert i dag selv om den eldste artikkelen var
+          et år gammel. På juridisk innhold er det den gale halvdelen å oppgi. */}
+      <p class="oversikt__notat">
         Alle {sortert.length} er kontrollert mot kilden {norskDato(eldstKontrollert)} eller
         senere. Dette er ikke juridisk rådgivning.
       </p>
     </div>
-  </Section>
+  </div>
 
-  <ContactBlock
-    n={2}
+  <Kontaktblokk
     tittel="Vil du vite om din egen side er i orden?"
     ingress="Sjekken leser siden din og svarer på de samme punktene artiklene handler om. Den tar under ett minutt og krever ingen innlogging."
   />
-</Base>
+</MalWow>
+
+<style>
+  .oversikt {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: var(--wow-rom-5);
+    padding-top: var(--wow-rom-7);
+  }
+  .oversikt__notat {
+    max-width: var(--wow-maal-brod);
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+    line-height: 1.5;
+  }
+</style>

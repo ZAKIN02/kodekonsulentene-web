@@ -1,0 +1,103 @@
+---
+/**
+ * Krav som typografiske rader, ikke kort (wow-undersider.md del 1.3 og 7): tittel til venstre,
+ * tekst til høyre, strek mellom. Står det en ekte måling bak et krav, står lampa, verdien og
+ * datoen ved raden (fra historie.ts). Ellers bare kravet. Ingen nummer.
+ *
+ *   <Kravrader rader={[
+ *     { tittel: "Lovlig fra dag én", tekst: "…",
+ *       maaling: { verdi: "Org.nr. bekreftet", status: "bestatt", dato: "Målt 18. nov. 2026", datoIso: "2026-11-18" } },
+ *     { tittel: "Uten cookie-banner", tekst: "…" },
+ *   ]} />
+ */
+import Lampe from "./Lampe.astro";
+import { statusOrd, verdiHtml, type LampeStatus } from "./maaling";
+
+interface Props {
+  rader: {
+    tittel: string;
+    tekst: string;
+    maaling?: { verdi: string; status: LampeStatus; dato?: string; datoIso?: string };
+  }[];
+  /** Overskriftsnivå på radtitlene. Standard 3. */
+  niva?: 3 | 4;
+}
+const { rader, niva = 3 } = Astro.props;
+const H = niva === 4 ? "h4" : "h3";
+---
+
+<ul class="wow-krav" role="list">
+  {rader.map((r) => (
+    <li class="wow-krav__rad">
+      <H class="wow-krav__tittel">{r.tittel}</H>
+      <div class="wow-krav__tekst">
+        <p>{r.tekst}</p>
+        {r.maaling && (
+          <p class="wow-krav__maaling">
+            <Lampe status={r.maaling.status} />
+            <span class="wow-usynlig">{statusOrd[r.maaling.status]}:</span>
+            <span class="wow-maalt__verdi wow-krav__verdi" set:html={verdiHtml(r.maaling.verdi)} />
+            {r.maaling.dato && (
+              <span class="wow-krav__dato">
+                {r.maaling.datoIso ? <time datetime={r.maaling.datoIso}>{r.maaling.dato}</time> : r.maaling.dato}
+              </span>
+            )}
+          </p>
+        )}
+      </div>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .wow-krav {
+    margin: 0;
+    padding: 0;
+    border-bottom: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .wow-krav__rad {
+    display: grid;
+    gap: var(--wow-rom-3) var(--wow-luke);
+    padding-block: var(--wow-rom-5);
+    border-top: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .wow-krav__tittel {
+    font-size: var(--wow-tekst-h3);
+    font-weight: 700;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+  .wow-krav__tekst {
+    display: grid;
+    gap: var(--wow-rom-4);
+    max-width: var(--wow-maal-brod);
+    color: var(--wow-tekst-dempet);
+  }
+  .wow-krav__maaling {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--wow-rom-2) var(--wow-rom-4);
+    color: var(--wow-tekst);
+    font-size: var(--wow-tekst-ingress);
+  }
+  .wow-krav__verdi {
+    font-size: var(--wow-tekst-h3);
+  }
+  .wow-krav__dato {
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+  }
+  @media (min-width: 1024px) {
+    .wow-krav__rad {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      padding-block: var(--wow-rom-6);
+    }
+    .wow-krav__tittel {
+      grid-column: 1 / 6;
+    }
+    .wow-krav__tekst {
+      grid-column: 6 / 13;
+    }
+  }
+</style>

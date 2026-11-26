@@ -1,0 +1,69 @@
+---
+/**
+ * Nøkkeltall i wow-drakt (portert fra src/components/Nokkeltall.astro): inntil fire målte tall
+ * med hver sin etikett, to og to på mobil og på rad fra 768 px. Tallet i Archivo, etiketten i
+ * liten, dempet Schibsted, strek over hvert felt. Ingen bokser.
+ *
+ * Forskjeller fra v1: ingen opptelling og ingen målestrek (lesesidene er «rolig»), ikke noe
+ * skript, og ingen aksentfarge på ett av tallene. Tallene skal komme fra data og være målt;
+ * komponenten finner ikke på noe. `poster` er påkrevd her (v1 falt tilbake på bevis.ts, som
+ * ingen leseside bruker).
+ *
+ *   <Nokkeltall poster={[{ value: "81,5 %", label: "av erklæringene …" }]} navn="Fire tall fra …" />
+ */
+interface Props {
+  poster: { value: string; label: string; accent?: boolean }[];
+  /** Beskrivende navn på lista, for skjermlesere. */
+  navn: string;
+  class?: string;
+}
+const { poster, navn, class: klasse } = Astro.props;
+---
+
+<ul class:list={["wow-nokkeltall", klasse]} role="list" aria-label={navn}>
+  {poster.map((p) => (
+    <li class="wow-nokkeltall__post">
+      <span class="wow-nokkeltall__verdi">{p.value}</span>
+      <span class="wow-nokkeltall__merke">{p.label}</span>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .wow-nokkeltall {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--wow-rom-6) var(--wow-luke);
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .wow-nokkeltall__post {
+    display: grid;
+    align-content: start;
+    gap: var(--wow-rom-2);
+    padding-top: var(--wow-rom-4);
+    border-top: var(--wow-kant-1) solid var(--wow-linje-sterk);
+  }
+  .wow-nokkeltall__verdi {
+    font-family: var(--wow-font-display);
+    font-size: var(--wow-tekst-dato);
+    font-stretch: var(--wow-display-bredde);
+    font-weight: var(--wow-display-vekt);
+    line-height: 1;
+    letter-spacing: var(--wow-display-sperring);
+    white-space: nowrap;
+  }
+  .wow-nokkeltall__merke {
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+    line-height: 1.4;
+    text-wrap: pretty;
+  }
+  @media (min-width: 768px) {
+    .wow-nokkeltall {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>

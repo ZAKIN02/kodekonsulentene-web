@@ -1,0 +1,371 @@
+---
+/**
+ * Hukommelsen i wow-drakt (portert fra src/components/Hukommelse.astro): «dette er alt vi vet om
+ * deg», målt i leserens egen nettleser. Flaten teller cookies med document.cookie, teller
+ * forespørsler til andre domener med Resource Timing, og lister opp hva som ligger i localStorage,
+ * med verdiene og en knapp som sletter dem. Tallene kommer fra nettleserens egne API-er, ikke fra
+ * noe vi har skrevet inn.
+ *
+ * Skriptet er det samme som i v1 (bare klassenavn og <code> rundt nøkkelen er endret). Teksten er
+ * ordrett fra v1.
+ *
+ * ÅPENT PUNKT (wow-r8-B3): lista `lagret` under er ikke sann lenger. Temabryteren er fjernet
+ * (MalWow sletter nøkkelen `kk-tema`), og v1-prisvelgeren som skrev `kk-prisvalg`, står bare på
+ * /lab/lek. Radene er latt stå fordi teksten hører sammen med personvernerklæringen og skal
+ * rettes av tekstforfatter i samme omgang. Flaten lyver ikke om verdiene: begge radene viser
+ * «ikke satt». Når radene fjernes, fjernes de også fra KJENTE i skriptet.
+ *
+ * Uten JavaScript står tabellen med alt den kan si uten å måle, og måleverdiene står som
+ * «– måles i din nettleser», ikke som en null vi ikke har målt.
+ *
+ * Udokumenterte nøkler havner i egne rader merket «Ikke dokumentert i denne tabellen.». Det er en
+ * lekkasjetest som går hver gang noen åpner siden.
+ *
+ * Stilen er global (`.wow-husk …`), fordi skriptet lager rader i nettleseren, og de bærer ikke
+ * komponentens scope-id. Tabellen og notatene står i <Prosa> og arver stilen derfra.
+ */
+import Prosa from "../side/Prosa.astro";
+
+interface Props {
+  class?: string;
+}
+const { class: klasse } = Astro.props;
+
+/** `nokkel` må stemme med koden som skriver. Se åpent punkt over. */
+const lagret = [
+  {
+    nokkel: "kk-tema",
+    hva: "Valget mellom lyst og mørkt tema fra en tidligere utgave av siden",
+    hvorfor: "Lagres ikke lenger. Slettes av seg selv når du åpner en side her.",
+  },
+  {
+    nokkel: "kk-prisvalg",
+    hva: "Valgene dine i den gamle prisvelgeren",
+    hvorfor: "Lagres ikke lenger. Ligger den her, er den fra et tidligere besøk. Knappen under sletter den.",
+  },
+] as const;
+---
+
+<div class:list={["wow-husk", klasse]} data-husk>
+  <dl class="wow-husk__maal">
+    <div class="wow-husk__rad">
+      <dt>Cookies satt av denne siden</dt>
+      <dd class="wow-husk__verdi" data-husk-cookies>– måles i din nettleser</dd>
+    </div>
+    <div class="wow-husk__rad">
+      <dt>Forespørsler til andre domener på denne siden</dt>
+      <dd class="wow-husk__verdi" data-husk-tredje>– måles i din nettleser</dd>
+    </div>
+    <div class="wow-husk__rad">
+      <dt>Ting lagret i din nettleser</dt>
+      <dd class="wow-husk__verdi" data-husk-antall>– måles i din nettleser</dd>
+    </div>
+  </dl>
+
+  <Prosa>
+    <p class="wow-notat">
+      Tallene over leses av nettleserens egne API-er – <code>document.cookie</code> og{" "}
+      <code>performance.getEntriesByType("resource")</code> – i det øyeblikket du åpner
+      siden. Vi kan ikke skrive dem inn.
+    </p>
+
+    {/* Tabellen beholder tabellsemantikken på alle bredder og ruller i seg selv når den er for
+        bred (Prosa). MalWow gjør rulleflaten nåbar med tastatur. */}
+    <table class="wow-husk__tabell">
+      <caption>Det som kan ligge i nettleseren din</caption>
+      <thead>
+        <tr><th scope="col">Nøkkel</th><th scope="col">Hva</th><th scope="col">Verdi nå</th></tr>
+      </thead>
+      <tbody data-husk-tbody>
+        {lagret.map((l) => (
+          <tr data-husk-nokkel={l.nokkel}>
+            <th scope="row"><code>{l.nokkel}</code></th>
+            <td>
+              {l.hva}
+              <span class="wow-husk__hvorfor">{l.hvorfor}</span>
+            </td>
+            <td class="wow-husk__naa" data-husk-naa>ikke lest</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </Prosa>
+
+  <div class="wow-husk__bunn">
+    {/* Knappen finnes bare når det er noe å slette. */}
+    <button type="button" class="wow-knapp wow-knapp--strek wow-knapp--liten wow-husk__slett" data-husk-slett hidden>
+      <span class="wow-knapp__tekst">Slett alt vi husker</span>
+    </button>
+    {/* Kvitteringen står utenfor det som skjules, så svaret på handlingen ikke forsvinner sammen
+        med knappen. */}
+    <p class="wow-husk__kvittering" role="status" aria-live="polite" data-husk-kvittering></p>
+  </div>
+
+  <Prosa>
+    <p class="wow-notat">
+      Det finnes ingen samtykkedialog på dette nettstedet, fordi det ikke er noe å
+      samtykke til: siden setter ingen cookies og lagrer ingenting i nettleseren din.
+      Ekomloven § 3-15 krever samtykke for lagring som ikke er nødvendig for tjenesten.
+    </p>
+  </Prosa>
+</div>
+
+<style is:global>
+  .wow-husk {
+    display: grid;
+    gap: var(--wow-rom-5);
+    min-width: 0;
+  }
+  .wow-husk__maal {
+    margin: 0;
+    border-bottom: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .wow-husk__rad {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--wow-rom-5);
+    padding-block: var(--wow-rom-3);
+    border-top: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .wow-husk__rad dt {
+    color: var(--wow-tekst-dempet);
+  }
+  .wow-husk__verdi {
+    margin: 0;
+    font-weight: 600;
+    text-align: right;
+  }
+  /* Fargen forsterker tallet, den bærer ikke meningen alene: «0» står som tekst. */
+  .wow-husk__verdi[data-husk-status="ok"] {
+    color: var(--wow-status-bestatt);
+  }
+  .wow-husk__verdi[data-husk-status="varsel"] {
+    color: var(--wow-status-brudd);
+  }
+  .wow-husk code {
+    overflow-wrap: anywhere;
+  }
+  .wow-husk__tabell {
+    width: 100%;
+  }
+  .wow-husk__tabell tbody th {
+    font-weight: 400;
+    white-space: nowrap;
+  }
+  .wow-husk__hvorfor {
+    display: block;
+    font-size: var(--wow-tekst-liten);
+  }
+  .wow-husk__tabell .wow-husk__naa {
+    padding-right: 0;
+    overflow-wrap: anywhere;
+  }
+  .wow-husk__naa[data-husk-status="satt"] {
+    color: var(--wow-tekst);
+  }
+  .wow-husk__naa[data-husk-status="varsel"] {
+    color: var(--wow-status-brudd);
+  }
+  /* Prosa gir siste kolonne 16rem på smal skjerm (den er som oftest forklaringen). Her er det
+     midtkolonnen som er forklaringen. */
+  @media (max-width: 767px) {
+    .wow-husk__tabell :is(th, td) {
+      min-width: 0;
+      padding-right: var(--wow-rom-4);
+    }
+    .wow-husk__tabell :is(th, td):nth-child(2) {
+      min-width: 9rem;
+    }
+    .wow-husk__tabell :is(th, td):last-child {
+      min-width: 0;
+    }
+    .wow-husk__tabell thead th {
+      white-space: normal;
+    }
+  }
+  /* Fra 768 px får tabellen plass og fyller kolonnen (Prosa gjør den ellers til en rulleboks
+     som krymper rundt innholdet). */
+  @media (min-width: 768px) {
+    .wow-husk__tabell {
+      display: table;
+    }
+  }
+  .wow-husk__bunn {
+    display: grid;
+    gap: var(--wow-rom-3);
+    justify-items: start;
+  }
+  /* .wow-knapp setter display, og det slår nettleserens [hidden]. */
+  .wow-husk__slett[hidden] {
+    display: none;
+  }
+  /* Ingenting å slette og ingen kvittering: blokken tar ikke plass. */
+  .wow-husk__bunn:has(.wow-husk__slett[hidden]):has(.wow-husk__kvittering:empty) {
+    display: none;
+  }
+  .wow-husk__kvittering {
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+  }
+</style>
+
+<script>
+  /**
+   * Alt her er lesing. Flaten skriver ingenting til `localStorage` eller `sessionStorage` – den
+   * viser bare det andre har lagt der, og sletter på forespørsel.
+   */
+  const KJENTE = ["kk-tema", "kk-prisvalg"];
+
+  /** Lange verdier kuttes. Hele verdien ligger i title, så ingenting skjules. */
+  const kort = (v: string) => (v.length > 60 ? `${v.slice(0, 59)}…` : v);
+
+  for (const rot of document.querySelectorAll<HTMLElement>("[data-husk]")) {
+    const utCookies = rot.querySelector<HTMLElement>("[data-husk-cookies]");
+    const utTredje = rot.querySelector<HTMLElement>("[data-husk-tredje]");
+    const utAntall = rot.querySelector<HTMLElement>("[data-husk-antall]");
+    const tbody = rot.querySelector<HTMLElement>("[data-husk-tbody]");
+    const slettBlokk = rot.querySelector<HTMLElement>("[data-husk-slett]");
+    const slett = rot.querySelector<HTMLButtonElement>("[data-husk-slett]");
+    const kvittering = rot.querySelector<HTMLElement>("[data-husk-kvittering]");
+    if (!tbody) continue;
+
+    /** Nøkler vi IKKE har dokumentert. Står i egne rader, merket. */
+    const ukjenteRader = new Set<HTMLElement>();
+
+    const les = () => {
+      // ── cookies ────────────────────────────────────────────────────────────
+      // document.cookie er "" når det ikke er noen. split(";") på tom streng gir
+      // [""], derfor filteret – ellers ville svaret vært 1 på en side med null.
+      const cookies = document.cookie.split(";").map((s) => s.trim()).filter(Boolean);
+      if (utCookies) {
+        utCookies.textContent = cookies.length === 0 ? "0" : String(cookies.length);
+        utCookies.dataset.huskStatus = cookies.length === 0 ? "ok" : "varsel";
+      }
+
+      // ── forespørsler ut av domenet ─────────────────────────────────────────
+      // Resource Timing ser alle ressurser siden hentet, også de en innbygging
+      // drar inn. Tallet er derfor ekte for NETTOPP DENNE siden, og det er slik
+      // det skal formuleres: /kontakt har en Cal.com-innbygging, og da er tallet
+      // ikke null. Flaten skal måle, ikke selge.
+      let utenfor = 0;
+      let kjentApi = false;
+      try {
+        const her = location.origin;
+        const poster = performance.getEntriesByType("resource") as PerformanceResourceTiming[];
+        kjentApi = true;
+        utenfor = poster.filter((p) => {
+          try { return new URL(p.name, her).origin !== her; } catch { return false; }
+        }).length;
+      } catch {
+        kjentApi = false;
+      }
+      if (utTredje) {
+        utTredje.textContent = kjentApi ? String(utenfor) : "kan ikke måles her";
+        utTredje.dataset.huskStatus = kjentApi && utenfor === 0 ? "ok" : "varsel";
+      }
+
+      // ── localStorage og sessionStorage ─────────────────────────────────────
+      // Øktlageret er med (r8-rettelser.md): det teller også som lagring etter ekomloven § 3-15,
+      // og forsiden la en markering der («wow-inngang») uten at flaten så den. Ingen nøkler i
+      // øktlageret er dokumentert, så alt som ligger der, vises som en lekkasje.
+      let noekler: string[] = [];
+      let oktNoekler: string[] = [];
+      let kanLese = true;
+      try {
+        noekler = Object.keys(localStorage);
+        oktNoekler = Object.keys(sessionStorage);
+      } catch {
+        // Privat vindu eller blokkerte data. Da er svaret ærlig «vet ikke».
+        kanLese = false;
+      }
+
+      for (const rad of ukjenteRader) rad.remove();
+      ukjenteRader.clear();
+
+      let funnet = 0;
+      for (const rad of tbody.querySelectorAll<HTMLElement>("[data-husk-nokkel]")) {
+        const naa = rad.querySelector<HTMLElement>("[data-husk-naa]");
+        if (!naa) continue;
+        if (!kanLese) { naa.textContent = "kan ikke leses"; continue; }
+        let verdi: string | null = null;
+        try { verdi = localStorage.getItem(rad.dataset.huskNokkel ?? ""); } catch {}
+        if (verdi === null) {
+          naa.textContent = "ikke satt";
+          naa.removeAttribute("title");
+          delete naa.dataset.huskStatus;
+        } else {
+          funnet += 1;
+          naa.textContent = kort(verdi);
+          naa.title = verdi;
+          naa.dataset.huskStatus = "satt";
+        }
+      }
+
+      // Udokumenterte nøkler. Dette er lekkasjetesten: skriver noen noe nytt til
+      // localStorage uten å føre det inn i tabellen, dukker det opp her.
+      if (kanLese) {
+        const ukjente: [Storage, string][] = [
+          ...noekler.filter((n) => !KJENTE.includes(n)).map((n): [Storage, string] => [localStorage, n]),
+          ...oktNoekler.map((n): [Storage, string] => [sessionStorage, n]),
+        ];
+        for (const [lager, n] of ukjente) {
+          funnet += 1;
+          let verdi = "";
+          try { verdi = lager.getItem(n) ?? ""; } catch {}
+          const tr = document.createElement("tr");
+          const th = document.createElement("th");
+          th.scope = "row";
+          th.append(Object.assign(document.createElement("code"), { textContent: n }));
+          const td = document.createElement("td");
+          td.textContent = "Ikke dokumentert i denne tabellen.";
+          const td2 = document.createElement("td");
+          td2.className = "wow-husk__naa";
+          td2.textContent = kort(verdi);
+          td2.title = verdi;
+          td2.dataset.huskStatus = "varsel";
+          tr.append(th, td, td2);
+          tbody.appendChild(tr);
+          ukjenteRader.add(tr);
+        }
+      }
+
+      if (utAntall) {
+        utAntall.textContent = kanLese ? String(funnet) : "kan ikke måles her";
+        utAntall.dataset.huskStatus = kanLese && funnet === 0 ? "ok" : "";
+      }
+
+      if (slettBlokk) {
+        if (kanLese && funnet > 0) slettBlokk.removeAttribute("hidden");
+        else slettBlokk.setAttribute("hidden", "");
+      }
+    };
+
+    slett?.addEventListener("click", () => {
+      let antall = 0;
+      try {
+        for (const lager of [localStorage, sessionStorage]) {
+          for (const n of Object.keys(lager)) { lager.removeItem(n); antall += 1; }
+        }
+      } catch {}
+      les();
+      if (kvittering) {
+        kvittering.textContent =
+          antall === 0
+            ? "Det var ingenting å slette."
+            : `Slettet ${antall} ${antall === 1 ? "oppføring" : "oppføringer"}. Siden ser lik ut til du laster den på nytt.`;
+        // Knappen forsvinner i samme øyeblikk som den siste oppføringen er borte,
+        // og da ville fokuset falt til <body>. Kvitteringen tar det i stedet, så
+        // det neste et tastatur eller en skjermleser møter er svaret på det du
+        // nettopp gjorde.
+        if (slettBlokk?.hasAttribute("hidden")) {
+          kvittering.tabIndex = -1;
+          kvittering.focus();
+        }
+      }
+    });
+
+    les();
+    rot.dataset.klar = "";
+  }
+</script>

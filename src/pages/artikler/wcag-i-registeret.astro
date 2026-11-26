@@ -25,16 +25,19 @@
  *   4. «Ikke relevant» er holdt utenfor nevneren, og det står hvorfor.
  * Uten disse fire er tallet en falsk generalisering – samme feil som en falsk
  * «Bestått» i nettsidesjekken.
+ *
+ * WOW-DRAKTEN (wow-undersider.md del 1.7, mønster: cookies-for-samtykke.astro). «rolig»:
+ * ingenting beveger seg uten at leseren har gjort noe, så tusjstrekene og målelinjene står
+ * ferdige. Teksten er uendret fra v1.
  */
-import Base from "../../layouts/Base.astro";
-import Section from "../../components/Section.astro";
-import Button from "../../components/Button.astro";
-import ContactBlock from "../../components/ContactBlock.astro";
-import Nokkeltall from "../../components/Nokkeltall.astro";
-import Registerstolper from "../../components/Registerstolper.astro";
-import Tusjstrek from "../../components/Tusjstrek.astro";
+import MalWow from "../../layouts/MalWow.astro";
+import { SideHode, Artikkelkropp, UrlFelt, Sporsmal, Kontaktblokk } from "../../components/wow/side";
+import Handlinger from "../../components/wow/side/Handlinger.astro";
+import Nokkeltall from "../../components/wow/les/Nokkeltall.astro";
+import Registerstolper from "../../components/wow/les/Registerstolper.astro";
+import Tusjstrek from "../../components/wow/les/Tusjstrek.astro";
 import { finnArtikkel } from "../../data/artikler";
-import { artikkel } from "../../data/schema";
+import { artikkel, faqSide } from "../../data/schema";
 import { WCAG_NAVN } from "../../data/wcag";
 import { KRAVNAVN, dekningIToppen, maskinsjekkbareKrav, type Kravrad } from "../../lib/uuregister";
 import registeret from "../../data/uu-register.json";
@@ -76,7 +79,7 @@ const kontrast = rader.find((r) => r.krav === "1.4.3")!;
 const altTekst = rader.find((r) => r.krav === "1.1.1")!;
 
 const nokkeltall = [
-  { value: `${prosent(registeret.andelMedBrudd)} %`, label: "av erklæringene rapporterer minst ett WCAG-brudd", accent: true },
+  { value: `${prosent(registeret.andelMedBrudd)} %`, label: "av erklæringene rapporterer minst ett WCAG-brudd" },
   { value: tall(registeret.erklaeringer), label: "erklæringer i registeret" },
   { value: String(registeret.brudd.median), label: "brudd i medianløsningen" },
   { value: `${d.dekket.length} av ${TOPP}`, label: "av de oftest brutte kravene en maskin kan måle" },
@@ -87,68 +90,53 @@ const nokkeltall = [
  * eller et tall. Ingen av svarene lover noe – de tre første er fakta om
  * registeret, det fjerde er grensen for hva verktøy kan.
  */
-const schema = [
-  artikkel(a),
+/* ÉN liste: den synlige FAQ-en nederst og FAQPage-markupen bygges av den samme (i v1 sto
+   spørsmålene bare i markupen). Spørsmål og svar er ordrett de som sto i markupen. */
+const sporsmaal = [
   {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: "Hvor mange norske løsninger bryter WCAG?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `Av ${tall(registeret.erklaeringer)} tilgjengelighetserklæringer i Uu-tilsynets register rapporterer ${prosent(registeret.andelMedBrudd)} prosent minst ett brudd på WCAG. Medianen er ${registeret.brudd.median} brudd per løsning, snittet ${registeret.brudd.snitt.toLocaleString("nb-NO")}. Tallene er selvrapportert av virksomhetene selv, og registeret dekker offentlige virksomheter, som har erklæringsplikt.`,
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Hvilket WCAG-krav brytes oftest i Norge?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `${toppKrav.krav} ${toppNavn.navn}. ${prosent(toppKrav.andel)} prosent av de ${tall(toppKrav.vurdert)} erklæringene som vurderte kravet som relevant, oppgir at de bryter det. Deretter følger 1.1.1 Ikke-tekstlig innhold og 1.3.1 Informasjon og relasjoner.`,
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Må private bedrifter ha tilgjengelighetserklæring?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Nei. Erklæringsplikten gjelder offentlige virksomheter. Private kan publisere en frivillig. Kravene i WCAG gjelder likevel for private: 35 suksesskriterier på nivå A og AA i WCAG 2.0.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Kan et verktøy finne alle WCAG-feil?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `Nei. Av de ${TOPP} kravene som oftest rapporteres brutt i registeret, har vår egen skanner en regel for ${d.dekket.length}. De øvrige krever at et menneske prøver løsningen – eller at noen produserer innhold som ikke finnes, som synstolking av video.`,
-        },
-      },
-    ],
+    q: "Hvor mange norske løsninger bryter WCAG?",
+    a: `Av ${tall(registeret.erklaeringer)} tilgjengelighetserklæringer i Uu-tilsynets register rapporterer ${prosent(registeret.andelMedBrudd)} prosent minst ett brudd på WCAG. Medianen er ${registeret.brudd.median} brudd per løsning, snittet ${registeret.brudd.snitt.toLocaleString("nb-NO")}. Tallene er selvrapportert av virksomhetene selv, og registeret dekker offentlige virksomheter, som har erklæringsplikt.`,
+  },
+  {
+    q: "Hvilket WCAG-krav brytes oftest i Norge?",
+    a: `${toppKrav.krav} ${toppNavn.navn}. ${prosent(toppKrav.andel)} prosent av de ${tall(toppKrav.vurdert)} erklæringene som vurderte kravet som relevant, oppgir at de bryter det. Deretter følger 1.1.1 Ikke-tekstlig innhold og 1.3.1 Informasjon og relasjoner.`,
+  },
+  {
+    q: "Må private bedrifter ha tilgjengelighetserklæring?",
+    a: "Nei. Erklæringsplikten gjelder offentlige virksomheter. Private kan publisere en frivillig. Kravene i WCAG gjelder likevel for private: 35 suksesskriterier på nivå A og AA i WCAG 2.0.",
+  },
+  {
+    q: "Kan et verktøy finne alle WCAG-feil?",
+    a: `Nei. Av de ${TOPP} kravene som oftest rapporteres brutt i registeret, har vår egen skanner en regel for ${d.dekket.length}. De øvrige krever at et menneske prøver løsningen – eller at noen produserer innhold som ikke finnes, som synstolking av video.`,
   },
 ];
+
+const schema = [artikkel(a), faqSide(sporsmaal)];
+
+const innhold = [
+  { id: "hvem", tittel: "Først: hvem det er som har svart" },
+  { id: "oftest", tittel: `De ${TOPP} kravene som oftest står som brutt` },
+  { id: "skannerapport", tittel: "Lista er ikke den samme som en skannerapport" },
+  { id: "privat", tittel: "Hva gjelder for deg, hvis du er privat" },
+  { id: "metode", tittel: "Hvordan vi regnet" },
+];
+
+/* Meta-linja har en annen ordlyd enn de andre artiklene (tallene er hentet, ikke kontrollert),
+   så den står i SideHode og ikke i Artikkelkropp sin faste setning. */
+const meta = `Publisert ${norskDato(a.publisert)}. Tallene er hentet fra kilden ${norskDato(registeret.hentet)} og regnet ut på nytt av oss. Dette er ikke juridisk rådgivning.`;
 ---
-<Base
+<MalWow
   tittel={a.tittel}
   beskrivelse={a.beskrivelse}
   schema={schema}
   artikkel={{ publisert: a.publisert, oppdatert: a.oppdatert }}
   ogBilde="sjekk"
+  bevegelse="rolig"
 >
-  <Section
-    nivaa={1}
-    n={1}
-    eyebrow="Artikkel"
-    tittel="WCAG-kravene som brytes oftest"
-    ingress={a.beskrivelse}
-  >
-    <div class="prose">
-      <p class="small faint">
-        Publisert {norskDato(a.publisert)}. Tallene er hentet fra kilden{" "}
-        {norskDato(registeret.hentet)} og regnet ut på nytt av oss. Dette er ikke
-        juridisk rådgivning.
-      </p>
+  <article>
+    <SideHode tittel="WCAG-kravene som brytes oftest" storrelse="tjeneste" bredde="les" brodsmuler meta={meta} />
+    <Artikkelkropp kortSvar={a.beskrivelse} innhold={innhold}>
+      <UrlFelt slot="verktoy" id="url-artikkel" action={a.verktoy!.href} knapp={a.verktoy!.tekst} />
 
       <p>
         Uu-tilsynet publiserer alle ferdigstilte tilgjengelighetserklæringer som åpne
@@ -157,24 +145,20 @@ const schema = [
         virksomheter – og regnet ut hvilke krav som faktisk står oppført som brutt.
       </p>
       <p>
-        {/* `staar`: dette avsnittet ligger over folden på en 700 px høy skjerm –
-            målt til y = 652. Uten propen står streken halvtegnet ved innlasting. */}
+        {/* `staar`: avsnittet ligger over folden. I wow står alle streker ferdige; propen
+            beholdes fordi test/uuregister.test.ts krever merket på denne. */}
         <Tusjstrek staar>{prosent(registeret.andelMedBrudd)} prosent rapporterer minst ett brudd.</Tusjstrek>{" "}
         Medianløsningen har {registeret.brudd.median}, snittet er{" "}
         {registeret.brudd.snitt.toLocaleString("nb-NO")}, og den dårligste i registeret
         har {registeret.brudd.maks}.
       </p>
-    </div>
 
-    <div style="margin-top: var(--space-6)">
       <Nokkeltall poster={nokkeltall} navn="Fire tall fra tilgjengelighetsregisteret" />
-    </div>
 
-    <div class="prose" style="margin-top: var(--space-7)">
-      <h2>Først: hvem det er som har svart</h2>
+      <h2 id="hvem">Først: hvem det er som har svart</h2>
       <p>
         Dette er den viktigste setningen i artikkelen, og den går mot oss selv:{" "}
-        <strong class="body-strong">registeret dekker offentlige virksomheter, og tallene er
+        <strong>registeret dekker offentlige virksomheter, og tallene er
         selvrapporterte.</strong>{" "}
         Offentlig sektor har plikt til å publisere en tilgjengelighetserklæring. Det er
         virksomheten selv som krysser av for hvert krav – ingen har målt det for dem, og
@@ -194,29 +178,25 @@ const schema = [
         oppfyller 48 krav.
       </p>
 
-      <h2>De {TOPP} kravene som oftest står som brutt</h2>
+      <h2 id="oftest">De {TOPP} kravene som oftest står som brutt</h2>
       <p>
         Prosenten er regnet av de erklæringene som faktisk vurderte kravet – altså
         «bryter» delt på «bryter pluss oppfyller».{" "}
-        <strong class="body-strong">«Ikke relevant» er holdt utenfor.</strong>{" "}
+        <strong>«Ikke relevant» er holdt utenfor.</strong>{" "}
         Det må det være: {tall(toppKrav.ikkjeRelevant)} erklæringer oppgir at{" "}
         {toppKrav.krav} ikke gjelder dem, fordi løsningen ikke har video i det hele
         tatt. Hadde de ligget i nevneren, ville kravet som faktisk topper listen
         framstått som et lite problem.
       </p>
-    </div>
 
-    <div style="margin-top: var(--space-6)">
       <Registerstolper
         rader={rader.slice(0, TOPP)}
         maskinsjekkbare={maskin}
         tittel={`De ${TOPP} kravene med høyest andel rapporterte brudd`}
         bunntekst={`Kilde: Uu-tilsynets datasett «Erklæringar med resultat», hentet ${norskDato(registeret.hentet)}. Alle ${tall(registeret.erklaeringer)} erklæringer er med. Kravnummeret lenker til tilsynets egen side for kravet, så hver rad kan kontrolleres hos kilden. Kolonnen «Målbar maskinelt» sier om vår egen skanner har en regel for kravet – ikke om kravet er oppfylt.`}
       />
-    </div>
 
-    <div class="prose" style="margin-top: var(--space-7)">
-      <h2>Lista er ikke den samme som en skannerapport</h2>
+      <h2 id="skannerapport">Lista er ikke den samme som en skannerapport</h2>
       <p>
         Her er funnet som gjorde at vi skrev denne artikkelen. Vår egen skanner har en
         regel for <Tusjstrek>{d.dekket.length} av de {TOPP} kravene over</Tusjstrek>:{" "}
@@ -265,11 +245,11 @@ const schema = [
         <Tusjstrek tone="varsel">Legger du en video på nettsiden, har du påtatt deg teksting.</Tusjstrek>
       </p>
 
-      <h2>Hva gjelder for deg, hvis du er privat</h2>
+      <h2 id="privat">Hva gjelder for deg, hvis du er privat</h2>
       <p>
         Registeret måler 48 krav, fordi offentlig sektor siden 1. februar 2023 har fulgt
         WCAG 2.1 på nivå A og AA. Private virksomheter som retter seg mot allmennheten er
-        bundet av <strong class="body-strong">35 suksesskriterier i WCAG 2.0</strong>, og
+        bundet av <strong>35 suksesskriterier i WCAG 2.0</strong>, og
         har ingen erklæringsplikt. De to listene overlapper mye, men de er ikke de samme –
         kolonnen med A og AA i tabellen over viser hvilket nivå hvert krav ligger på.
       </p>
@@ -285,7 +265,7 @@ const schema = [
         orientering og innhold som kan forstørres, altså ting du vil ha uansett.
       </p>
 
-      <h2>Hvordan vi regnet</h2>
+      <h2 id="metode">Hvordan vi regnet</h2>
       <p>
         Hele settet er hentet, ikke et utvalg: {tall(registeret.erklaeringer)} erklæringer,
         som er nøyaktig det antallet API-et selv oppgir. Erklæringene er datert mellom{" "}
@@ -293,46 +273,52 @@ const schema = [
       </p>
       <ul>
         <li>
-          <strong class="body-strong">Nevneren.</strong> Andelen per krav er «bryter» delt
+          <strong>Nevneren.</strong> Andelen per krav er «bryter» delt
           på «bryter pluss oppfyller». «Ikke relevant» er ikke en vurdering og er holdt
           utenfor. Begge tallene står i tabellen, så du kan regne etter.
         </li>
         <li>
-          <strong class="body-strong">Egenkontroll.</strong> Kilden oppgir både en sum av
+          <strong>Egenkontroll.</strong> Kilden oppgir både en sum av
           brudd per erklæring og et resultat per krav. Vi sjekket at de stemmer med
           hverandre for hver enkelt erklæring. De stemmer for{" "}
           {tall(registeret.integritet.stemmer)} av {tall(registeret.integritet.kontrollert)}.
           Hadde det vært avvik, ville de stått her.
         </li>
         <li>
-          <strong class="body-strong">Øyeblikksbilde, ikke live.</strong> Tallene er frosset
+          <strong>Øyeblikksbilde, ikke live.</strong> Tallene er frosset
           på hentedatoen og ligger som en fil i kildekoden vår. Siden bygger uten å spørre
           noen, og tallet du leser er tallet vi faktisk så.
         </li>
         <li>
-          <strong class="body-strong">Våre egne tall til sammenligning</strong> kommer fra en
+          <strong>Våre egne tall til sammenligning</strong> kommer fra en
           skanning av {maalinger.utvalg.svarte} norske småbedriftssider{" "}
           {norskDato(maalinger.maalt)}. Det er en maskinmåling av et lite utvalg, ikke et
           register – og forbeholdene står i artikkelen om de 35 kravene.
         </li>
       </ul>
-      <p class="small faint">
+      <p class="wow-notat">
         Datasettet er publisert som åpne data av Tilsynet for universell utforming av ikt.
         Vi har ikke funnet en lisenstekst oppgitt for settet – tilsynets egen side kaller
         det åpne data og tilbyr et nedlastingsskript, og{" "}
         <code>/dataset/metadata</code>-endepunktet svarer med en feil. Det vi publiserer er
         vår egen aggregering, med kilde og dato, og funnet er ført i lisensloggen vår.
       </p>
-    </div>
 
-    <div class="row" style="margin-top: var(--space-6); gap: var(--space-4); flex-wrap: wrap">
-      <Button variant="primary" href={a.verktoy!.href}>{a.verktoy!.tekst}</Button>
-      <Button variant="ghost" href="/artikler/35-wcag-krav">De 35 kravene som gjelder private</Button>
-    </div>
-  </Section>
+      <Fragment slot="etter">
+        <Sporsmal liste={sporsmaal} id="sporsmal" tittel="Spørsmål og svar om tallene i registeret" storrelse="les" innfelt />
+        <Handlinger
+          handlinger={[
+            { tekst: a.verktoy!.tekst, href: a.verktoy!.href, type: "primar" },
+            { tekst: "De 35 kravene som gjelder private", href: "/artikler/35-wcag-krav", type: "strek" },
+          ]}
+        />
+      </Fragment>
+    </Artikkelkropp>
+  </article>
 
-  <ContactBlock
+  <Kontaktblokk
     tittel="Vil du vite hvilke av disse du har?"
     ingress="Sjekken kjører en ekte nettleser mot siden din og rapporterer det som kan måles – og sier tydelig fra om det den ikke har sjekket."
   />
-</Base>
+</MalWow>
+

@@ -1,61 +1,96 @@
 ---
-import Base from "../layouts/Base.astro";
-import Hukommelse from "../components/Hukommelse.astro";
-import Section from "../components/Section.astro";
+/**
+ * Personvernerklæringen i wow-drakten (wow-undersider.md del 1.9): lesemalen uten verktøy og
+ * uten kontaktblokk. Teksten er lovpålagt og står ordrett som i v1.
+ *
+ * ÅPENT PUNKT (wow-r8-B3), IKKE RETTET HER: avsnittet under «Cookies» som begynner «Ett unntak,
+ * som ikke er en cookie: velger du lyst eller mørkt tema …» stemmer ikke lenger. Temabryteren er
+ * fjernet, og ingenting lagres. Teksten skal rettes av tekstforfatter, sammen med radene i
+ * Hukommelse og datoen «Sist oppdatert».
+ */
+import MalWow from "../layouts/MalWow.astro";
+import { SideHode, Artikkelkropp } from "../components/wow/side";
+import Hukommelse from "../components/wow/les/Hukommelse.astro";
 import { firma, orgnrVist } from "../data/firma";
-const oppdatert = "5. oktober 2026";
----
-<Base
-  tittel="Personvernerklæring"
-  beskrivelse="Hva KodeKonsulentene lagrer, hvorfor, hvor lenge og hvilke rettigheter du har. Cookieløs analyse – ingen sporing før samtykke."
->
-  <Section nivaa={1} n={1} eyebrow="Personvern" tittel="Personvernerklæring" ingress={`Sist oppdatert ${oppdatert}. Kort fortalt: denne siden bruker ikke cookies, og vi lagrer bare det som trengs for å svare deg.`}>
-    <div class="card card--sunken" style="border-color: var(--warn); margin-bottom: var(--space-6)">
-      <p class="body-strong">Forbehold</p>
-      <p class="small muted">
-        Denne teksten er et utkast skrevet av utvikleren, ikke av advokat. Den må
-        kvalitetssikres juridisk før den brukes som bindende erklæring overfor kunder
-        og besøkende. Dette er ikke juridisk rådgivning.
-      </p>
-    </div>
+const oppdatert = "24. november 2026";
 
-    <div class="prose">
+// «ai» er et anker andre sider lenker til (AI-demoen på /apper-og-ai). Det skal ikke endres.
+const innhold = [
+  { id: "ansvarlig", tittel: "Behandlingsansvarlig" },
+  { id: "cookies", tittel: "Cookies" },
+  { id: "nettsidesjekken", tittel: "Hva lagres når du bruker nettsidesjekken" },
+  { id: "ai", tittel: "Hva skjer med teksten du limer inn i AI-demoen" },
+  { id: "kontaktskjemaet", tittel: "Hva lagres når du bruker kontaktskjemaet" },
+  { id: "grunnlag", tittel: "Behandlingsgrunnlag" },
+  { id: "hvor-lenge", tittel: "Hvor lenge" },
+  { id: "mottakere", tittel: "Hvem får opplysningene" },
+  { id: "rettigheter", tittel: "Dine rettigheter" },
+  { id: "endringer", tittel: "Endringer" },
+  { id: "lagret", tittel: "Se selv hva siden har lagret hos deg" },
+];
+---
+<MalWow
+  tittel="Personvernerklæring"
+  beskrivelse="Hva KodeKonsulentene lagrer, hvorfor, hvor lenge og hvilke rettigheter du har. Ingen cookies og ingen sporing."
+  bevegelse="rolig"
+  bookHref="/kontakt"
+>
+  <article>
+    {/* Mykt bindestrek (U+00AD) i H1: ordet er bredere enn spalten under 430 px. Delingen vises
+        bare der ordet må deles, og står riktig («Personvern-erklæring»). Uten den deler
+        sikkerhetsnettet i wow.css ordet midt i en stavelse. */}
+    <SideHode
+      tittel={"Personvern\u00ADerklæring"}
+      ingress={`Sist oppdatert ${oppdatert}. Kort fortalt: denne siden bruker ikke cookies, og vi lagrer bare det som trengs for å svare deg.`}
+      storrelse="tjeneste"
+      bredde="les"
+    />
+    <Artikkelkropp variant="juridisk" innhold={innhold}>
+      <div class="forbehold">
+        <p><strong>Forbehold</strong></p>
+        <p>
+          Denne teksten er et utkast skrevet av utvikleren, ikke av advokat. Den må
+          kvalitetssikres juridisk før den brukes som bindende erklæring overfor kunder
+          og besøkende. Dette er ikke juridisk rådgivning.
+        </p>
+      </div>
+
       {/* firma.telefon er tomt til vi har et ekte nummer. Uten vakten nedenfor ble det
           stående «telefon .» – en merkelapp uten verdi, på siden som skal si hvordan folk
           når oss. Kommentaren står utenfor avsnittet med vilje: Astro fjerner en kommentar
           sammen med mellomrommet rundt, og limte «Oslo.» og «E-post» sammen da den sto inni. */}
-      <h2>Behandlingsansvarlig</h2>
-      <p class="muted">
+      <h2 id="ansvarlig">Behandlingsansvarlig</h2>
+      <p>
         {firma.foretaksnavn}, org.nr. {orgnrVist}, {firma.adresse}.
-        E-post <a class="kk-link" href={`mailto:${firma.epost}`}>{firma.epost}</a>{firma.telefon ? `, telefon ${firma.telefon}` : ""}.
+        E-post <a href={`mailto:${firma.epost}`}>{firma.epost}</a>{firma.telefon ? `, telefon ${firma.telefon}` : ""}.
       </p>
 
-      <h2>Cookies</h2>
-      <p class="muted">
+      <h2 id="cookies">Cookies</h2>
+      <p>
         Siden setter ingen cookies, og det er derfor du ikke har sett et samtykkevindu.
-        Besøksstatistikken er cookieløs og teller sidevisninger uten å identifisere deg
-        eller følge deg mellom nettsteder. Fra 1. januar 2025 krever ekomloven § 3-15 at
+        Vi har ingen besøksstatistikk på siden i dag. Fra 1. januar 2025 krever ekomloven § 3-15 at
         cookie-samtykke oppfyller GDPR-kravene; den enkleste måten å overholde det på er
         å ikke sette cookies.
       </p>
-      <p class="muted">
-        Ett unntak, som ikke er en cookie: velger du lyst eller mørkt tema, lagres valget
-        i nettleserens eget lager (<code>localStorage</code>) på din maskin. Det sendes
-        aldri til serveren, og vi kan ikke lese det.
+      <p>
+        Siden lagrer heller ikke noe annet i nettleseren din. En tidligere utgave lagret
+        valget mellom lyst og mørkt tema i nettleserens eget lager
+        (<code>localStorage</code>). Har du det liggende fra et tidligere besøk, slettes
+        det neste gang du åpner en side her.
       </p>
 
-      <h2>Hva lagres når du bruker nettsidesjekken</h2>
-      <p class="muted">
-        Skriver du inn en nettadresse på <a class="kk-link" href="/sjekk">/sjekk</a>, henter
+      <h2 id="nettsidesjekken">Hva lagres når du bruker nettsidesjekken</h2>
+      <p>
+        Skriver du inn en nettadresse på <a href="/sjekk">/sjekk</a>, henter
         serveren den forsiden én gang og analyserer svaret. Adressen og rapporten lagres
         ikke – de finnes bare i svaret som sendes tilbake til nettleseren din.
       </p>
-      <p class="muted">
+      <p>
         Ber du om rapporten på e-post, sendes e-postadressen og rapporten til Resend, som
         er databehandler for utsending. Adressen brukes bare til å sende den ene e-posten,
         og den havner ikke på noen liste. Vi tar ikke kontakt i etterkant med mindre du ber om det.
-        </p>
-        {/* Her sto det at vi kunne ta kontakt «på grunnlag av berettiget interesse
+      </p>
+      {/* Her sto det at vi kunne ta kontakt «på grunnlag av berettiget interesse
             (B2B)», og at du kunne reservere deg i svaret. Det var AVMELDING der loven
             krever samtykke PÅ FORHÅND.
 
@@ -67,9 +102,7 @@ const oppdatert = "5. oktober 2026";
             Et enkeltpersonforetak ER en fysisk person, og ENK er hovedmålgruppen vår.
             Setningen lovet oss en rett vi ikke har, på siden som skal forklare hvilke
             rettigheter kunden har. */}
-        <p class="muted">
-      </p>
-      <p class="muted">
+      <p>
         Er PageSpeed-målingen aktiv, sendes adressen du skrev inn til Googles
         PageSpeed Insights-API for å måle ytelse. Ingen opplysninger om deg sendes med.
       </p>
@@ -79,42 +112,42 @@ const oppdatert = "5. oktober 2026";
           og GDPR art. 13 krever at det er opplyst FØR den brukes – ikke etterpå.
           Overskriften har id-en «ai» fordi feltet lenker rett hit. */}
       <h2 id="ai">Hva skjer med teksten du limer inn i AI-demoen</h2>
-      <p class="muted">
-        På <a class="kk-link" href="/apper-og-ai#ai-demo">/apper-og-ai</a> kan du lime
+      <p>
+        På <a href="/apper-og-ai#ai-demo">/apper-og-ai</a> kan du lime
         inn tekst fra din egen nettside og få den skrevet om. Teksten sendes fra
         serveren vår til Anthropic, som kjører språkmodellen Claude, og svaret
         sendes tilbake til nettleseren din. Verken teksten eller svaret lagres hos
         oss – de finnes bare i den ene forespørselen, og er borte når den er svart på.
       </p>
-      <p class="muted">
+      <p>
         Anthropic er databehandler for selve omskrivingen, og behandlingen skjer
         utenfor EØS. Vi oppgir ingen opplysninger om deg i kallet: ingen navn,
         ingen e-postadresse, ingen IP-adresse. Det eneste som sendes, er teksten du
         selv limte inn. Lim derfor ikke inn personopplysninger eller noe fortrolig –
         funksjonen er laget for den teksten som allerede står åpent på nettsiden din.
       </p>
-      <p class="muted">
+      <p>
         Funksjonen setter ingen cookies, og den krever ingen innlogging. For å hindre
         misbruk teller serveren antall kall per IP-adresse i minnet, uten å lagre
         adressen til disk og uten å koble den til noe annet. Telleren nullstilles
         når serveren starter på nytt.
       </p>
 
-      <h2>Hva lagres når du bruker kontaktskjemaet</h2>
-      <p class="muted">
+      <h2 id="kontaktskjemaet">Hva lagres når du bruker kontaktskjemaet</h2>
+      <p>
         Navn, e-postadresse, eventuell nettadresse og meldingen du skriver. Opplysningene
         brukes bare til å svare deg og eventuelt gi et tilbud.
       </p>
 
-      <h2>Behandlingsgrunnlag</h2>
-      <ul class="muted">
+      <h2 id="grunnlag">Behandlingsgrunnlag</h2>
+      <ul>
         <li><strong>Kontaktskjema og nettsidesjekk på e-post:</strong> berettiget interesse i å svare på henvendelser, og å inngå avtale på din forespørsel (GDPR art. 6 nr. 1 b og f).</li>
         <li><strong>Kundeforhold:</strong> oppfyllelse av avtale (art. 6 nr. 1 b).</li>
         <li><strong>Regnskapsbilag:</strong> rettslig forpliktelse etter bokføringsloven (art. 6 nr. 1 c).</li>
       </ul>
 
-      <h2>Hvor lenge</h2>
-      <ul class="muted">
+      <h2 id="hvor-lenge">Hvor lenge</h2>
+      <ul>
         <li>Henvendelser som ikke blir oppdrag: slettes etter seks måneder.</li>
         <li>Kundeopplysninger: så lenge kundeforholdet varer, og deretter tre år.</li>
         <li>Regnskapsbilag: fem år, som bokføringsloven krever.</li>
@@ -122,8 +155,8 @@ const oppdatert = "5. oktober 2026";
         <li>Tekst limt inn i AI-demoen: lagres ikke.</li>
       </ul>
 
-      <h2>Hvem får opplysningene</h2>
-      <p class="muted">
+      <h2 id="mottakere">Hvem får opplysningene</h2>
+      <p>
         Databehandlere vi bruker: Fly.io (drift av nettsiden, EU-region Amsterdam),
         Resend (utsending av e-post), Anthropic (språkmodellen bak AI-demoen, utenfor
         EØS) og regnskapsprogram for fakturering. Det er inngått databehandleravtale
@@ -131,24 +164,42 @@ const oppdatert = "5. oktober 2026";
         profilering eller annonsering.
       </p>
 
-      <h2>Dine rettigheter</h2>
-      <p class="muted">
+      <h2 id="rettigheter">Dine rettigheter</h2>
+      <p>
         Du kan be om innsyn i hva som er lagret om deg, få det rettet eller slettet, og
         protestere mot behandlingen. Send en e-post til{" "}
-        <a class="kk-link" href={`mailto:${firma.epost}`}>{firma.epost}</a>, så svarer vi
+        <a href={`mailto:${firma.epost}`}>{firma.epost}</a>, så svarer vi
         innen 30 dager. Mener du at noe er galt, kan du klage til Datatilsynet.
       </p>
 
-      <h2>Endringer</h2>
-      <p class="muted">
+      <h2 id="endringer">Endringer</h2>
+      <p>
         Endres erklæringen, oppdateres datoen øverst. Er endringen vesentlig for deg som
         kunde, får du beskjed på e-post.
       </p>
-    </div>
-  </Section>
-</Base>
-  {/* Vi paastaar ikke hva vi lagrer – siden MAALER det i leserens egen
-      nettleser. Udokumenterte noekler havner i en egen rad merket «ikke
-      dokumentert», saa det er en lekkasjetest som gaar hver gang noen
-      aapner sida, ikke et loefte i en tekst. */}
-  <Hukommelse />
+
+      {/* Vi påstår ikke hva vi lagrer: siden MÅLER det i leserens egen nettleser. Udokumenterte
+          nøkler havner i en egen rad merket «ikke dokumentert», så det er en lekkasjetest som
+          går hver gang noen åpner siden, ikke et løfte i en tekst. I v1 sto flaten etter
+          </Base>, altså utenfor <main>; nå står den sist i erklæringen. */}
+      <Fragment slot="etter">
+        <h2 id="lagret" class="wow-les-h2">Se selv hva siden har lagret hos deg</h2>
+        <Hukommelse />
+      </Fragment>
+    </Artikkelkropp>
+  </article>
+</MalWow>
+
+<style>
+  /* Ingen kontaktblokk under: luft ned til bunnfeltet. */
+  article {
+    padding-bottom: var(--wow-seksjon);
+  }
+  .forbehold {
+    display: grid;
+    gap: var(--wow-rom-2);
+    max-width: var(--wow-maal-brod);
+    padding-left: var(--wow-rom-5);
+    border-left: var(--wow-kant-2) solid var(--wow-linje-sterk);
+  }
+</style>

@@ -1,0 +1,188 @@
+---
+// Arbeid, runde wow-r6. Én idé: «dette er ekte arbeid, ikke en liste».
+//
+// 1. Hovedcasen er priskalkulatoren (dirigentens avgjørelse etter runde 3): i drift, kan
+//    prøves. Nettleservinduet er bredere enn høyt (12:5 desktop, 3:2 mobil), og skjermbildet er
+//    høyere enn vinduet. Mens du ruller, ruller siden inni vinduet (data-parallax="-0.2" på
+//    laget rundt bildet): toppen vises når vinduet kommer inn, bunnen når det går ut. Det er
+//    bevegelse som forklarer noe: dette er en side, ikke en illustrasjon. Vinduet avdekkes med
+//    data-reveal="clip". Bildet er beskåret nedenfra (object-position bunn), så den kuttede
+//    setningen øverst i skjermbildet aldri vises (kritiker r4 #12).
+// 2. «Se flere»-raden: tre ting vi har laget, hver med et ekte skjermbilde fra
+//    public/media/wow/ekte/: bookingflyten på bransjesiden for klinikker (merket «Ikke et levert
+//    oppdrag»), driftsstatus og sjekken på telefon. Vinduene er ulike (to nettlesere, én telefon
+//    som stikker opp nedenfra), så raden ikke blir tre like kort. På mobil er raden en vannrett
+//    rad du kan dra i (scroll-snap, bare CSS); på desktop tre spalter.
+//    Sjekken vises på telefon og beskåret til toppen (ytelse, «Ikke sjekket»), så målingene som
+//    står i rapporten over, ikke står en gang til.
+//    Småbildene har tom alt-tekst: de er forhåndsvisninger inni lenken, og tittelen ved siden
+//    av sier hva lenken er.
+// Runde wow-r7 «Lampa» (historie-manus.md del 5, Arbeid): seksjonen åpner med bildet. Desktop:
+// vinduet til venstre i ni spalter, H2 (3rem, setningsform) og fortellerens linje øverst til
+// høyre, tittelen på casen nederst til høyre. Mobil: vinduet først, så H2, så casen. Ingressen
+// («Problem, løsning, resultat …») er tatt ut; fortellerens linje sier det samme med lampa.
+// Lampa: Driftsstatus-kortet har en levende lampe. Nettleseren spør /status (samme side som Fly
+// bruker som helsesjekk) når kortet kommer inn, og lampa tennes med svartiden som faktisk ble
+// målt: «svarte på {N} ms». Tallet står aldri i koden. Feiler kallet, står lampa hul med «ikke
+// målt nå» (også uten JS). Teksten sier bare at serveren svarte, ikke mer (manus C, risiko).
+// Driftsstatus står først i raden, så den levende lampa er synlig også på mobil (der raden er
+// sidelengs). Bookingsystemet har hul lampe og «Konsept, ikke oppdrag». De andre har ingen lampe: de er
+// ikke målt her, og en lampe på alt ville tømt den for mening.
+//
+// Tekster: forside.md del 4, og ingressene på sidene lenkene peker til (som før).
+// App-casene i caser.ts inneholder TODO og rendres ikke før eier har levert navn og tall.
+import { caser } from "../../../data/caser";
+import { fortelling } from "./fortelling";
+
+const demo = caser.find((c) => c.slug === "booking-demo");
+const harTodo = (c: (typeof caser)[number]) => JSON.stringify(c).includes("TODO");
+
+const hoved = {
+  tittel: "Priskalkulator",
+  href: "/verktoy/priskalkulator",
+  merke: "Verktøy",
+  adresse: "kodekonsulentene.no/verktoy/priskalkulator",
+  bilde: "kalkulator-d",
+  alt: "Skjermbilde av priskalkulatoren med fire spørsmål og et prisspenn.",
+  tekst:
+    "Fire spørsmål gir et prisspenn. Du ser hver linje estimatet består av, hvilke timeanslag som ligger bak, og hva andre tar for det samme.",
+};
+
+type Flere = {
+  merke: string;
+  /** «hul»: konsept, ikke målt. «levende»: måler /status i nettleseren (drift.ts). */
+  lampe?: "hul" | "levende";
+  tittel: string;
+  href: string;
+  tekst: string;
+  bilde: string;
+  type: "nettleser" | "telefon";
+};
+
+const flere = [
+  {
+    merke: "Drift",
+    lampe: "levende",
+    tittel: "Driftsstatus",
+    href: "/status",
+    tekst: "Denne siden er også helsesjekken serveren svarer på. Får du opp denne teksten, står nettsiden.",
+    bilde: "status-d",
+    type: "nettleser",
+  },
+  demo && !harTodo(demo)
+    ? {
+        merke: fortelling.konsept,
+        lampe: "hul",
+        tittel: demo.tittel,
+        href: demo.href ?? "/caser",
+        tekst: demo.losning,
+        bilde: "klinikker-flyt",
+        type: "nettleser",
+      }
+    : null,
+  {
+    merke: "Verktøy",
+    tittel: "Sjekk nettsiden din",
+    href: "/sjekk",
+    tekst:
+      "Gratis sjekk av ytelse, sikkerhetsheadere, cookies før samtykke, universell utforming og lovpålagt informasjon.",
+    bilde: "sjekk-m",
+    type: "telefon",
+  },
+].filter((k): k is Flere => k !== null);
+
+const sti = (navn: string) => `/media/wow/ekte/${navn}`;
+const srcset = (navn: string, type: "nettleser" | "telefon", fmt: string) =>
+  type === "nettleser"
+    ? `${sti(navn)}-960.${fmt} 960w, ${sti(navn)}.${fmt} 1920w`
+    : `${sti(navn)}-585.${fmt} 585w, ${sti(navn)}.${fmt} 1170w`;
+---
+
+<section class="wow-arbeid" aria-labelledby="arbeid-tittel">
+  <div class="wow-rute wow-arbeid__scene">
+    <div class="wow-arbeid__vindu wow-ramme wow-ramme--nettleser">
+      <div class="wow-ramme__linje" aria-hidden="true">
+        <span class="wow-ramme__prikker"><i></i><i></i><i></i></span>
+        <span class="wow-ramme__adresse">{hoved.adresse}</span>
+      </div>
+      <div class="wow-ramme__skjerm wow-hovedcase__skjerm" data-reveal="clip">
+        <div class="wow-hovedcase__rull" data-parallax="-0.2">
+          <picture>
+            <source type="image/avif" srcset={srcset(hoved.bilde, "nettleser", "avif")} sizes="(min-width: 1024px) 64vw, 94vw" />
+            <source type="image/webp" srcset={srcset(hoved.bilde, "nettleser", "webp")} sizes="(min-width: 1024px) 64vw, 94vw" />
+            <img src={`${sti(hoved.bilde)}-960.webp`} alt={hoved.alt} width="1920" height="1200" loading="lazy" decoding="async" />
+          </picture>
+        </div>
+      </div>
+    </div>
+
+    <div class="wow-arbeid__hode">
+      <h2 id="arbeid-tittel" class="wow-setning wow-setning--liten" data-split="lines">Hva vi har bygget</h2>
+      <p class="wow-forteller">{fortelling.arbeid.linje}</p>
+    </div>
+
+    <article class="wow-arbeid__hoved" aria-labelledby="case-hoved">
+      <p class="wow-merke">{hoved.merke}</p>
+      <h3 id="case-hoved" class="wow-arbeid__hoved-tittel">
+        <a href={hoved.href}><span data-hover="strek">{hoved.tittel}</span></a>
+      </h3>
+      <p class="wow-arbeid__hoved-linje">{hoved.tekst}</p>
+    </article>
+  </div>
+
+  <ul class="wow-flere" role="list">
+    {flere.map((k) => (
+      <li
+        class:list={["wow-flere__kort", `wow-flere__kort--${k.type}`, k.lampe === "levende" && "wow-flere__kort--drift"]}
+        data-seksjon={k.lampe === "levende" ? "drift" : undefined}
+      >
+        <div class="wow-flere__vindu" data-hover="zoom">
+          {k.type === "nettleser" ? (
+            <picture>
+              <source type="image/avif" srcset={srcset(k.bilde, k.type, "avif")} sizes="(min-width: 1024px) 31vw, 80vw" />
+              <source type="image/webp" srcset={srcset(k.bilde, k.type, "webp")} sizes="(min-width: 1024px) 31vw, 80vw" />
+              <img src={`${sti(k.bilde)}-960.webp`} alt="" width="1920" height="1200" loading="lazy" decoding="async" />
+            </picture>
+          ) : (
+            <span class="wow-flere__telefon">
+              <picture>
+                <source type="image/avif" srcset={srcset(k.bilde, k.type, "avif")} sizes="(min-width: 1024px) 18vw, 48vw" />
+                <source type="image/webp" srcset={srcset(k.bilde, k.type, "webp")} sizes="(min-width: 1024px) 18vw, 48vw" />
+                <img src={`${sti(k.bilde)}-585.webp`} alt="" width="1170" height="2532" loading="lazy" decoding="async" />
+              </picture>
+            </span>
+          )}
+        </div>
+        {k.lampe === "levende" ? (
+          <p class="wow-drift" data-drift data-drift-maalt={fortelling.drift.maalt} data-drift-ikke-maalt={fortelling.drift.ikkeMaalt}>
+            <span class="wow-lampe wow-lampe--hul wow-drift__lampe" data-drift-lampe aria-hidden="true"></span>
+            <span class="wow-drift__tekst" data-drift-tekst>{fortelling.drift.ikkeMaalt}</span>
+          </p>
+        ) : k.lampe === "hul" ? (
+          <p class="wow-flere__konsept">
+            <span class="wow-lampe wow-lampe--hul" aria-hidden="true"></span>
+            {k.merke}
+          </p>
+        ) : (
+          <p class="wow-merke">{k.merke}</p>
+        )}
+        <h3 class="wow-flere__tittel">
+          <a href={k.href}>{k.tittel}</a>
+        </h3>
+        <p class="wow-flere__linje">{k.tekst}</p>
+      </li>
+    ))}
+  </ul>
+
+  <div class="wow-rute wow-arbeid__fot">
+    <p class="wow-arbeid__pilot">
+      Vi tar inn to til tre pilotprosjekter til redusert pris mot at vi får bruke tallene som case.
+      Si fra hvis det er aktuelt.
+    </p>
+    <a class="wow-lenke wow-arbeid__alle" href="/caser">Se alle caser</a>
+  </div>
+</section>
+
+<script>
+  import "../../../scripts/wow/seksjoner/last";
+</script>

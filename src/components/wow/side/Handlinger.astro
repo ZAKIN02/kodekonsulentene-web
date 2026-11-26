@@ -1,0 +1,53 @@
+---
+/**
+ * Inntil to handlinger i en toppdel, bare én primær (wow-undersider.md del 1.0). Brukes av
+ * SideHode og Verktoyramme. Overskytende handlinger rendres ikke.
+ */
+import type { Handling } from "./tittel";
+
+interface Props {
+  handlinger: Handling[];
+}
+const liste = Astro.props.handlinger.slice(0, 2);
+---
+
+{liste.length > 0 && (
+  <div class="wow-handlinger">
+    {liste.map((h) =>
+      h.type === "lenke" ? (
+        <a class="wow-lenke wow-handlinger__lenke" href={h.href}>{h.tekst}</a>
+      ) : (
+        <a class:list={["wow-knapp", h.type === "strek" && "wow-knapp--strek"]} href={h.href} data-magnetic>
+          <span class="wow-knapp__tekst" data-magnetic-tekst>{h.tekst}</span>
+        </a>
+      ),
+    )}
+  </div>
+)}
+
+<style>
+  .wow-handlinger {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--wow-rom-4) var(--wow-rom-6);
+  }
+  .wow-handlinger__lenke {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--wow-trykkflate);
+    background-position: 0 calc(100% - 0.6rem), 0 calc(100% - 0.6rem);
+  }
+  @media (max-width: 599px) {
+    .wow-handlinger {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .wow-handlinger .wow-knapp {
+      width: 100%;
+    }
+    .wow-handlinger__lenke {
+      align-self: flex-start;
+    }
+  }
+</style>

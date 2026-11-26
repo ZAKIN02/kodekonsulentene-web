@@ -1,185 +1,80 @@
 ---
-import Base from "../../layouts/Base.astro";
-import Scene from "../../components/Scene.astro";
-import Mega from "../../components/Mega.astro";
-import Avslor from "../../components/Avslor.astro";
-import Demo from "../../components/Demo.astro";
-import ServiceCard from "../../components/ServiceCard.astro";
-import ContactBlock from "../../components/ContactBlock.astro";
-
-import "../../styles/scener.css";
-
 /**
- * Samleside for gratisverktøyene. Verktøyene er sidens viktigste salgsargument:
- * de viser at vi kan jobben i stedet for å påstå det.
+ * Samleside for gratisverktøyene i wow-drakten (wow-undersider.md del 1.8, runde wow-r8-B2).
+ * Verktøyene er sidens viktigste salgsargument: de viser at vi kan jobben i stedet for å påstå
+ * det. Rekkefølge: SideHode → verktøyene som rader → «Sjekken som kjører» (ekte opptak) →
+ * kontaktblokk. «rolig».
  *
- * cookie-sjekk og uu-sjekk bygges parallelt og er lenket herfra før de står ferdig.
- * Står de ikke oppe ennå, er `klar: false` – da lenker kortet ingen steder.
+ * Ute, med vilje:
+ *  - ServiceCard-kortene og de tre punktene per kort (planen: rader med navn, hva det måler og
+ *    lenke; fem like kort er del 12 «samme kortoppsett tre eller flere ganger»).
+ *  - «Kortene uten lenke er under arbeid»: alle fem verktøyene har lenke.
+ *  - «Motoren er åpen kildekode» (kommandolinje og GitHub Action). Påstanden er ikke bekreftet
+ *    av eier (wow-undersider.md åpent punkt 3), og det som ikke er dokumentert, rendres ikke.
  */
+import MalWow from "../../layouts/MalWow.astro";
+import { SideHode, Seksjon, Tekstrader, Opptak, Kontaktblokk } from "../../components/wow/side";
+
 const verktoy = [
   {
-    n: 1,
     tittel: "Sjekk nettsiden din",
     href: "/sjekk",
-    beskrivelse: "Ytelse, sikkerhetsheadere, cookies før samtykke, WCAG-feil og org.nr. i én sjekk.",
-    punkter: ["Org.nr. verifiseres mot Enhetsregisteret", "Rapport på 30 sekunder", "Kan sendes på e-post"],
-    klar: true,
+    tekst: "Ytelse, sikkerhetsheadere, cookies før samtykke, WCAG-feil og org.nr. i én sjekk.",
   },
   {
-    n: 2,
     tittel: "Hva koster det?",
     href: "/verktoy/priskalkulator",
-    beskrivelse: "Fire spørsmål gir et prisspenn, med alle timeanslag og forutsetninger synlige.",
-    punkter: ["Våre faste priser", "Markedstall med kilde og dato", "Ingen skjulte påslag"],
-    klar: true,
+    tekst: "Fire spørsmål gir et prisspenn, med alle timeanslag og forutsetninger synlige.",
   },
   {
-    n: 3,
-    tittel: "Kan noen sende e-post i ditt navn?",
+    // Hard bindestrek (U+2011), så tittelen ikke deles «E-» / «POST» i versaler.
+    tittel: "Kan noen sende e‑post i ditt navn?",
     href: "/verktoy/dmarc",
-    beskrivelse: "SPF, DKIM og DMARC lest rett fra DNS, forklart uten driftssjargong.",
-    punkter: ["Ser om domenet kan misbrukes", "Forklarer hvorfor e-post havner i søppelposten", "Ingen e-post sendes"],
-    klar: true,
+    tekst: "SPF, DKIM og DMARC lest rett fra DNS, forklart uten driftssjargong.",
   },
   {
-    n: 4,
     tittel: "Cookie-sjekk",
     href: "/verktoy/cookie-sjekk",
-    beskrivelse: "Laster siden uten å klikke på noe, og lister alt som settes før samtykke.",
-    punkter: ["Ekomloven § 3-15", "Kjører ekte nettleser", "Ser det HTML-sjekken ikke ser"],
-    klar: true,
+    tekst: "Laster siden uten å klikke på noe, og lister alt som settes før samtykke.",
   },
   {
-    n: 5,
     tittel: "Universell utforming",
     href: "/verktoy/uu-sjekk",
-    beskrivelse: "De maskinelt testbare av de 35 kravene private virksomheter må oppfylle.",
-    punkter: ["WCAG 2.0 nivå A og AA", "Sier hva som ikke kan testes maskinelt", "Rapport du kan sende videre"],
-    klar: true,
+    tekst: "De maskinelt testbare av de 35 kravene private virksomheter må oppfylle.",
   },
 ];
 ---
-<Base
+
+<MalWow
   tittel="Gratisverktøy for nettsiden din"
   beskrivelse="Gratis verktøy for norske bedrifter: nettsidesjekk, priskalkulator, e-postsikkerhet, cookie-sjekk og universell utforming. Ingen innlogging."
+  bevegelse="rolig"
 >
-  <Scene lav>
-    {/* Merket het «Verktøy» og overskriften begynte på «Verktøy», så siden leste
-          «Verktøy Verktøy du kan bruke gratis». Merket sier nå hva det koster, og
-          overskriften hva du gjør. */}
-      <Mega som="h1" merke="Gratis" n={1} tekst="Verktøy du kan kjøre selv" />
-    <Avslor trinn={1}>
-      <p class="scene__ingress body-lg">Vi selger sikkerhet og etterlevelse. Da er det rimelig at du får se at vi kan det, før du betaler for noe. Ingen innlogging, ingen e-post før du selv ber om rapporten.</p>
-    </Avslor>
+  <SideHode
+    tittel="Verktøy du kan kjøre selv"
+    ingress="Vi selger sikkerhet og etterlevelse. Da er det rimelig at du får se at vi kan det, før du betaler for noe. Ingen innlogging, ingen e-post før du selv ber om rapporten."
+    storrelse="tjeneste"
+  />
 
-    {/*
-      Kortene fra ServiceCard er h3. Uten noe imellom hopper rekkefølgen rett fra
-      sidens h1 til h3, og axe melder «heading-order» – /verktoy lå på 98 i
-      tilgjengelighet bare på grunn av dette. Overskriften er skjult visuelt fordi
-      Mega-tittelen over allerede sier det samme med store bokstaver, men den gir
-      kortlisten et navn for den som navigerer på overskrifter.
+  {/* Radene er h2: de er sidens innhold rett under H1, og da hopper ikke overskriftsnivået. */}
+  <div class="wow-rute verktoy-liste">
+    <Tekstrader rader={verktoy} niva={2} stil="display" />
+  </div>
 
-      Den strukturelt riktige løsningen er en `nivaa`-prop på ServiceCard, slik
-      Section og PriceCard har. Komponenten eies av en annen agent akkurat nå.
-    */}
-    <h2 class="visually-hidden">Verktøyene du kan kjøre nå</h2>
-
-    {/* `verktoy-rad` finnes bare for aa kunne naa .avslor-wrapperne under uten aa
-        skrive en regel som gjelder hvert .grid-3 paa nettstedet. Se <style>. */}
-    <div class="grid-3 verktoy-rad">
-      {verktoy.map((v, k) => (
-        <Avslor trinn={k % 3}>
-        <ServiceCard
-          n={v.n}
-          title={v.tittel}
-          href={v.klar ? v.href : undefined}
-          description={v.beskrivelse}
-          items={v.punkter}
-          linkLabel="Kjør den"
-        />
-        </Avslor>
-      ))}
+  <Seksjon id="opptak" tittel="Sjekken som kjører" storrelse="tjeneste">
+    {/* Ekte opptak av e-postsjekken mot nkom.no. Navnet står i bildeteksten fordi domenet skrives
+        inn på skjermen i selve opptaket. Oppslagene er offentlige DNS-poster hos et
+        forvaltningsorgan; regelen om ikke å navngi gjelder sidene i masseskanningen. */}
+    <div class="wow-vt-opptak">
+      <Opptak navn="dmarc" adresse="kodekonsulentene.no/verktoy/dmarc" />
     </div>
-    <p class="small faint" style="margin-top: var(--space-5)">
-      Kortene uten lenke er under arbeid. De dukker opp her når de faktisk virker –
-      ikke før.
-    </p>
-  </Scene>
+  </Seksjon>
 
-  <Scene n={2} eyebrow="Slik ser det ut" tittel="Sjekken som kjører">
-    <Avslor>
-      <Demo
-        spill
-        smal="/historie/verktoy-1280.mp4"
-        bred="/historie/verktoy-1920.mp4"
-        plakat="/historie/verktoy-poster.avif"
-        {/* Navnet står fortsatt her, og det er et bevisst valg: domenet skrives
-            inn på skjermen i selve opptaket, så en bildetekst uten navn ville
-            skjult noe leseren ser uansett – det er det motsatte av poenget vårt.
-            Men bildeteksten sier nå hva slags oppslag det er, og at regelen om å
-            ikke navngi gjelder sidene i masseskanningen, ikke en enkeltsjekk mot
-            offentlige DNS-poster hos et forvaltningsorgan. Ingen score oppgis. */}
-        tekst="Opptak av e-postsjekken mot nkom.no. Oppslagene er offentlige DNS-poster hos et forvaltningsorgan, og funnene er det DNS faktisk svarte. Regelen vår om ikke å navngi gjelder sidene i masseskanningen."
-        kilde="6. oktober 2026"
-      />
-    </Avslor>
-  </Scene>
+  <Kontaktblokk />
+</MalWow>
 
-  <Scene n={3} eyebrow="Åpent" tittel="Motoren er åpen kildekode" ingress="Sjekkene kjører også som kommandolinjeverktøy og som GitHub Action, slik at du kan ha dem i ditt eget bygg i stedet for å besøke denne siden.">
-    <div class="grid-2">
-      <div class="card">
-        <h3 class="subheading">Kommandolinje</h3>
-        <p class="muted">Kjør den samme sjekken fra terminalen, uten å installere noe.</p>
-        <pre tabindex="0" class="kk-term" style="padding: var(--space-4); overflow-x: auto"><code class="mono">npx kodekonsulentene sjekk dinbedrift.no</code></pre>
-      </div>
-      <div class="card">
-        <h3 class="subheading">GitHub Action</h3>
-        <p class="muted">La bygget feile hvis en side bryter lovkravene, før den går i produksjon.</p>
-        <pre tabindex="0" class="kk-term" style="padding: var(--space-4); overflow-x: auto"><code class="mono">- uses: kodekonsulentene/norsk-lovsjekk@v1
-  with:
-    url: https://dinbedrift.no</code></pre>
-      </div>
-    </div>
-  </Scene>
-
-  <ContactBlock n={3} />
-</Base>
-<style is:global>
-  /* Toppene sto i linje, bunnene gjorde det ikke. .avslor er en vanlig blokk, saa
-     tjenestekortet inni fikk SIN EGEN hoeyde i stedet for radens: maalt 288/288/310
-     i rad en og 262/288 i rad to – 22 og 26 px sprik i underkant.
-
-     display:grid gjoer kortet til et rutenettsbarn, og et rutenettsbarn strekkes
-     til cellen. .kk-svc har allerede `grid-template-rows: auto 1fr auto`, saa
-     «Kjoer den»-lenken havner i bunnen slik komponenten var tegnet.
-
-     is:global er IKKE valgfritt: .avslor kommer fra Avslor.astro og baerer DEN
-     komponentens scope-id, mens .verktoy-rad baerer sidens. En vanlig <style>
-     ville krevd sidens id paa begge og matchet ingenting – stille. */
-  .verktoy-rad > .avslor { display: grid; }
-</style>
-<style is:global>
-  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
-     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
-     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
-     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
-  .scene:first-of-type .mega .ord,
-  .scene:first-of-type .mega-blokk,
-  /* Bare FØRSTE avdekking i første scene, ikke hele scenen.
-     Regelen fantes for at innhold over folden ikke skal ligge usynlig og vente på
-     en scroll som aldri kommer. Men `.scene:first-of-type .avslor` traff ALLE
-     avdekkinger i scenen – og /caser og /handbok er én eneste scene, så den slo av
-     all bevegelse på hele siden. Målt: 0 bevegelsesøyeblikk, 5,5 skjermhøyder uten
-     at ett element endrer seg. */
-  /* Treffer på HVA elementet er, ikke hvor det tilfeldigvis står.
-     `> .avslor` traff ingenting fordi .avslor ligger i .scene__inner, og
-     `:first-of-type` gjelder tagg og ikke klasse. Begge varianter var stille døde:
-     skjemaet på /verktoy/cookie-sjekk sto på 0,56 opasitet ved innlasting –
-     sidens primære handling, halvgjennomsiktig til du scrollet. */
-  .scene:first-of-type .avslor:has(.scene__ingress),
-  .scene:first-of-type .avslor:has(form) {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
+<style>
+  .verktoy-liste {
+    padding-top: var(--wow-seksjon-tett);
   }
 </style>

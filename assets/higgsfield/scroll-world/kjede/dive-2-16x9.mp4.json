@@ -1,0 +1,10 @@
+{
+ "status": "completed",
+ "request_id": "01a1ee7a-fcd3-7719-9123-6222765364eb",
+ "status_url": "https://api.higgsfield.ai/requests/01a1ee7a-fcd3-7719-9123-6222765364eb/status",
+ "cancel_url": "https://api.higgsfield.ai/requests/01a1ee7a-fcd3-7719-9123-6222765364eb/cancel",
+ "expires_at": "2026-11-25T12:00:50.107296+00:00",
+ "video": {
+  "url": "https://d3u0tzju9qaucj.cloudfront.net/cc1083fc-6d60-417e-b73b-c64ca48db4c7/01a1ee7a-fcd3-7719-9123-6222765364eb/065d7957-ec4d-4eee-ab3e-6741108e2bc4.mp4"
+ }
+}

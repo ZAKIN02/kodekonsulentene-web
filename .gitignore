@@ -21,3 +21,14 @@ test-results/
 # Hele mappa er bevisst utenfor, ikke bare enkelte filtyper paa toppnivaa.
 .skudd/
 .design/
+
+# Råfiler fra Higgsfield (kandidatbilder, utkast, råklipp): ca. 1,8 GB, bare lokalt.
+# Prompter, logg og lisenslogg er tekst og spores fortsatt. Nettfilene ligger i public/.
+assets/higgsfield/**/*.png
+assets/higgsfield/**/*.jpg
+assets/higgsfield/**/*.jpeg
+assets/higgsfield/**/*.webp
+assets/higgsfield/**/*.avif
+assets/higgsfield/**/*.mp4
+assets/higgsfield/**/*.mov
+assets/higgsfield/**/*.webm

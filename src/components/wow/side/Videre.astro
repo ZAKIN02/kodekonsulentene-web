@@ -1,0 +1,28 @@
+---
+/**
+ * «Les videre»: 2–5 interne lenker (pilar, verktøy, tjenesteside) på artikler, håndbok, verktøy
+ * og status (wow-undersider.md del 1.7). Typografiske rader med tittel og én linje, hele raden er
+ * lenken. Færre enn to lenker: rendres ikke. Flere enn fem: de fem første.
+ *
+ *   <Videre lenker={[{ tittel: "Sjekk nettsiden din", tekst: "…", href: "/sjekk" }, …]} />
+ */
+import Seksjon from "./Seksjon.astro";
+import Tekstrader from "./Tekstrader.astro";
+
+interface Props {
+  tittel?: string;
+  lenker: { tittel: string; tekst: string; href: string }[];
+  /** Lesestørrelse (standard) eller tjenestestørrelse på overskriften. */
+  storrelse?: "les" | "tjeneste";
+  bredde?: "full" | "les";
+  id?: string;
+}
+const { tittel = "Les videre", lenker, storrelse = "les", bredde = "les", id = "videre" } = Astro.props;
+const liste = lenker.slice(0, 5);
+---
+
+{liste.length >= 2 && (
+  <Seksjon id={id} tittel={tittel} storrelse={storrelse} bredde={bredde} tett>
+    <Tekstrader rader={liste} />
+  </Seksjon>
+)}

@@ -1,0 +1,72 @@
+---
+// Runde wow-r7 «Lampa» (historie-manus.md del 5, Footer): sidens siste lampe står fylt ved
+// «Denne siden bruker ikke cookies.», med datoen målingen ble gjort (maltDato i historie.ts, samme
+// kilde som rapporten). Lampa er fylt fordi cookies før samtykke er målt til 0 den dagen.
+// Ordmerket er det andre av to steder på siden med gigantiske versaler (det første er garantien).
+//
+// Gjenbrukbar (runde wow-r6): MalWow setter den inn på alle sider, så undersidene får den uten
+// å gjøre noe. Innholdet tar ingen egenskaper med vilje: alt er lovpålagt eller felles
+// (firma.ts, navigasjon.ts) og skal være likt overalt. Bølge A1: `rull` (standard true) styrer
+// bare om ordmerket følger rullingen. MalWow gir rull={false} på «rolig»-sider, der ordmerket står
+// stille og helt (wow-undersider.md del 1.0).
+//
+// Footer (wow-briefen, blokk 10): ordmerket «KODEKONSULENTENE» fra kant til
+// kant helt nederst, kuttet litt mot grunnlinjen (kritikerfunn 21), og
+// bokstavene følger rullingen begge veier (data-split="chars" med
+// data-split-scrub, bevegelse). Bunnmenyen er hovedmenyen pluss footerlenkene
+// fra navigasjon.ts, uten dubletter: forsiden har ikke lenger egne
+// tjenesterader, så /nettsider, /systemer og /apper-og-ai må stå her for at
+// forsiden skal lenke til dem. Det lovpålagte
+// innholdet er uendret fra den forrige footeren: alle fakta fra
+// src/data/firma.ts, lenkelista fra navigasjon.ts. Det registrerte
+// foretaksnavnet står bare her (foretaksnavnloven § 2-2).
+import { firma, orgnrVist } from "../../../data/firma";
+import { hovedmeny, footerLenker } from "../../../data/navigasjon";
+import { maltDato, maltDatoIso } from "../../../data/historie";
+
+interface Props {
+  /** Ordmerket følger rullingen (data-split-scrub). Bare på «film». */
+  rull?: boolean;
+}
+const { rull = true } = Astro.props;
+
+const lenker = [...hovedmeny, ...footerLenker].filter(
+  (l, i, alle) => alle.findIndex((x) => x.href === l.href) === i,
+);
+
+// `as string`: firma er `as const`, og et tomt nummer gir ellers typen never.
+const telefon = firma.telefon as string;
+---
+
+<footer class="wow-bunn">
+  <div class="wow-rute wow-bunn__topp">
+    <p class="wow-bunn__tagline">{firma.tagline}</p>
+    <nav class="wow-bunn__nav" aria-label="Bunnmeny">
+      <ul class="wow-bunn__lenker" role="list">
+        {lenker.map((l) => (
+          <li><a href={l.href}>{l.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+
+  <div class="wow-rute wow-bunn__lov">
+    <ul class="wow-bunn__fakta" role="list">
+      <li>{firma.foretaksnavn}</li>
+      <li>Org.nr. {orgnrVist}</li>
+      <li>{firma.adresse}</li>
+      <li><a href={`mailto:${firma.epost}`}>{firma.epost}</a></li>
+      {telefon && <li><a href={`tel:${telefon.replace(/\s/g, "")}`}>{telefon}</a></li>}
+    </ul>
+    <p class="wow-bunn__cookies">
+      <span class="wow-lampe wow-lampe--bestatt wow-bunn__lampe" aria-hidden="true"></span>
+      <span>{firma.cookieNote} <time class="wow-bunn__maalt" datetime={maltDatoIso}>{maltDato}</time></span>
+    </p>
+  </div>
+
+  {rull ? (
+    <p class="wow-bunn__ordmerke" data-split="chars" data-split-scrub>{firma.navn}</p>
+  ) : (
+    <p class="wow-bunn__ordmerke">{firma.navn}</p>
+  )}
+</footer>

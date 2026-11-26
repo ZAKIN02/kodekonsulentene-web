@@ -1,0 +1,204 @@
+---
+/**
+ * Komponentkatalogen for undersidene (bølge A1, docs/design/wow-undersider.md del 3). Viser alle
+ * felleskomponentene i src/components/wow/side/ og de gjenbrukbare seksjonene, i de viktigste
+ * tilstandene. `noindex`, lenkes ikke fra noe, og /lab/ er stengt i robots.txt.
+ *
+ * Siden er «rolig», som lesesidene og verktøyene. Overskriftene over hver komponent er
+ * komponentnavnene. Alt innhold er hentet fra src/data/ (historie, flyter, faq, opptak, priser,
+ * kilder, navigasjon), aldri skrevet her.
+ */
+import MalWow from "../../layouts/MalWow.astro";
+import {
+  SideHode,
+  Seksjon,
+  Brodsmuler,
+  Lampe,
+  Maaling,
+  Rapportark,
+  UrlFelt,
+  Verktoyramme,
+  Artikkelkropp,
+  Kravrader,
+  Tekstrader,
+  Steg,
+  Opptak,
+  Videre,
+  Flyt,
+  Prosess,
+  Prisliste,
+  Sporsmal,
+  Kontaktblokk,
+  Refleksfelt,
+  Ramme,
+  statusOrd,
+  type LampeStatus,
+} from "../../components/wow/side";
+import { historie, malinger, maltDato, maltDatoIso, maltAdresse } from "../../data/historie";
+import { flyter } from "../../data/flyter";
+import { faq } from "../../data/faq";
+import { kilder } from "../../data/kilder";
+import { hovedmeny } from "../../data/navigasjon";
+
+const kapitler = historie.filter((k) => k.href && k.tittel && k.losning);
+const statuser = Object.keys(statusOrd) as LampeStatus[];
+const forste = malinger[0];
+---
+
+<MalWow tittel="Komponenter for undersidene" beskrivelse="Komponentkatalog, ikke for indeksering." noindex bevegelse="rolig" bookHref="#kontakt-lab">
+  <SideHode
+    tittel="SideHode"
+    storrelse="stor"
+    brodsmuler
+    ingress={historie[1].losning}
+    handlinger={[
+      { tekst: "Book 20 minutter", href: "#kontakt-lab", type: "primar" },
+      { tekst: "Sjekk nettsiden din", href: "/sjekk", type: "lenke" },
+    ]}
+  >
+    <Rapportark slot="side" niva={2} adresse={maltAdresse} dato={maltDato} datoIso={maltDatoIso}>
+      {malinger.map((m) => (
+        <Maaling navn={m.etikett} verdi={m.verdi} status="bestatt" forbehold={m.forbehold} />
+      ))}
+    </Rapportark>
+  </SideHode>
+
+  <Seksjon tittel="Lampe" storrelse="tjeneste" tett>
+    <ul class="lab-lamper" role="list">
+      {statuser.map((s) => (
+        <li><Lampe status={s} /> {statusOrd[s]}</li>
+      ))}
+    </ul>
+  </Seksjon>
+
+  <Seksjon tittel="Rapportark med Maaling" storrelse="tjeneste" tone="flate">
+    <Rapportark niva={3} tittel="Befaringsrapport" adresse={maltAdresse} dato={maltDato} datoIso={maltDatoIso} tittelId="lab-rapport" listeId="lab-rader">
+      {statuser.map((s) => (
+        <Maaling
+          navn={forste.etikett}
+          verdi={s === "venter" || s === "ikke-sjekket" ? undefined : forste.verdi}
+          status={s}
+          merknad={s === "ikke-sjekket" ? malinger[2].forbehold : undefined}
+        />
+      ))}
+    </Rapportark>
+  </Seksjon>
+
+  <Seksjon tittel="UrlFelt" storrelse="tjeneste">
+    <UrlFelt id="lab-url" knapp="Start befaringen" hint="Ingen innlogging. Du velger selv om rapporten skal sendes på e-post." />
+  </Seksjon>
+
+  <Verktoyramme niva={2} tittel="Verktoyramme" ingress="Skriv inn adressen. På 30 sekunder ser du hva som virker, og hva som ikke gjør det." resultatId="lab-resultat">
+    <UrlFelt slot="skjema" id="lab-verktoy" knapp="Start befaringen" />
+  </Verktoyramme>
+
+  <Seksjon tittel="Kravrader" storrelse="tjeneste">
+    <Kravrader
+      rader={flyter.systemer.noder.slice(0, 3).map((n, i) => ({
+        tittel: n.navn,
+        tekst: n.detalj,
+        maaling: i === 0 ? { verdi: malinger[3].verdi, status: "bestatt" as const, dato: maltDato, datoIso: maltDatoIso } : undefined,
+      }))}
+    />
+  </Seksjon>
+
+  <Seksjon tittel="Tekstrader" storrelse="tjeneste" ingress={flyter.systemer.beskrivelse}>
+    <Tekstrader rader={kapitler.map((k) => ({ tittel: k.tittel!, tekst: k.losning!, href: k.href }))} />
+  </Seksjon>
+
+  <Seksjon tittel="Tekstrader, display" storrelse="tjeneste" tone="flate">
+    <Tekstrader stil="display" rader={kapitler.map((k) => ({ tittel: k.tittel!, tekst: k.problem, side: k.sted }))} />
+  </Seksjon>
+
+  <Seksjon tittel="Steg, fire" storrelse="tjeneste">
+    <Steg steg={flyter.prosess.noder.map((n) => ({ naar: n.tid!, navn: n.navn, tekst: n.detalj }))} />
+  </Seksjon>
+
+  <Seksjon tittel="Steg, fem" storrelse="tjeneste">
+    <Steg steg={flyter.systemer.noder.map((n) => ({ naar: n.navn, navn: n.kvittering!, tekst: n.detalj }))} tegn={false} />
+  </Seksjon>
+
+  <Seksjon tittel="Flyt" storrelse="tjeneste" tone="flate">
+    <Flyt flyt={flyter.systemer} />
+  </Seksjon>
+
+  <Seksjon tittel="Flyt, tre ledd" storrelse="tjeneste">
+    <Flyt flyt={flyter.apper} />
+  </Seksjon>
+
+  <Seksjon tittel="Ramme og Opptak" storrelse="tjeneste">
+    <div class="lab-to">
+      <Ramme bilde="klinikker-d" type="nettleser" adresse="kodekonsulentene.no" alt="Skjermbilde av bookingdemoen for klinikker" sizes="(min-width: 1024px) 45vw, 100vw" />
+      <Opptak navn="dmarc" adresse="kodekonsulentene.no/verktoy/dmarc" />
+    </div>
+  </Seksjon>
+
+  <Seksjon tittel="Artikkelkropp" storrelse="tjeneste" />
+  <Artikkelkropp
+    kortSvar={faq[0].a}
+    publisert="2026-10-06"
+    oppdatert="2026-11-18"
+    publisertTekst="6. oktober 2026"
+    oppdatertTekst="18. november 2026"
+    innhold={faq.slice(1, 4).map((f, i) => ({ id: `lab-h2-${i}`, tittel: f.q }))}
+    kilder={kilder.slice(0, 2).map((k) => ({ tittel: k.henvisning, url: k.url, sjekket: k.hentet }))}
+  >
+    <UrlFelt slot="verktoy" id="lab-artikkel" knapp="Start befaringen" lampe={false} />
+    {faq.slice(1, 4).map((f, i) => (
+      <>
+        <h2 id={`lab-h2-${i}`}>{f.q}</h2>
+        <p>{f.a}</p>
+      </>
+    ))}
+    <pre><code>curl -sI https://{maltAdresse}</code></pre>
+    <Sporsmal slot="etter" liste={faq.slice(4, 7)} id="lab-faq-les" storrelse="les" innfelt />
+  </Artikkelkropp>
+
+  <Videre
+    lenker={hovedmeny.slice(0, 4).map((l) => ({
+      tittel: l.label,
+      tekst: historie.find((k) => k.href === l.href)?.losning ?? flyter.systemer.beskrivelse,
+      href: l.href,
+    }))}
+  />
+
+  <Prisliste variant="kort" pakker={["Start", "Bedrift"]} id="lab-priser" gruppe="lab-pakke" />
+
+  <Refleksfelt />
+
+  <Prosess id="lab-prosess" />
+
+  <Sporsmal liste={faq.slice(0, 3)} id="lab-faq" storrelse="tjeneste" tittel="Sporsmal" />
+
+  <Kontaktblokk id="kontakt-lab" tilstand="sendt" fakta="full" />
+
+  <Seksjon tittel="Brodsmuler" storrelse="tjeneste" tett>
+    <Brodsmuler />
+  </Seksjon>
+</MalWow>
+
+<style>
+  .lab-lamper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--wow-rom-5) var(--wow-rom-7);
+    margin: 0;
+    padding: 0;
+    font-size: var(--wow-tekst-ingress);
+  }
+  .lab-lamper li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--wow-rom-3);
+  }
+  .lab-to {
+    display: grid;
+    gap: var(--wow-rom-7);
+  }
+  @media (min-width: 1024px) {
+    .lab-to {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+  }
+</style>

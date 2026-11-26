@@ -1,27 +1,57 @@
 ---
-import Base from "../layouts/Base.astro";
-import Section from "../components/Section.astro";
-import Button from "../components/Button.astro";
+/**
+ * Salgsvilkårene i wow-drakten (wow-undersider.md del 1.9): lesemalen uten verktøy og uten
+ * kontaktblokk. Teksten er juridisk og står ordrett som i v1, med nummereringen 1–15.
+ */
+import MalWow from "../layouts/MalWow.astro";
+import { SideHode, Artikkelkropp } from "../components/wow/side";
+import Handlinger from "../components/wow/side/Handlinger.astro";
 import { firma, orgnrVist } from "../data/firma";
 import { mvaSetning } from "../data/priser";
 const oppdatert = "5. oktober 2026";
+
+const innhold = [
+  { id: "p1", tittel: "1. Partene og omfang" },
+  { id: "p2", tittel: "2. Tilbud og bestilling" },
+  { id: "p3", tittel: "3. Prototype" },
+  { id: "p4", tittel: "4. Betaling" },
+  { id: "p5", tittel: "5. Revisjoner og endringer i omfang" },
+  { id: "p6", tittel: "6. Kundens medvirkning" },
+  { id: "p7", tittel: "7. Eierskap til kode, innhold og domene" },
+  { id: "p8", tittel: "8. Referanse" },
+  { id: "p9", tittel: "9. Drift, abonnement og oppsigelse" },
+  { id: "p10", tittel: "10. Leverandørens tilgjengelighet" },
+  { id: "p11", tittel: "11. Reklamasjon og retting" },
+  { id: "p12", tittel: "12. Ansvarsbegrensning" },
+  { id: "p13", tittel: "13. Taushetsplikt og personvern" },
+  { id: "p14", tittel: "14. Force majeure" },
+  { id: "p15", tittel: "15. Lovvalg og tvister" },
+];
 ---
-<Base
+<MalWow
   tittel="Salgsvilkår for næringsdrivende"
   beskrivelse="Salgsvilkår for oppdrag fra KodeKonsulentene: betaling, revisjoner, eierskap til kode og domene, drift, oppsigelse og ansvar. B2B."
+  bevegelse="rolig"
+  bookHref="/kontakt"
 >
-  <Section nivaa={1} n={1} eyebrow="Vilkår" tittel="Salgsvilkår" ingress={`Sist oppdatert ${oppdatert}. Gjelder oppdrag mellom ${firma.foretaksnavn} og næringsdrivende kunder. ${mvaSetning}`}>
-    <div class="card card--sunken" style="border-color: var(--warn); margin-bottom: var(--space-6)">
-      <p class="body-strong">Forbehold</p>
-      <p class="small muted">
-        Dette er et utkast skrevet av utvikleren, ikke av advokat. Vilkårene må
-        kvalitetssikres juridisk før de brukes i avtaler. Dette er ikke juridisk rådgivning.
-      </p>
-    </div>
+  <article>
+    <SideHode
+      tittel="Salgsvilkår"
+      ingress={`Sist oppdatert ${oppdatert}. Gjelder oppdrag mellom ${firma.foretaksnavn} og næringsdrivende kunder. ${mvaSetning}`}
+      storrelse="tjeneste"
+      bredde="les"
+    />
+    <Artikkelkropp variant="juridisk" innhold={innhold}>
+      <div class="forbehold">
+        <p><strong>Forbehold</strong></p>
+        <p>
+          Dette er et utkast skrevet av utvikleren, ikke av advokat. Vilkårene må
+          kvalitetssikres juridisk før de brukes i avtaler. Dette er ikke juridisk rådgivning.
+        </p>
+      </div>
 
-    <div class="prose">
-      <h2>1. Partene og omfang</h2>
-      <p class="muted">
+      <h2 id="p1">1. Partene og omfang</h2>
+      <p>
         {/* `orgnrVist`, ikke `firma.orgnr`: dette leses av et menneske. Rått sto
             det «936374336» her og «936 374 336» i footeren på samme side – samme
             lovpålagte nummer i to former er nøyaktig slurvet /sjekk flagger. */}
@@ -31,21 +61,21 @@ const oppdatert = "5. oktober 2026";
         foran disse vilkårene.
       </p>
 
-      <h2>2. Tilbud og bestilling</h2>
-      <p class="muted">
+      <h2 id="p2">2. Tilbud og bestilling</h2>
+      <p>
         Tilbud er bindende i 30 dager. Bestilling skjer skriftlig, også ved e-post.
         Arbeid starter når bestillingen er bekreftet og oppstartsfakturaen er betalt.
       </p>
 
-      <h2>3. Prototype</h2>
-      <p class="muted">
+      <h2 id="p3">3. Prototype</h2>
+      <p>
         Kunden får en klikkbar prototype innen 72 timer etter oppstartsmøtet. Er kunden
         ikke fornøyd med prototypen, kan avtalen sies opp uten kostnad, og oppstartsfakturaen
         krediteres i sin helhet. Leverandøren beholder rettighetene til prototypen.
       </p>
 
-      <h2>4. Betaling</h2>
-      <ul class="muted">
+      <h2 id="p4">4. Betaling</h2>
+      <ul>
         <li>40 % av avtalt pris faktureres ved oppstart.</li>
         <li>60 % faktureres ved lansering.</li>
         <li>Betalingsfrist er 14 dager. Ved forsinket betaling påløper forsinkelsesrente etter forsinkelsesrenteloven.</li>
@@ -57,99 +87,116 @@ const oppdatert = "5. oktober 2026";
         <li>{mvaSetning}</li>
       </ul>
 
-      <h2>5. Revisjoner og endringer i omfang</h2>
-      <p class="muted">
+      <h2 id="p5">5. Revisjoner og endringer i omfang</h2>
+      <p>
         To revisjonsrunder er inkludert. En runde er samlede tilbakemeldinger levert innen
         ti virkedager. Arbeid utover avtalt omfang, inkludert nye sider og ny funksjonalitet,
         prises til {firma.timepris} per time og skal avtales skriftlig før arbeidet starter.
         Kunden mottar aldri faktura for arbeid som ikke er godkjent på forhånd.
       </p>
 
-      <h2>6. Kundens medvirkning</h2>
-      <p class="muted">
+      <h2 id="p6">6. Kundens medvirkning</h2>
+      <p>
         Kunden leverer innhold, bilder og tilganger innen avtalte frister. Forsinket
         medvirkning forskyver leveringsdato tilsvarende. Står et prosjekt stille i mer enn
         60 dager på grunn av manglende medvirkning, kan leverandøren fakturere utført
         arbeid og avslutte oppdraget.
       </p>
 
-      <h2>7. Eierskap til kode, innhold og domene</h2>
-      <p class="muted">
+      <h2 id="p7">7. Eierskap til kode, innhold og domene</h2>
+      <p>
         Når sluttfakturaen er betalt, overdras alle rettigheter til kildekode, design og
         konfigurasjon som er laget spesifikt for kunden. Domenet registreres på kundens
         foretak fra dag én. Kunden eier alle kontoer hos tredjepartsleverandører.
       </p>
-      <p class="muted">
+      <p>
         Leverandøren beholder rettighetene til generelle komponenter, verktøy og
         rammeverk som er utviklet uavhengig av oppdraget, og kan gjenbruke disse.
         Kunden får en ubegrenset, vederlagsfri bruksrett til disse i det leverte produktet.
         Åpen kildekode følger sine egne lisenser.
       </p>
 
-      <h2>8. Referanse</h2>
-      <p class="muted">
+      <h2 id="p8">8. Referanse</h2>
+      <p>
         Leverandøren kan omtale oppdraget som referanse med kundens navn, logo og
         skjermbilder, med mindre kunden reserverer seg skriftlig. Tall og resultater
         publiseres bare etter kundens godkjenning.
       </p>
 
-      <h2>9. Drift, abonnement og oppsigelse</h2>
-      <ul class="muted">
+      <h2 id="p9">9. Drift, abonnement og oppsigelse</h2>
+      <ul>
         <li>Abonnement har 12 måneders bindingstid, fordi byggekostnaden ligger i de første månedene. Deretter løper det med én måneds gjensidig oppsigelse.</li>
         <li>Driftsavtale på side kjøpt som engangskjøp har ingen binding og sies opp med én måneds varsel.</li>
         <li>Endringer inkludert i løpende avtaler har et tak på én time per måned. Ubrukte timer overføres ikke.</li>
         <li>Ved oppsigelse av abonnement får kunden en kjørbar eksport av nettsiden og tilhørende data innen ti virkedager, uten tilleggskostnad.</li>
       </ul>
 
-      <h2>10. Leverandørens tilgjengelighet</h2>
-      <p class="muted">
+      <h2 id="p10">10. Leverandørens tilgjengelighet</h2>
+      <p>
         Leverandøren er et lite miljø med begrenset kapasitet. Blir leverandøren forhindret fra å arbeide i mer enn
         fem arbeidsdager, varsles kunden, og kunden mottar fullstendig dokumentasjon,
         kildekode og tilganger, samt kontaktinformasjon til minst to andre utviklere som
         kan overta. Kunden er ikke bundet til å benytte disse.
       </p>
 
-      <h2>11. Reklamasjon og retting</h2>
-      <p class="muted">
+      <h2 id="p11">11. Reklamasjon og retting</h2>
+      <p>
         Feil som skyldes leverandøren rettes uten kostnad i 12 måneder etter lansering.
         Kunden skal reklamere skriftlig innen rimelig tid etter at feilen ble oppdaget.
         Feil som skyldes kundens egne endringer, tredjepartstjenester eller endret
         regelverk, faktureres etter timepris.
       </p>
 
-      <h2>12. Ansvarsbegrensning</h2>
-      <p class="muted">
+      <h2 id="p12">12. Ansvarsbegrensning</h2>
+      <p>
         Leverandørens samlede erstatningsansvar er begrenset til det kunden har betalt for
         oppdraget de siste 12 månedene. Leverandøren er ikke ansvarlig for indirekte tap,
         herunder tapt fortjeneste, tapte data, tapt omdømme eller krav fra tredjepart.
         Begrensningen gjelder ikke ved forsett eller grov uaktsomhet.
       </p>
 
-      <h2>13. Taushetsplikt og personvern</h2>
-      <p class="muted">
+      <h2 id="p13">13. Taushetsplikt og personvern</h2>
+      <p>
         Partene har gjensidig taushetsplikt om forretningsforhold de får kjennskap til.
         Behandles personopplysninger på kundens vegne, inngås egen databehandleravtale.
-        Se også <a class="kk-link" href="/personvern">personvernerklæringen</a>.
+        Se også <a href="/personvern">personvernerklæringen</a>.
       </p>
 
-      <h2>14. Force majeure</h2>
-      <p class="muted">
+      <h2 id="p14">14. Force majeure</h2>
+      <p>
         Ingen av partene er ansvarlig for forsinkelse eller mangel som skyldes forhold
         utenfor deres kontroll, herunder langvarig sykdom, strømbrudd, nedetid hos
         tredjepartsleverandører, krig, pandemi eller offentlige pålegg. Varer forholdet
         i mer enn 60 dager, kan begge parter si opp avtalen uten erstatningsansvar.
       </p>
 
-      <h2>15. Lovvalg og tvister</h2>
-      <p class="muted">
+      <h2 id="p15">15. Lovvalg og tvister</h2>
+      <p>
         Avtalen reguleres av norsk rett. Tvister søkes løst i minnelighet. Fører det ikke
         fram, er Oslo tingrett verneting.
       </p>
-    </div>
 
-    <div class="row" style="margin-top: var(--space-6)">
-      <Button variant="ghost" href="/handbok">Hvordan vi jobber i praksis</Button>
-      <Button variant="ghost" href="/priser">Prislisten</Button>
-    </div>
-  </Section>
-</Base>
+      <Handlinger
+        slot="etter"
+        handlinger={[
+          { tekst: "Hvordan vi jobber i praksis", href: "/handbok", type: "strek" },
+          { tekst: "Prislisten", href: "/priser", type: "strek" },
+        ]}
+      />
+    </Artikkelkropp>
+  </article>
+</MalWow>
+
+<style>
+  /* Ingen kontaktblokk under: luft ned til bunnfeltet. */
+  article {
+    padding-bottom: var(--wow-seksjon);
+  }
+  .forbehold {
+    display: grid;
+    gap: var(--wow-rom-2);
+    max-width: var(--wow-maal-brod);
+    padding-left: var(--wow-rom-5);
+    border-left: var(--wow-kant-2) solid var(--wow-linje-sterk);
+  }
+</style>

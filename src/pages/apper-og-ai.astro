@@ -1,38 +1,53 @@
 ---
-import Base from "../layouts/Base.astro";
+/**
+ * /apper-og-ai i wow-drakten (wow-undersider.md del 1.3 og del 4, wow-r8-B1).
+ * Rekkefølge: kapittel 3 (rørleggeren) → «To flater, én kobling» (flyt og ekte skjermbilder) →
+ * «Tre ting en app løser» → «Fire steg» → «AI som gjør en jobb» → reglene for AI-flater →
+ * AiTekst (sidens eget øyeblikk: demoen man kan røre) → kontakt.
+ * Ute fra v1: løpenumrene på kortene, Horisont og terminalutsnittet «I praksis» (de fem reglene
+ * står som nummerert liste).
+ */
+import MalWow from "../layouts/MalWow.astro";
+import { Seksjon, Prosa, Flyt, Tekstrader, Kontaktblokk, Ramme } from "../components/wow/side";
+import Kapittel from "../components/wow/Kapittel.astro";
+import Rader from "../components/wow/tjeneste/Rader.astro";
+import AiTekst from "../components/wow/tjeneste/AiTekst.astro";
+import { kapittelForhandslast } from "../scripts/wow/kapittel-klipp";
 import { tjeneste } from "../data/schema";
-import Flyt from "../components/Flyt.astro";
 import { flyter } from "../data/flyter";
-import Scene from "../components/Scene.astro";
-import Mega from "../components/Mega.astro";
-import Avslor from "../components/Avslor.astro";
-import Pekerkort from "../components/Pekerkort.astro";
-import Horisont from "../components/Horisont.astro";
-import Button from "../components/Button.astro";
-import Terminal from "../components/Terminal.astro";
-import AiTekst from "../components/AiTekst.astro";
-import ContactBlock from "../components/ContactBlock.astro";
 import { synligeCaser } from "../data/caser";
 import { bookUrl } from "../data/firma";
-
-import "../styles/scener.css";
+import { tjenester } from "../data/historie";
 
 /**
- * `synligeCaser`, ikke `caser`. Den ufiltrerte listen inneholder app-caser som
- * fortsatt er merket TODO, og de ble rendret som kundetekst: «TODO: navn på app
- * nummer én» sto i bygget HTML. Prinsippet er ikke å finne på innhold, men at et
- * internt notat aldri skal vises – har vi ikke navn å vise til, skal raden ikke
- * finnes. Samme grep som `firma.telefon` og den tomme tel:-lenken.
+ * `synligeCaser`, ikke `caser`. Den ufiltrerte listen inneholder app-caser som fortsatt er merket
+ * TODO, og et internt notat skal aldri vises: har vi ikke navn å vise til, skal raden ikke finnes.
  */
 const apper = synligeCaser.filter((c) => c.type === "App");
 
-const steg = [
-  { nr: "01", tittel: "Vi finner den ene jobben", tekst: "Nesten alle app-ideer er tre ideer i en trenchcoat. Vi skiller ut den ene oppgaven som faktisk gjentar seg hver uke, og lar resten vente." },
-  { nr: "02", tittel: "Du får se den på egen telefon", tekst: "Lenge før den er ferdig. En app som bare er sett på en skjerm i et møterom, oppdager man feilene i først etter lansering." },
-  { nr: "03", tittel: "Den kobles til det du har", tekst: "Appen henter fra samme sted som nettsiden og regnskapet. Et eget datasett ved siden av er en ny kilde til uenighet om hvilke tall som gjelder." },
-  { nr: "04", tittel: "Den legges ut i ditt navn", tekst: "App Store og Google Play krever en utviklerkonto. Den står på din bedrift, ikke på oss, så appen blir værende din også om du bytter leverandør." },
+const loser = [
+  { tittel: "Varsler", tekst: "Push når en ny jobb kommer inn, eller når en time avbestilles. Ingen venter på at noen skal sjekke e-posten." },
+  { tittel: "Offline", tekst: "Montøren registrerer timer og bilder i kjelleren uten dekning, og det synkes når telefonen får nett igjen." },
+  { tittel: "Kamera og posisjon", tekst: "Befaringsbilder, strekkoder og GPS rett inn i ordren. Det er her feltarbeid faktisk sparer tid." },
 ];
-/** Fra `tjeneste()`. Siden hadde ingen strukturerte data foer. */
+
+const steg = [
+  { tittel: "Vi finner den ene jobben", tekst: "Nesten alle app-ideer er tre ideer i en trenchcoat. Vi skiller ut den ene oppgaven som faktisk gjentar seg hver uke, og lar resten vente." },
+  { tittel: "Du får se den på egen telefon", tekst: "Lenge før den er ferdig. En app som bare er sett på en skjerm i et møterom, oppdager man feilene i først etter lansering." },
+  { tittel: "Den kobles til det du har", tekst: "Appen henter fra samme sted som nettsiden og regnskapet. Et eget datasett ved siden av er en ny kilde til uenighet om hvilke tall som gjelder." },
+  { tittel: "Den legges ut i ditt navn", tekst: "App Store og Google Play krever en utviklerkonto. Den står på din bedrift, ikke på oss, så appen blir værende din også om du bytter leverandør." },
+];
+
+/** De fem reglene for AI-flater. Sto som terminalutsnitt i v1; innholdet er det samme. */
+const regler = [
+  "Alltid merket som AI",
+  "Aldri pris eller avtale uten menneske",
+  "Ingen personopplysninger i loggen",
+  "Databehandleravtale før produksjon",
+  "Feiler den, sier den det – og sender deg videre",
+];
+
+/** Fra `tjeneste()`. */
 const schema = tjeneste({
   type: "Utvikling av apper og AI-assistenter",
   navn: "Apper og AI",
@@ -41,212 +56,233 @@ const schema = tjeneste({
   sti: "/apper-og-ai",
 });
 ---
-<Base
+
+<MalWow
   tittel="Apper og AI for små bedrifter"
   beskrivelse="iOS-app, intern app og AI-assistent fra samme utvikler som bygger nettsiden. Oslo, fast pris og databehandleravtale. Utviklerkontoen står på din bedrift."
   schema={[schema]}
+  bevegelse="film"
+  forhandslast={kapittelForhandslast(3, "skrubb")}
 >
-  <Scene lav>
-    <Mega som="h1" merke="Apper og AI" n={1} tekst="Få leverandører tar både nettside og app" aksent="app" />
-    <Avslor trinn={1}>
-      <p class="scene__ingress body-lg">De fleste som bygger nettsider setter ut apputvikling. Vi gjør begge deler selv, slik at nettsiden, systemet bak og appen oppå henger sammen fra start.</p>
-    </Avslor>
+  <Kapittel
+    nummer={3}
+    tittel="Få leverandører tar både nettside og app"
+    ingress="De fleste som bygger nettsider setter ut apputvikling. Vi gjør begge deler selv, slik at nettsiden, systemet bak og appen oppå henger sammen fra start."
+    problem={tjenester.apper.problem}
+    losning={tjenester.apper.losning}
+    handlinger={[
+      { tekst: "Book 20 minutter", href: bookUrl, type: "primar" },
+      { tekst: "Hva en app løser", href: "#apper", type: "lenke" },
+    ]}
+  />
 
-    <Avslor>
-    <div class="row">
-      <Button variant="primary" href={bookUrl}>Book 20 minutter</Button>
-      <Button variant="ghost" href="#apper">Hva en app løser</Button>
-    </div>
-    </Avslor>
-  </Scene>
-
-  {/* HER STO ET GENERERT KLIPP BAK DENNE SEKSJONEN, OG DET ER FJERNET MED VILJE.
-
-      Motivet var faktisk det nærmeste et av de ni klippene kom en mening: en stabel
-      og en liten plate forbundet med en kabel, og et grønt signal som reiser over og
-      tenner den lille – altså «To flater, én kobling». Men meningen overlevde ikke
-      masken. Masken sto på 52 % og vi hadde allerede måttet speilvende motivet for
-      å dytte det inn i båndet som slippes fram. Opptak i headless Chrome viser at
-      kunden ser stabelen, ikke kabelen og ikke den lille platen – altså akkurat den
-      halvdelen som BÆRER poenget, borte.
-
-      Og bevegelsen var frontlastet: total endring 4,95 av 255, hvorav 60 % i første
-      kvartal. Klippet var over lenge før øyet kom dit. Prosjektets regel er at
-      poenget skal ligge rundt 50 % av tidslinjen.
-
-      Det klippet prøvde å si, sier Flyt-figuren nederst i denne seksjonen bedre:
-      App → Database → Nettside med ekte navn og en pakke som reiser gjennom kjeden.
-
-      Klippet kostet 296 kB av førstelasten. Siden lå på 535 kB mot et tak på 400 kB. */}
-    <Scene n={2} eyebrow="Sammenhengen" tittel="To flater, én kobling">
-      <Avslor>
-      <div class="stack" style="max-width: 34rem">
-        <p class="body-lg">
+  <Seksjon id="kobling" tittel="To flater, én kobling" storrelse="stor">
+    <div class="app-kobling">
+      <Prosa>
+        <p>
           En app som ikke snakker med nettsiden og systemet bak, er bare en ny
           innboks noen må huske å sjekke.
         </p>
-        <p class="muted">
+        <p>
           Derfor bygges appen mot de samme dataene som alt annet: én kundeliste,
           én ordre, ett sted tallene kommer fra. Det er den koblingen som gjør at
           en app sparer tid i stedet for å lage mer arbeid.
         </p>
-        <Button variant="ghost" href="/systemer">Se hvordan vi kobler systemer</Button>
+        <p><a href="/systemer">Se hvordan vi kobler systemer</a></p>
+      </Prosa>
+      {/* Ekte skjermbilder (public/media/wow/ekte/), samme par som på forsiden. */}
+      <div class="app-flater">
+        <Ramme
+          type="nettleser"
+          bilde="apper-kobling"
+          adresse="kodekonsulentene.no/apper-og-ai"
+          alt="Skjermbilde av hvordan app, database og nettside deler de samme tallene."
+          sizes="(min-width: 1024px) 46vw, 80vw"
+          class="app-flater__stor"
+          avdekk
+        />
+        <Ramme
+          type="telefon"
+          bilde="apper-m"
+          alt="Skjermbilde av siden om apper og AI på mobil."
+          sizes="(min-width: 1024px) 13vw, 26vw"
+          class="app-flater__liten"
+          parallax="-0.14"
+        />
       </div>
-      </Avslor>
-
-    <Avslor trinn={2}>
-      {/* Diagram med EKTE navn på systemene, ikke abstrakte former. Brandboken
-          rangerer dette over generert materiale: det forklarer hva kunden får,
-          og koster 0 kB. */}
-      <Flyt flyt={flyter.apper} />
-    </Avslor>
-    </Scene>
-
-  <Scene n={3} eyebrow="Apper" tittel="Tre ting en app løser som en nettside ikke gjør" id="apper">
-    <Avslor>
-    <div class="grid-3">
-      <Pekerkort nr={1} tittel="Varsler" tekst="Push når en ny jobb kommer inn, eller når en time avbestilles. Ingen venter på at noen skal sjekke e-posten." />
-      <Pekerkort nr={2} tittel="Offline" tekst="Montøren registrerer timer og bilder i kjelleren uten dekning, og det synkes når telefonen får nett igjen." />
-      <Pekerkort nr={3} tittel="Kamera og posisjon" tekst="Befaringsbilder, strekkoder og GPS rett inn i ordren. Det er her feltarbeid faktisk sparer tid." />
     </div>
-    </Avslor>
+    {/* Diagram med EKTE navn på systemene, ikke abstrakte former. */}
+    <div class="app-flyt">
+      <Flyt flyt={flyter.apper} />
+    </div>
+  </Seksjon>
 
-    {/* Her lå et generert stillbilde (apper-par) uten bildetekst, rett under tre
-        kort som allerede sier hva en app løser. Et bilde av to hengende stabler
-        aluminiumsplater forklarer ikke push-varsler, offline-synk eller kamera.
-        Brandboken tillater generert materiale som bakgrunnstekstur under tekst –
-        ikke som frittstående figur. Fjernet. */}
-
+  <Seksjon id="apper" tittel="Tre ting en app løser som en nettside ikke gjør" storrelse="tjeneste" tone="flate">
+    <Tekstrader rader={loser} />
     {apper.length > 0 && (
-      <dl class="kv" style="margin-top: var(--space-6)">
+      <dl class="app-caser">
         {apper.map((a) => (
-          <div><dt>{a.tittel}</dt><dd>{a.stack.join(" · ")}</dd></div>
+          <div><dt>{a.tittel}</dt><dd>{a.stack.join(", ")}</dd></div>
         ))}
       </dl>
     )}
-  </Scene>
+  </Seksjon>
 
-  <Horisont
-    n={4}
-    merke="Slik blir den til"
-    tittel="Fire steg, ingen overraskelser"
-    navn="Stegene i et apputviklingsløp"
-    poster={steg}
-  />
+  {/* En ekte rekkefølge, derfor nummerert (<ol>). */}
+  <Seksjon id="steg" tittel="Fire steg, ingen overraskelser" storrelse="tjeneste">
+    <Rader ordnet rader={steg} />
+  </Seksjon>
 
-  <Scene n={5} eyebrow="AI" lav>
-    <Mega som="h2" tekst="AI som gjør en jobb, ikke AI som pynt" aksent="jobb" />
-    {/*
-      «SSB MELDER AT 48 % … MOT TRE AV TI ÅRET FØR» – ETT TALL HOLDT, ETT GJORDE IKKE.
-
-      Kontrollert mot SSBs statistikkbank 7. oktober 2026, tabell 14942 «Bruk av
-      kunstig intelligens-teknologi (prosent), etter næring (SN2025),
-      sysselsette», oppdatert 25. september 2026. Variabelen heter «Brukar ein
-      eller fleire KI-teknologiar». Tallene for 2026, I alt:
-
-        Alle sysselsette ....... 48 %
-        10–19 sysselsette ...... 37 %
-
-      48 % STEMMER. Men:
-
-      1. Henvisningen sa bare «SSB». Det er den samme feilen som nesten veltet
-         SSB-tallene på /bransjer/handverkere: to tabeller dekker samme tema med
-         ulike tall, og den som kontrollerer oss mot feil tabell tror vi lyver.
-         Tabellnummeret står nå på siden.
-
-      2. «Mot tre av ti året før» ER FJERNET. SSB avsluttet tidsserien etter
-         SN2007 i 2025 og startet en ny etter SN2025 i 2026 – de to kan ikke
-         sammenlignes direkte, og SSB sier det selv. En vekstpåstand over det
-         bruddet er ikke noe vi kan vise til en tabell for, så den står ikke her.
-
-      3. FORBEHOLDET SOM MANGLET, OG SOM BETYR MEST FOR DENNE SIDEN: SSB dekker
-         bare foretak med MINST TI SYSSELSATTE. Målgruppen vår – enkeltpersonforetak
-         og de minste bedriftene – er ikke med i tallet i det hele tatt. Vi oppgir
-         derfor også 37 %-tallet for de minste foretakene undersøkelsen dekker,
-         siden det er det nærmeste leseren kommer sin egen situasjon.
-    */}
-    <Avslor trinn={1}>
-      <p class="scene__ingress body-lg">SSB målte at 48 % av foretakene med minst ti ansatte brukte KI i 2026. Blant de minste som er med – de med 10–19 ansatte – var det 37 %. Konkurrentene dine prøver. De fleste prøver på feil sted.</p>
-      <p class="small faint">
-        Kilde: <a class="kk-link" href="https://www.ssb.no/statbank/table/14942" rel="nofollow">SSB, tabell 14942 «Bruk av kunstig intelligens-teknologi (prosent), etter næring (SN2025), sysselsette»</a>,
+  {/*
+    «SSB MELDER AT 48 % … MOT TRE AV TI ÅRET FØR» – ETT TALL HOLDT, ETT GJORDE IKKE (v1).
+    Kontrollert mot SSBs statistikkbank 7. oktober 2026, tabell 14942, oppdatert 25. september
+    2026: alle sysselsette 48 %, 10–19 sysselsette 37 %. Tabellnummeret står på siden.
+    «Mot tre av ti året før» er fjernet: SSB byttet næringsstandard (SN2007 → SN2025), og seriene
+    kan ikke sammenlignes direkte. Forbeholdet som betyr mest: SSB dekker bare foretak med minst
+    ti sysselsatte, så målgruppen vår er ikke med i tallet.
+  */}
+  <Seksjon
+    id="ai"
+    tittel="AI som gjør en jobb, ikke AI som pynt"
+    ingress="SSB målte at 48 % av foretakene med minst ti ansatte brukte KI i 2026. Blant de minste som er med – de med 10–19 ansatte – var det 37 %. Konkurrentene dine prøver. De fleste prøver på feil sted."
+    storrelse="stor"
+    tone="flate"
+  >
+    <Prosa>
+      <p class="wow-notat">
+        Kilde: <a href="https://www.ssb.no/statbank/table/14942" rel="nofollow">SSB, tabell 14942 «Bruk av kunstig intelligens-teknologi (prosent), etter næring (SN2025), sysselsette»</a>,
         2026-tall, oppdatert 25. september 2026, lest 7. oktober 2026. Undersøkelsen dekker bare
         foretak med minst ti sysselsatte: enkeltpersonforetak og de minste bedriftene – altså
         flertallet av dem denne siden er skrevet for – er ikke med i tallet. 2026-tallene følger ny
         næringsstandard (SN2025) og kan ikke sammenlignes direkte med tidligere år.
       </p>
-    </Avslor>
-  </Scene>
+    </Prosa>
+  </Seksjon>
 
-  <Scene n={6} eyebrow="I praksis" tittel="Ett lag som gjør én ting">
-    <Avslor>
-    <div class="grid-2">
-      <div class="stack">
-        <p class="muted">
+  <Seksjon id="i-praksis" tittel="Ett lag som gjør én ting" storrelse="tjeneste">
+    <div class="app-praksis">
+      <Prosa>
+        <p>
           Det som faktisk virker for en småbedrift er smalt og kjedelig: en assistent som
           svarer på de tjue spørsmålene du får hver uke, et verktøy som leser en PDF-faktura
           og fyller ut skjemaet, eller en oppsummering av ukens henvendelser.
         </p>
-        <p class="muted">
+        <p>
           Det som ikke virker er en chatbot som later som den er en ansatt. Derfor merkes
           alle AI-flater tydelig, de lover aldri priser på egen hånd, og de logger ikke
           sensitive data. Og det skrives databehandleravtale før noe settes i drift.
         </p>
-        <Button variant="ghost" href="/sikkerhet">Hvordan vi sikrer det</Button>
-      </div>
-      <Terminal
-        skriv
-        title="~/ai/regler"
-        lines={[
-          { type: "cmd", text: "cat regler.txt" },
-          { type: "ok", text: "1. alltid merket som AI" },
-          { type: "ok", text: "2. aldri pris eller avtale uten menneske" },
-          { type: "ok", text: "3. ingen personopplysninger i loggen" },
-          { type: "ok", text: "4. databehandleravtale før produksjon" },
-          { type: "warn", text: "5. feiler den, sier den det – og sender deg videre" },
-        ]}
-        label="Terminalutsnitt med fem regler for AI-flater: alltid merket som AI, aldri pris eller avtale uten menneske, ingen personopplysninger i loggen, databehandleravtale før produksjon, og den sier det hvis den feiler."
-      />
+        <p><a href="/sikkerhet">Hvordan vi sikrer det</a></p>
+      </Prosa>
+      <ol class="app-regler">
+        {regler.map((r) => <li>{r}</li>)}
+      </ol>
     </div>
-    </Avslor>
+  </Seksjon>
 
-    {/* Her lå et generert stillbilde (apper-lag) uten bildetekst, rett under
-        terminalutsnittet med de fem AI-reglene. Terminalen skriver seg selv og sier
-        noe konkret; platen sa ingenting. Fjernet av samme grunn som apper-par. */}
-  </Scene>
+  {/* DEMOEN. Står etter reglene med vilje: seksjonene over setter regelen – AI skal gjøre én
+      jobb, og den skal merkes – og demoen er den jobben. Teknikken ligger i
+      src/components/wow/tjeneste/AiTekst.astro og src/pages/api/ai-tekst.ts; kostnad, tak og
+      hemmeligheter står i docs/ai-tekst.md. */}
+  <AiTekst />
 
-  {/* DEMOEN. Her stoppet siden før: seks seksjoner om at vi lager AI-apper, og
-      ingenting en kunde kunne røre. Mønsterdokumentet (docs/sidemonstre.md) sier
-      at bransjesider skal ha «én demo som kan klikkes i – en demo slår et
-      avsnitt», og det gjelder like mye for den siden som SELGER AI.
+  <Kontaktblokk />
+</MalWow>
 
-      Den står etter seksjon 6 med vilje. Seksjon 5 og 6 setter regelen – AI skal
-      gjøre én jobb, og den skal merkes – og demoen er den jobben. Står den før,
-      er det en effekt; står den her, er det et bevis på det som nettopp ble sagt.
-
-      Teknikken ligger i src/components/AiTekst.astro og src/pages/api/ai-tekst.ts.
-      Kostnad, tak og hemmeligheter står i docs/ai-tekst.md. */}
-  <AiTekst n={7} />
-
-  <ContactBlock n={8} />
-</Base>
-<style is:global>
-  /* Sidens h1 står over folden. Scroll-avdekking på noe som allerede er synlig
-     ved innlasting betyr at teksten blir stående halvt gjennomsiktig til
-     brukeren scroller – målt 0,52 opasitet på de siste ordene i overskriften.
-     Toppscenen står derfor ferdig; avdekkingen gjelder fra scene to og nedover. */
-  .scene:first-of-type .mega .ord,
-  .scene:first-of-type .mega-blokk,
-  .scene:first-of-type .avslor {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
+<style>
+  .app-kobling,
+  .app-praksis {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--wow-rom-7) var(--wow-luke);
   }
-  /* Bildene er flater, ikke illustrasjoner i en spalte: de får hele scenens
-     bredde og en hårlinje, slik brandboken krever for bildeflater. */
-  .scene__flate {
-    margin-top: var(--space-7);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-md);
-    overflow: hidden;
+  /* Et stort nettleservindu og en telefon forskjøvet over hjørnet, som på forsiden. */
+  .app-flater {
+    position: relative;
+    padding-bottom: var(--wow-rom-5);
+  }
+  .app-flater :global(.app-flater__stor) {
+    margin-right: 14%;
+  }
+  .app-flater :global(.app-flater__liten) {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 28%;
+  }
+  .app-flyt {
+    margin-top: var(--wow-rom-8);
+  }
+  .app-caser {
+    display: grid;
+    gap: var(--wow-rom-3);
+    margin: var(--wow-rom-6) 0 0;
+  }
+  .app-caser > div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--wow-rom-1) var(--wow-rom-5);
+  }
+  .app-caser dt {
+    font-weight: 700;
+  }
+  .app-caser dd {
+    margin: 0;
+    color: var(--wow-tekst-dempet);
+  }
+  /* Reglene: nummerert fordi de gjelder i denne rekkefølgen, satt som overskrifter. */
+  .app-regler {
+    display: grid;
+    align-content: start;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: regel;
+    border-bottom: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .app-regler li {
+    display: grid;
+    grid-template-columns: 2ch minmax(0, 1fr);
+    column-gap: var(--wow-rom-4);
+    align-items: baseline;
+    padding-block: var(--wow-rom-4);
+    border-top: var(--wow-kant-1) solid var(--wow-linje);
+    counter-increment: regel;
+    font-size: var(--wow-tekst-ingress);
+    font-weight: 700;
+    line-height: 1.25;
+  }
+  .app-regler li::before {
+    content: counter(regel);
+    color: var(--wow-tekst-dempet);
+    font-variant-numeric: tabular-nums;
+  }
+  @media (min-width: 1024px) {
+    .app-kobling,
+    .app-praksis {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      align-items: start;
+    }
+    .app-kobling > :global(.wow-prosa),
+    .app-praksis > :global(.wow-prosa) {
+      grid-column: 1 / 6;
+    }
+    .app-flater,
+    .app-regler {
+      grid-column: 6 / 13;
+    }
+    .app-praksis > .app-regler {
+      grid-column: 7 / 13;
+    }
+    .app-flater :global(.app-flater__stor) {
+      margin-right: 0;
+      margin-left: 20%;
+    }
+    .app-flater :global(.app-flater__liten) {
+      right: auto;
+      left: 0;
+      width: 24%;
+    }
   }
 </style>

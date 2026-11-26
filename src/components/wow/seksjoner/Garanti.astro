@@ -1,0 +1,133 @@
+---
+// Refleksfeltet (wow-briefen, blokk 6): refleksfelt i full bredde. Høyst én gang per side, og bare
+// på Persuade-sider (wow-undersider.md del 1.0).
+//
+// Standard er garantien, ordrett fra docs/design/tekst/forside.md del 5, i samme rekkefølge:
+// inngangen i mellomstørrelse, løftet i plakatstørrelse. Garantien og prototype-løftet står her og
+// ingen andre steder på siden. Kontrollert mot vilkårene (/vilkar, punkt 3): «Er kunden ikke
+// fornøyd med prototypen, kan avtalen sies opp uten kostnad, og oppstartsfakturaen krediteres i
+// sin helhet.» Det dekker den store setningen. Den første («før du har betalt noe») holder bare
+// hvis oppstartsfakturaen forfaller etter at prototypen er vist; det er meldt som åpent punkt.
+//
+// Bølge A1 (wow-undersider.md del 3, «Refleksfelt»): `inngang`, `hoved`, `under` og en slot for
+// én handling (f.eks. UrlFelt eller en knapp med wow-knapp--mork). Tekstene kommer fra sidens
+// eget manus.
+//
+// Runde wow-r7 «Lampa» (historie-manus.md del 5, Garanti), bare på forsiden (`tegning`):
+// fortelleren først («Du skal ikke tro oss på ordet …»), så kommer feltet som en tynn strektegning
+// av en forside (en nettleser på desktop, en telefon på mobil). Når tegningen står midt i
+// skjermen, fylles den nedenfra med refleksfarge og vokser ut til full bredde: tegningen blir noe
+// du kan trykke på. Så løsner ordene i løftet, og «nei» og «ingenting» står igjen et øyeblikk før
+// hele setningen kommer tilbake (epic-grepet). Garantien er ett av to steder på siden med
+// gigantiske versaler (det andre er ordmerket).
+// Scenen er festet med CSS (position: sticky) og bare når html har wow-js og full bevegelse;
+// rullingen styres av src/scripts/wow/seksjoner/garanti.ts. Uten JS, med redusert bevegelse eller
+// Save-Data står feltet ferdig fylt, som før, og tegningen vises ikke. Ordene er egne <span> i
+// samme setning, så skjermlesere leser setningen hel.
+//
+//   <Garanti />                                                        /priser
+//   <Garanti tegning forteller="…" />                                  forsiden
+//   <Garanti inngang="Lovsjekk-pakken" hoved={`${pris} kr`} under="…">
+//     <a class="wow-knapp wow-knapp--mork" href="#kontakt">Book 20 minutter</a>
+//   </Garanti>
+interface Props {
+  inngang?: string;
+  hoved?: string;
+  under?: string;
+  /** Forsiden: strektegningen som fylles med refleks (wow-r7). */
+  tegning?: boolean;
+  /** Fortellerens linje før feltet. */
+  forteller?: string;
+}
+const {
+  inngang = "Du ser en klikkbar prototype av forsiden din før du har betalt noe.",
+  hoved = "Sier du nei til prototypen, koster det ingenting.",
+  under,
+  tegning = false,
+  forteller,
+} = Astro.props;
+const harHandling = Astro.slots.has("default");
+
+// Ordene som blir stående når setningen løsner (manus C).
+const BLIR = new Set(["nei", "ingenting"]);
+const ord = hoved.split(" ").map((o) => ({ o, blir: BLIR.has(o.toLowerCase().replace(/[^a-zæøå]/g, "")) }));
+---
+
+{tegning ? (
+  <section class="wow-garanti wow-garanti--tegning" data-seksjon="garanti">
+    {forteller && (
+      <div class="wow-rute wow-garanti__fortalt">
+        <p class="wow-forteller wow-garanti__forteller">{forteller}</p>
+      </div>
+    )}
+    <div class="wow-garanti__scene" data-garanti-scene>
+      <div class="wow-garanti__stage" data-garanti-stage>
+        <svg class="wow-garanti__tegning wow-garanti__tegning--bred" data-garanti-tegning viewBox="0 0 1200 720" aria-hidden="true" focusable="false">
+          <rect pathLength="1" x="1" y="1" width="1198" height="718" rx="24" data-ramme />
+          <path pathLength="1" d="M1 64H1199" />
+          <circle pathLength="1" cx="36" cy="32" r="7" />
+          <circle pathLength="1" cx="60" cy="32" r="7" />
+          <circle pathLength="1" cx="84" cy="32" r="7" />
+          <rect pathLength="1" x="430" y="18" width="340" height="28" rx="14" />
+          <rect pathLength="1" x="56" y="100" width="140" height="24" rx="4" />
+          <path pathLength="1" d="M760 112H830M870 112H940M980 112H1040" />
+          <rect pathLength="1" x="1076" y="96" width="76" height="32" rx="16" />
+          <rect pathLength="1" x="56" y="196" width="560" height="48" rx="6" />
+          <rect pathLength="1" x="56" y="262" width="430" height="48" rx="6" />
+          <path pathLength="1" d="M56 356H520M56 386H470M56 416H380" />
+          <rect pathLength="1" x="56" y="458" width="220" height="60" rx="30" />
+          <rect pathLength="1" x="700" y="180" width="444" height="340" rx="16" />
+          <path pathLength="1" d="M700 500L840 380L940 460L1050 352L1144 440" />
+          <circle pathLength="1" cx="1050" cy="250" r="26" />
+          <rect pathLength="1" x="56" y="570" width="330" height="110" rx="12" />
+          <rect pathLength="1" x="435" y="570" width="330" height="110" rx="12" />
+          <rect pathLength="1" x="814" y="570" width="330" height="110" rx="12" />
+        </svg>
+        <svg class="wow-garanti__tegning wow-garanti__tegning--smal" data-garanti-tegning viewBox="0 0 390 720" aria-hidden="true" focusable="false">
+          <rect pathLength="1" x="1" y="1" width="388" height="718" rx="44" data-ramme />
+          <rect pathLength="1" x="145" y="16" width="100" height="22" rx="11" />
+          <rect pathLength="1" x="28" y="72" width="104" height="22" rx="4" />
+          <path pathLength="1" d="M318 76H360M318 88H360M318 100H360" />
+          <rect pathLength="1" x="28" y="150" width="320" height="40" rx="6" />
+          <rect pathLength="1" x="28" y="202" width="300" height="40" rx="6" />
+          <rect pathLength="1" x="28" y="254" width="200" height="40" rx="6" />
+          <path pathLength="1" d="M28 326H340M28 352H300M28 378H250" />
+          <rect pathLength="1" x="28" y="414" width="334" height="56" rx="28" />
+          <rect pathLength="1" x="28" y="498" width="334" height="190" rx="16" />
+          <path pathLength="1" d="M28 668L130 590L200 640L280 572L362 640" />
+          <circle pathLength="1" cx="290" cy="540" r="18" />
+        </svg>
+        <div class="wow-garanti__flate" data-garanti-flate>
+          <div class="wow-rute">
+            {inngang && <p class="wow-garanti__inngang" data-garanti-inngang>{inngang}</p>}
+            <p class="wow-garanti__hoved" data-garanti-hoved>
+              {ord.map((w, i) => (
+                <>
+                  <span class="wow-garanti__ord" data-garanti-ord={w.blir ? "blir" : "gaar"}>{w.o}</span>
+                  {i < ord.length - 1 && " "}
+                </>
+              ))}
+            </p>
+            {under && <p class="wow-garanti__under">{under}</p>}
+            {harHandling && <div class="wow-garanti__handling"><slot /></div>}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+) : (
+  <section class="wow-garanti">
+    <div class="wow-garanti__flate" data-scale-in>
+      <div class="wow-rute">
+        {inngang && <p class="wow-garanti__inngang">{inngang}</p>}
+        <p class="wow-garanti__hoved" data-split="lines">{hoved}</p>
+        {under && <p class="wow-garanti__under">{under}</p>}
+        {harHandling && <div class="wow-garanti__handling"><slot /></div>}
+      </div>
+    </div>
+  </section>
+)}
+
+<script>
+  import "../../../scripts/wow/seksjoner/last";
+</script>

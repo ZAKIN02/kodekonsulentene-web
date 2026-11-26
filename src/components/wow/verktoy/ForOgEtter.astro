@@ -1,0 +1,268 @@
+---
+/**
+ * Fire målte forskjeller mellom en typisk småbedriftsside og vår egen, i wow-drakten (portert fra
+ * src/components/ForOgEtter.astro for /sjekk, wow-undersider.md del 3).
+ *
+ * ALLE TALL ER MÅLT, INGEN ER SKREVET INN. De kommer fra src/data/maalinger.json:
+ *  - Bransjetallene fra .skudd/maaling-skann.mjs (utvalg fra Enhetsregisteret, vår egen motor).
+ *  - Våre egne tall fra .skudd/maaling-egen.mjs, NØYAKTIG samme motor mot vår egen side.
+ *
+ * INGEN SIDER NAVNGIS (docs/metode-skanning.md er bindende). Bare aggregerte tall.
+ *
+ * SPERREN ER UENDRET: `oss.bestaar` er false hvis enten den statiske motoren eller axe finner noe.
+ * Da viser raden hva som faktisk er funnet, med rød lampe, ikke et nulltall vi ikke har dekning for.
+ *
+ * Hva som er endret fra v1:
+ *  - Rader med strek, ingen kort. Tallene i Archivo, ikke monospace. Etiketten «Målt, ikke
+ *    påstått» over ingressen er borte (del 12: etikett som ikke gir ny informasjon).
+ *  - «79 % setter minst én» sto to ganger: som stort tall og i setningen under. Nå står tallet
+ *    én gang, med ordene ved siden av.
+ *  - Stolpen står ferdig. Verktøysidene er «rolig», så den vokser ikke fram ved rulling.
+ *  - «Denne siden» har lampa og statusen som ord, som resten av rapportspråket.
+ */
+import maalinger from "../../../data/maalinger.json";
+import Lampe from "../side/Lampe.astro";
+import { statusOrd } from "../side/maaling";
+
+interface Props {
+  class?: string;
+}
+const { class: klasse } = Astro.props;
+
+const { typisk, andelProsent: andel, oss, utvalg } = maalinger;
+
+/** ISO-dato er for maskiner. Leseren skal se «6. oktober 2026». */
+const norskDato = (iso: string) =>
+  new Intl.DateTimeFormat("nb-NO", { day: "numeric", month: "long", year: "numeric" }).format(
+    new Date(`${iso}T12:00:00Z`),
+  );
+
+/** En rad er bare med hvis begge sidene faktisk er målt. */
+const rader = [
+  {
+    navn: "Sikkerhetsheadere",
+    andel: 100 - andel.harAlleSeksHeadere,
+    andelOrd: "mangler minst én",
+    typisk: `${typisk.headereAv6}/6`,
+    oss: `${oss.headereAv6}/6`,
+    bra: oss.headereAv6 === 6,
+    hva: "Seks headere forteller nettleseren hva den ikke skal tillate. Uten dem er siden lettere å misbruke mot dine egne kunder.",
+  },
+  {
+    navn: "Cookies før samtykke",
+    andel: andel.settercookiesForSamtykke,
+    andelOrd: "setter minst én",
+    typisk: String(typisk.cookiesForSamtykke),
+    oss: String(oss.cookiesForSamtykke),
+    bra: oss.cookiesForSamtykke === 0,
+    hva: `${andel.harSporereForSamtykke} % laster en sporer før noen har sagt ja. Ekomloven § 3-15 har krevd gyldig samtykke siden 1. januar 2025.`,
+  },
+  {
+    navn: "Universell utforming",
+    andel: andel.harMinstEnUuFeil,
+    andelOrd: "har minst én feil",
+    typisk: `${typisk.uuFeil} feil`,
+    // Sperren: vi påstår ikke null før begge målingene er enige.
+    oss: oss.bestaar ? `${oss.uuFeil} feil` : `${oss.axeBrudd} feil`,
+    bra: oss.bestaar,
+    hva: oss.bestaar
+      ? "Private virksomheter skal oppfylle 35 krav i WCAG 2.0 A og AA."
+      : `Vår egen side har ${oss.axeBrudd} kontrastbrudd akkurat nå. Vi skriver det her fordi vi ellers ville vist et nulltall vi ikke har dekning for.`,
+  },
+  {
+    navn: "Org.nr. på siden",
+    andel: andel.manglerOrgnr,
+    andelOrd: "mangler det",
+    typisk: "Mangler",
+    oss: oss.orgnr ? "Står der" : "Mangler",
+    bra: oss.orgnr,
+    hva: "Foretaksnavn og organisasjonsnummer skal stå på nettsiden. Det er det første en kunde ser etter for å sjekke at foretaket er ekte.",
+  },
+] as const;
+---
+
+<figure class:list={["wow-foe", klasse]}>
+  <figcaption class="wow-foe__ingress">
+    Vi kjørte vår egen sjekk mot {utvalg.svarte} tilfeldig trukne småbedriftssider. Her er hva vi
+    fant, og hvor vi selv står.
+  </figcaption>
+
+  <ul class="wow-foe__rader" role="list">
+    {
+      rader.map((r) => (
+        <li class="wow-foe__rad">
+          <div class="wow-foe__hva">
+            <h3 class="wow-foe__navn">{r.navn}</h3>
+            <p class="wow-foe__tekst">{r.hva}</p>
+          </div>
+
+          <div class="wow-foe__andel">
+            <p class="wow-foe__tall">
+              <span class="wow-foe__prosent">{r.andel}&nbsp;%</span> {r.andelOrd}
+            </p>
+            {/* Stolpen gjentar tallet ved siden av, og er skjult for skjermlesere. */}
+            <div class="wow-foe__stolpe" aria-hidden="true">
+              <span style={`width: ${r.andel}%`} />
+            </div>
+          </div>
+
+          <dl class="wow-foe__par">
+            <div>
+              <dt>Typisk</dt>
+              <dd>{r.typisk}</dd>
+            </div>
+            <div>
+              <dt>Denne siden</dt>
+              <dd>
+                {r.oss}
+                <span class="wow-foe__status">
+                  <Lampe status={r.bra ? "bestatt" : "brudd"} />
+                  {statusOrd[r.bra ? "bestatt" : "brudd"]}
+                </span>
+              </dd>
+            </div>
+          </dl>
+        </li>
+      ))
+    }
+  </ul>
+
+  <p class="wow-foe__metode">
+    <strong>Metode.</strong>{" "}
+    {utvalg.svarte} forsider hentet {norskDato(maalinger.maalt)}, trukket fra Enhetsregisteret blant
+    foretak med 1–20 ansatte og registrert hjemmeside.{" "}
+    {utvalg.stengtAvRobots === 1 ? "Én side stengte" : `${utvalg.stengtAvRobots} sider stengte`} oss i
+    robots.txt og {utvalg.svarteIkke} svarte ikke; de er ikke med. Ingen sider navngis — vi publiserer
+    ikke navn på sider som kommer dårlig ut. Vår egen side er målt med nøyaktig samme sjekk{" "}
+    {norskDato(oss.maalt)}. Kontrast og tastaturbruk kan ikke måles av den statiske sjekken, så den
+    er kjørt med nettleser i tillegg.
+  </p>
+</figure>
+
+<style>
+  .wow-foe {
+    display: grid;
+    gap: var(--wow-rom-6);
+    margin: 0;
+  }
+  .wow-foe__ingress {
+    max-width: var(--wow-maal-brod);
+    color: var(--wow-tekst-dempet);
+    text-wrap: pretty;
+  }
+  .wow-foe__rader {
+    margin: 0;
+    padding: 0;
+    border-bottom: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .wow-foe__rad {
+    display: grid;
+    gap: var(--wow-rom-4) var(--wow-luke);
+    padding-block: var(--wow-rom-5);
+    border-top: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .wow-foe__hva {
+    display: grid;
+    gap: var(--wow-rom-2);
+    align-content: start;
+  }
+  .wow-foe__navn {
+    font-size: var(--wow-tekst-ingress);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .wow-foe__tekst {
+    max-width: var(--wow-maal-brod);
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+    line-height: 1.45;
+    text-wrap: pretty;
+  }
+  .wow-foe__andel {
+    display: grid;
+    gap: var(--wow-rom-3);
+    align-content: start;
+  }
+  .wow-foe__tall {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--wow-rom-1) var(--wow-rom-3);
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+  }
+  /* Andelen er poenget i raden, så den er det største i den. */
+  .wow-foe__prosent {
+    color: var(--wow-tekst);
+    font-family: var(--wow-font-display);
+    font-weight: var(--wow-display-vekt);
+    font-stretch: var(--wow-display-bredde);
+    font-size: var(--wow-tekst-h3);
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .wow-foe__stolpe {
+    height: var(--wow-kant-2);
+    background: var(--wow-linje-sterk);
+  }
+  .wow-foe__stolpe span {
+    display: block;
+    height: 100%;
+    background: var(--wow-feil);
+  }
+  .wow-foe__par {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--wow-rom-3) var(--wow-rom-6);
+    align-content: start;
+    margin: 0;
+  }
+  .wow-foe__par div {
+    display: grid;
+    gap: var(--wow-rom-1);
+    align-content: start;
+  }
+  .wow-foe__par dt {
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+  }
+  .wow-foe__par dd {
+    display: grid;
+    gap: var(--wow-rom-1);
+    margin: 0;
+    font-weight: 700;
+  }
+  .wow-foe__status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--wow-rom-2);
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+    font-weight: 500;
+  }
+  .wow-foe__metode {
+    max-width: var(--wow-maal-brod);
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+    line-height: 1.5;
+  }
+  .wow-foe__metode strong {
+    color: var(--wow-tekst);
+  }
+  @media (min-width: 1024px) {
+    .wow-foe__rad {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+    .wow-foe__hva {
+      grid-column: 1 / 6;
+    }
+    .wow-foe__andel {
+      grid-column: 6 / 10;
+    }
+    .wow-foe__par {
+      grid-column: 10 / 13;
+      flex-wrap: nowrap;
+      gap: var(--wow-rom-5);
+    }
+  }
+</style>

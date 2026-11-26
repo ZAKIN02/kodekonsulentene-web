@@ -1,0 +1,94 @@
+---
+/**
+ * Adressefeltet med den fjerde lampa (wow-undersider.md del 3). Samme felt og samme stil som
+ * befaringen på forsiden (.wow-sjekk), med lampa «Din side: ikke sjekket» over som feltets
+ * beskrivelse. Sender en vanlig GET til `action`, så det virker uten JavaScript.
+ *
+ *   <UrlFelt id="url-sjekk" knapp="Kjør sjekken" />
+ *   <UrlFelt id="domene" navn="domene" type="domene" action="/verktoy/dmarc" knapp="Sjekk domenet"
+ *            skjemaId="dmarc-skjema"> <details>…DKIM…</details> </UrlFelt>
+ *
+ * Slotten står under feltet, inne i skjemaet (ekstra felter som DKIM-selektoren).
+ */
+import { filmTekst } from "../../../data/historie";
+import Lampe from "./Lampe.astro";
+
+interface Props {
+  /** id på feltet. Beskrivelser får id-er med dette som prefiks. */
+  id: string;
+  action?: string;
+  /** Feltnavnet som sendes. Standard «url». */
+  navn?: string;
+  /** Teksten på knappen. */
+  knapp: string;
+  /** Liten tekst under feltet. */
+  hint?: string;
+  /** Den fjerde lampa, «Din side: ikke sjekket», over feltet. */
+  lampe?: boolean;
+  type?: "url" | "domene";
+  /** Usynlig etikett. Standard «Nettadresse» (url) eller «Domene». */
+  etikett?: string;
+  /** Forhåndsutfylt verdi (f.eks. fra ?url=). */
+  verdi?: string;
+  /** id på <form>, for skript som lytter på innsending. */
+  skjemaId?: string;
+  class?: string;
+}
+const {
+  id,
+  action = "/sjekk",
+  navn = "url",
+  knapp,
+  hint,
+  lampe = true,
+  type = "url",
+  etikett = type === "domene" ? "Domene" : "Nettadresse",
+  verdi,
+  skjemaId,
+  class: klasse,
+} = Astro.props;
+const beskrivelse = [lampe && `${id}-din`, `${id}-feil`, hint && `${id}-hint`].filter(Boolean).join(" ");
+---
+
+<form class:list={["wow-sjekk", "wow-urlfelt", klasse]} method="get" action={action} id={skjemaId}>
+  {lampe && (
+    <p class="wow-befaring__din wow-urlfelt__din" id={`${id}-din`}>
+      <Lampe status="ikke-sjekket" />
+      {filmTekst.dinSideStatus}
+    </p>
+  )}
+  <label class="wow-usynlig" for={id}>{etikett}</label>
+  <div class="wow-sjekk__rad">
+    <input
+      id={id}
+      name={navn}
+      type="text"
+      inputmode="url"
+      autocomplete="url"
+      spellcheck="false"
+      autocapitalize="off"
+      placeholder="dinbedrift.no"
+      required
+      pattern="[^ ]+\.[^ ]+"
+      value={verdi}
+      aria-describedby={beskrivelse}
+    />
+    <button class="wow-knapp" type="submit" data-magnetic>
+      <span class="wow-knapp__tekst" data-magnetic-tekst>{knapp}</span>
+    </button>
+  </div>
+  <p class="wow-sjekk__feil" id={`${id}-feil`}>
+    Det ser ikke ut som en nettadresse. Prøv formen dinbedrift.no.
+  </p>
+  {hint && <p class="wow-sjekk__hint" id={`${id}-hint`}>{hint}</p>}
+  <slot />
+</form>
+
+<style>
+  .wow-urlfelt {
+    max-width: 40rem;
+  }
+  .wow-urlfelt__din {
+    font-size: var(--wow-tekst-brod);
+  }
+</style>

@@ -1,0 +1,21 @@
+---
+/**
+ * Én måling som rad: lampe, navn, status som ord, forbehold, målelinje og verdi, og en setning om
+ * hva det betyr (wow-undersider.md del 3). Markupen lages av maalingHtml() i maaling.ts, som også
+ * verktøyskriptene bruker i nettleseren, så serveren og skriptet aldri tegner ulike rader.
+ *
+ * Står i en Rapportark (som <li>), eller alene med som="div".
+ *
+ *   <Maaling navn="Sikkerhetsheadere" verdi="6/6" status="bestatt" />
+ *   <Maaling navn="Universell utforming" status="ikke-sjekket"
+ *            merknad="Siden svarte ikke innen 15 sekunder, så den ble ikke lastet." />
+ */
+import { maalingHtml, type MaalingData } from "./maaling";
+
+interface Props extends MaalingData {
+  som?: "li" | "div";
+}
+const { som = "li", ...m } = Astro.props;
+---
+
+<Fragment set:html={maalingHtml(m, som)} />

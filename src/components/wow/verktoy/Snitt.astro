@@ -1,0 +1,125 @@
+---
+/**
+ * Snitt i wow-drakten: lag stablet oppå hverandre, med ekte navn (portert fra
+ * src/components/Snitt.astro for verktøysidene, wow-undersider.md del 3).
+ *
+ * Et snitt tegner en OPPBYGNING: lagene finnes samtidig, og ett av dem (`aksent`) er poenget.
+ * Dataene er de samme (`snitt` i src/data/flyter.ts).
+ *
+ * Hva som er endret fra v1:
+ *  - Figuren står stille. Verktøysidene er «rolig»: ingenting beveger seg uten at brukeren har
+ *    gjort noe. Sveipet, gløden og tegningen ved rulling er borte.
+ *  - Ren HTML i stedet for SVG. V1 måtte bytte figuren mot en liste under 1024 px fordi teksten i
+ *    SVG-en krympet med spalten. Her er lista figuren, i alle bredder, og teksten er ekte tekst.
+ *  - Ingen «01, 02, 03» og ingen monospace (del 12). Rekkefølgen bæres av <ol>.
+ *
+ *   <Snitt snitt={snitt.epost} />
+ *   <Snitt snitt={snitt.epost} bildetekst={false} />   når siden sier det samme i brødteksten
+ */
+import type { Snitt } from "../../../data/flyter";
+
+interface Props {
+  snitt: Snitt;
+  /** Overskriftsnivå. Standard 3 (figuren står i en seksjon som eier h2). */
+  niva?: 2 | 3;
+  /** Vis `snitt.beskrivelse` under figuren. Standard true. */
+  bildetekst?: boolean;
+  class?: string;
+}
+const { snitt, niva = 3, bildetekst = true, class: klasse } = Astro.props;
+const H = niva === 2 ? "h2" : "h3";
+---
+
+<figure class:list={["wow-snitt", klasse]}>
+  <H class="wow-snitt__tittel">{snitt.tittel}</H>
+  <ol class="wow-snitt__lag" role="list">
+    {
+      snitt.lag.map((l, i) => (
+        <li class:list={["wow-snitt__rad", i === snitt.aksent && "wow-snitt__rad--aksent"]}>
+          <span class="wow-snitt__navn">{l.navn}</span>
+          <span class="wow-snitt__leder" aria-hidden="true" />
+          <span class="wow-snitt__detalj">{l.detalj}</span>
+        </li>
+      ))
+    }
+  </ol>
+  {bildetekst && <figcaption class="wow-snitt__tekst">{snitt.beskrivelse}</figcaption>}
+</figure>
+
+<style>
+  .wow-snitt {
+    display: grid;
+    gap: var(--wow-rom-5);
+    margin: 0;
+  }
+  .wow-snitt__tittel {
+    font-size: var(--wow-tekst-les-h3);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .wow-snitt__lag {
+    display: grid;
+    gap: var(--wow-rom-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  /* Mobil: hvert lag er en plate med navnet og hva det er, under hverandre. */
+  .wow-snitt__rad {
+    display: grid;
+    gap: var(--wow-rom-1);
+    padding: var(--wow-rom-4) var(--wow-rom-5);
+    border: var(--wow-kant-1) solid var(--wow-linje-sterk);
+    border-radius: var(--wow-radius-s);
+  }
+  .wow-snitt__rad--aksent {
+    border-color: var(--wow-refleks);
+  }
+  .wow-snitt__navn {
+    font-family: var(--wow-font-display);
+    font-weight: var(--wow-display-vekt);
+    font-stretch: var(--wow-display-bredde);
+    font-size: var(--wow-tekst-h3);
+    line-height: 1;
+  }
+  .wow-snitt__rad--aksent .wow-snitt__navn {
+    color: var(--wow-refleks);
+  }
+  .wow-snitt__leder {
+    display: none;
+  }
+  .wow-snitt__detalj {
+    color: var(--wow-tekst-dempet);
+  }
+  .wow-snitt__tekst {
+    max-width: var(--wow-maal-brod);
+    color: var(--wow-tekst-dempet);
+    font-size: var(--wow-tekst-liten);
+  }
+  /* Bredere: plata til venstre, en strek ut, og hva laget er til høyre. */
+  @media (min-width: 768px) {
+    .wow-snitt__rad {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 1fr) minmax(0, 6fr);
+      align-items: center;
+      gap: var(--wow-rom-4);
+      padding: 0;
+      border: 0;
+    }
+    .wow-snitt__navn {
+      padding: var(--wow-rom-4) var(--wow-rom-5);
+      border: var(--wow-kant-1) solid var(--wow-linje-sterk);
+      border-radius: var(--wow-radius-s);
+    }
+    .wow-snitt__rad--aksent .wow-snitt__navn {
+      border-color: var(--wow-refleks);
+    }
+    .wow-snitt__leder {
+      display: block;
+      height: var(--wow-kant-1);
+      background: var(--wow-linje-sterk);
+    }
+    .wow-snitt__rad--aksent .wow-snitt__leder {
+      background: var(--wow-refleks);
+    }
+  }
+</style>

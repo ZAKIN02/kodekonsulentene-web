@@ -1,0 +1,141 @@
+---
+// Navigasjonen: heldekkende toppfelt (kritikerfunn 11), fire valg og én refleks-knapp (funn 12).
+// Den fulle menyen fra navigasjon.ts står i bunnteksten, så ingen side mister en innlenke. På smal
+// skjerm: logo, knapp og en «Meny»-knapp bygget på <details>, så den virker uten JavaScript.
+// data-hode-skjul (bevegelse: hode.ts på film, rolig.ts på rolig): feltet glir bort ved rulling
+// nedover og kommer tilbake ved rulling oppover.
+//
+// Bølge A1 (wow-undersider.md del 3): lenkene virker fra alle sider.
+//  - Forsiden er uendret: «Tjenester» peker på første tjenestekapittel i filmen (#sw-kapittel-1)
+//    og «Priser» på #priser.
+//  - Undersidene: «Tjenester» er en <details> som åpner et panel med Nettsider, Systemer og
+//    integrasjoner, Apper og AI (med løsningslinja fra historie.ts under hver) og Sikkerhet.
+//    «Priser» peker på /priser. Mobilmenyen har de samme sidene som vanlige lenker.
+//  - aria-current="page" på siden du står på.
+//  - Med JavaScript lukkes åpne paneler med Esc (fokus tilbake til knappen) og ved klikk utenfor.
+//
+//   <Hode />                          (MalWow setter den inn; bookHref fra MalWow)
+//   <Hode bookHref="/kontakt" />      sider uten Kontaktblokk
+import { historie } from "../../../data/historie";
+import { hovedmeny } from "../../../data/navigasjon";
+
+interface Props {
+  /** Hvor «Book 20 min» peker. Standard «#kontakt». */
+  bookHref?: string;
+  /** Overstyrer hvilken sti som regnes som aktiv (standard: sidens egen). */
+  aktiv?: string;
+}
+
+const { bookHref = "#kontakt", aktiv } = Astro.props;
+const ren = (s: string) => s.replace(/\/+$/, "") || "/";
+const her = ren(aktiv ?? Astro.url.pathname);
+const forside = her === "/";
+const gjeldende = (href: string) => (ren(href) === her ? "page" : undefined);
+
+// Tjenestene: de tre kapitlene i filmen med lenke, så Sikkerhet fra hovedmenyen. Navn og linje
+// leses fra historie.ts, så menyen og filmen sier det samme.
+const sikkerhet = hovedmeny.find((l) => l.href === "/sikkerhet");
+const tjenester = [
+  ...historie
+    .filter((k) => k.href && k.tittel)
+    .map((k) => ({ navn: k.tittel!, href: k.href!, linje: k.losning })),
+  ...(sikkerhet ? [{ navn: sikkerhet.label, href: sikkerhet.href, linje: undefined }] : []),
+];
+
+const meny = forside
+  ? [
+      { label: "Tjenester", href: "#sw-kapittel-1" },
+      { label: "Priser", href: "#priser" },
+      { label: "Caser", href: "/caser" },
+      { label: "Om", href: "/om" },
+    ]
+  : [
+      { label: "Priser", href: "/priser" },
+      { label: "Caser", href: "/caser" },
+      { label: "Om", href: "/om" },
+    ];
+
+const menySmal = forside ? meny : [...tjenester.map((t) => ({ label: t.navn, href: t.href })), ...meny];
+const tjenesteAktiv = tjenester.some((t) => gjeldende(t.href));
+---
+
+<header class="wow-hode" data-hode-skjul data-hode-meny>
+  <div class="wow-hode__rad">
+    <a class="wow-hode__logo" href="/" aria-label="KodeKonsulentene – til forsiden">
+      <picture>
+        <source media="(max-width: 479px)" srcset="/logo/kk-mark.svg" />
+        <img src="/logo/kk-lockup-dark.svg" alt="" width="186" height="24" />
+      </picture>
+    </a>
+    <nav class="wow-hode__meny" aria-label="Hovedmeny">
+      <ul>
+        {!forside && (
+          <li>
+            <details class="wow-hode__tjenester">
+              <summary class:list={["wow-hode__lenke", tjenesteAktiv && "wow-hode__lenke--aktiv"]}>
+                Tjenester<span class="wow-hode__pil" aria-hidden="true"></span>
+              </summary>
+              <ul class="wow-hode__tjenesteliste" role="list">
+                {tjenester.map((t) => (
+                  <li>
+                    <a class="wow-hode__tjeneste" href={t.href} aria-current={gjeldende(t.href)}>
+                      <span class="wow-hode__tjeneste-navn">{t.navn}</span>
+                      {t.linje && <span class="wow-hode__tjeneste-linje">{t.linje}</span>}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          </li>
+        )}
+        {meny.map((l) => (
+          <li><a class="wow-hode__lenke" href={l.href} aria-current={gjeldende(l.href)}>{l.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+    <div class="wow-hode__handling">
+      <a class="wow-knapp wow-knapp--liten" href={bookHref} data-magnetic>
+        <span class="wow-knapp__tekst" data-magnetic-tekst>Book 20 min</span>
+      </a>
+      <details class="wow-hode__smal">
+        <summary>Meny</summary>
+        <nav class="wow-hode__panel" aria-label="Hovedmeny, mobil">
+          <ul>
+            {menySmal.map((l) => (
+              <li><a href={l.href} aria-current={gjeldende(l.href)}>{l.label}</a></li>
+            ))}
+          </ul>
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>
+
+<script>
+  // Esc lukker et åpent panel i toppfeltet og gir fokus tilbake til knappen; klikk utenfor lukker
+  // det. Uten dette skriptet er panelene vanlige <details> som lukkes ved nytt klikk.
+  const hode = document.querySelector<HTMLElement>("[data-hode-meny]");
+  if (hode) {
+    const aapne = () => Array.from(hode.querySelectorAll<HTMLDetailsElement>("details[open]"));
+    addEventListener("keydown", (e) => {
+      if (e.key !== "Escape") return;
+      for (const d of aapne()) {
+        const fokusInni = d.contains(document.activeElement);
+        d.open = false;
+        if (fokusInni) d.querySelector("summary")?.focus();
+      }
+    });
+    addEventListener("click", (e) => {
+      for (const d of aapne()) if (!d.contains(e.target as Node)) d.open = false;
+    });
+    // To paneler oppå hverandre gir ingen mening: åpnes ett, lukkes det andre.
+    hode.addEventListener(
+      "toggle",
+      (e) => {
+        const d = e.target as HTMLDetailsElement;
+        if (d.open) for (const annen of aapne()) if (annen !== d) annen.open = false;
+      },
+      true,
+    );
+  }
+</script>

@@ -1,0 +1,203 @@
+/* Tokens for wow-forsiden (docs/design/wow-brief.md, «Natt i verkstedet»).
+   Alle farger, avstander, radier, typeskala og tider for MalWow og
+   src/components/wow/ ligger her. Komponenter og wow.css bruker bare var(--wow-*).
+
+   Kontrast, målt med WCAG-formelen (relativ luminans):
+     tekst      #F2F2EE på bunn #0A0B0C  17,55:1   på flate #141618  16,16:1
+     dempet     #A4A79F på bunn          8,07:1    på flate          7,43:1
+     svak       #8E918A på bunn          6,16:1    på flate-hev      5,24:1
+     refleks    #C8F24A på bunn          15,25:1
+     lenke      #8FA2FF på bunn          8,24:1    på flate-hev      7,00:1
+     feil       #FF6B5E på bunn          7,05:1
+     bunn-tekst #0A0B0C på refleks       15,25:1
+     refleks-dempet #3A4A12 på refleks   7,50:1
+   Kantfargene (--wow-linje*) er ikke tekst og trenger bare 3:1 der de bærer
+   informasjon (feltkanter: --wow-linje-sterk). */
+
+:root {
+  color-scheme: dark;
+
+  /* ── Farger ─────────────────────────────────────────────────────── */
+  --wow-bunn: #0a0b0c;
+  --wow-flate: #141618;
+  --wow-flate-hev: #1b1e21;
+  --wow-tekst: #f2f2ee;
+  --wow-tekst-dempet: #a4a79f;
+  --wow-tekst-svak: #8e918a;
+  --wow-refleks: #c8f24a;
+  --wow-refleks-trykk: #b4dc3a;
+  --wow-tekst-pa-refleks: #0a0b0c;
+  --wow-refleks-dempet: #3a4a12;
+  --wow-lenke: #8fa2ff;
+  --wow-feil: #ff6b5e;
+  --wow-linje: #2a2d31;
+  --wow-linje-sterk: #6e726b;
+  /* Lampene (status i rapportspråket). Fargen bærer aldri status alene: ordet står ved. */
+  --wow-status-bestatt: var(--wow-refleks);
+  --wow-status-brudd: var(--wow-feil);
+  --wow-status-venter: var(--wow-linje-sterk);
+  --wow-slor: rgb(10 11 12 / 0.62);
+  --wow-slor-tung: rgb(10 11 12 / 0.92);
+  --wow-slor-null: rgb(10 11 12 / 0);
+  --wow-plate: rgb(10 11 12 / 0.55);
+  /* Rammene rundt ekte skjermbilder (nettleser og telefon). */
+  --wow-ramme: #1f2226;
+  --wow-ramme-kant: #34383d;
+  --wow-ramme-prikk: #4a4f55;
+  --wow-skygge-ramme:
+    0 1px 2px rgb(0 0 0 / 0.4),
+    0 12px 24px -8px rgb(0 0 0 / 0.5),
+    0 40px 80px -24px rgb(0 0 0 / 0.7);
+
+  /* ── Skrift ─────────────────────────────────────────────────────── */
+  --wow-font-display: "Archivo", "Archivo reserve", "Arial Narrow", sans-serif;
+  --wow-font-tekst: "Schibsted Grotesk", "Schibsted Grotesk reserve", system-ui, sans-serif;
+  /* Archivo-fila er instansiert til wght 700–800 og wdth 75–112. */
+  --wow-display-vekt: 800;
+  --wow-display-bredde: 78%;
+  --wow-display-linje: 0.88;
+  --wow-display-sperring: -0.012em;
+
+  /* Typeskala. Display er briefens clamp; resten er trinn under.
+     Trinnene er valgt så hvert nivå er minst ×1,5 av det under:
+     mega 176 → stor 120 → verdi 96 → tjeneste 80 → mellom 44 → h3 32 → ingress 24 → brød 19 → liten 15 */
+  --wow-tekst-mega: clamp(3.5rem, 11vw, 11rem);
+  /* H1 i heroen, i spalte 1–7 (kritiker r3 #4): tre linjer på desktop, så
+     gata i filmen står fri til høyre. */
+  --wow-tekst-hero: clamp(3rem, 7.2vw, 7.25rem);
+  /* Ordmerket er målt til 9,08 em bredt i Archivo 800/78 %. Det går fra kant
+     til kant (funn 21), så delingen tar bare bort det sperringen legger til. */
+  --wow-tekst-ordmerke: calc(100vw / 9.3);
+  --wow-tekst-stor: clamp(3.25rem, 7.4vw, 7.5rem);
+  /* Garantien (runde wow-r6): ett løfte i plakatstørrelse, tre linjer ved 1440. */
+  --wow-tekst-garanti: clamp(2.75rem, 9.2vw, 9.5rem);
+  --wow-tekst-tjeneste: clamp(2.25rem, 4.2vw, 4.5rem);
+  --wow-tekst-tall: clamp(3rem, 6.4vw, 6.5rem);
+  --wow-tekst-pris: clamp(2.5rem, 5.4vw, 5.5rem);
+  --wow-tekst-h3: clamp(1.5rem, 1.1rem + 1.2vw, 2.25rem);
+  /* Mellomnivået (kritikerfunn 16): ingresser i de viktigste seksjonene. */
+  --wow-tekst-mellom: clamp(1.375rem, 0.9rem + 1.9vw, 2.875rem);
+  /* Befaringsrapporten: etikett ≥ 20 px, verdi i visningsstørrelse. Høyden
+     er med i min(), så fire rader alltid får plass i et festet vindu. */
+  --wow-tekst-rapport-navn: clamp(1.25rem, 1.05rem + 0.6vw, 1.75rem);
+  --wow-tekst-rapport-verdi: clamp(2.75rem, min(6vw, 9vh), 6.5rem);
+  /* Smal skjerm: «Org.nr. bekreftet» skal stå på én linje ved 320–390 px. */
+  --wow-tekst-rapport-verdi-smal: clamp(2rem, 10vw, 2.75rem);
+  --wow-tekst-rapport-pris: clamp(3rem, min(6.5vw, 10vh), 7rem);
+  /* Datoene i «Slik går det» er overskriften der (funn 20). */
+  --wow-tekst-dato: clamp(2.5rem, 3.4vw, 3.75rem);
+  --wow-tekst-pris-andre: 2rem;
+  --wow-tekst-ingress: clamp(1.25rem, 1.05rem + 0.6vw, 1.625rem);
+  /* Runde wow-r7, «Lampa» (historie-manus.md del 5, typografiregelen): etter filmen står bare
+     garantien og ordmerket i versaler. Alle andre overskrifter i setningsform, maks 4,5rem.
+     seksjon 3,5rem (rapporten, kontakten), seksjon-liten 3rem (arbeid, priser). */
+  --wow-tekst-seksjon: clamp(2.25rem, 1.55rem + 2.6vw, 3.5rem);
+  --wow-tekst-seksjon-liten: clamp(2rem, 1.45rem + 2vw, 3rem);
+  --wow-setning-bredde: 88%;
+  --wow-setning-vekt: 760;
+  --wow-setning-linje: 1.02;
+  --wow-setning-sperring: -0.02em;
+  /* Fortellerens linjer (samme stemme som platen i filmen, uten plate). */
+  --wow-tekst-forteller: clamp(1.25rem, 1rem + 0.95vw, 1.875rem);
+  /* Første spørsmål står i 2,5rem (manus C, Spørsmål). */
+  --wow-tekst-sporsmal-forst: clamp(1.625rem, 1.2rem + 1.6vw, 2.5rem);
+  --wow-tekst-sporsmal: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+  /* Datohjulet: én dato om gangen, innhold og ikke overskrift (manus C: «det store er innhold»). */
+  --wow-tekst-hjul: clamp(3.5rem, 1.6rem + 7.4vw, 9rem);
+  /* Svartiden i driftskortet. */
+  --wow-tekst-drift: clamp(2.5rem, 1.8rem + 2.4vw, 4rem);
+  /* Lengden på de rullestyrte scenene (bare med JS og full bevegelse). */
+  --wow-scene-garanti: 300svh;
+  --wow-scene-garanti-mobil: 240svh;
+  --wow-scene-hjul: 280svh;
+  --wow-scene-hjul-mobil: 220svh;
+  /* Tegningen i garantien: strekbredde i SVG-ens egne enheter (viewBox 1200 bred på desktop,
+     390 på mobil; tegningen vises i omtrent naturlig størrelse, så 2 blir ca. 1,7 px). */
+  --wow-strek-tegning: 2;
+  /* Tegningen er aldri bredere enn dette på store skjermer. */
+  --wow-tegning-maks: 72rem;
+  /* Dybden i datohjulet (rotateX på verdiene). */
+  --wow-hjul-perspektiv: 60rem;
+  /* Svakeste opasitet en dato i hjulet har mens den er synlig (på vei inn eller ut av vinduet).
+     #F2F2EE med 0,5 på bunn #0A0B0C blir #7E7E7D: 4,85:1 (kravet er 3:1 for stor tekst, og
+     hjulet er aldri under 56 px). Før sto naboverdien på 0,3, som ga 2,44:1 (axe, wow-r8).
+     Verdier som er rullet helt ut av vinduet, skjules i stedet for å tones ned. */
+  --wow-hjul-svakest: 0.5;
+  --wow-tekst-brod: clamp(1.125rem, 1.05rem + 0.2vw, 1.25rem);
+  --wow-tekst-liten: 0.9375rem;
+  --wow-tekst-mikro: 0.8125rem;
+
+  --wow-maal-brod: 62ch;
+  --wow-maal-ingress: 40ch;
+
+  /* Undersidene (docs/design/wow-undersider.md del 1.1 og 3). Lesesidene holder Archivo i
+     rammen og Schibsted i kolonnen, så H2 og H3 der er egne, roligere trinn. */
+  --wow-tekst-les-h2: clamp(1.5rem, 1.25rem + 0.9vw, 2rem);
+  --wow-tekst-les-h3: clamp(1.1875rem, 1.1rem + 0.3vw, 1.375rem);
+  --wow-linje-les: 1.65;
+  /* Displaytekst med Æ, Ø eller Å, og all displaytekst under 768 px (kritiker r4 #14):
+     ringen i Å skal ikke treffe linja over. */
+  --wow-display-linje-smal: 0.95;
+  /* Bare i <code> og <pre> (ekte kode) og i den ekte terminalen. Systemets monospace,
+     ingen ekstra fontfil. */
+  --wow-font-kode: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  /* Lesekolonne med innholdsliste (fra 1280 px). */
+  --wow-maal-innhold: 16rem;
+
+  /* ── Rom ────────────────────────────────────────────────────────── */
+  --wow-rom-1: 0.25rem;
+  --wow-rom-2: 0.5rem;
+  --wow-rom-3: 0.75rem;
+  --wow-rom-4: 1rem;
+  --wow-rom-5: 1.5rem;
+  --wow-rom-6: 2rem;
+  --wow-rom-7: 3rem;
+  --wow-rom-8: 4.5rem;
+  --wow-rom-9: 7rem;
+  --wow-rom-10: 10rem;
+
+  --wow-marg: clamp(1.25rem, 3.4vw, 3rem);
+  --wow-luke: clamp(1rem, 1.6vw, 1.5rem);
+  /* Seksjonsluft (funn 3): topp, aldri bunn når en ny overskrift følger. */
+  --wow-seksjon: clamp(3.5rem, 6vw, 6rem);
+  --wow-seksjon-tett: clamp(3rem, 5vw, 4.5rem);
+  --wow-hode-hoyde: 4.5rem;
+  --wow-trykkflate: 2.75rem;
+  --wow-kontroll: 3.5rem;
+  --wow-felt: 3.5rem;
+
+  /* ── Kanter og radier ───────────────────────────────────────────── */
+  --wow-kant-1: 1px;
+  --wow-kant-2: 2px;
+  --wow-radius-s: 0.5rem;
+  --wow-radius-m: 1rem;
+  --wow-radius-l: 1.75rem;
+  --wow-radius-pille: 999px;
+  --wow-fokus: var(--wow-refleks);
+  --wow-fokus-avstand: 3px;
+
+  /* ── Tid og kurver (svar på handling; scroll-bevegelse eies av bevegelse) */
+  --wow-tid-kort: 160ms;
+  --wow-tid-svar: 280ms;
+  --wow-tid-lang: 700ms;
+  --wow-tid-rull: 2400ms;
+  /* Lampa som lytter (driftskortet mens /status måles): én puls. */
+  --wow-tid-puls: 900ms;
+  --wow-kurve: cubic-bezier(0.2, 0.7, 0.1, 1);
+  --wow-kurve-inn-ut: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* ── Lag ────────────────────────────────────────────────────────── */
+  --wow-lag-hode: 50;
+  --wow-lag-meny: 60;
+  --wow-lag-hopp: 100;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --wow-tid-kort: 0ms;
+    --wow-tid-svar: 0ms;
+    --wow-tid-lang: 0ms;
+    --wow-tid-rull: 0ms;
+    --wow-tid-puls: 0ms;
+  }
+}

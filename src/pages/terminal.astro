@@ -1,7 +1,6 @@
 ---
-import Base from "../layouts/Base.astro";
-import Section from "../components/Section.astro";
-import Terminal from "../components/Terminal.astro";
+import MalWow from "../layouts/MalWow.astro";
+import { SideHode, Artikkelkropp } from "../components/wow/side";
 import { firma } from "../data/firma";
 
 /**
@@ -10,6 +9,17 @@ import { firma } from "../data/firma";
  * Den finnes fordi en skjult funksjon ingen vet om, ikke finnes. Epic.net har
  * «Puzzle», «Rabbit» og «Castle» stående synlig i footeren – det er nettopp det
  * som gjør at siden føles som den har dybde. Vi gjør det samme med vår egen.
+ *
+ * WOW-DRAKTEN (wow-undersider.md del 1.9): lesemalen. Kommandoene står som ekte kode, og
+ * utsnittet står i den ekte terminalen (`kkterm`, stil i wow-terminal.css). Med JavaScript slår
+ * /terminal.js på feltet under utsnittet (`data-kkterm-innfelt="utsnitt"`), så «terminalen over»
+ * i teksten er en terminal du kan skrive i. Uten JavaScript står utsnittet som tekst og feltet
+ * er av. Teksten er uendret fra v1.
+ *
+ * OVERSKRIFTEN sto en gang «Trykk ~ hvor som helst», mens siden selv sier at terminalen er av på
+ * berøringsskjerm. Overskriften sier derfor hva siden ER, og vilkåret står i ingressen, der det
+ * gjelder alle. (En mediespørring på `pointer: coarse` gjetter på inndataenheten og gjetter feil
+ * begge veier.)
  */
 const kommandoer = [
   ["sjekk <url>", "Kjører hele nettsidesjekken og skriver resultatet her"],
@@ -19,95 +29,138 @@ const kommandoer = [
   ["ls", "Sidene som finnes"],
   ["cat <side>", "Leser en side her, uten å navigere bort"],
   ["open <side>", "Går til siden"],
-  ["tema", "Bytter mørkt og lyst"],
   ["help", "Alle kommandoer"],
 ];
+
+/**
+ * UTSNITTET KJØRER MOT VÅRT EGET DOMENE, MED EKTE TALL.
+ *
+ * Det sto en gang «dmarc nkom.no … Samlet: 83/100»: en poengsum for en navngitt tredjepart,
+ * uten kilde og uten dato. Vi lover andre steder at ingen sider navngis. Tallene under er kjørt
+ * med hentEpostoppsett() og byggEpostRapport() fra src/lib/dns.ts mot kodekonsulentene.no
+ * 7. oktober 2026, som ga
+ *
+ *   SPF    ok      ~all · 2/10 oppslag
+ *   DKIM   nøytral Ikke sjekket (ingen selektor oppgitt)
+ *   DMARC  warn    p=none
+ *   totalt 67
+ *
+ * Et eksempel som viser vårt eget svake punkt er et bedre bevis på at verktøyet måler enn et
+ * pent tall fra en fremmed side.
+ *
+ * Linjene får klassene /terminal.js selv bruker: ok → kk-ok, warn → kk-warn, nøytral → ingen
+ * (v1 farget «Ikke sjekket» som varsel; terminalen gjør ikke det, og «Ikke sjekket» er ikke et
+ * funn). Siste linje er det skrivRapport() i /terminal.js skriver i dag for de samme radene
+ * (r8-rettelser.md 4.2); resten er ordrett v1.
+ */
+const esc = (t: string) => t.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]!);
+const utsnitt = [
+  `<span><span class="kkterm__ps">$</span> <b>dmarc ${esc(firma.domene)}</b></span>`,
+  `<span><span class="kk-ok">spf ..... ~all · 2/10 oppslag</span></span>`,
+  `<span>dkim .... Ikke sjekket</span>`,
+  `<span><span class="kk-warn">dmarc ... p=none</span></span>`,
+  `<span></span>`,
+  `<span><span class="kk-warn">1 å fikse. Samlet: 67/100.</span></span>`,
+]
+  .map((l) => l + "\n")
+  .join("");
 ---
-<Base
+
+<MalWow
   tittel="Terminal i nettleseren (trykk ~)"
   beskrivelse="Siden har en terminal. Trykk tilde for å åpne den, og kjør nettsidesjekken, DMARC-oppslag eller prislisten uten å forlate siden."
+  bevegelse="rolig"
+  bookHref="/kontakt"
 >
-  <Section
-    nivaa={1}
-    n={1}
-    eyebrow="Terminal"
-    {/* OVERSKRIFTEN BA OM NOE SIDEN SELV SIER ER AVSKRUDD.
-        Den sto «Trykk ~ hvor som helst». To avsnitt lenger ned sto det «På
-        berøringsskjerm er den skrudd av, siden den krever tastatur» – altsaa en
-        oppfordring i stoerste skriftgrad, dementert i den minste. Paa 390 px er
-        det foerste og eneste en telefonbruker ser av denne siden.
-
-        Loesningen er ikke aa bytte tekst etter `pointer: coarse`. En
-        mediespoerring GJETTER paa inndataenheten, og et nettbrett med tastatur
-        eller en telefon med Bluetooth-tastatur gjetter den feil begge veier.
-        Overskriften sier i stedet hva siden ER, og vilkaaret staar i ingressen,
-        der det gjelder alle. */}
-    tittel="En terminal i nettleseren"
-    ingress="Trykk tilde (~) på et tastatur, så åpner den seg hvor som helst på siden. Den er ikke pynt – den kjører de samme sjekkene som verktøyene, mot ekte nettsider, og skriver svaret rett i vinduet. På berøringsskjerm er den av, siden den krever tastatur."
-  >
-    <div class="grid-2">
-      <div class="stack">
-        <dl class="kv">
-          {kommandoer.map(([k, hva]) => (
-            <div><dt class="mono">{k}</dt><dd class="small" style="font-family: var(--font-sans)">{hva}</dd></div>
-          ))}
-        </dl>
-        {/* Vilkaaret om beroeringsskjerm sto baade her og i ingressen etter at
-            overskriften ble skrevet om. Det staar i ingressen nu, der det hoerer
-            hjemme, og er fjernet her. */}
-        <p class="small faint">
-          Piltastene blar i historikken, Tab fullfører kommandonavn, Esc lukker.
-          Den laster ingenting før du åpner den.
-        </p>
-        <p class="small faint">
-          Det finnes også noe som ikke står i <span class="mono">help</span>.
-          Folk som har spilt mye på åttitallet finner det raskest.
-        </p>
-      </div>
-      {/*
-        UTSNITTET VISTE ET FREMMED DOMENE MED EN KONKRET SCORE.
-
-        Det sto «dmarc nkom.no … Samlet: 83/100» – en poengsum for en navngitt
-        tredjepart, uten kilde og uten dato, på en side som ikke er en rapport.
-        Sju andre steder på nettstedet lover vi at ingen sider navngis, og selv om
-        regelen i docs/metode-skanning.md er skrevet for masseskanningen, kan ikke
-        nettstedet love én ting og gjøre en annen i et eksempel.
-
-        Utsnittet kjører derfor mot VÅRT EGET domene, der regelen ikke gjelder –
-        samme begrunnelse som på /sikkerhet. Og tallene er ekte: kjørt med
-        hentEpostoppsett() og byggEpostRapport() fra src/lib/dns.ts mot
-        kodekonsulentene.no 7. oktober 2026, som ga
-
-          SPF    ok      ~all · 2/10 oppslag
-          DKIM   nøytral Ikke sjekket (ingen selektor oppgitt)
-          DMARC  warn    p=none
-          totalt 67
-
-        Det er en DÅRLIGERE score enn den som sto der før, og den står med vilje:
-        et eksempel som viser vårt eget svake punkt er et bedre bevis på at
-        verktøyet måler enn et pent tall fra en fremmed side. DMARC-en vår står i
-        overvåkningsmodus, og det er en av de tingene som skal rettes.
-      */}
-      <Terminal
-        title={`~/${firma.domene}`}
-        skriv
-        cursor
-        lines={[
-          { type: "cmd", text: `dmarc ${firma.domene}` },
-          { type: "ok", text: "spf ..... ~all · 2/10 oppslag" },
-          { type: "warn", text: "dkim .... Ikke sjekket" },
-          { type: "warn", text: "dmarc ... p=none" },
-          { type: "out", text: "" },
-          { type: "out", text: "Ingen brudd, 1 bør fikses, 1 ikke sjekket. Samlet: 67/100." },
-        ]}
-        label={`Terminalutsnitt: kommandoen dmarc ${firma.domene} gir SPF tilde-all med to av ti oppslag, DKIM ikke sjekket, DMARC p-lik-none, samlet 67 av 100.`}
-      />
-      <p class="small faint">
-        Utsnittet er vårt eget domene, kjørt 7. oktober 2026. Kjør{" "}
-        <span class="mono">dmarc {firma.domene}</span> i terminalen over, så får du
-        det samme svaret fra DNS – og ser samtidig at vår egen DMARC står i
-        overvåkningsmodus.
+  <article>
+    <SideHode
+      tittel="En terminal i nettleseren"
+      ingress="Trykk tilde (~) på et tastatur, så åpner den seg hvor som helst på siden. Den er ikke pynt – den kjører de samme sjekkene som verktøyene, mot ekte nettsider, og skriver svaret rett i vinduet. Har du ikke tastatur, kan du skrive i terminalen lenger ned på denne siden."
+      storrelse="tjeneste"
+      bredde="les"
+    />
+    <Artikkelkropp variant="handbok">
+      <dl class="kommandoer">
+        {kommandoer.map(([k, hva]) => (
+          <div><dt><code>{k}</code></dt><dd>{hva}</dd></div>
+        ))}
+      </dl>
+      <p class="wow-notat">
+        Piltastene blar i historikken, Tab fullfører kommandonavn, Esc lukker.
+        Den laster ingenting før du åpner den.
       </p>
-    </div>
-  </Section>
-</Base>
+      <p class="wow-notat">
+        Det finnes også noe som ikke står i <code>help</code>.
+        Folk som har spilt mye på åttitallet finner det raskest.
+      </p>
+
+      <div class="kkterm utsnitt" data-kkterm-innfelt="utsnitt">
+        <div class="kkterm__bar"><span>~/{firma.domene}</span></div>
+        <div class="kkterm__out" role="log" aria-live="polite" set:html={utsnitt} />
+        <div class="kkterm__line">
+          <span class="kkterm__ps" aria-hidden="true">$</span>
+          <label class="visually-hidden" for="kkterm-side">Kommando</label>
+          <input
+            class="kkterm__in"
+            id="kkterm-side"
+            autocomplete="off"
+            spellcheck="false"
+            autocapitalize="off"
+            autocorrect="off"
+            disabled
+            placeholder="krever JavaScript"
+          />
+        </div>
+      </div>
+      <p class="wow-notat">
+        Utsnittet er vårt eget domene, kjørt 7. oktober 2026. Kjør{" "}
+        <code>dmarc {firma.domene}</code> i terminalen over, så får du
+        svaret fra DNS slik det er i dag.
+      </p>
+    </Artikkelkropp>
+  </article>
+</MalWow>
+
+<style>
+  /* Ingen kontaktblokk under: luft ned til bunnfeltet. */
+  article {
+    padding-bottom: var(--wow-seksjon);
+  }
+  /* Kommandoene: koden til venstre, forklaringen til høyre, strek mellom. Under 600 px står
+     forklaringen under koden. */
+  .kommandoer {
+    margin: 0;
+    border-bottom: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .kommandoer > div {
+    display: grid;
+    gap: var(--wow-rom-1) var(--wow-rom-5);
+    padding-block: var(--wow-rom-3);
+    border-top: var(--wow-kant-1) solid var(--wow-linje);
+  }
+  .kommandoer dt {
+    white-space: nowrap;
+  }
+  .kommandoer dd {
+    margin: 0;
+    color: var(--wow-tekst-dempet);
+  }
+  @media (min-width: 600px) {
+    .kommandoer > div {
+      grid-template-columns: 12rem minmax(0, 1fr);
+      align-items: baseline;
+    }
+  }
+
+  /* Modalen har egen maksbredde og høyde; den innfelte følger lesekolonnen. */
+  .utsnitt {
+    max-width: none;
+  }
+  /* Linja har bare stien (modalen har «Esc lukker» til høyre); den står til venstre. */
+  .utsnitt :global(.kkterm__bar span) {
+    margin-left: 0;
+  }
+  .utsnitt :global(.kkterm__out) {
+    max-height: 50svh;
+  }
+</style>

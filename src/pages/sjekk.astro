@@ -1,35 +1,37 @@
 ---
-import Base from "../layouts/Base.astro";
+/**
+ * /sjekk i wow-drakten (wow-undersider.md del 1.8 og tabellen i del 4, runde wow-r8-B2).
+ * Rekkefølge: Verktoyramme (brødsmuler, H1, feltet, resultatet) → de fem punktene → hva sjekken
+ * faktisk finner (målte tall og ekte opptak) → «Etterpå» → kontaktblokk. «rolig»: ingenting
+ * beveger seg uten at brukeren har gjort noe.
+ *
+ * Uendret fra v1: API-kallet (POST /api/sjekk med { url }, og { url, epost } for e-posten),
+ * id-ene `#url-sjekk`, `#resultat` og `#r-epost`, feltnavnene `url` og `epost`, alle feiltekster,
+ * forbeholdene, `?url=`-oppførselen (tests/sjekk-url.spec.ts) og WebApplication-markupen.
+ * Nytt: resultatet står i rapportspråket (lampe + status som ord), og fokus flyttes til
+ * rapportens tittel når den er klar.
+ *
+ * Ute: SjekkSekvens (sekvensen spilte av seg selv, og «rolig» har ingen bevegelse uten handling),
+ * terminalutsnittet «sjekk --hva» (kommandoen finnes ikke; linjene står som liste) og
+ * `$ sjekk …`-teksten mens sjekken går.
+ */
+import MalWow from "../layouts/MalWow.astro";
+import { Verktoyramme, UrlFelt, Seksjon, Prosa, Tekstrader, Opptak, Kontaktblokk } from "../components/wow/side";
+import Handlinger from "../components/wow/side/Handlinger.astro";
+import ForOgEtter from "../components/wow/verktoy/ForOgEtter.astro";
 import { verktoy } from "../data/schema";
-import SjekkSekvens from "../components/SjekkSekvens.astro";
-import Demo from "../components/Demo.astro";
-import opptak from "../data/opptak.json";
-import Section from "../components/Section.astro";
-import Scene from "../components/Scene.astro";
-import Mega from "../components/Mega.astro";
-import Avslor from "../components/Avslor.astro";
-import UrlCheck from "../components/UrlCheck.astro";
-import Button from "../components/Button.astro";
-import Terminal from "../components/Terminal.astro";
-import ContactBlock from "../components/ContactBlock.astro";
-import ForOgEtter from "../components/ForOgEtter.astro";
 import { firma } from "../data/firma";
 import { loepende, prisenhet } from "../data/priser";
 
-/* Prisen sto skrevet av, med «eks. mva» på et foretak som ikke er
-   mva-registrert. Begge deler hentes nå fra prislisten. */
+/* Prisen hentes fra prislisten, aldri skrevet av. */
 const lovsjekkPris = loepende.find((r) => r.navn === "Lovsjekk-pakke")?.pris ?? "";
 
-import "../styles/scener.css";
-
-// Siden er statisk. Sjekken kjøres av skriptet under mot /api/sjekk, slik at
-// rapporten kan hentes uten full sidelasting – og uten at siden trenger SSR.
+// Siden er statisk. Sjekken kjøres av skriptet under mot /api/sjekk. I bygget er searchParams
+// tom; skriptet leser ?url= fra location.search. Linja under fyller feltet bare i `astro dev`.
 const forhandsutfylt = Astro.url.searchParams.get("url") ?? "";
 /**
- * `WebApplication` fra `verktoy()` i src/data/schema.ts. Siden hadde ingen
- * strukturerte data foer – hjelperen var skrevet og aldri importert av noen.
- * `price: "0"` og `isAccessibleForFree` er sanne: verktoeyet krever ingen
- * innlogging og koster ingenting.
+ * `WebApplication` fra `verktoy()` i src/data/schema.ts. `price: "0"` og
+ * `isAccessibleForFree` er sanne: verktøyet krever ingen innlogging og koster ingenting.
  */
 const schema = verktoy({
   navn: "Sjekk nettsiden din",
@@ -37,252 +39,146 @@ const schema = verktoy({
     "Sjekker ytelse, sikkerhetsheadere, cookies satt foer samtykke, maskinelt testbare WCAG-feil og lovpaalagt informasjon paa en nettside, og verifiserer org.nr. mot Enhetsregisteret.",
   sti: "/sjekk",
 });
+
+/** De fem punktene, i rekkefølgen sjekken rapporterer dem. */
+const punkter = [
+  { tittel: "Ytelse", tekst: "Lighthouse, mobil" },
+  { tittel: "Sikkerhetsheadere", tekst: "CSP, HSTS, +4" },
+  { tittel: "Cookies før samtykke", tekst: "ekomloven § 3-15" },
+  { tittel: "Universell utforming", tekst: "WCAG 2.0 A/AA" },
+  { tittel: "Lovpålagt informasjon", tekst: "org.nr., ehandelsloven § 8" },
+];
 ---
-<Base
+
+<MalWow
   tittel="Sjekk nettsiden din"
   beskrivelse="Gratis sjekk av ytelse, sikkerhetsheadere, cookies før samtykke, universell utforming og lovpålagt informasjon. Rapport på 30 sekunder."
   schema={[schema]}
+  bevegelse="rolig"
 >
-  {/*
-    HOVEDSEKSJONEN.
+  <Verktoyramme
+    tittel="Sjekk nettsiden din"
+    ingress="Fem ting som er konkrete, testbare og som svært mange norske småbedriftssider bryter minst ett av. Du får svaret i klartekst, ikke i utviklersjargong."
+  >
+    <UrlFelt
+      slot="skjema"
+      id="url-sjekk"
+      knapp="Kjør sjekken"
+      verdi={forhandsutfylt}
+      hint="Vi laster forsiden din én gang, slik en besøkende får den. Ingenting lagres."
+    />
+    <p slot="noscript">
+      Sjekken krever JavaScript. Send adressen til{" "}
+      <a class="wow-lenke" href={`mailto:${firma.epost}?subject=Nettsidesjekk`}>{firma.epost}</a>,
+      så kjører vi den manuelt og sender rapporten samme dag.
+    </p>
+  </Verktoyramme>
 
-    HVA SOM BLE FJERNET HERFRA, OG HVORFOR. Her sto en scenefilm bak teksten
-    (generert materiale, maskert til bakgrunnstekstur), et abstrakt lyssveip over
-    et rutenett, og et snitt-diagram av de fem punktene. Kunden har nå tre ganger
-    sagt det samme: «de gir ingen mening for oss».
-
-    Han har rett, og vi brøt vår egen regel. docs/brandbok.md rangerer bilder
-    1) opptak av verktøyet i bruk, 2) diagram med ekte navn, 3) ingenting.
-    Generert abstrakt materiale står ikke på listen, og et lys som glir over et
-    rutenett består ikke prøven «dekk til teksten – skjønner en rørlegger hva
-    dette handler om?». Det gjorde heller ikke jobben filmen fikk: motivet var
-    sterkt som stillbilde, men klippet sto nesten stille (8,29 av 255 i total
-    endring, mot 18,6 for klippene vi kaller tydelige).
-
-    SNITTET er ikke borte fordi det var dårlig – det er rangordningens nivå 2 og
-    det forklarte. Det var det TREDJE stedet på denne siden som listet de samme
-    fem punktene: akt 3 i sekvensen under, definisjonslista i seksjon 2, og det.
-    Tre kopier av samme liste leses som en side som ikke vet hva den vil si.
-
-    HVA SOM STÅR HER I STEDET: sjekken, fortalt. Adressen skrives inn, skanneren
-    leser svaret med sine egne feltnavn, dommen lander med tallene. Det er
-    rangordningens nivå 1 i form og nivå 2 i teknikk: operasjonen verktøyet
-    faktisk utfører, tegnet i CSS. Den beveger seg uten at brukeren scroller –
-    som var den målte forskjellen mot referansene – og den koster null kilobyte.
-
-    FILMEN VEIDE MER ENN NOTATET HER PÅSTO. Det sto 716 kB. Målt på filene:
-    /scener/sjekk-scan-960.mp4 er 217 kB, -1280 er 1,46 MB og -1920 er 3,20 MB,
-    og SceneFilm velger `bred` over 1024 px og `stor` over 2200 enhetspiksler –
-    altså 3,20 MB på en vanlig 1440-skjerm med dobbel pikseltetthet. Hele /sjekk
-    laster nå 132 kB, mest skrift. De fire filmfilene er ikke referert noe sted
-    lenger og kan slettes; de ligger i public/, som deles med andre sider, så det
-    blir ikke gjort herfra.
-
-    DIVEN RUNDT SEKSJONEN BLIR STÅENDE selv om filmen er borte. Flaterytmen i
-    scener.css er `main > section:nth-of-type(even)`, og hero-en har aldri vært
-    tellende fordi den ligger inne i en div. Fjernes diven, forskyves annenhver
-    flate på HELE siden med én. Den koster ingenting og holder rytmen i ro.
-  */}
-  <div class="sjekk-hero">
-    <Scene lav>
-      <Mega som="h1" merke="Verktøy" n={1} tekst="Sjekk nettsiden din" aksent="Sjekk" />
-      <Avslor trinn={1}>
-        <p class="scene__ingress body-lg">
-          Fem ting som er konkrete, testbare og som svært mange norske småbedriftssider
-          bryter minst ett av. Du får svaret i klartekst, ikke i utviklersjargong.
-        </p>
-      </Avslor>
-
-      {/* IKKE i en Avslor. Avslor venter på scroll, og hele poenget med denne er
-          at den går av seg selv ved innlasting. Pakket inn ville sekvensen stått
-          på opasitet 0 mens akt 1 og 2 spilte seg ferdig bak sløret – og den som
-          ikke scroller, som er hele målgruppen for bevegelse ved innlasting,
-          hadde sett nøyaktig ingenting. */}
-      <SjekkSekvens />
-
-      <div class="stack">
-        <Avslor trinn={2}>
-          <UrlCheck
-            id="url-sjekk"
-            buttonLabel="Kjør sjekken"
-            value={forhandsutfylt}
-            hint="Vi laster forsiden din én gang, slik en besøkende får den. Ingenting lagres."
-          />
-        </Avslor>
-
-        {/* Rapporten har sin egen ugjennomsiktige flate (.kk-report, --bg-raised).
-            Den ligger med vilje IKKE
-            i en Avslor: den settes inn av skriptet etter at sjekken har kjørt, og
-            innhold som kommer fra en handling skal ikke vente på en scroll. */}
-        <div id="resultat" aria-live="polite" aria-busy="false"></div>
-
-        <noscript>
-          <p class="card">
-            Sjekken krever JavaScript. Send adressen til{" "}
-            <a class="kk-link" href={`mailto:${firma.epost}?subject=Nettsidesjekk`}>{firma.epost}</a>,
-            så kjører vi den manuelt og sender rapporten samme dag.
-          </p>
-        </noscript>
-      </div>
-    </Scene>
-  </div>
-
-  <Section n={2} eyebrow="Hva som sjekkes" tittel="Fem punkter, i denne rekkefølgen">
-    <div class="grid-2">
-      <div class="stack">
-        <dl class="kv">
-          <div><dt>Ytelse</dt><dd>Lighthouse, mobil</dd></div>
-          <div><dt>Sikkerhetsheadere</dt><dd>CSP, HSTS, +4</dd></div>
-          <div><dt>Cookies før samtykke</dt><dd>ekomloven § 3-15</dd></div>
-          <div><dt>Universell utforming</dt><dd>WCAG 2.0 A/AA</dd></div>
-          <div><dt>Lovpålagt informasjon</dt><dd>org.nr., ehandelsloven § 8</dd></div>
-        </dl>
-        <p class="small muted">
+  <Seksjon id="punktene" tittel="Fem punkter, i denne rekkefølgen" storrelse="tjeneste" tett>
+    <div class="wow-vt-stabel">
+      <Tekstrader rader={punkter} />
+      <Prosa>
+        <p class="wow-notat">
           Private virksomheter skal oppfylle 35 krav i WCAG 2.0 nivå A og AA. Fra 1. januar 2025
           krever ekomloven § 3-15 at cookie-samtykke oppfyller GDPR-kravene: ingen forhåndsavkryssing,
           «avvis» like lett som «godta», ingen sporing før samtykke.
         </p>
-      </div>
-      <div class="stack">
-        <Terminal
-          title="~/kodekonsulentene/sjekk"
-          lines={[
-            { type: "cmd", text: "sjekk --hva" },
-            { type: "out", text: "henter forsiden én gang, uten å kjøre JavaScript" },
-            { type: "out", text: "leser svarheadere og HTML" },
-            { type: "ok", text: "rapporterer bare det som er målt" },
-            { type: "warn", text: "kontrast og tastaturbruk må testes manuelt" },
-          ]}
-          label="Terminalutsnitt: sjekken henter forsiden én gang uten å kjøre JavaScript, leser svarheadere og HTML, rapporterer bare det som er målt. Kontrast og tastaturbruk må testes manuelt."
-        />
-        <p class="small faint">
-          Verktøyet overdriver aldri funnene. Det som ikke kan måles, får status
-          «Ikke sjekket» og en setning om hvorfor. Dette er ikke juridisk rådgivning.
+        {/* V1 hadde et terminalutsnitt («sjekk --hva») her. Kommandoen finnes ikke, så det var
+            pynt. Linjene står som liste, med de samme ordene. */}
+        <ul>
+          <li>Henter forsiden én gang, uten å kjøre JavaScript</li>
+          <li>Leser svarheadere og HTML</li>
+          <li>Rapporterer bare det som er målt</li>
+          <li>Kontrast og tastaturbruk må testes manuelt</li>
+        </ul>
+        <p class="wow-notat">
+          Verktøyet overdriver aldri funnene. Det som ikke kan måles, får status «Ikke sjekket» og
+          en setning om hvorfor. Dette er ikke juridisk rådgivning.
         </p>
+      </Prosa>
+    </div>
+  </Seksjon>
+
+  <Seksjon id="malt" tittel="Hva sjekken faktisk finner" storrelse="tjeneste">
+    <div class="wow-vt-stabel">
+      {/* Ekte tall fra vår egen motor mot sider trukket fra Enhetsregisteret, ikke håndplukket.
+          Ingen av dem navngis (docs/metode-skanning.md). Raden om oss selv viser våre egne feil
+          med rød lampe når vi har noen. */}
+      <ForOgEtter />
+      {/* Opptak av vår egen sjekk: 50 av 100 mot 90, med radene som skiller dem navngitt. */}
+      <div class="wow-vt-opptak">
+        <Opptak navn="sammenlign" adresse="kodekonsulentene.no/sjekk" />
       </div>
     </div>
-  </Section>
+  </Seksjon>
 
-  <Section eyebrow="Målt" tittel="Hva sjekken faktisk finner">
-    {/* Ekte tall fra vår egen motor mot 38 sider trukket fra Enhetsregisteret –
-        ikke håndplukket, for et håndplukket utvalg beviser bare at man klarte å
-        finne dårlige sider. Ingen av dem navngis: docs/metode-skanning.md forbyr
-        å publisere navn på sider som kommer dårlig ut, og rådata ligger utenfor
-        repoet. Raden om oss selv viser våre egne feil i rødt når vi har noen. */}
-    <ForOgEtter />
-
-    {/* Opptak av vår egen sjekk: 50 av 100 mot 90, med radene som skiller dem
-        navngitt. Utsnittet tar med bunnteksten med vilje – vår egen regel om at
-        den sjekkede siden ikke navngis står der. */}
-    <Demo
-      smal={opptak.sammenlign.smal}
-      bred={opptak.sammenlign.bred}
-      stor={opptak.sammenlign.stor}
-      plakat={opptak.sammenlign.plakat}
-      tekst={opptak.sammenlign.tekst}
-      kilde={opptak.sammenlign.kilde}
+  <Seksjon
+    id="etterpa"
+    tittel="Vil du at vi fikser det?"
+    ingress={`Lovsjekk-pakken er ${lovsjekkPris} – ${prisenhet} – og dekker cookies, universell utforming, lovpålagt informasjon og personvernerklæring på den siden du har i dag. Du trenger ikke ny nettside for det.`}
+    storrelse="tjeneste"
+  >
+    <Handlinger
+      handlinger={[
+        { tekst: "Se hva det koster", href: "/priser", type: "primar" },
+        { tekst: "Les om sikkerhetsarbeidet", href: "/sikkerhet", type: "strek" },
+      ]}
     />
-  </Section>
+  </Seksjon>
 
-  {/* Her lå en scenefilm bak CTA-seksjonen («verktoy-sjekk»). Den er fjernet, og
-      budsjettet flyttet til hovedseksjonen øverst, der kunden faktisk ser etter
-      bevegelse. Begrunnelsen er vekt: filmen her kostet 716 kB på mobil, og to
-      scenefilmer på samme side ville tatt /sjekk fra 913 kB til godt over 1,6 MB.
-
-      Seksjonen taper ingenting på det. Den er fire linjer tekst og to knapper –
-      en avslutning, ikke et øyeblikk. Film bak en CTA er dekorasjon, og
-      brandboken rangerer «ingenting» over et bilde som ikke forklarer noe. */}
-  <Section n={3} eyebrow="Etterpå" tittel="Vil du at vi fikser det?" ingress={`Lovsjekk-pakken er ${lovsjekkPris} – ${prisenhet} – og dekker cookies, universell utforming, lovpålagt informasjon og personvernerklæring på den siden du har i dag. Du trenger ikke ny nettside for det.`}>
-    <div class="row">
-      <Button variant="primary" href="/priser">Se hva det koster</Button>
-      <Button variant="ghost" href="/sikkerhet">Les om sikkerhetsarbeidet</Button>
-    </div>
-  </Section>
-
-  <ContactBlock n={4} tittel="Eller bare ring" ingress="Har du rapporten foran deg og vil vite hva som er viktigst å starte med, tar det fem minutter på telefon." />
-</Base>
-
-<style is:global>
-  /* `.scene__inner` er ikke en grid og setter ingen avstand mellom barna sine.
-     Hero-en her har fire: megateksten, ingressen, sekvensen og feltstabelen.
-     Uten denne regelen klistrer de seg til hverandre.
-
-     is:global fordi selektoren må nå `.scene__inner`, som rendres av
-     Scene.astro og bærer DEN komponentens scope. Avgrenset til `.sjekk-hero`,
-     så den ikke lekker til en eneste annen side. Samme grep som `.flate--lys` i
-     index.astro, av samme grunn. */
-  .sjekk-hero .scene__inner > * + * { margin-block-start: var(--space-6); }
-</style>
+  <Kontaktblokk
+    tittel="Eller bare ring"
+    ingress="Har du rapporten foran deg og vil vite hva som er viktigst å starte med, tar det fem minutter på telefon."
+  />
+</MalWow>
 
 <script>
-  const ORD = { ok: "Bestått", warn: "Bør fikses", fail: "Brudd", neutral: "Ikke sjekket" } as const;
-  type Status = keyof typeof ORD;
+  import { maalingHtml, rapportarkHtml, fraSjekk } from "../components/wow/side/maaling";
 
-  const IKON: Record<Status, string> = {
-    ok: '<path d="M20 6 9 17l-5-5"/>',
-    warn: '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
-    fail: '<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>',
-    neutral: '<circle cx="12" cy="12" r="10"/><path d="M8 12h8"/>',
-  };
-
+  type Status = "ok" | "warn" | "fail" | "neutral";
   interface Rad { name: string; status: Status; value: string; note: string }
   interface Rapport { url: string; dato: string; rader: Rad[]; totalt: number; forbehold: string[]; sendt: boolean }
 
   const esc = (s: unknown) =>
     String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
 
-  const badge = (s: Status) =>
-    `<span class="kk-badge kk-badge-${s}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IKON[s]}</svg>${ORD[s]}</span>`;
-
   const boks = document.querySelector<HTMLElement>("#resultat")!;
-  const skjema = document.querySelector<HTMLFormElement>("#url-sjekk")?.closest("form");
   const felt = document.querySelector<HTMLInputElement>("#url-sjekk")!;
+  const skjema = felt.closest("form");
 
-  function melding(html: string) {
-    boks.innerHTML = `<div class="card">${html}</div>`;
-  }
+  // De fem radene sjekken rapporterer (src/lib/sjekk.ts). Samme navn mens den venter.
+  const RADER = ["Ytelse", "Sikkerhetsheadere", "Cookies før samtykke", "Universell utforming", "Lovpålagt informasjon"] as const;
+
+  /** Én rad utenfor et rapportark: sjekken kjørte ikke. «Ikke sjekket», aldri «Bestått» eller «Brudd». */
+  const stoppet = (hvorfor: string) => {
+    boks.innerHTML = maalingHtml({ navn: "Sjekken stoppet", status: "ikke-sjekket", merknad: hvorfor }, "div");
+  };
 
   function tegn(r: Rapport) {
-    const rader = r.rader
-      .map(
-        (x) => `<tr>
-          <td class="kk-name">${esc(x.name)}</td>
-          <td>${badge(x.status)}</td>
-          <td class="kk-value">${esc(x.value)}</td>
-          <td class="kk-note">${esc(x.note)}</td>
-        </tr>`,
-      )
-      .join("");
-
-    boks.innerHTML = `
-      <div class="stack">
-        <div class="kk-report">
-          <div class="kk-report-head"><span class="kk-url">${esc(r.url)}</span><span>${esc(r.dato)}</span></div>
-          <table>
-            <thead><tr><th scope="col">Sjekk</th><th scope="col">Status</th><th scope="col">Verdi</th><th scope="col">Hva det betyr</th></tr></thead>
-            <tbody>${rader}</tbody>
-          </table>
-          <div class="kk-report-foot"><span>Samlet: ${r.totalt} av 100</span><span class="mono">${esc(r.url)}</span></div>
-        </div>
-
-        <form class="card" data-send>
-          <h3 class="subheading">Få rapporten på e-post</h3>
-          <div class="field">
-            <label for="r-epost">E-post</label>
-            <input class="control" id="r-epost" name="epost" type="email" autocomplete="email" required placeholder="din@bedrift.no" />
-            <span class="hint">Vi bruker adressen til å sende denne rapporten. Ingen nyhetsbrev.</span>
-          </div>
-          <button class="kk-btn" type="submit">Send rapporten</button>
-          <p class="small faint" data-send-status></p>
-        </form>
-
-        <details class="card card--sunken">
-          <summary class="body-strong" style="cursor: pointer">Forbehold – hva sjekken ikke ser</summary>
-          <ul class="small muted" style="margin: var(--space-3) 0 0; padding-left: var(--space-5); display: grid; gap: var(--space-2)">
-            ${r.forbehold.map((f) => `<li>${esc(f)}</li>`).join("")}
-          </ul>
-        </details>
-      </div>`;
+    boks.innerHTML =
+      rapportarkHtml({
+        tittelId: "rapport-tittel",
+        // Statusen kommer fra sjekken, uendret: «neutral» er «Ikke sjekket», med årsaken i `note`.
+        rader: r.rader.map((x) => ({ navn: x.name, verdi: x.value, status: fraSjekk[x.status], merknad: x.note })),
+        adresse: r.url,
+        dato: `${r.dato}. Samlet: ${r.totalt} av 100`,
+      }) +
+      `<form class="wow-skjema wow-vt-send" data-send>
+         <h3>Få rapporten på e-post</h3>
+         <div class="wow-skjema__felt">
+           <label for="r-epost">E-post</label>
+           <input id="r-epost" name="epost" type="email" autocomplete="email" required placeholder="din@bedrift.no" aria-describedby="r-epost-hint" />
+           <p class="wow-skjema__hint" id="r-epost-hint">Vi bruker adressen til å sende denne rapporten. Ingen nyhetsbrev.</p>
+         </div>
+         <button class="wow-knapp wow-knapp--strek" type="submit"><span class="wow-knapp__tekst">Send rapporten</span></button>
+         <p data-send-status></p>
+       </form>` +
+      `<div class="wow-prosa">
+         <details>
+           <summary>Forbehold – hva sjekken ikke ser</summary>
+           <ul class="wow-notat">${r.forbehold.map((f) => `<li>${esc(f)}</li>`).join("")}</ul>
+         </details>
+       </div>`;
 
     const sendSkjema = boks.querySelector<HTMLFormElement>("[data-send]")!;
     const status = boks.querySelector<HTMLElement>("[data-send-status]")!;
@@ -304,12 +200,18 @@ const schema = verktoy({
         status.textContent = "Klarte ikke å sende e-posten nå. Rapporten står fortsatt over.";
       }
     });
+
+    // Resultatet er klart: flytt fokus til rapportens tittel, så skjermleseren starter der.
+    document.getElementById("rapport-tittel")?.focus({ preventScroll: false });
   }
 
   async function kjor(url: string) {
     if (!url.trim()) return;
     boks.setAttribute("aria-busy", "true");
-    melding('<p class="mono">$ sjekk ' + esc(url) + " …</p><p class='small faint'>Dette tar vanligvis 10–30 sekunder. Lighthouse-målingen er den som bruker tid.</p>");
+    // Venter: de samme fem radene, uten verdi. Ingen spinner.
+    boks.innerHTML =
+      rapportarkHtml({ rader: RADER.map((navn) => ({ navn, status: "venter" as const })), adresse: url }) +
+      `<p class="wow-vt-venter">Dette tar vanligvis 10–30 sekunder. Lighthouse-målingen er den som bruker tid.</p>`;
     try {
       const svar = await fetch("/api/sjekk", {
         method: "POST",
@@ -318,12 +220,12 @@ const schema = verktoy({
       });
       const data = (await svar.json()) as Rapport & { feil?: string };
       if (!svar.ok || data.feil) {
-        melding(`<p class="body-strong">Sjekken stoppet.</p><p class="muted">${esc(data.feil ?? "Ukjent feil.")}</p>`);
+        stoppet(data.feil ?? "Ukjent feil.");
         return;
       }
       tegn(data);
     } catch {
-      melding('<p class="body-strong">Sjekken stoppet.</p><p class="muted">Fikk ikke svar fra serveren. Prøv igjen om et øyeblikk.</p>');
+      stoppet("Fikk ikke svar fra serveren. Prøv igjen om et øyeblikk.");
     } finally {
       boks.setAttribute("aria-busy", "false");
     }
@@ -337,5 +239,10 @@ const schema = verktoy({
   });
 
   // Kom brukeren hit fra hero-feltet eller terminalmodus, kjør med en gang.
+  // /sjekk er forhåndsbygget, så ?url= kommer ikke med i feltets value fra
+  // serveren (Astro.url.searchParams er tom ved bygg). Adressen leses derfor
+  // her, fylles inn i feltet og kjøres. Testen er tests/sjekk-url.spec.ts.
+  const fraAdresse = new URLSearchParams(location.search).get("url")?.trim() ?? "";
+  if (fraAdresse && !felt.value.trim()) felt.value = fraAdresse;
   if (felt.value.trim()) void kjor(felt.value);
 </script>

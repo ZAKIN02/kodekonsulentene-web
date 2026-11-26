@@ -17,7 +17,6 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 html { color-scheme: dark; }
-html[data-theme="light"] { color-scheme: light; }
 
 body {
   margin: 0;
@@ -233,7 +232,7 @@ html { scroll-padding-top: calc(var(--topplinje-hoyde, 80px) + var(--space-3)); 
    En logo og en 36 px kontroll er faste stoerrelser; det er MENYEN som skal gi.
    Den er allerede en scroller paa mobil, og under faar den vaere det her ogsaa –
    men bare naar den faktisk maa, se `[data-mer]`. */
-.topbar__logo, .topbar .iconbtn, .topbar__cta { flex: none; }
+.topbar__logo, .topbar__cta { flex: none; }
 .topbar__logo img { height: 22px; width: auto; max-width: none; flex: none; }
 /* Menyen er en vannrett scroller under 861 px: 535 px innhold i 316 px paa 390.
    Tre toppsider faller utenfor. To ting gjoeres her:
@@ -323,17 +322,6 @@ html { scroll-padding-top: calc(var(--topplinje-hoyde, 80px) + var(--space-3)); 
 .topbar__logo { min-height: 44px; }
 .topbar nav a { display: inline-flex; align-items: center; min-height: 44px; padding-inline: var(--space-1); white-space: nowrap; }
 
-.iconbtn {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 36px; height: 36px; padding: 0;
-  background: transparent; border: var(--hairline) solid var(--line);
-  border-radius: var(--radius-sm); color: var(--ink-muted); cursor: pointer;
-}
-.iconbtn:hover { border-color: var(--line-strong); color: var(--ink); }
-.iconbtn:focus-visible { outline: var(--focus-width) solid var(--focus); outline-offset: 2px; }
-.iconbtn svg { width: 18px; height: 18px; }
-html:not([data-theme="light"]) .iconbtn [data-icon="sun"] { display: none; }
-html[data-theme="light"] .iconbtn [data-icon="moon"] { display: none; }
 
 /* ---- Hero: 7/5-kolonner på desktop ---- */
 .hero { position: relative; isolation: isolate; padding-block: var(--space-8) var(--space-7); }

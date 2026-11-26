@@ -210,7 +210,7 @@ describe("hemmeligheter og klientkode", () => {
     for (const f of [
       "src/lib/ai-tekst.ts",
       "src/pages/api/ai-tekst.ts",
-      "src/components/AiTekst.astro",
+      "src/components/wow/tjeneste/AiTekst.astro",
       ".env.example",
     ]) {
       const kode = readFileSync(f, "utf8");
@@ -220,7 +220,7 @@ describe("hemmeligheter og klientkode", () => {
 
   test("komponenten snakker bare med vårt eget endepunkt", () => {
     // En nøkkel i klientkoden er den feilen vi selger oss på å ikke gjøre.
-    const kode = readFileSync("src/components/AiTekst.astro", "utf8");
+    const kode = readFileSync("src/components/wow/tjeneste/AiTekst.astro", "utf8");
     assert.doesNotMatch(kode, /api\.anthropic\.com/);
     assert.doesNotMatch(kode, /ANTHROPIC_API_KEY/);
     assert.match(kode, /fetch\("\/api\/ai-tekst"/);
@@ -251,14 +251,14 @@ describe("hemmeligheter og klientkode", () => {
   });
 
   test("skjemaet virker uten JavaScript", () => {
-    const kode = readFileSync("src/components/AiTekst.astro", "utf8");
+    const kode = readFileSync("src/components/wow/tjeneste/AiTekst.astro", "utf8");
     assert.match(kode, /<form[^>]*method="post"[^>]*action="\/api\/ai-tekst"/);
     assert.match(kode, /<noscript>/);
   });
 
   test("ingen cookies settes noe sted i funksjonen", () => {
     // Null cookies er et salgsargument og en lovtolkning (ekomloven § 3-15).
-    for (const f of ["src/pages/api/ai-tekst.ts", "src/components/AiTekst.astro", "src/lib/ai-tekst.ts"]) {
+    for (const f of ["src/pages/api/ai-tekst.ts", "src/components/wow/tjeneste/AiTekst.astro", "src/lib/ai-tekst.ts"]) {
       assert.doesNotMatch(readFileSync(f, "utf8"), /set-cookie|document\.cookie/i, f);
     }
   });

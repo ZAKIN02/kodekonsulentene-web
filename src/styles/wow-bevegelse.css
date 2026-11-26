@@ -1,0 +1,1308 @@
+/* Startstilene wow-bevegelsen trenger (src/scripts/wow/). Eies av bevegelse.
+ *
+ * Tre regler holder alt sammen:
+ *  1. Uten JavaScript er ingenting skjult. Startstilene gjelder bare når <html> har
+ *     wow-js, som Intro.astro setter før første maling (og fjerner igjen hvis
+ *     skriptet ikke kommer innen 4 s).
+ *  2. Det finnes ikke lenger noe intro-teppe. Heroen tegnes ved første maling; bildet bak
+ *     toner inn fra svart (html.wow-inngang, ren CSS) mens H1-linjene løftes.
+ *  3. Ved redusert bevegelse gjelder ingen av startstilene, og inngang og peker vises ikke.
+ *
+ * ScrollWorld sine stiler ligger her også (ikke injisert av skriptet), så CSP-en ikke
+ * trenger noe nytt for stiler, og filmoppsettet gjelder fra første maling.
+ *
+ * Et element med data-wow-klar eies av skriptet; da slipper startstilen taket.
+ * Farger bare via var(--wow-*) fra tokens-wow.css.
+ */
+
+/* ── Lenis (lenis/dist/lenis.css, 1.3.27) ─────────────────────────── */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+.lenis [data-lenis-prevent],
+.lenis [data-lenis-prevent-wheel],
+.lenis [data-lenis-prevent-touch],
+.lenis [data-lenis-prevent-vertical],
+.lenis [data-lenis-prevent-horizontal] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* Lenis ruller selv; en CSS-myk rulling oppå gir hakking. */
+html.lenis {
+  scroll-behavior: auto !important;
+}
+
+/* ── Skjermlesertekst ─────────────────────────────────────────────── */
+.wow-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Startstiler: bare med JS, bare full bevegelse ─────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  /* Ikke heroen: H1 er LCP og skal males ved første maling, uten å vente på bunten
+     (revisor r3 #1). Den spilles heller ikke inn (split.ts). */
+  html.wow-js [data-split]:not([data-wow-klar]):not([data-split-inngang]):not([data-sw-kapittel="0"] *) {
+    visibility: hidden;
+  }
+
+  html.wow-js [data-reveal="fade"]:not([data-wow-klar]),
+  html.wow-js [data-draw]:not([data-wow-klar]),
+  html.wow-js [data-befaring-verdi]:not([data-wow-klar]),
+  html.wow-js [data-pin="befaring"]:not([data-befaring-venter])
+    [data-befaring-steg]:not([data-befaring-status="venter"]):not([data-wow-klar]) {
+    opacity: 0;
+  }
+
+  html.wow-js [data-reveal="clip"]:not([data-wow-klar]) {
+    clip-path: inset(100% 0 0 0);
+  }
+}
+
+/* ── data-split: linjemaskene ─────────────────────────────────────── */
+.wow-split {
+  display: block;
+}
+
+/* Masken strekkes litt over og under linjen, så Å-ringer og descendere ikke
+   klippes når linjeavstanden er tett (0.88). Margen nuller ut, så layouten står. */
+.wow-linje-mask {
+  padding-block: 0.14em;
+  margin-block: -0.14em;
+}
+
+/* Margene mellom to masker kollapser til den mest negative, ikke summen. Derfor
+   −0.28em her, så hver linje står nøyaktig der den sto før delingen (ingen CLS). */
+.wow-linje-mask + .wow-linje-mask {
+  margin-block-start: -0.28em;
+}
+
+/* ── data-count ───────────────────────────────────────────────────── */
+[data-count] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Masken (kritiker wow-r1 #5): hver sifferkolonne klippes til linjen, og number-flow sin
+   myke kant over og under settes til null. Sifre som ruller forbi, vises aldri utenfor
+   linjen, og mellomrommet mellom tusen og hundre står fast. */
+[data-count] number-flow {
+  --number-flow-mask-height: 0em;
+  line-height: 1;
+}
+
+[data-count] number-flow::part(digit) {
+  overflow: clip;
+}
+
+/* ── data-befaring-lander: lysstreifet når fastprisen lander ──────── */
+.wow-lys {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.wow-lys > span {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    var(--wow-slor-null) 25%,
+    color-mix(in srgb, var(--wow-tekst) 55%, transparent) 50%,
+    var(--wow-slor-null) 75%
+  );
+  opacity: 0;
+  transform: translateX(-100%);
+}
+
+/* ── data-befaring-skriv: skrivefeltet ────────────────────────────── */
+.wow-skriv {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.wow-skriv__spokelse {
+  visibility: hidden;
+}
+
+.wow-skriv__tekst {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+}
+
+.wow-skriv__tekst::after {
+  content: "";
+  display: inline-block;
+  width: 0.08em;
+  height: 1.05em;
+  margin-inline-start: 0.06em;
+  vertical-align: -0.15em;
+  background: var(--wow-refleks);
+  animation: wow-markor 1s steps(1, end) infinite;
+}
+
+[data-befaring-status="skrevet"] .wow-skriv__tekst::after {
+  opacity: 0;
+  animation: none;
+}
+
+@keyframes wow-markor {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ── data-marquee ─────────────────────────────────────────────────── */
+/* Uten JS og ved redusert bevegelse: en rad som kan rulles sidelengs, så alt kan leses
+   og siden ikke blir bredere enn skjermen. */
+[data-marquee]:not([data-wow-klar]) {
+  overflow-x: auto;
+}
+
+[data-marquee][data-wow-klar] {
+  position: relative;
+  overflow: hidden;
+}
+
+.wow-marquee__spor {
+  display: flex;
+  width: max-content;
+}
+
+.wow-marquee__gruppe {
+  display: flex;
+  flex: none;
+}
+
+/* Stoppknappen er usynlig til den får tastaturfokus (pekeren stopper båndet ved hover). */
+.wow-marquee__stopp {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: var(--wow-marg);
+  translate: 0 -50%;
+  min-height: var(--wow-trykkflate);
+  padding-inline: var(--wow-rom-4);
+  border: var(--wow-kant-1) solid var(--wow-linje-sterk);
+  border-radius: var(--wow-radius-pille);
+  background: var(--wow-bunn);
+  color: var(--wow-tekst);
+  font: inherit;
+  font-size: var(--wow-tekst-liten);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.wow-marquee__stopp:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+  outline: var(--wow-kant-2) solid var(--wow-fokus);
+  outline-offset: var(--wow-fokus-avstand);
+}
+
+/* ── data-karusell (uten JS: vanlig vannrett rulling med snap) ────── */
+[data-karusell]:not([data-wow-klar]) {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+}
+
+[data-karusell][data-wow-klar] {
+  overflow: hidden;
+  touch-action: pan-y pinch-zoom;
+}
+
+[data-karusell] .karusell__spor {
+  display: flex;
+}
+
+[data-karusell] .karusell__lysbilde {
+  flex: 0 0 auto;
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+[data-karusell]:focus-visible {
+  outline: var(--wow-kant-2) solid var(--wow-fokus);
+  outline-offset: var(--wow-fokus-avstand);
+}
+
+[data-karusell-fremdrift] {
+  transform-origin: 0 50%;
+}
+
+/* ── Peker (src/components/wow/Peker.astro) ───────────────────────── */
+.wow-peker {
+  display: none;
+}
+
+html.wow-peker-pa .wow-peker {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  z-index: calc(var(--wow-lag-hopp) - 1);
+  display: block;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--wow-tid-svar) var(--wow-kurve);
+}
+
+html.wow-peker-pa .wow-peker[data-synlig] {
+  opacity: 1;
+}
+
+.wow-peker__prikk,
+.wow-peker__ring,
+.wow-peker__tekst {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  translate: -50% -50%;
+  border-radius: 50%;
+}
+
+/* Papirhvit, ikke grønn: grønt betyr «virker» i filmen, og pekeren skal ikke leses som en lampe
+   (kritiker r4 #19). */
+.wow-peker__prikk {
+  width: 0.625rem;
+  height: 0.625rem;
+  background: var(--wow-tekst);
+  /* Synlig også over refleksflater. */
+  box-shadow: 0 0 0 var(--wow-kant-1) var(--wow-bunn);
+  transition: scale var(--wow-tid-lang) var(--wow-kurve);
+}
+
+.wow-peker__ring {
+  width: var(--wow-trykkflate);
+  height: var(--wow-trykkflate);
+  border: var(--wow-kant-1) solid var(--wow-tekst);
+  opacity: 0;
+  scale: 0.25;
+  transition:
+    scale var(--wow-tid-lang) var(--wow-kurve),
+    opacity var(--wow-tid-svar) var(--wow-kurve);
+}
+
+.wow-peker__tekst {
+  border-radius: 0;
+  color: var(--wow-tekst-pa-refleks);
+  font-family: var(--wow-font-tekst);
+  font-size: var(--wow-tekst-liten);
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity var(--wow-tid-kort) var(--wow-kurve);
+}
+
+.wow-peker[data-tilstand="lenke"] .wow-peker__prikk {
+  scale: 0.5;
+}
+
+.wow-peker[data-tilstand="lenke"] .wow-peker__ring {
+  opacity: 1;
+  scale: 1;
+}
+
+.wow-peker[data-tilstand="medie"] .wow-peker__prikk {
+  scale: 8.4;
+}
+
+.wow-peker[data-tilstand="medie"] .wow-peker__tekst {
+  opacity: 1;
+  transition-delay: var(--wow-tid-kort);
+}
+
+/* ── ScrollWorld (src/components/wow/ScrollWorld.astro, scripts/wow/scroll-world.ts) ──
+ *
+ * Grunnoppsettet under gjelder uten JavaScript, ved redusert bevegelse og ved Save-Data:
+ * heroen står over første stillbilde, og hvert kapittel er en statisk blokk med sitt eget
+ * stillbilde, grønn lampe, problem, tittel og løsning. Filmoppsettet lenger ned gjelder fra
+ * første maling når Intro.astro har satt html.wow-js og ikke html.wow-spar, så ingenting
+ * flytter seg når skriptet starter.
+ *
+ * Runde 4, historien C «Lampa»: én plate med fortellerlinjene, én lampe ved teksten (hul = ikke
+ * målt, fylt grønn med dato = målt), uavhengig av gråtonen. Telleren er fjernet.
+ * Runde wow-r3: én tekstplate som bytter innhold (problem → tittel og løsning),
+ * målingene i verkstedet, hardt kutt i sømmene (skriptet).
+ * Runde wow-r5: gata er grå til lampa blir grønn (.sw__gra), telleren med fire lamper er eneste
+ * viser (skinnen er fjernet), sluttsløret, og panelet som blir rapporten (overgang.ts).
+ * Bare opacity, transform og clip-path animeres. To kurver: --wow-kurve og --wow-kurve-inn-ut.
+ *
+ * Teknikk tilpasset fra oso95/scroll-world (MIT), se scroll-world.ts. */
+.sw {
+  position: relative;
+  isolation: isolate;
+  background: var(--wow-bunn);
+  color: var(--wow-tekst);
+}
+
+/* Uten film dekker bildet bare heroen. I filmen følger sporet hele seksjonen, og rammen i
+   det er festet (sticky) og holder filmen. */
+.sw__spor {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: 0;
+  height: 100vh;
+  height: 100svh;
+  pointer-events: none;
+}
+
+.sw__ramme {
+  position: sticky;
+  inset-block-start: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.sw__lerret,
+.sw__lag {
+  position: absolute;
+  inset: 0;
+}
+
+.sw__lag {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.sw__lag:first-child {
+  opacity: 1;
+  visibility: visible;
+}
+
+.sw__lag:not(:first-child) {
+  display: none;
+}
+
+.sw__poster,
+.sw__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Uten klipp skyves stillbildet sakte innover med rullingen (--sw-zoom fra skriptet). */
+.sw__poster {
+  transform: scale(var(--sw-zoom, 1));
+  transform-origin: 50% 45%;
+}
+
+/* Posteren ligger under til klippet har tegnet sitt første bilde (iOS). */
+.sw__video {
+  opacity: 0;
+}
+
+.sw__lag[data-har-klipp] .sw__video {
+  opacity: 1;
+}
+
+.sw__lag[data-har-klipp] .sw__poster {
+  visibility: hidden;
+}
+
+/* Slør. Kapitlene har sin egen tette plate, så sløret er bare en lett bunn. */
+.sw__slor {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--wow-slor) 0%, var(--wow-slor-null) 45%);
+}
+
+/* Heroen (kritiker r3 #4): sløret bare fra venstre, 70 % → 0 over venstre 55 %, så gata står i
+   full lysstyrke til høyre. Opasiteten følger heroteksten ut. */
+.sw__slor--hero {
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--wow-bunn) 70%, transparent) 0%,
+    color-mix(in srgb, var(--wow-bunn) 45%, transparent) 30%,
+    var(--wow-slor-null) 55%
+  );
+}
+
+/* Gata er grå til vi har fikset den (kritiker r4 #1). To lag over filmen: et med blandingsmodus
+   «saturation» (bunnfargen har ingen metning, så bildet under mister fargen) og et mørkt. Bare
+   opasiteten animeres: 280 ms inn i det grå (--wow-tid-svar), 700 ms ut når lampa blir grønn
+   (--wow-tid-lang). I et kutt byttes det
+   straks (data-straks fra skriptet). Lampa og platen ligger over og beholder fargen. */
+.sw__gra {
+  position: absolute;
+  inset: 0;
+  background: var(--wow-bunn);
+  mix-blend-mode: saturation;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--wow-tid-lang) var(--wow-kurve);
+}
+
+.sw__gra--mork {
+  mix-blend-mode: normal;
+}
+
+.sw__gra[data-aktiv] {
+  opacity: 0.92;
+  transition-duration: var(--wow-tid-svar);
+}
+
+.sw__gra--mork[data-aktiv] {
+  opacity: 0.22;
+}
+
+.sw__gra[data-straks] {
+  transition: none;
+}
+
+/* Sluttsløret: bunnen av filmen tones mot bakgrunnen før den slipper, så det ikke blir en hard
+   kant over rapporten (kritiker r4 #2). Opasiteten settes av skriptet. */
+.sw__slutt {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--wow-bunn) 0%, var(--wow-bunn) 12%, var(--wow-slor-null) 55%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Inngangen: første bilde toner inn fra svart, 0,9 s, første visning i økta. Bare bildet:
+   H1 ligger over og er synlig fra første maling (LCP). */
+.sw__inngang {
+  position: absolute;
+  inset: 0;
+  background: var(--wow-bunn);
+  opacity: 0;
+  visibility: hidden;
+}
+
+@keyframes sw-inngang {
+  from {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* KI-merket på første skjerm. I filmen tar platen over merket når heroen er tont ut. */
+.sw__kolofon--hero {
+  position: absolute;
+  inset-inline-end: var(--wow-marg);
+  inset-block-end: var(--wow-rom-4);
+  margin: 0;
+}
+
+/* Det som bare finnes i filmen. */
+.sw__nede,
+.sw__gra,
+.sw__slutt {
+  display: none;
+}
+
+/* ── Kapitlene i flyt ── */
+.sw__kapittel {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.sw__kapittel--hero {
+  display: flex;
+  flex-direction: column;
+}
+
+.sw__tekstramme {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  box-sizing: border-box;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding-block: calc(var(--wow-hode-hoyde) + var(--wow-rom-6)) var(--wow-rom-8);
+}
+
+.sw__tekst {
+  pointer-events: auto;
+}
+
+/* Hopp forbi filmen: usynlig til den får tastaturfokus. */
+.sw__hopp {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.sw__hopp:focus-visible {
+  position: fixed;
+  inset-block-start: calc(var(--wow-hode-hoyde) + var(--wow-rom-4));
+  inset-inline-start: var(--wow-marg);
+  z-index: var(--wow-lag-hopp);
+  width: auto;
+  height: auto;
+  padding: var(--wow-rom-2) var(--wow-rom-4);
+  clip-path: none;
+  border-radius: var(--wow-radius-pille);
+  background: var(--wow-refleks);
+  color: var(--wow-tekst-pa-refleks);
+  font-weight: 600;
+  text-decoration: none;
+  pointer-events: auto;
+  outline: var(--wow-kant-2) solid var(--wow-fokus);
+  outline-offset: var(--wow-fokus-avstand);
+}
+
+/* Statiske blokker: ett kapittel per blokk, stillbilde og tekst. */
+.sw__blokk {
+  display: grid;
+  gap: var(--wow-rom-6);
+  padding: var(--wow-seksjon-tett) var(--wow-marg) 0;
+  pointer-events: auto;
+}
+
+.sw__kapittel:last-child .sw__blokk {
+  padding-block-end: var(--wow-seksjon-tett);
+}
+
+.sw__blokk-bilde {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--wow-radius-m);
+  background: var(--wow-flate);
+}
+
+.sw__blokk-bilde img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sw__blokk-bilde .sw__kolofon {
+  position: absolute;
+  inset-inline-end: var(--wow-rom-3);
+  inset-block-end: var(--wow-rom-2);
+  margin: 0;
+  padding: var(--wow-rom-1) var(--wow-rom-2);
+  border-radius: var(--wow-radius-s);
+  background: var(--wow-slor-tung);
+}
+
+/* Linjene i den statiske blokken: alle i rekkefølge, som et manus (manus C, felles regler). */
+.sw__blokk-tekst {
+  display: grid;
+  gap: var(--wow-rom-3);
+  max-width: 40rem;
+}
+
+.sw__blokk--hero .sw__blokk-tekst {
+  padding-block-start: var(--wow-rom-5);
+}
+
+.sw__linje-fast {
+  margin: 0;
+  font-family: var(--wow-font-tekst);
+  font-size: var(--wow-tekst-ingress);
+  line-height: 1.35;
+  text-wrap: pretty;
+}
+
+.sw__blokk-tekst .sw__tittel {
+  margin-block-start: var(--wow-rom-3);
+}
+
+@media (min-width: 1024px) {
+  .sw__blokk:not(.sw__blokk--hero) {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    align-items: end;
+    column-gap: var(--wow-rom-7);
+  }
+}
+
+/* Lampa i blokken: hul og «Ikke målt», eller fylt med datoen ved pulten. */
+.sw__lampe-rad {
+  display: flex;
+  align-items: center;
+  gap: var(--wow-rom-3);
+  margin: 0;
+  color: var(--wow-tekst-dempet);
+  font-size: var(--wow-tekst-liten);
+}
+
+.sw__lampe-rad .sw__lampe {
+  margin: 0;
+}
+
+.sw__lampe-rad[data-gronn] {
+  color: var(--wow-tekst);
+}
+
+/* ── Tekst ── */
+.sw__problem {
+  margin: 0;
+  font-family: var(--wow-font-tekst);
+  font-size: var(--wow-tekst-ingress);
+  line-height: 1.35;
+  text-wrap: pretty;
+}
+
+.sw__tittel {
+  margin: 0;
+  font-family: var(--wow-font-display);
+  /* Runde 4 (wow-brief «Runde 4»): setningsform, ikke versaler. Bare garantien og ordmerket står
+     i gigantiske versaler. */
+  font-size: var(--wow-tekst-h3);
+  font-stretch: var(--wow-display-bredde);
+  font-weight: var(--wow-display-vekt);
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.sw__tittel a {
+  color: inherit;
+}
+
+.sw__losning {
+  max-width: 40ch;
+  margin: var(--wow-rom-3) 0 0;
+  font-family: var(--wow-font-tekst);
+  font-size: var(--wow-tekst-brod);
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.sw__kolofon {
+  color: var(--wow-tekst-svak);
+  font-size: var(--wow-tekst-mikro);
+  line-height: 1.4;
+}
+
+/* ── Lampen: samme hake som statusen i befaringsrapporten (.wow-hake i wow.css). Grå prikk
+   (som .wow-hake--venter) med den grønne haken over; overgangen er opasitet og skala på
+   haken (ingen fargeovergang), og én ring slipper ut i det den blir grønn. ── */
+.sw__lampe {
+  position: relative;
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
+  width: 1.125rem;
+  height: 1.125rem;
+  /* Midt på første linje i problemet. */
+  margin-block-start: calc((1.35 * var(--wow-tekst-ingress) - 1.125rem) / 2);
+}
+
+.sw__lampe::before,
+.sw__lampe::after,
+.sw__maaling-status::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--wow-radius-pille);
+}
+
+.sw__lampe::before,
+.sw__maaling-status::before {
+  background: var(--wow-linje-sterk);
+  transform: scale(0.7);
+}
+
+.sw__lampe .sw__lampe-gronn,
+.sw__maaling-status .sw__maaling-hake {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  opacity: 0;
+  transform: scale(0.7);
+  transition:
+    opacity var(--wow-tid-svar) var(--wow-kurve),
+    transform var(--wow-tid-svar) var(--wow-kurve);
+}
+
+.sw__lampe::after {
+  border: var(--wow-kant-2) solid var(--wow-refleks);
+  opacity: 0;
+}
+
+.sw__lampe[data-gronn] .sw__lampe-gronn,
+[data-gronn] > .sw__lampe .sw__lampe-gronn,
+[data-alle] > span > .sw__lampe .sw__lampe-gronn,
+[data-alle] > .sw__lampe .sw__lampe-gronn {
+  opacity: 1;
+  transform: none;
+}
+
+[data-gronn] > .sw__lampe::after,
+[data-alle] > .sw__lampe::after {
+  animation: sw-lampe var(--wow-tid-lang) var(--wow-kurve);
+}
+
+@keyframes sw-lampe {
+  from {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(2.4);
+  }
+}
+
+/* ── Platen: ett felt, linjene stablet i samme rute. Den gamle tones ut (120 ms) før den nye
+   kommer (160 ms, etter 120 ms), så to linjer står aldri samtidig (kritiker r3 #1). ── */
+.sw__nede {
+  position: absolute;
+  inset-inline: var(--wow-marg);
+  inset-block-end: var(--wow-rom-7);
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--wow-rom-5);
+  pointer-events: none;
+}
+
+.sw__plate {
+  box-sizing: border-box;
+  width: min(36rem, 100%);
+  padding: var(--wow-rom-5) var(--wow-rom-6) var(--wow-rom-4);
+  border-radius: var(--wow-radius-m);
+  background: var(--wow-slor-tung);
+  opacity: 0;
+  /* Platen er like høy som den lengste linja (alle står i samme rute), men klippes ovenfra til
+     linja som vises (--sw-klipp fra skriptet): ingen layout endres, bare clip-path. */
+  clip-path: inset(var(--sw-klipp, 0px) 0 0 0 round var(--wow-radius-m));
+  transition:
+    opacity var(--wow-tid-svar) var(--wow-kurve),
+    clip-path var(--wow-tid-svar) var(--wow-kurve);
+}
+
+.sw__plate[data-synlig] {
+  opacity: 1;
+}
+
+.sw__plate-rute {
+  position: relative;
+  padding-inline-start: calc(1.125rem + var(--wow-rom-4));
+}
+
+.sw__linjer {
+  display: grid;
+}
+
+.sw__linje {
+  grid-area: 1 / 1;
+  align-self: end;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity calc(var(--wow-tid-kort) * 0.75) var(--wow-kurve);
+}
+
+.sw__plate[data-synlig] .sw__linje[data-sw-aktiv] {
+  opacity: 1;
+  transition: opacity var(--wow-tid-kort) var(--wow-kurve) calc(var(--wow-tid-kort) * 0.75);
+}
+
+.sw__fortelling {
+  margin: 0;
+  font-family: var(--wow-font-tekst);
+  font-size: var(--wow-tekst-ingress);
+  line-height: 1.35;
+  text-wrap: pretty;
+}
+
+.sw__linje .sw__tittel + .sw__fortelling {
+  margin-block-start: var(--wow-rom-3);
+  font-size: var(--wow-tekst-brod);
+  line-height: 1.45;
+}
+
+/* Lampa: ÉN, til venstre for første linje i teksten som vises (--sw-lampe-y fra skriptet).
+   Hul ring = ikke målt. Fylt grønn med hake = målt (plate[data-malt]). Uavhengig av gråtonen. */
+.sw__lampe--plate {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  margin: 0;
+  transform: translateY(var(--sw-lampe-y, 0px));
+  transition: transform var(--wow-tid-svar) var(--wow-kurve);
+}
+
+.sw__lampe--plate::before,
+.sw__lampe-rad:not([data-gronn]) .sw__lampe::before {
+  background: transparent;
+  border: var(--wow-kant-2) solid var(--wow-tekst-dempet);
+  transform: scale(0.82);
+}
+
+[data-malt] .sw__lampe--plate .sw__lampe-gronn {
+  opacity: 1;
+  transform: none;
+}
+
+[data-malt] .sw__lampe--plate::after {
+  animation: sw-lampe var(--wow-tid-lang) var(--wow-kurve);
+}
+
+/* Én puls ved linja som forklarer lampa: bare opasitet, den tennes ikke. */
+.sw__lampe--plate[data-puls]::before {
+  animation: sw-lampe-puls var(--wow-tid-lang) var(--wow-kurve-inn-ut);
+}
+
+@keyframes sw-lampe-puls {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.sw__plate-fot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--wow-rom-1) var(--wow-rom-4);
+  margin: var(--wow-rom-4) 0 0;
+  font-size: var(--wow-tekst-mikro);
+  line-height: 1.4;
+}
+
+.sw__lampe-status {
+  display: grid;
+  color: var(--wow-tekst-dempet);
+}
+
+.sw__lampe-status > span {
+  grid-area: 1 / 1;
+  transition: opacity var(--wow-tid-svar) var(--wow-kurve);
+}
+
+.sw__status-malt {
+  color: var(--wow-tekst);
+  font-weight: 500;
+  opacity: 0;
+}
+
+[data-malt] .sw__status-malt {
+  opacity: 1;
+}
+
+[data-malt] .sw__status-ikke {
+  opacity: 0;
+}
+
+
+/* ── Målingene i verkstedet: samme språk som befaringsrapporten under (statusfirkant,
+   blå målelinje på grått spor, verdi til høyre), så overgangen leses som én bevegelse. ── */
+.sw__maalinger {
+  box-sizing: border-box;
+  width: min(30rem, 100%);
+  padding: var(--wow-rom-4) var(--wow-rom-5);
+  border: var(--wow-kant-1) solid var(--wow-linje);
+  border-radius: var(--wow-radius-m);
+  background: var(--wow-bunn);
+}
+
+.sw__maalinger[data-sw-maalinger] {
+  opacity: 0;
+  transition: opacity var(--wow-tid-svar) var(--wow-kurve);
+}
+
+.sw__maalinger[data-sw-maalinger][data-synlig] {
+  opacity: 1;
+}
+
+/* Filmen har sluppet: delene i rapporten har tatt over panelets plass (overgang.ts). */
+.sw__maalinger[data-sw-maalinger][data-overgang] {
+  visibility: hidden;
+}
+
+/* Delene i rapporten flyttes av overgang.ts hver ramme. Haken (.wow-hake i wow.css) har en
+   overgang på transform (280 ms); den lot haken henge etter de andre delene, så den sto et
+   øyeblikk over etiketten («Uni✓ersell», bygger wow-r6 punkt 4). Mens overgangen eier delene,
+   har de ingen CSS-overgang på transform. */
+[data-sw-overgang] [data-maal-del] {
+  transition: none;
+}
+
+.sw__maalinger-hode {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--wow-rom-1) var(--wow-rom-3);
+  margin: 0 0 var(--wow-rom-2);
+  color: var(--wow-tekst-dempet);
+  font-size: var(--wow-tekst-mikro);
+}
+
+.sw__maalinger-adresse {
+  color: var(--wow-tekst);
+  font-weight: 500;
+}
+
+.sw__maalinger-liste {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sw__maaling {
+  display: grid;
+  grid-template-columns: 1.125rem minmax(0, max-content) minmax(var(--wow-rom-5), 1fr) auto;
+  column-gap: var(--wow-rom-3);
+  align-items: center;
+  padding-block: var(--wow-rom-2);
+  border-block-end: var(--wow-kant-1) solid var(--wow-linje);
+  font-size: var(--wow-tekst-liten);
+}
+
+.sw__maaling:last-child {
+  border-block-end: 0;
+}
+
+.sw__maaling-status {
+  position: relative;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.sw__maaling-navn {
+  display: grid;
+  gap: var(--wow-rom-1);
+  color: var(--wow-tekst-dempet);
+}
+
+/* Forbeholdet står under etiketten, som i rapporten, med samme bredde i tegn og samme
+   linjehøyde, så det brytes likt og kan skaleres rett over i rapporten. */
+.sw__maaling-forbehold {
+  max-width: 36ch;
+  color: var(--wow-tekst-dempet);
+  font-size: var(--wow-tekst-mikro);
+  line-height: 1.4;
+}
+
+.sw__maaling-spor {
+  position: relative;
+  height: var(--wow-kant-1);
+  background: var(--wow-linje-sterk);
+}
+
+.sw__maaling-linje {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: calc(50% - var(--wow-kant-1));
+  height: var(--wow-kant-2);
+  background: var(--wow-lenke);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
+.sw__maaling-verdi {
+  font-size: 1.75rem;
+  opacity: 0;
+  transition: opacity var(--wow-tid-kort) var(--wow-kurve);
+}
+
+.sw__maaling[data-last] .sw__maaling-hake {
+  opacity: 1;
+  transform: none;
+}
+
+.sw__maaling[data-last] .sw__maaling-navn {
+  color: var(--wow-tekst);
+}
+
+.sw__maaling[data-last] .sw__maaling-verdi {
+  opacity: 1;
+}
+
+/* ── Filmoppsettet. Hvert kapittel er like høyt som segmentene sine (skjermhøyder), og det siste
+   får skjermhøyden filmen står i. Kapitlene i flyt er da bare avstand og ankere (#sw-kapittel-1
+   fra toppfeltet); teksten står på platen. ── */
+@media (prefers-reduced-motion: no-preference) {
+  html.wow-js:not(.wow-spar) .sw:not([data-sw-modus="stille"]) .sw__spor {
+    inset-block-end: 0;
+    height: auto;
+  }
+
+  html.wow-js:not(.wow-spar) .sw:not([data-sw-modus="stille"]) .sw__ramme {
+    height: 100vh;
+    height: 100lvh;
+  }
+
+  /* Lagene lenger ute står av (og stillbildet deres hentes ikke) til kameraet nærmer seg
+     (data-sw-naer fra skriptet). Ved load hentes da bare de to første stillbildene. */
+  html.wow-js:not(.wow-spar) .sw:not([data-sw-modus="stille"]) .sw__lag[data-sw-naer] {
+    display: block;
+  }
+
+  html.wow-js:not(.wow-spar) .sw:not([data-sw-modus="stille"]) :is(.sw__gra, .sw__slutt) {
+    display: block;
+  }
+
+  html.wow-js:not(.wow-spar) .sw:not([data-sw-modus="stille"]) .sw__nede {
+    display: flex;
+  }
+
+  html.wow-js:not(.wow-spar) .sw:not([data-sw-modus="stille"]) .sw__blokk {
+    display: none;
+  }
+
+  html.wow-js:not(.wow-spar) .sw:not([data-sw-modus="stille"]) .sw__kapittel {
+    display: block;
+    height: calc(var(--sw-lengde, 1) * 100vh);
+    height: calc(var(--sw-lengde, 1) * 100svh);
+  }
+
+  /* Det siste kapittelet får skjermhøyden filmen står i: rullelengden er nøyaktig filmen. */
+  html.wow-js:not(.wow-spar) .sw:not([data-sw-modus="stille"]) .sw__kapittel--siste {
+    height: calc((var(--sw-lengde, 1) + 1) * 100vh);
+    height: calc((var(--sw-lengde, 1) + 1) * 100svh);
+  }
+
+  html.wow-js:not(.wow-spar) .sw:not([data-sw-modus="stille"]) .sw__tekstramme {
+    position: sticky;
+    inset-block-start: 0;
+    height: 100vh;
+    height: 100svh;
+    min-height: 0;
+  }
+
+  html.wow-inngang .sw__inngang {
+    animation: sw-inngang 0.9s var(--wow-kurve-inn-ut) both;
+  }
+}
+
+/* Mobil, heroen (kritiker r4 #15): bildet står 15svh høyere fra første maling, så dioramaet står
+   over H1 og ikke som en stripe bak den. Skriptet lar det gli ned på plass mens heroteksten går
+   ut (samme verdi, HERO_BILDE i scroll-world.ts). Under står bunnfargen. */
+@media (prefers-reduced-motion: no-preference) and (max-aspect-ratio: 4/5) {
+  html.wow-js:not(.wow-spar) .sw:not([data-sw-modus="stille"]) .sw__lerret {
+    transform: translate3d(0, -15svh, 0);
+  }
+}
+
+/* Smalere enn plate + målinger side om side: målingene over platen. */
+@media (max-width: 1099.98px) {
+  .sw__nede {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .sw__tekstramme {
+    padding-block-end: var(--wow-rom-7);
+  }
+
+  .sw__slor {
+    background: linear-gradient(to top, var(--wow-slor) 0%, var(--wow-slor-null) 55%);
+  }
+
+  /* På mobil går heroteksten over hele bredden; sløret kommer nedenfra. */
+  .sw__slor--hero {
+    background: linear-gradient(to top, var(--wow-slor-tung) 0%, var(--wow-slor-tung) 30%, var(--wow-slor) 60%, var(--wow-slor-null) 90%);
+  }
+
+  /* Nede er heroens hint; KI-merket står øverst til venstre. */
+  .sw__kolofon--hero {
+    inset-block: calc(var(--wow-hode-hoyde) + var(--wow-rom-4)) auto;
+    inset-inline: var(--wow-marg) auto;
+  }
+
+  /* Nede fyller rammen under toppfeltet: panelet øverst, platen nederst (column-reverse over). */
+  .sw__nede {
+    inset-block: calc(var(--wow-hode-hoyde) + var(--wow-rom-3)) var(--wow-rom-5);
+    align-items: stretch;
+    justify-content: space-between;
+    gap: var(--wow-rom-3);
+  }
+
+  .sw__plate,
+  .sw__maalinger {
+    width: 100%;
+  }
+
+  .sw__plate {
+    padding: var(--wow-rom-4) var(--wow-rom-5) var(--wow-rom-3);
+  }
+
+  /* Panelet står øverst (under toppfeltet) og platen nede, så linjene om lampa kan stå mens
+     målingene er synlige (manus C 88–96 %). Raden får to linjer: etiketten øverst, målelinja og
+     verdien under, med luft mellom (kritiker r4 #7). */
+  .sw__maalinger {
+    padding: var(--wow-rom-3) var(--wow-rom-4);
+  }
+
+  .sw__maaling {
+    grid-template-columns: 1.125rem minmax(var(--wow-rom-5), 1fr) auto;
+    row-gap: var(--wow-rom-1);
+    padding-block: var(--wow-rom-2);
+  }
+
+  .sw__maaling-navn {
+    grid-column: 2 / -1;
+  }
+
+  .sw__maaling-spor {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .sw__maaling-verdi {
+    grid-column: 3;
+    grid-row: 2;
+    font-size: 1.375rem;
+  }
+
+  .sw__plate-rute {
+    padding-inline-start: calc(1.125rem + var(--wow-rom-3));
+  }
+}
+
+/* ── Sideoverganger (øyeblikk 4, wow-undersider.md del 1.2; bevegelse wow-r9) ──────
+ * Mellom to sider i wow-uttrykket krysstones innholdet i stedet for å blinke, og toppfeltet står
+ * stille (eget navn, så det ikke tones med). Ren CSS: `@view-transition` mellom dokumenter, ingen
+ * ruter og ingen JavaScript. Varighet --wow-tid-svar (280 ms, del 8: 250–400 ms), kurve
+ * --wow-kurve-inn-ut. Bare opasitet.
+ * Av ved redusert bevegelse (hele blokken står i mediespørringen). Nettlesere uten støtte
+ * (Firefox per nov. 2026) bytter side som før. Gjelder begge bevegelsesnivåene: overgangen er et
+ * svar på et klikk, ikke noe som beveger seg av seg selv. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: var(--wow-tid-svar);
+    animation-timing-function: var(--wow-kurve-inn-ut);
+  }
+
+  .wow-hode {
+    view-transition-name: wow-hode;
+  }
+
+  /* Toppfeltet er det samme på begge sider: ingen toning, det står. */
+  ::view-transition-group(wow-hode) {
+    animation-duration: var(--wow-tid-svar);
+    animation-timing-function: var(--wow-kurve-inn-ut);
+  }
+
+  ::view-transition-old(wow-hode) {
+    animation: none;
+    opacity: 0;
+  }
+
+  ::view-transition-new(wow-hode) {
+    animation: none;
+  }
+}
+
+/* ── data-hode-skjul (scripts/wow/hode.ts) ────────────────────────── */
+[data-hode-skjul] {
+  transition: translate var(--wow-tid-svar) var(--wow-kurve);
+}
+
+[data-hode-skjul][data-hode-skjult] {
+  translate: 0 -100%;
+}
+
+/* ── data-hover: små svar på pekeren (bare fin peker, bare full bevegelse) ──
+ * data-hover="zoom"   på en bilderamme: bildet/klippet inni skaleres 1 → 1,04 (700 ms).
+ *                     Bruker `scale`, ikke `transform`, så det ikke slåss med parallakse.
+ * data-hover="strek"  på en lenke: en strek trekkes under fra venstre (280 ms), og
+ *                     trekkes ut mot høyre når pekeren går. Også ved tastaturfokus. */
+[data-hover="zoom"] {
+  overflow: clip;
+}
+
+[data-hover="strek"] {
+  position: relative;
+  text-decoration: none;
+}
+
+[data-hover="strek"]::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: -0.06em;
+  height: max(var(--wow-kant-2), 0.05em);
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: 100% 50%;
+  transition: transform var(--wow-tid-svar) var(--wow-kurve);
+}
+
+[data-hover="strek"]:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: 0 50%;
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  [data-hover="zoom"] :is(img, video) {
+    transition: scale var(--wow-tid-lang) var(--wow-kurve);
+  }
+
+  [data-hover="zoom"]:hover :is(img, video) {
+    scale: 1.04;
+  }
+
+  [data-hover="strek"]:hover::after {
+    transform: scaleX(1);
+    transform-origin: 0 50%;
+  }
+}
+
+/* Et ordmerke delt i bokstaver mister kerningen og blir bredere enn før delingen.
+   Uten kerning fra start er bredden lik før, under og etter, og ordet går ikke utenfor. */
+[data-split="chars"][data-split-scrub] {
+  font-kerning: none;
+}
+
+/* ── «rolig» (scripts/wow/rolig.ts setter html.wow-rolig) ─────────────
+ * Lesesider og verktøy: ingenting beveger seg uten at leseren har gjort noe. Når en <details>
+ * i innholdet åpnes, tones innholdet inn (--wow-tid-svar, --wow-kurve). Bare opasitet: høyden
+ * åpnes straks (del 8 tillater ikke å animere høyde), så teksten under flytter seg én gang og
+ * står. Nettlesere uten ::details-content åpner som vanlig. Toppfeltets menyer tones ikke: de
+ * brukes ofte og skal svare straks. Ved redusert bevegelse er --wow-tid-svar 0 ms. */
+@media (prefers-reduced-motion: no-preference) {
+  html.wow-rolig main details::details-content {
+    opacity: 0;
+    transition:
+      opacity var(--wow-tid-svar) var(--wow-kurve),
+      content-visibility var(--wow-tid-svar) allow-discrete;
+  }
+
+  html.wow-rolig main details[open]::details-content {
+    opacity: 1;
+  }
+}

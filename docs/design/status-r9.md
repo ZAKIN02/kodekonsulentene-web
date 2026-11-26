@@ -79,10 +79,10 @@ Ingenting er publisert eller merget. Det krever fortsatt et eksplisitt «GODKJEN
 - Test rullingen på ekte iPhone og Android.
 - «GODKJENT» før noe publiseres eller merges.
 
-## Ikke i git
-Råfiler fra Higgsfield (kandidatbilder, utkast, råklipp, ca. 1,8 GB under `assets/higgsfield/`) ligger
-bare lokalt. Se `.gitignore`. Prompter, logg og lisenslogg er i git. Nettfilene i `public/media/wow/`
-er i git. Måle- og arbeidsmappene `.skudd/` og `.design/` var allerede utenfor git.
+## I git
+Råfiler fra Higgsfield (kandidatbilder, utkast, råklipp, ca. 1,8 GB under `assets/higgsfield/`) er
+pushet etter ønske fra eier 26. nov., i flere commits per mappe. Måle- og arbeidsmappene `.skudd/` og
+`.design/` er fortsatt utenfor git (kontaktark og opptak).
 
 ## Neste steg
 1. Start den endelige filmproduksjonen på nytt fra loggen (produsent).
